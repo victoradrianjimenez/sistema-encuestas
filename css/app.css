@@ -1,0 +1,71 @@
+/* Artfully masterminded by ZURB  */
+
+/* -------------------------------------------------- 
+   Table of Contents
+-----------------------------------------------------
+:: Shared Styles
+:: Page Name 1
+:: Page Name 2
+*/
+
+
+/* -----------------------------------------
+   Shared Styles
+----------------------------------------- */
+input[type="submit"]{
+  margin:0 auto;
+}
+fieldset{
+  padding-bottom:10px;
+  margin-left:10px;
+  margin-right:10px;
+}
+textarea{
+  resize:vertical;
+}
+select{
+  width: 100%;
+  margin: 0 0 10px 0;
+  padding: 5px 0 4px 0 ;
+}
+form.custom div.custom.dropdown { 
+  min-width: 100%; 
+}           
+form.custom div.custom.dropdown ul{
+  min-width: 100%;
+}
+#listaItems>li{
+  list-style:none;
+}
+
+/* Zona Login */
+#login fieldset{
+  margin:0;
+}
+#login legend{
+  background-color: rgba(0,0,0,0);
+}
+#login input[type="submit"]{
+  margin:8px auto;
+}
+#datosUsuario{
+  margin:7px;
+}
+    
+/* Zona central */
+#Main{
+  margin-bottom:20px;
+}
+
+/* -----------------------------------------
+   Page Name 1
+----------------------------------------- */
+
+
+
+
+/* -----------------------------------------
+   Page Name 2
+----------------------------------------- */
+
+
