@@ -30,39 +30,7 @@
   <div class="row">
     <!-- Main Section -->  
     <div id="Main" class="nine columns push-three">
-      <div class="row">
-        <div class="twelve columns">
-          
-          <h4>Departamentos</h4>
-          <?php if(count($tabla)== 0):?>
-            <p>No se encontraron departamentos.</p>
-          <?php else:?>
-            <table class="twelve">
-              <thead>
-                <th>Nombre</th>
-                <th>Jefe de Departamento</th>
-                <th>Acciones</th>
-              </thead>
-              <?php foreach($tabla as $fila): ?>  
-                <tr>
-                  <td><a href="<?php echo site_url("carreras/listar/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
-                  <td><?php echo $fila['JefeDepartamento']?></td>
-                  <td>
-                    <a href="<?php echo site_url("departamentos/modificar/".$fila['IdDepartamento'])?>">Modificar</a> /
-                    <a href="<?php echo site_url("departamentos/eliminar/".$fila['IdDepartamento'])?>">Eliminar</a>
-                  </td>
-                </tr>
-              <?php endforeach ?>
-            </table>
-          <?php endif ?>
-          <?php echo $paginacion ?>
-        </div>
-      </div>
-      <div class="row">
-        <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url("departamentos/nuevo")?>">Nuevo Departamento</a>
-        </div>          
-      </div>
+
     </div>
 
     <!-- Nav Sidebar -->
