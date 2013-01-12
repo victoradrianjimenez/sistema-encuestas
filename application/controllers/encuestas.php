@@ -10,7 +10,8 @@ class Encuestas extends CI_Controller{
   }
   
   public function index(){
-    $this->load->view('index.php');
+    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+    $this->load->view('index.php', $data);
   }
   
 }

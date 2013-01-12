@@ -10,7 +10,7 @@ class Departamentos extends CI_Controller{
   }
   
   public function index(){
-    
+    $this->listar();
   }
   
   public function listar($Pagina=0){
@@ -47,7 +47,7 @@ class Departamentos extends CI_Controller{
     //envio datos a la vista
     $data['tabla'] = $tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuario'] = unserialize($this->session->userdata('usuario')); //objeto Persona (usuario logueado)
+    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
     $this->load->view('lista_departamentos', $data);
   }
   

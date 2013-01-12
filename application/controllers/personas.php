@@ -10,15 +10,14 @@ class Personas extends CI_Controller {
 	}
   
   public function index(){
-    
+    $this->login();
   }
   
   function login(){
-    logout();
     //si no recibimos ningún valor proveniente del formulario (el usuario no ingresó sus datos)
     if($this->input->post('usuario')==FALSE){
       //pantalla del formulario de ingreso (pantalla de inicio)
-      $data = null;
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
       $this->load->view('index', $data); 
     }
     else{
@@ -39,8 +38,8 @@ class Personas extends CI_Controller {
         if($p){
           //si el usuario ingresó datos de acceso válidos
           $data['estadoLogin']="ok";
-          $data['usuario']=$p;
-          $this->session->set_userdata('usuario', serialize($p));
+          $data['usuarioLogin']=$p;
+          $this->session->set_userdata('usuarioLogin', serialize($p));
           $this->load->view('index', $data);
         }
         else{
