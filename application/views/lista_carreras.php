@@ -33,21 +33,26 @@
       <div class="row">
         <div class="twelve columns">
           
-          <h4>Departamentos</h4>
+          <h4>Carreras</h4>
+          <?php if(isset($departametno)== 0):?>
+            <h6><?php echo $departamento['nombre']?></h6>
+          <?php endif ?>
           <?php if(count($tabla)== 0):?>
-            <p>No se encontraron departamentos.</p>
+            <p>No se encontraron carreras.</p>
           <?php else:?>
             <table class="twelve">
               <thead>
                 <th>Nombre</th>
+                <th>Plan</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/listarDepartamento/".$fila['idDepartamento'])?>"/><?php echo $fila['nombre']?></a></td>
+                  <td><a href="<?php echo site_url("carreras/listar/".$fila['idCarrera'])?>"><?php echo $fila['nombre']?></a></td>
+                  <td><?php echo $fila['plan']?></td>
                   <td>
-                    <a href="<?php echo site_url("departamentos/modificar/".$fila['idDepartamento'])?>">Modificar</a> /
-                    <a href="<?php echo site_url("departamentos/eliminar/".$fila['idDepartamento'])?>">Eliminar</a>
+                    <a href="<?php echo site_url("carreras/modificar/".$fila['idCarrera'])?>">Editar</a> /
+                    <a href="<?php echo site_url("carreras/eliminar/".$fila['idCarrera'])?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -58,7 +63,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url("departamentos/nuevo")?>">Nuevo Departamento</a>
+          <a class="button" href="<?php echo site_url("carreras/nueva")?>">Nueva Carrera</a>
         </div>          
       </div>
     </div>

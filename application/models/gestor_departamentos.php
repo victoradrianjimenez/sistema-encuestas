@@ -11,6 +11,23 @@ class Gestor_departamentos extends CI_Model{
   
   
   /**
+   * Obtener un departamento a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
+   *
+   * @access public
+   * @param identificador de departamento
+   * @return object
+   */
+  public function dame($idDepartamento){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $query = $this->db->query("call esp_dame_departamento($idDepartamento)");
+    $data = $query->result('Departamento');
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data != FALSE)?$data[0]:FALSE;
+  }
+  
+  
+  /**
    * Obtener el listado de departamentos. Devuleve un array de objetos.
    *
    * @access public
@@ -44,6 +61,7 @@ class Gestor_departamentos extends CI_Model{
   }
 
 
-
+  
+  
 }
 ?>

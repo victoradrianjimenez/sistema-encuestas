@@ -13,8 +13,8 @@ class Departamentos extends CI_Controller{
     $this->listar();
   }
   
-  public function listar($Pagina=0){
-    if (!is_numeric($Pagina)){
+  public function listar($pagina=0){
+    if (!is_numeric($pagina)){
       show_error('El número de página es inválido.');
       return;
     }
@@ -25,7 +25,6 @@ class Departamentos extends CI_Controller{
     $this->load->library('pagination');
     $this->load->model('Departamento');
     $this->load->model('Gestor_departamentos','gd');
-    $this->load->model('Gestor_personas','gp');
        
     //genero la lista de links de paginación
     $config['base_url'] = site_url('departamentos/listar/');
@@ -35,13 +34,11 @@ class Departamentos extends CI_Controller{
     $this->pagination->initialize($config);
     
     //obtengo lista de departamentos
-    $departamentos = $this->gd->listar($Pagina, $config['per_page']);
+    $departamentos = $this->gd->listar($pagina, $config['per_page']);
     $tabla = array();
     foreach ($departamentos as $i => $departamento) {
-      $jd = $this->gp->damePersona($departamento->IdJefeDepartamento);
-      $tabla[$i]['IdDepartamento'] = $departamento->IdDepartamento;
-      $tabla[$i]['Nombre'] = $departamento->Nombre;
-      $tabla[$i]['JefeDepartamento'] = "$jd->Nombre $jd->Apellido";
+      $tabla[$i]['idDepartamento'] = $departamento->IdDepartamento;
+      $tabla[$i]['nombre'] = $departamento->Nombre;
     }
 
     //envio datos a la vista
