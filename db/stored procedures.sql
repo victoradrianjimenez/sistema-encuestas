@@ -136,6 +136,82 @@ BEGIN
     WHERE IdDepartamento = pIdDepartamento;
 END $$
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_clave`;
+
+
+DELIMITER $$
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_clave`(
+    pClave CHAR(16))
+BEGIN
+    -- busca una clave en las encuestas que no finalizaron
+    SELECT  IdClave, IdMateria, IdClave, C.IdEncuesta, C.IdFormulario,
+            Clave, Tipo, Generada, Utilizada
+    FROM    Claves C INNER JOIN Encuestas E ON C.IdEncuesta = E.IdEncuesta AND C.IdFormulario = E.IdFormulario
+    WHERE   Clave = pClave AND FechaFin IS NOT NULL
+    LIMIT   1;
+END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_clave`(
+    pIdMateria SMALLINT,
+    pIdCarrera SMALLINT,
+    pIdEncuesta INT,
+    pIdFormulario INT,
+    pTipo CHAR(1))
+BEGIN
+    DECLARE id INT;
+    DECLARE clave CHAR(12);
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF NOT pTipo IN ('E','R','O') THEN
+        SET Mensaje = 'El tipo de clave es incorrecto.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS(  SELECT  IdEncuesta FROM Encuestas 
+                        WHERE   IdEncuesta = pIdEncuesta AND 
+                                IdFormulario = IdFormulario AND FechaFin IS NOT NULL LIMIT 1) THEN
+            SET Mensaje = 'No se encontró la Encuesta correspondiente y la misma ya concluyó.';
+            ROLLBACK;
+        ELSE
+            SET id = (  
+                SELECT COALESCE(MAX(IdClave),0)+1 
+                FROM    Claves
+                WHERE   IdMateria = pIdMateria AND
+                        IdCarrera = pIdCarrera AND
+                        IdEncuesta = pIdEncuesta AND
+                        IdFormulario = pIdFormulario);            
+            SET clave = SUBSTRING(MD5(CONCAT(
+                id,pIdMateria,pIdCarrera,pIdEncuesta,pIdFormulario,pTipo,NOW())),1,12);
+            INSERT INTO Claves 
+                (IdClave, IdMateria, IdCarrera, IdEncuesta, IdFormulario, Clave, Tipo, Generada, Utilizada)
+            VALUES (id, pIdMateria, pIdCarrera, pIdEncuesta, pIdFormulario, UPPER(clave), pTipo, NOW(), NULL);
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = clave;
+                COMMIT;
+            END IF;            
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
 

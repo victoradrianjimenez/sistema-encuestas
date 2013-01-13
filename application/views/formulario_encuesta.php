@@ -7,7 +7,13 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Listar Departamentos</title>
+  <title>Encuesta</title>
+  
+  <style>
+    input[name="submit"]{width:100%;}
+    input[name="clave"]{text-align:center;}
+    form h6{text-align:center;}
+  </style>  
 </head>
 <body>
   <!-- Header -->
@@ -18,16 +24,8 @@
   </div>
 
   <div class="row">
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
-
-    </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
+    <!-- Main Section -->
+ 
   </div>
 
   <!-- Footer -->    
