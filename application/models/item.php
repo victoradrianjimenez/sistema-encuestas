@@ -3,11 +3,7 @@
 /**
  * 
  */
-class Items extends CI_Model{
-  var $IdSeccion;
-  var $IdFormulario;
-  var $IdPregunta;
-  var $IdCarrera;
+class Item extends Pregunta{
   var $Posicion;
   var $Tamaño;
   

@@ -20,6 +20,23 @@ class Pregunta extends CI_Model{
   function __construct(){
     parent::__construct();
   }
+  
+  
+  /**
+   * Obtener el listado de opciones de una pregunta. Devuleve un array de objetos.
+   *
+   * @access public
+   * @return array
+   */
+  public function listarOpciones(){
+    $idPregunta = $this->db->escape($this->IdPregunta);
+    $query = $this->db->query("call esp_listar_opciones($idPregunta)");
+    $data = $query->result('Opcion');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
 }
 
 ?>
