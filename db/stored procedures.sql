@@ -1,3 +1,15 @@
+
+UPDATE Items_Carreras
+SET Tamaño = 2
+WHERE IdFormulario = 1 AND IdPregunta = 39;
+
+
+UPDATE Items
+SET Tamaño = 2
+WHERE IdFormulario = 1 AND IdPregunta = 39;
+
+
+
 DELIMITER ;
 
 
@@ -214,4 +226,102 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_listar_secciones_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_secciones_carrera`(
+    pIdFormulario INT,
+    pIdCarrera SMALLINT)
+BEGIN
+    SELECT  IdSeccion, IdFormulario, IdCarrera, Texto, Descripcion, Tipo
+    FROM    Secciones
+    WHERE   IdFormulario = pIdFormulario AND (IdCarrera IS NULL OR IdCarrera = pIdCarrera)
+    ORDER BY IdSeccion;
+    -- se ordena por ID, es decir por orden de creacion (por lo tanto las de la carrera van al final)    
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_items_seccion`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_items_seccion`(
+    pIdSeccion INT,
+    pIdFormulario INT)
+BEGIN
+    DECLARE pIdCarrera INT;
+    START TRANSACTION;
+    SET pIdCarrera = (SELECT IdCarrera FROM Secciones WHERE IdSeccion = pIdSeccion AND IdFormulario = pIdFormulario);
+    -- las columnas posicion y tamaño los toma de items_secciones, pero si son nulos, los toma de items
+    SELECT  P.IdPregunta, P.IdCarrera, P.Texto, P.Descripcion, P.Creacion, P.Tipo, 
+            Obligatoria, OrdenInverso, LimiteInferior, LimiteSuperior, Paso, Unidad,
+            COALESCE(IC.Posicion, I.Posicion) AS Posicion, 
+            COALESCE(IC.Tamaño, I.Tamaño) AS Tamaño
+    FROM    Items I INNER JOIN Preguntas P ON I.IdPregunta = P.IdPregunta 
+            LEFT JOIN Items_Carreras IC ON I.IdSeccion = IC.IdSeccion AND 
+                I.IdFormulario = IC.IdFormulario AND I.IdPregunta = IC.IdPregunta AND
+                I.IdCarrera = IC.IdCarrera
+    WHERE   I.IdSeccion = pIdSeccion AND I.IdFormulario = pIdFormulario AND (I.IdCarrera IS NULL OR I.IdCarrera = pIdCarrera)
+    ORDER BY Posicion;
+    COMMIT;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_opciones`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_opciones`(
+    pIdPregunta INT)
+BEGIN
+    SELECT  IdOpcion, Texto
+    FROM    Opciones
+    WHERE   IdPregunta = pIdPregunta
+    ORDER BY IdOpcion;
+    -- ordenados por orden de creacion
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_materia`(
+    pIdMateria SMALLINT)
+BEGIN
+    SELECT IdMateria, Nombre, Codigo, Alumnos
+    FROM Materias
+    WHERE IdMateria = pIdMateria;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_carrera`(
+    pIdCarrera SMALLINT)
+BEGIN
+    SELECT IdCarrera, IdDepartamento, Nombre, Plan
+    FROM Carreras
+    WHERE IdCarrera = pIdCarrera;
+END $$
+
+DELIMITER ;
+
+--
 
