@@ -59,7 +59,6 @@ CREATE TABLE Alumnos_Materias(
 CREATE TABLE Carreras(
     IdCarrera         SMALLINT       NOT NULL,
     IdDepartamento    SMALLINT       NOT NULL,
-    IdFormulario      INT,
     Nombre            VARCHAR(60)    NOT NULL,
     Plan              SMALLINT       NOT NULL,
     PRIMARY KEY (IdCarrera)
@@ -393,11 +392,6 @@ ALTER TABLE Alumnos_Materias ADD CONSTRAINT RefAlumnos48
 -- 
 -- TABLE: Carreras 
 --
-
-ALTER TABLE Carreras ADD CONSTRAINT RefFormularios60 
-    FOREIGN KEY (IdFormulario)
-    REFERENCES Formularios(IdFormulario)
-;
 
 ALTER TABLE Carreras ADD CONSTRAINT RefDepartamentos65 
     FOREIGN KEY (IdDepartamento)
