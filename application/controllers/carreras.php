@@ -56,12 +56,22 @@ class Carreras extends CI_Controller{
 
     //si no recibimos ningún valor proveniente del formulario
     if(!$this->input->post('submit')){
+      $this->load->model('Departamento');
+      $this->load->model('Gestor_departamentos','gd');
+      $departamentos = $this->gd->listar(0, 255);
+      $datos_departamentos = array();
+      foreach ($departamentos as $i => $departamento) {
+        $datos_departamentos[$i] = array(
+          'idDepartamento' => $departamento->IdDepartamento,
+          'nombre' => $departamento->Nombre);
+      }
       $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+      $data['departamentos'] = $datos_departamentos;
       $data['carrera'] = array(
         'idCarrera' => 0,
         'idDepartamento' => 0,
         'nombre' => '',
-        'plan' => '');
+        'plan' => date('Y'));
       $data['link'] = site_url('carreras/nueva'); //hacia donde mandar los datos      
       $this->load->view('editar_carrera',$data); 
     }
@@ -73,7 +83,17 @@ class Carreras extends CI_Controller{
       $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
       if($this->form_validation->run()==FALSE){
         //en caso de que los datos sean incorrectos, cargo el formulario nuevamente
+        $this->load->model('Departamento');
+        $this->load->model('Gestor_departamentos','gd');
+        $departamentos = $this->gd->listar(0, 255);
+        $datos_departamentos = array();
+        foreach ($departamentos as $i => $departamento) {
+          $datos_departamentos[$i] = array(
+            'idDepartamento' => $departamento->IdDepartamento,
+            'nombre' => $departamento->Nombre);
+        }
         $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+        $data['departamentos'] = $datos_departamentos;
         $data['carrera'] = array(
           'idCarrera' => 0,
           'idDepartamento' => 0,
@@ -95,7 +115,22 @@ class Carreras extends CI_Controller{
   }
 
 
+  public function eliminar($IdCarrera=0){ //PASAR DATOS POR POST!!!!
+    if (!is_numeric($IdCarrera)){
+      show_error('El ID Carrera es inválido.');
+      return;
+    }
 
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+
+    //doy de baja y cargo vista para mostrar resultado
+    $this->load->model('Gestor_carreras','gc');
+    $res = $this->gc->baja($IdCarrera);
+    $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+    $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+    $data['link'] = site_url('carreras'); //link para boton aceptar/continuar
+    $this->load->view('resultado_operacion', $data);
+  }
 
 
 

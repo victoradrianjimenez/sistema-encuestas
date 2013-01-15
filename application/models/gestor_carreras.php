@@ -22,7 +22,7 @@ class Gestor_carreras extends CI_Model{
   public function alta($IdDepartamento, $Nombre, $Plan){
     $IdDepartamento = $this->db->escape($IdDepartamento);
     $Nombre = $this->db->escape($Nombre);
-    $Nombre = $this->db->escape($Plan);
+    $Plan = $this->db->escape($Plan);
     $query = $this->db->query("call esp_alta_carrera($IdDepartamento, $Nombre, $Plan)");
     $data = $query->row();
     $query->free_result();
