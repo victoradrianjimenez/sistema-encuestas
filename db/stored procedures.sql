@@ -548,7 +548,7 @@ BEGIN
     
     IF COALESCE(pNombre,'')='' THEN
         SET Mensaje = 'El nombre de la carrera no puede estar vacío.';
-    ELSEIF pPlan < 1900 OR pPlan < 2100 THEN
+    ELSEIF pPlan < 1900 OR pPlan > 2100 THEN
         SET Mensaje = 'El plan debe ser un número entre 1900 y 2100.';
     ELSE
         START TRANSACTION;

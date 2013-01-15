@@ -78,7 +78,7 @@ class Gestor_carreras extends CI_Model{
    * @param identificador de la carrera
    * @return object
    */
-  public function dameCarrera($idCarrera){
+  public function dame($idCarrera){
     $idCarrera = $this->db->escape($idCarrera);
     $query = $this->db->query("call esp_dame_carrera($idCarrera)");
     $data = $query->result('Carrera');
