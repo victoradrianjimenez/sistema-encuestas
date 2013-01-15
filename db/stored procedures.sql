@@ -19,7 +19,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_departamentos`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_departamentos`(
-    pPagNumero INT,
+    pPagInicio INT,
     pPagLongitud INT)
 BEGIN
     SET @qry = '
@@ -28,7 +28,7 @@ BEGIN
     ORDER BY Nombre
     LIMIT ?,?';
     PREPARE stmt FROM  @qry;
-    SET @a = pPagNumero * pPagLongitud;
+    SET @a = pPagInicio;
     SET @b = pPagLongitud;
     EXECUTE stmt USING @a, @b;
     DEALLOCATE PREPARE stmt;
@@ -92,7 +92,7 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_departamento`(
     pIdDepartamento SMALLINT,
-    pPagNumero INT,
+    pPagInicio INT,
     pPagLongitud INT)
 BEGIN
     SET @qry = '
@@ -103,7 +103,7 @@ BEGIN
     LIMIT ?,?';
     PREPARE stmt FROM  @qry;
     SET @c = pIdDepartamento;
-    SET @a = pPagNumero * pPagLongitud;
+    SET @a = pPagInicio;
     SET @b = pPagLongitud;
     EXECUTE stmt USING @c, @a, @b;
     DEALLOCATE PREPARE stmt;

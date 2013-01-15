@@ -15,8 +15,8 @@ class Departamentos extends CI_Controller{
   }
   
   
-  public function listar($pagina=0){
-    if (!is_numeric($pagina)){
+  public function listar($pagInicio=0){
+    if (!is_numeric($pagInicio)){
       show_error('El número de página es inválido.');
       return;
     }
@@ -36,7 +36,7 @@ class Departamentos extends CI_Controller{
     $this->pagination->initialize($config);
     
     //obtengo lista de departamentos
-    $departamentos = $this->gd->listar($pagina, $config['per_page']);
+    $departamentos = $this->gd->listar($pagInicio, $config['per_page']);
     $tabla = array();
     foreach ($departamentos as $i => $departamento) {
       $tabla[$i]['idDepartamento'] = $departamento->IdDepartamento;

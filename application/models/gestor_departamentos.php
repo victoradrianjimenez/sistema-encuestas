@@ -83,14 +83,14 @@ class Gestor_departamentos extends CI_Model{
    * Obtener el listado de departamentos. Devuleve un array de objetos.
    *
    * @access public
-   * @param numero de pagina a mostrar
+   * @param item inicial del listado a mostrar
    * @param cantidad de items a mostrar (tamaño de página)
    * @return array
    */
-  public function listar($pagNumero, $pagLongitud){
-    $pagNumero = $this->db->escape($pagNumero);
+  public function listar($pagInicio, $pagLongitud){
+    $pagInicio = $this->db->escape($pagInicio);
     $pagLongitud = $this->db->escape($pagLongitud);
-    $query = $this->db->query("call esp_listar_departamentos($pagNumero, $pagLongitud)");
+    $query = $this->db->query("call esp_listar_departamentos($pagInicio, $pagLongitud)");
     $data = $query->result('Departamento');
     $query->free_result();
     $this->db->reconnect();
