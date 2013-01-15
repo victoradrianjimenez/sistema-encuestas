@@ -45,6 +45,24 @@ class Gestor_departamentos extends CI_Model{
   
   
   /**
+   * Modificar los datos de un departamento. Devuleve el 'ok' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access  public
+   * @param nombre del departamento
+   * @return  string
+   */
+  public function modificar($IdDepartamento, $Nombre){
+    $Nombre = $this->db->escape($Nombre);
+    $IdDepartamento = $this->db->escape($IdDepartamento);
+    $query = $this->db->query("call esp_modificar_departamento($IdDepartamento, $Nombre)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
+  /**
    * Obtener un departamento a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
    *
    * @access public

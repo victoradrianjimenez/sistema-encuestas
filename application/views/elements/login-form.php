@@ -12,7 +12,7 @@
         <input type="checkbox" name="recordarme" />Recordarme              
       </div>
       <div class="row">
-        <div class="one mobile-one columns pull-three-mobile">
+        <div class="twelve mobile-one columns pull-three-mobile">
           <input type="submit" name="sumit" value="Enviar" class="small button" />
         </div>
       </div>

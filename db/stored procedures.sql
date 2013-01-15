@@ -395,8 +395,43 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_modificar_departamento`;
 
 
+DELIMITER $$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_departamento`(
+    pIdDepartamento SMALLINT,
+    pNombre VARCHAR(60))
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'')='' THEN
+        SET Mensaje = 'El nombre del departamento no puede estar vacío.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS( SELECT IdDepartamento FROM Departamentos WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe un departamento con ID=',pIdDepartamento,'.');
+            ROLLBACK;
+        ELSEIF EXISTS( SELECT Nombre FROM Departamentos WHERE Nombre = pNombre AND IdDepartamento != pIdDepartamento LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe un departamento que se llama ',pNombre,'.');
+            ROLLBACK;
+        ELSE    
+            UPDATE Departamentos 
+            SET Nombre = pNombre
+            WHERE IdDepartamento = pIdDepartamento;
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = 'ok';
+                COMMIT;
+            END IF;
+        END IF;            
+    END IF;
+    SELECT Mensaje;
+END $$
 
-
+DELIMITER ;

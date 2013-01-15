@@ -26,7 +26,7 @@
   <div class="row">
     <!-- Main -->
     <div id="Main" class="nine columns push-three">
-      <form action="<?php echo site_url('departamentos/nuevo')?>" method="post"> 
+      <form action="<?php echo $link?>" method="post"> 
         <fieldset>
           <legend>Departamento</legend>
           <div class="twelve columns">

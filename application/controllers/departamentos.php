@@ -106,6 +106,60 @@ class Departamentos extends CI_Controller{
     $data['link'] = site_url('departamentos'); //link para boton aceptar/continuar
     $this->load->view('resultado_operacion', $data);
   }
+  
+  
+  public function modificar($IdDepartamento=0){ //PASAR DATOS POR POST!!!!
+    if (!is_numeric($IdDepartamento)){
+      show_error('El ID Departamento es inválido.');
+      return;
+    }
+    
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    
+    //cargo modelos, librerias, etc.
+    $this->load->model('Departamento');
+    $this->load->model('Gestor_departamentos','gd');
+    
+    //si no recibimos ningún valor proveniente del formulario
+    if(!$this->input->post('submit')){  
+      //si el departamento no existe mostrar mensaje
+      $depto = $this->gd->dame($IdDepartamento);
+      if ($depto != FALSE){
+          $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+          $data['departamento'] = array(
+            'idDepartamento' => $depto->IdDepartamento,
+            'nombre' => $depto->Nombre);
+          $data['link'] = site_url('departamentos/modificar'); //hacia donde mandar los datos      
+          $this->load->view('editar_departamento',$data);  
+      }
+      else{
+        show_error('El ID Departamento es inválido.');
+      }
+    }
+    else{
+      //verifico si los datos son correctos
+      $this->form_validation->set_rules('nombre','Nombre','required');
+      $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
+      if($this->form_validation->run()==FALSE){
+        //en caso de que los datos sean incorrectos, cargo nuevamente el formulario
+        $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+        $data['departamento'] = array(
+          'idDepartamento' => $this->input->post('idDepartamento'),
+          'nombre' => $this->input->post('nombre'));
+        $data['link'] = site_url('departamentos/modificar'); //hacia donde mandar los datos
+        $this->load->view('editar_departamento',$data);
+      }
+      else{
+        //modifico departamento y cargo vista para mostrar resultado
+        $res = $this->gd->modificar($this->input->post('idDepartamento',TRUE), $this->input->post('nombre',TRUE));
+        $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+        $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+        $data['link'] = site_url('departamentos');
+        $this->load->view('resultado_operacion', $data);
+      }
+    }
+  }
+  
 }
 
 ?>
