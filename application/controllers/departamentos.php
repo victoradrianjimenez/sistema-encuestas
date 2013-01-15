@@ -9,9 +9,11 @@ class Departamentos extends CI_Controller{
     parent::__construct();
   }
   
+  
   public function index(){
     $this->listar();
   }
+  
   
   public function listar($pagina=0){
     if (!is_numeric($pagina)){
@@ -56,7 +58,9 @@ class Departamentos extends CI_Controller{
     //si no recibimos ningún valor proveniente del formulario
     if(!$this->input->post('submit')){
       $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
-      $data['departamento'] = array('nombre' => ''); //datos del departamento
+      $data['departamento'] = array(
+        'idDepartamento' => 0,
+        'nombre' => '');
       $data['link'] = site_url('departamentos/nuevo'); //hacia donde mandar los datos      
       $this->load->view('editar_departamento',$data); 
     }
@@ -67,7 +71,9 @@ class Departamentos extends CI_Controller{
       if($this->form_validation->run()==FALSE){
         //en caso de que los datos sean incorrectos, cargo el formulario nuevamente
         $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
-        $data['departamento'] = array('nombre' => $this->input->post('nombre')); //datos del departamento
+        $data['departamento'] = array(
+          'idDepartamento' => 0,
+          'nombre' => $this->input->post('nombre')); //datos del departamento
         $data['link'] = site_url('departamentos/nuevo'); //hacia donde mandar los datos
         $this->load->view('editar_departamento',$data);
       }
@@ -81,6 +87,24 @@ class Departamentos extends CI_Controller{
         $this->load->view('resultado_operacion', $data);
       }
     }
+  }
+
+
+  public function eliminar($IdDepartamento=0){ //PASAR DATOS POR POST!!!!
+    if (!is_numeric($IdDepartamento)){
+      show_error('El ID Departamento es inválido.');
+      return;
+    }
+
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+
+    //doy de baja y cargo vista para mostrar resultado
+    $this->load->model('Gestor_departamentos','gd');
+    $res = $this->gd->baja($IdDepartamento);
+    $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+    $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+    $data['link'] = site_url('departamentos'); //link para boton aceptar/continuar
+    $this->load->view('resultado_operacion', $data);
   }
 }
 

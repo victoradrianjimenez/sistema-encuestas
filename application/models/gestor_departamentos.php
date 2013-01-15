@@ -9,8 +9,7 @@ class Gestor_departamentos extends CI_Model{
 		parent::__construct();
 	}
   
-  
-  
+    
   /**
    * Da de Alta un nuevo departamento. Devuleve el id en caso de éxito o un mensaje en caso de error.
    *
@@ -28,6 +27,22 @@ class Gestor_departamentos extends CI_Model{
   }
   
   
+  /**
+   * Da de Baja un departamento. Devuleve 'Ok.' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de departamento
+   * @return string
+   */
+  public function baja($IdDepartamento){
+    $IdDepartamento = $this->db->escape($IdDepartamento);
+    $query = $this->db->query("call esp_baja_departamento($IdDepartamento)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
   
   /**
    * Obtener un departamento a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
@@ -44,9 +59,6 @@ class Gestor_departamentos extends CI_Model{
     $this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
-  
-
-
 
 
   /**
@@ -82,8 +94,5 @@ class Gestor_departamentos extends CI_Model{
     return ($data!=FALSE)?$data->Cantidad:0;
   }
 
-
-  
-  
 }
 ?>

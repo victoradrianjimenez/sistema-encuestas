@@ -385,7 +385,7 @@ BEGIN
             SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
             ROLLBACK;
         ELSE 
-            SET Mensaje = 'Ok.';
+            SET Mensaje = 'ok';
             COMMIT;
         END IF;
     END IF;

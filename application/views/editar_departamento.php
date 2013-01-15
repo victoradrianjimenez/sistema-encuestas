@@ -30,6 +30,7 @@
         <fieldset>
           <legend>Departamento</legend>
           <div class="twelve columns">
+            <input type="hidden" name="idDepartamento" value="<?php echo $departamento['idDepartamento']?>" />
             <label for="campoNombre" for="campoNombre">Nombre: </label>
             <input type="text" id="campoNombre" name="nombre" autofocus value="<?php echo $departamento['nombre']?>" />
             <?php echo form_error('nombre')?>
