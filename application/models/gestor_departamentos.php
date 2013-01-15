@@ -28,7 +28,7 @@ class Gestor_departamentos extends CI_Model{
   
   
   /**
-   * Da de Baja un departamento. Devuleve 'Ok.' en caso de éxito o un mensaje en caso de error.
+   * Da de Baja un departamento. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de departamento

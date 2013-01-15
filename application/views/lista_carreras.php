@@ -25,7 +25,7 @@
         <div class="twelve columns">
           
           <h4>Carreras</h4>
-          <?php if(isset($departametno)== 0):?>
+          <?php if(isset($departametno)):?>
             <h6><?php echo $departamento['nombre']?></h6>
           <?php endif ?>
           <?php if(count($tabla)== 0):?>

@@ -435,3 +435,182 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_carrera`(
+    pIdDepartamento SMALLINT,
+    pNombre VARCHAR(60),
+    pPlan SMALLINT)
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(120);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'')='' THEN
+        SET Mensaje = 'El nombre de la carrera no puede estar vacío.';
+    ELSEIF pPlan < 1900 OR pPlan < 2100 THEN
+        SET Mensaje = 'El plan debe ser un número entre 1900 y 2100.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS(SELECT IdDepartamento FROM Departamentos WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe un departamento con ID=', pIdDepartamento,'.');
+            ROLLBACK;
+        ELSEIF EXISTS(  SELECT Nombre FROM Carreras 
+                        WHERE Nombre = pNombre AND Plan=pPlan LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe una carrera del plan ', pPlan,' que se llama ', pNombre, '.');
+            ROLLBACK;
+        ELSE    
+            SET id = (  
+                SELECT COALESCE(MAX(IdCarrera),0)+1 
+                FROM    Carreras);
+            INSERT INTO Carreras 
+                (IdCarrera, IdDepartamento, Nombre, Plan)
+            VALUES (id, pIdDepartamento, pNombre, pPlan);
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;        
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_carrera`(
+    pIdCarrera SMALLINT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT IdCarrera FROM Materias_Carreras WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe una materia asociada a la carrera.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdCarrera FROM Secciones WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, la carrera tiene secciones de formularios asociadas.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdCarrera FROM Preguntas WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, la carrera tiene preguntas asociadas.';
+        ROLLBACK;
+    ELSE
+        DELETE FROM Accesos_Carreras
+        WHERE IdCarrera = pIdCarrera;
+        DELETE FROM Items_Carreras
+        WHERE IdCarrera = pIdCarrera;
+        DELETE FROM Carreras
+        WHERE IdCarrera = pIdCarrera;
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = 'ok';
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_modificar_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_carrera`(
+    pIdCarrera SMALLINT,
+    pIdDepartamento SMALLINT,
+    pNombre VARCHAR(60),
+    pPlan SMALLINT)
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(120);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'')='' THEN
+        SET Mensaje = 'El nombre de la carrera no puede estar vacío.';
+    ELSEIF pPlan < 1900 OR pPlan < 2100 THEN
+        SET Mensaje = 'El plan debe ser un número entre 1900 y 2100.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS( SELECT IdCarrera FROM Carreras WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe la carrera con ID=',pIdCarrera,'.');
+            ROLLBACK;
+        ELSEIF NOT EXISTS( SELECT IdDepartamento FROM Departamentos WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe un departamento con ID=',pIdDepartamento,'.');
+            ROLLBACK;
+        ELSE    
+            UPDATE Carreras 
+            SET IdDepartamento=pIdDepartamento, Nombre = pNombre, Plan = pPlan
+            WHERE IdCarrera = pIdCarrera;
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = 'ok';
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;        
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_carreras`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras`(
+    pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  IdDepartamento, IdCarrera, Nombre, Plan
+    FROM    Carreras
+    ORDER BY Nombre, Plan DESC
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_carreras`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_carreras`()
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Carreras;
+END $$
+
+DELIMITER ;
+
