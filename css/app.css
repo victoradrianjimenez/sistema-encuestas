@@ -57,6 +57,13 @@ form.custom div.custom.dropdown ul{
   margin-bottom:20px;
 }
 
+/************ Formularios *****************/
+
+/* los botones de los formularios */
+button.button, input[type="button"].button, input[type="submit"].button{
+  width: 100%;
+}
+
 /* -----------------------------------------
    Page Name 1
 ----------------------------------------- */

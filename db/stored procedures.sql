@@ -1,12 +1,12 @@
 
 UPDATE Items_Carreras
 SET Tamaño = 2
-WHERE IdFormulario = 1 AND IdPregunta = 39;
+WHERE IdCarrera >= 0 AND IdFormulario = 1 AND IdPregunta = 39;
 
 
 UPDATE Items
 SET Tamaño = 2
-WHERE IdFormulario = 1 AND IdPregunta = 39;
+WHERE IdCarrera >= 0 AND IdFormulario = 1 AND IdPregunta = 39;
 
 
 
@@ -78,7 +78,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_validar_usuario`(
 BEGIN
     SELECT IdPersona, Apellido, Nombre, Usuario, Email, Contraseña, UltimoAcceso, Estado
     FROM Personas
-    WHERE Usuario = pUsuario AND Contraseña = pContraseña
+    WHERE Usuario = pUsuario AND Contraseña = pContraseña AND Estado != 'I'
     LIMIT 1;
 END $$
 
@@ -121,14 +121,9 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_carreras_departamento`(
     pIdDepartamento SMALLINT)
 BEGIN
-    SET @qry = '
     SELECT  COUNT(*) AS Cantidad
     FROM    Carreras
-    WHERE   IdDepartamento = ?';
-    PREPARE stmt FROM  @qry;
-    SET @a = pIdDepartamento;
-    EXECUTE stmt USING @a;
-    DEALLOCATE PREPARE stmt;
+    WHERE   IdDepartamento = pIdDepartamento;
 END $$
 
 DELIMITER ;
@@ -323,5 +318,85 @@ END $$
 
 DELIMITER ;
 
---
+
+DROP PROCEDURE IF EXISTS `esp_alta_departamento`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_departamento`(
+    pNombre VARCHAR(60))
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'')='' THEN
+        SET Mensaje = 'El nombre del departamento no puede estar vacío.';
+    ELSE
+        START TRANSACTION;
+        IF EXISTS( SELECT Nombre FROM Departamentos WHERE Nombre = pNombre LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe un departamento que se llama ',pNombre,'.');
+            ROLLBACK;
+        ELSE    
+            SET id = (  
+                SELECT COALESCE(MAX(IdDepartamento),0)+1 
+                FROM    Departamentos);
+            INSERT INTO Departamentos 
+                (IdDepartamento, IdJefeDepartamento, Nombre)
+            VALUES (id, NULL, pNombre);
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;            
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_departamento`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_departamento`(
+    pIdDepartamento SMALLINT)
+BEGIN
+    DECLARE id INT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT IdDepartamento FROM Carreras WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe una carrera asociada al departamento.';
+        ROLLBACK;
+    ELSE
+        DELETE FROM Departamentos
+        WHERE IdDepartamento = pIdDepartamento;
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = 'Ok.';
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+
+
+
+
 

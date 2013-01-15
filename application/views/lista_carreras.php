@@ -16,7 +16,8 @@
       <?php include 'elements/header.php'?>
     </div>
   </div>
-
+  
+  <!-- Main Section -->
   <div class="row">
     <!-- Main Section -->  
     <div id="Main" class="nine columns push-three">

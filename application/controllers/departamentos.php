@@ -48,6 +48,40 @@ class Departamentos extends CI_Controller{
     $this->load->view('lista_departamentos', $data);
   }
   
+  
+  public function nuevo(){
+    
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+
+    //si no recibimos ningún valor proveniente del formulario
+    if(!$this->input->post('submit')){
+      $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+      $data['departamento'] = array('nombre' => ''); //datos del departamento
+      $data['link'] = site_url('departamentos/nuevo'); //hacia donde mandar los datos      
+      $this->load->view('editar_departamento',$data); 
+    }
+    else{
+      //verifico si los datos son correctos
+      $this->form_validation->set_rules('nombre','Nombre','required');
+      $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
+      if($this->form_validation->run()==FALSE){
+        //en caso de que los datos sean incorrectos, cargo el formulario nuevamente
+        $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+        $data['departamento'] = array('nombre' => $this->input->post('nombre')); //datos del departamento
+        $data['link'] = site_url('departamentos/nuevo'); //hacia donde mandar los datos
+        $this->load->view('editar_departamento',$data);
+      }
+      else{
+        //agrego departamento y cargo vista para mostrar resultado
+        $this->load->model('Gestor_departamentos','gd');
+        $res = $this->gd->alta($this->input->post('nombre',TRUE));
+        $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
+        $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID del nuevo departamento es $res.":$res;
+        $data['link'] = site_url('departamentos'); //hacia donde redirigirse
+        $this->load->view('resultado_operacion', $data);
+      }
+    }
+  }
 }
 
 ?>

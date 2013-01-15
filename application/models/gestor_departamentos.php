@@ -10,6 +10,25 @@ class Gestor_departamentos extends CI_Model{
 	}
   
   
+  
+  /**
+   * Da de Alta un nuevo departamento. Devuleve el id en caso de éxito o un mensaje en caso de error.
+   *
+   * @access  public
+   * @param nombre del departamento
+   * @return  string
+   */
+  public function alta($Nombre){
+    $Nombre = $this->db->escape($Nombre);
+    $query = $this->db->query("call esp_alta_departamento($Nombre)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
+  
   /**
    * Obtener un departamento a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
    *
@@ -26,7 +45,10 @@ class Gestor_departamentos extends CI_Model{
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
-  
+
+
+
+
   /**
    * Obtener el listado de departamentos. Devuleve un array de objetos.
    *
