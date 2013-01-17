@@ -41,7 +41,7 @@ class Carreras extends CI_Controller{
     $this->load->model('Gestor_carreras','gc');
        
     //genero la lista de links de paginación
-    $config['base_url'] = site_url('carreras/listar/');
+    $config['base_url'] = "carreras/listar/";
     $config['total_rows'] = $this->gc->cantidad();
     $config['per_page'] = 5;
     $config['uri_segment'] = 3;
@@ -77,7 +77,7 @@ class Carreras extends CI_Controller{
         'idDepartamento' => 0,
         'nombre' => '',
         'plan' => date('Y'));
-      $data['link'] = site_url('carreras/nueva'); //hacia donde mandar los datos      
+      $data['link'] = "carreras/nueva"; //hacia donde mandar los datos      
       $this->load->view('editar_carrera',$data); 
     }
     else{
@@ -95,7 +95,7 @@ class Carreras extends CI_Controller{
           'idDepartamento' => 0,
           'plan' => $this->input->post('plan'),
           'nombre' => $this->input->post('nombre'));
-        $data['link'] = site_url('carreras/nueva'); //hacia donde mandar los datos
+        $data['link'] = "carreras/nueva"; //hacia donde mandar los datos
         $this->load->view('editar_carrera',$data);
       }
       else{
@@ -104,7 +104,7 @@ class Carreras extends CI_Controller{
         $res = $this->gc->alta($this->input->post('idDepartamento',TRUE), $this->input->post('nombre',TRUE),$this->input->post('plan',TRUE));
         $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
         $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
-        $data['link'] = site_url('carreras'); //hacia donde redirigirse
+        $data['link'] = "carreras"; //hacia donde redirigirse
         $this->load->view('resultado_operacion', $data);
       }
     }
@@ -124,7 +124,7 @@ class Carreras extends CI_Controller{
     $res = $this->gc->baja($IdCarrera);
     $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
     $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-    $data['link'] = site_url('carreras'); //link para boton aceptar/continuar
+    $data['link'] = "carreras"; //link para boton aceptar/continuar
     $this->load->view('resultado_operacion', $data);
   }
 
@@ -153,7 +153,7 @@ class Carreras extends CI_Controller{
           'idDepartamento' => $carrera->IdDepartamento,
           'nombre' => $carrera->Nombre,
           'plan' => $carrera->Plan);
-        $data['link'] = site_url('carreras/modificar'); //hacia donde mandar los datos      
+        $data['link'] = "carreras/modificar"; //hacia donde mandar los datos      
         $this->load->view('editar_carrera',$data); 
       }
       else{
@@ -175,7 +175,7 @@ class Carreras extends CI_Controller{
           'idDepartamento' => $this->input->post('idDepartamento'),
           'plan' => $this->input->post('plan'),
           'nombre' => $this->input->post('nombre'));
-        $data['link'] = site_url('carreras/modificar'); //hacia donde mandar los datos
+        $data['link'] = "carreras/modificar"; //hacia donde mandar los datos
         $this->load->view('editar_carrera',$data);
       }
       else{
@@ -184,7 +184,7 @@ class Carreras extends CI_Controller{
         $res = $this->gc->modificar($this->input->post('idCarrera',TRUE),$this->input->post('idDepartamento',TRUE), $this->input->post('nombre',TRUE),$this->input->post('plan',TRUE));
         $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
         $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-        $data['link'] = site_url('carreras'); //hacia donde redirigirse
+        $data['link'] = "carreras"; //hacia donde redirigirse
         $this->load->view('resultado_operacion', $data);
       }
     }
@@ -214,7 +214,7 @@ class Carreras extends CI_Controller{
     $departamento = $this->gd->dame($idDepartamento);
     if ($departamento != FALSE){ //objeto departamento;
       //genero la lista de links de paginación
-      $config['base_url'] = site_url("carreras/listardepartamento/$idDepartamento/");
+      $config['base_url'] = "carreras/listardepartamento/$idDepartamento/";
       $config['total_rows'] = $departamento->cantidadCarreras();
       $config['per_page'] = 5;
       $config['uri_segment'] = 3;

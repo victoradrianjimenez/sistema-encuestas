@@ -1,5 +1,5 @@
 <?php if(!(isset($usuarioLogin) && is_a($usuarioLogin, 'Persona'))): ?>
-  <form id="login" action="<?php echo site_url("personas/login")?>" method="post"> 
+  <form id="login" action="personas/login" method="post"> 
     <fieldset>
       <legend>Iniciar sesión</legend>
       <div class="row">
@@ -23,13 +23,13 @@
         </div>
       <?php endif ?>
       <div class="row">  
-        <a href="<?php echo site_url("personas/resetearContraseña")?>">¿Olvidó la contraseña?</a>
+        <a href="personas/resetearContraseña">¿Olvidó la contraseña?</a>
       </div>
     </fieldset>
   </form>
 <?php else: ?>
   <div id="datosUsuario">
-    <form id="logout" action="<?php echo site_url("personas/logout")?>" method="post"> 
+    <form id="logout" action="personas/logout" method="post"> 
       <h6><?php echo $usuarioLogin->Nombre.' '.$usuarioLogin->Apellido?></h6>
       <input type="submit" name="submit" value="Cerrar sesión" class="small button" />
     </form>      

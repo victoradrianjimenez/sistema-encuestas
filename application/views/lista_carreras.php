@@ -39,11 +39,11 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/listar/".$fila['idCarrera'])?>"><?php echo $fila['nombre']?></a></td>
+                  <td><a href="<?php echo "carreras/listar/".$fila['idCarrera']?>"><?php echo $fila['nombre']?></a></td>
                   <td><?php echo $fila['plan']?></td>
                   <td>
-                    <a href="<?php echo site_url("carreras/modificar/".$fila['idCarrera'])?>">Editar</a> /
-                    <a href="<?php echo site_url("carreras/eliminar/".$fila['idCarrera'])?>">Eliminar</a>
+                    <a href="<?php echo "carreras/modificar/".$fila['idCarrera']?>">Editar</a> /
+                    <a href="<?php echo "carreras/eliminar/".$fila['idCarrera']?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -54,7 +54,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url("carreras/nueva")?>">Nueva Carrera</a>
+          <a class="button" href="carreras/nueva">Nueva Carrera</a>
         </div>          
       </div>
     </div>

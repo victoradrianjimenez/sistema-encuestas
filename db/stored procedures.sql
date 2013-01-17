@@ -210,7 +210,7 @@ BEGIN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
             ELSE 
-                SET Mensaje = clave;
+                SET Mensaje = UPPER(clave);
                 COMMIT;
             END IF;            
         END IF;
@@ -610,6 +610,73 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_carreras`()
 BEGIN
     SELECT  COUNT(*) AS Cantidad
     FROM    Carreras;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_formulario`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_formulario`(
+    pIdFormulario INT)
+BEGIN
+    SELECT  IdFormulario, Nombre, Titulo, Descripcion, 
+            Creacion, PreguntasAdicionales
+    FROM    Formularios
+    WHERE   IdFormulario = pIdFormulario;
+END $$
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_clave`(
+    pIdClave INT,
+    pIdMateria SMALLINT,
+    pIdCarrera SMALLINT,
+    pIdEncuesta INT,
+    pIdFormulario INT)
+BEGIN
+    SELECT  IC.IdSeccion, R.IdPregunta, R.IdDocente, R.Opcion, R.Texto
+    FROM    Respuestas R 
+            LEFT JOIN Items I ON I.IdFormulario = R.IdFormulario AND I.IdPregunta = R.IdPregunta
+            LEFT JOIN Items_Carreras IC ON IC.IdCarrera = R.IdCarrera AND IC.IdFormulario = R.IdFormulario AND IC.IdPregunta = R.IdPregunta
+            LEFT JOIN Docentes_Materias DM ON DM.IdDocente = R.IdDocente AND DM.IdMateria = R.IdMateria
+    WHERE   R.IdClave = pIdClave AND R.IdMateria = pIdMateria AND R.IdCarrera = pIdCarrera AND 
+            R.IdEncuesta = pIdEncuesta AND R.IdFormulario = pIdFormulario
+    ORDER BY IC.IdSeccion, COALESCE(DM.OrdenFormulario,255), COALESCE(IC.Posicion, I.Posicion);
+END $$
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_materia`(
+    pIdPregunta INT,
+    pIdMateria SMALLINT,
+    pIdCarrera SMALLINT,
+    pIdEncuesta INT,
+    pIdFormulario INT)
+BEGIN
+	SELECT  Opcion, COUNT(IdRespuesta) AS Cantidad
+	FROM    Respuestas R
+	WHERE   R.IdPregunta = pIdPregunta AND R.IdMateria = pIdMateria AND 
+			R.IdCarrera = pIdCarrera AND R.IdEncuesta = pIdEncuesta AND
+			R.IdFormulario = pIdFormulario
+	GROUP BY Opcion;
 END $$
 
 DELIMITER ;

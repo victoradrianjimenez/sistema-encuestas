@@ -19,7 +19,7 @@ class Seccion extends CI_Model{
    * Obtener el listado de items que pertenecen al formulario (y una carrera). Devuleve un array de objetos.
    *
    * @access public
-   * @return array
+   * @return arrayItems
    */
   public function listarItems(){
     $idFormulario = $this->db->escape($this->IdFormulario);

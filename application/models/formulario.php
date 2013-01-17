@@ -21,7 +21,7 @@ class Formulario extends CI_Model{
    * @access public
    * @param identificador del formulario
    * @param identidicador de la carrera
-   * @return array
+   * @return arraySecciones
    */
   public function listarSeccionesCarrera($idCarrera){
     $idFormulario = $this->db->escape($this->IdFormulario);

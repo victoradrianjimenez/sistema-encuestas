@@ -26,7 +26,7 @@
   <div class="row">
     <!-- Main Section -->
     <div class="six columns centered">  
-      <form action="<?php echo site_url('claves/ingresar')?>" method="post">
+      <form action="claves/ingresar" method="post">
         <fieldset>
           <div class="twelve columns">
             <h6>Ingrese la Clave de Acceso que figura en la tarjeta entregada por el representante de la Comisión Académica</h6>

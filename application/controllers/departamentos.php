@@ -29,7 +29,7 @@ class Departamentos extends CI_Controller{
     $this->load->model('Gestor_departamentos','gd');
        
     //genero la lista de links de paginación
-    $config['base_url'] = site_url('departamentos/listar/');
+    $config['base_url'] = "departamentos/listar/";
     $config['total_rows'] = $this->gd->cantidad();
     $config['per_page'] = 5;
     $config['uri_segment'] = 3;
@@ -61,7 +61,7 @@ class Departamentos extends CI_Controller{
       $data['departamento'] = array(
         'idDepartamento' => 0,
         'nombre' => '');
-      $data['link'] = site_url('departamentos/nuevo'); //hacia donde mandar los datos      
+      $data['link'] = "departamentos/nuevo"; //hacia donde mandar los datos      
       $this->load->view('editar_departamento',$data); 
     }
     else{
@@ -74,7 +74,7 @@ class Departamentos extends CI_Controller{
         $data['departamento'] = array(
           'idDepartamento' => 0,
           'nombre' => $this->input->post('nombre')); //datos del departamento
-        $data['link'] = site_url('departamentos/nuevo'); //hacia donde mandar los datos
+        $data['link'] = "departamentos/nuevo"; //hacia donde mandar los datos
         $this->load->view('editar_departamento',$data);
       }
       else{
@@ -83,7 +83,7 @@ class Departamentos extends CI_Controller{
         $res = $this->gd->alta($this->input->post('nombre',TRUE));
         $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
         $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID del nuevo departamento es $res.":$res;
-        $data['link'] = site_url('departamentos'); //hacia donde redirigirse
+        $data['link'] = "departamentos"; //hacia donde redirigirse
         $this->load->view('resultado_operacion', $data);
       }
     }
@@ -103,7 +103,7 @@ class Departamentos extends CI_Controller{
     $res = $this->gd->baja($IdDepartamento);
     $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
     $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-    $data['link'] = site_url('departamentos'); //link para boton aceptar/continuar
+    $data['link'] = "departamentos"; //link para boton aceptar/continuar
     $this->load->view('resultado_operacion', $data);
   }
   
@@ -129,7 +129,7 @@ class Departamentos extends CI_Controller{
           $data['departamento'] = array(
             'idDepartamento' => $depto->IdDepartamento,
             'nombre' => $depto->Nombre);
-          $data['link'] = site_url('departamentos/modificar'); //hacia donde mandar los datos      
+          $data['link'] = "departamentos/modificar"; //hacia donde mandar los datos      
           $this->load->view('editar_departamento',$data);  
       }
       else{
@@ -146,7 +146,7 @@ class Departamentos extends CI_Controller{
         $data['departamento'] = array(
           'idDepartamento' => $this->input->post('idDepartamento'),
           'nombre' => $this->input->post('nombre'));
-        $data['link'] = site_url('departamentos/modificar'); //hacia donde mandar los datos
+        $data['link'] = "departamentos/modificar"; //hacia donde mandar los datos
         $this->load->view('editar_departamento',$data);
       }
       else{
@@ -154,7 +154,7 @@ class Departamentos extends CI_Controller{
         $res = $this->gd->modificar($this->input->post('idDepartamento',TRUE), $this->input->post('nombre',TRUE));
         $data['usuario'] = unserialize($this->session->userdata('usuario')); //datos de session
         $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-        $data['link'] = site_url('departamentos');
+        $data['link'] = "departamentos";
         $this->load->view('resultado_operacion', $data);
       }
     }
