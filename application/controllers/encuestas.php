@@ -16,26 +16,30 @@ class Encuestas extends CI_Controller{
   
   
   public function informeMateria(){
+    $IdMateria = 5;
+    $IdCarrera = 5;
+    $IdEncuesta = 1;
+    $IdFormulario = 1;
+    
     $this->load->model('Opcion');
     $this->load->model('Pregunta');
     $this->load->model('Item');
     $this->load->model('Seccion');
+    $this->load->model('Materia');
     $this->load->model('Carrera');
     $this->load->model('Formulario');
     $this->load->model('Encuesta');
     $this->load->model('Gestor_formularios','gf');
+    $this->load->model('Gestor_materias','gm');
     $this->load->model('Gestor_carreras','gc');
-    $this->Encuesta->IdEncuesta = 1;
-    $this->Encuesta->IdFormulario = 1;
-    $formulario = $this->gf->dame(1);
-    $carrera = $this->gc->dame(1);
+    $this->load->model('Gestor_encuestas','ge');
+
+    $encuesta = $this->ge->dame($IdEncuesta, $IdFormulario);
+    $formulario = $this->gf->dame($IdFormulario);
+    $carrera = $this->gc->dame($IdCarrera);
+    $materia = $this->gm->dame($IdMateria);
     
-    $secciones = $formulario->listarSeccionesCarrera(1);
-    
-    echo $formulario->Nombre;
-    echo $carrera->Nombre;
-    
-    
+    $secciones = $formulario->listarSeccionesCarrera($IdCarrera);
     $datos_secciones = array(); 
     foreach ($secciones as $i => $seccion) {
       $items = $seccion->listarItems();
@@ -49,7 +53,16 @@ class Encuestas extends CI_Controller{
             'texto' => $opcion->Texto
             );
         }
-        $datos_respuestas = $this->Encuesta->respuestasPreguntaMateria($item->IdPregunta, 5, 5);
+        switch ($item->Tipo) {
+          case 'S': case 'M': case 'N':
+            $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->IdPregunta, $IdMateria, $IdCarrera);
+            break;
+          case 'T': case 'X':
+            $datos_respuestas = $encuesta->textosPreguntaMateria($item->IdPregunta, $IdMateria, $IdCarrera);
+          default:
+            break;
+        }
+        
         $datos_items[$j] = array(
           'idPregunta' => $item->IdPregunta,
           'texto' => $item->Texto,
@@ -62,20 +75,22 @@ class Encuestas extends CI_Controller{
         'texto' => $seccion->Texto,
         'preguntas' => $datos_items
         );
-    
     }
-    
-    $datos['secciones'] = $datos_secciones;
-    $newdata = array(
-                   'encuesta'  => serialize($this->Encuesta),
-                   'idCarrera'     => 5,
-                   'idMateria'     => 5
-               );
 
-    $this->session->set_userdata($newdata);
-    
-    
-    
+    $datos['encuesta'] = array(
+      'año' => $encuesta->Año,
+      'cuatrimestre' => $encuesta->Cuatrimestre,
+      'fechaInicio' => $encuesta->FechaInicio,
+      'fechaFin' => $encuesta->FechaFin);
+    $datos['formulario'] = array(
+      'titulo' => $formulario->Titulo,
+      'descripcion' => $formulario->Descripcion);
+    $datos['carrera'] = array(
+      'nombre' => $carrera->Nombre);
+    $datos['materia'] = array(
+      'nombre' => $materia->Nombre);
+    $datos['claves'] = $encuesta->cantidadClavesMateria($IdMateria, $IdCarrera);
+    $datos['secciones'] = $datos_secciones;
     $this->load->view('informe_materia', $datos);
   }
 
@@ -83,23 +98,16 @@ class Encuestas extends CI_Controller{
 
 
   public function graficoPregunta($IdEncuesta, $IdFormulario, $IdPregunta, $IdMateria, $IdCarrera){
-    $this->load->model('Encuesta');
-    $encuesta = unserialize($this->session->userdata('encuesta'));
-    
-    $IdEncuesta = $encuesta->IdEncuesta;
-    $IdFormulario = $encuesta->IdFormulario;   
-    $IdMateria = $this->session->userdata('idMateria');
-    $IdCarrera = $this->session->userdata('idCarrera'); 
-    
     // Standard inclusions   
+    $this->load->model('Encuesta');
     $this->load->library('pChart/pData');
     $this->load->library('pChart/pChart', array(500,160));
     
     $this->Encuesta->IdEncuesta = $IdEncuesta;
     $this->Encuesta->IdFormulario = $IdFormulario;
     $datos_respuestas = $this->Encuesta->respuestasPreguntaMateria($IdPregunta, $IdMateria, $IdCarrera);
-    $datos = array();
-    $etiquetas = array();
+    $datos = array(1,1,1,3);
+    $etiquetas = array(1,2,3,4);
     foreach ($datos_respuestas as $i => $val) {
       $datos[$i] = $val['Cantidad'];
       $etiquetas[$i] = $val['Opcion'];
@@ -112,8 +120,9 @@ class Encuestas extends CI_Controller{
     $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
     
      // Inicializar gráfico
-    $this->pchart->setFontProperties("Fonts/tahoma.ttf",10);
+    $this->pchart->setFontProperties("Fonts/tahoma.ttf",14);
     $this->pchart->setGraphArea(36,8,464,140);
+    $this->pchart->drawFilledRectangle(0,0,500,160,255,255,255,FALSE);
     $this->pchart->drawGraphArea(255,255,255,TRUE);
     $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,2,TRUE);  
     $this->pchart->drawGrid(4,TRUE,230,230,230,50);
@@ -122,7 +131,7 @@ class Encuestas extends CI_Controller{
     $this->pdata->RemoveSerie("AbsciseLabels");
     $this->pchart->setColorPalette(0,0,150,110);
     $this->pchart->drawStackedBarGraph($this->pdata->GetData(),$this->pdata->GetDataDescription(),100);
-    $this->pchart->Stroke("example20.png");
+    $this->pchart->Stroke();
   }
   
 }

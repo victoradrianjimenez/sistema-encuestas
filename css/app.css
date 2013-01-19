@@ -12,6 +12,18 @@
 /* -----------------------------------------
    Shared Styles
 ----------------------------------------- */
+
+
+/*estas clases permiten centrar un div en resoluciones de dispositivos moviles */
+@media only screen and (max-width: 767px) {
+  .mobile-centered, .mobile-centered { 
+    float: none;
+    margin: 0 auto;
+    text-align: center;
+  }
+}
+
+
 input[type="submit"]{
   margin:0 auto;
 }

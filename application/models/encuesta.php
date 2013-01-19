@@ -47,7 +47,7 @@ class Encuesta extends CI_Model{
     $IdCarrera = $this->db->escape($IdCarrera);
     $IdEncuesta = $this->db->escape($this->IdEncuesta);
     $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("esp_cantidad_claves_materia($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+    $query = $this->db->query("call esp_cantidad_claves_materia($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
     $data=$query->row_array();
     $query->free_result();
     $this->db->reconnect();
@@ -74,6 +74,29 @@ class Encuesta extends CI_Model{
     $query->free_result();
     $this->db->reconnect();
     return $data; //Opcion, Cantidad (ultima fila = cantidad total)
+  }
+  
+  
+  /**
+   * Obtiene las respuestas del tipo texo de una pregunta para una materia, carrera y encuesta. Devuelve un array.
+   *
+   * @access public
+   * @param identificador de la pregunta
+   * @param identificador de materia
+   * @param idenificador de carrera
+   * @return array
+   */  
+  public function textosPreguntaMateria($IdPregunta, $IdMateria, $IdCarrera){
+    $IdPregunta = $this->db->escape($IdPregunta);
+    $IdMateria = $this->db->escape($IdMateria);
+    $IdCarrera = $this->db->escape($IdCarrera);
+    $IdEncuesta = $this->db->escape($this->IdEncuesta);
+    $IdFormulario = $this->db->escape($this->IdFormulario);
+    $query = $this->db->query("call esp_textos_pregunta_materia($IdPregunta, $IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
   }
 }
 

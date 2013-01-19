@@ -681,3 +681,60 @@ END $$
 
 DELIMITER ;
 
+
+DROP PROCEDURE IF EXISTS `esp_dame_encuesta`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_encuesta`(
+    pIdEncuesta INT,
+    pIdFormulario INT)
+BEGIN
+    SELECT  IdEncuesta, IdFormulario, Año, Cuatrimestre, FechaInicio, FechaFin
+    FROM    Encuestas
+    WHERE   IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;            
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_textos_pregunta_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_textos_pregunta_materia`(
+    pIdPregunta INT,
+    pIdMateria SMALLINT,
+    pIdCarrera SMALLINT,
+    pIdEncuesta INT,
+    pIdFormulario INT)
+BEGIN
+	SELECT  Texto
+	FROM    Respuestas R
+	WHERE   R.IdPregunta = pIdPregunta AND R.IdMateria = pIdMateria AND 
+			R.IdCarrera = pIdCarrera AND R.IdEncuesta = pIdEncuesta AND
+			R.IdFormulario = pIdFormulario AND Texto IS NOT NULL;;
+END
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_claves_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_materia`(
+    pIdMateria SMALLINT,
+    pIdCarrera SMALLINT,
+    pIdEncuesta INT,
+    pIdFormulario INT)
+BEGIN
+    SELECT  Count(IdClave) AS Generadas, Count(Utilizada) AS Utilizadas, 
+			MIN(Utilizada) AS PrimerAcceso, MAX(Utilizada) AS UltimoAcceso
+    FROM    Claves
+    WHERE   IdMateria = pIdMateria AND IdCarrera = pIdCarrera AND 
+            IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;
+END

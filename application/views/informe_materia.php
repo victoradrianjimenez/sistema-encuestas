@@ -8,49 +8,93 @@
 <head>
   <?php include 'elements/head.php'?> 
   <title>Listar Departamentos</title>
+  
+  <style>
+    #header h1, #header h2, #header h3, #header h4, #header h5{
+      text-align:center;
+    }
+    
+    h5.separador{
+      border-bottom: 3px solid #2BA6CB;
+    }
+    
+  </style>
+  
 </head>
 <body>
-  <!-- Header -->
+  <div id="header" class="row">
+    <h2><?php echo $formulario['titulo']?></h2>
+    <h4><?php echo $formulario['descripcion']?></h4>
+    <h4><?php echo $carrera['nombre']?></h4>
+    <h4>Asignatura: <?php echo $materia['nombre']?></h4>
+  </div>
   <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
+    <h5 class="separador">Estadísticas Generales</h5>
+    <div class="six columns">
+      <?php
+        echo '<p>Año: '.$encuesta['año'].'</p>';
+        echo '<p>Cuatrimestre/periodo: '.$encuesta['cuatrimestre'].'</p>';
+        echo '<p>Fecha de Inicio de las encuestas: '.$encuesta['fechaInicio'].'</p>';
+        echo '<p>Fecha de Fin de las encuestas: '.$encuesta['fechaFin'].'</p>';
+      ?>
+    </div>
+    <div class="six columns">
+      <?php
+        echo '<p>Claves generadas: '.$claves['Generadas'].'</p>';
+        echo '<p>Claves utilizadas: '.$claves['Utilizadas'].'</p>';
+        echo '<p>Primer acceso: '.$claves['PrimerAcceso'].'</p>';
+        echo '<p>Último acceso: '.$claves['UltimoAcceso'].'</p>';
+      ?>
     </div>
   </div>
-  
-  
-  
+  <div class="row">
     <?php foreach ($secciones as $i => $seccion):?>
+
+      <h5 class="separador"><?php echo $seccion['texto']?></h5>
       <div class="row">
-        <h3><?php echo $seccion['texto']?></h3>
-      </div>    
-      <?php foreach ($seccion['preguntas'] as $j => $pregunta):?>
-      <div class="row">
-                
           
-          <?php  if ($pregunta['tipo'] == 'S'):?>
-            <div class="eight columns">
-              <p><?php echo $pregunta['texto']?></p>
-              <div class="row">
-                <?php foreach ($pregunta['opciones'] as $k => $opcion){
-                  echo '<div class="three columns">'.$opcion['texto'];
-                  foreach ($pregunta['respuestas'] as $res){
-                    if ($opcion['idOpcion'] == $res['Opcion']){
-                      echo  $res['Cantidad'];
+        <?php foreach ($seccion['preguntas'] as $j => $pregunta){
+          switch($pregunta['tipo']){
+          case 'S':case 'N': //selección simple
+            echo '
+            <div class="nine columns">
+              <p>'.$pregunta['texto'].'</p>
+              <div class="row">';
+                foreach ($pregunta['opciones'] as $k => $opcion){
+                  echo '<div class="three mobile-one columns">'.$opcion['texto'].': ';
+                  $cant = 0;
+                  foreach ($pregunta['respuestas'] as $r){
+                    if ($opcion['idOpcion'] == $r['Opcion']){
+                      $cant = $r['Cantidad'];
                       break;
                     }
                   }
-                  echo '</div>';
-                }?>
+                  echo "<b>$cant</b></div>";
+                }
+              echo '
               </div>
             </div>
-            <div class="four columns">
-              <img src="<?php echo "encuestas/graficoPregunta/1/1/".$pregunta['idPregunta']."/5/5" ?>" width="400" height="160" />
-            </div>
-          <?php endif ?>
-                
-      </div>      
-      <?php endforeach?>
-    <?php endforeach?>
+            <div class="three columns">
+              <img src="'.site_url("encuestas/graficoPregunta/1/1/".$pregunta['idPregunta'].'/5/5').'" width="400" height="160" />
+            </div>';
+            break;
+          case 'T': //testo simple
+            echo '
+            <div class="twelve columns">
+              <p>'.$pregunta['texto'].'</p>
+              <ul>';
+                foreach ($pregunta['respuestas'] as $r){
+                  echo '<li>'.$r['Texto'].'</li>';
+                }
+              echo '
+              </ul>
+            </div>';
+            break;
+          }//switch
+        }//foreach?> 
+      </div>   
+    <?php endforeach //secciones?>
+    <h5 class="separador"></h5>
     
   </div>
   <!-- Footer -->    

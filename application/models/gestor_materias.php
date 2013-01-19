@@ -16,7 +16,7 @@ class Gestor_materias extends CI_Model{
    * @param identificador de la materia
    * @return object
    */
-  public function dameMateria($idMateria){
+  public function dame($idMateria){
     $idMateria = $this->db->escape($idMateria);
     $query = $this->db->query("call esp_dame_materia($idMateria)");
     $data = $query->result('Materia');
