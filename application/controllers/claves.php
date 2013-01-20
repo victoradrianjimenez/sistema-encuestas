@@ -9,7 +9,7 @@ class Claves extends CI_Controller{
     parent::__construct();
   }
   
-  public function index(){
+  public function encuesta(){
     $this->load->model('Opcion');
     $this->load->model('Pregunta');
     $this->load->model('Item');

@@ -8,8 +8,92 @@ UPDATE Items
 SET Tamaño = 2
 WHERE IdCarrera >= 0 AND IdFormulario = 1 AND IdPregunta = 39;
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_materias_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_materias_carrera`(
+	pIdCarrera SMALLINT)
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Materias_Carreras
+	WHERE	IdCarrera = pIdCarrera;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_materias_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_carrera`(
+	pIdCarrera SMALLINT,
+    pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  M.IdMateria, M.Nombre, M.Codigo, M.Alumnos
+    FROM    Materias M INNER JOIN Materias_Carreras MC ON M.IdMateria = MC.IdMateria
+	WHERE	MC.IdCarrera = ?
+    ORDER BY M.Nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pIdCarrera;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_materias`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_materias`()
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Materias;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_materias`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias`(
+    pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  IdMateria, Nombre, Codigo, Alumnos
+    FROM    Materias
+    ORDER BY Nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_listar_personas`;
+
 
 DELIMITER $$
 
@@ -780,4 +864,60 @@ BEGIN
     FROM    Claves
     WHERE   IdMateria = pIdMateria AND IdCarrera = pIdCarrera AND 
             IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;
-END
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_persona`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_persona`(
+    pApellido VARCHAR(40),
+    pNombre VARCHAR(40),
+    pUsuario VARCHAR(40),
+    pEmail VARCHAR(200),
+    pContraseña CHAR(64))
+BEGIN
+    DECLARE id INT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pApellido,'') = '' THEN
+        SET Mensaje = 'El apellido no puede ser vacío.';
+    ELSEIF COALESCE(pUsuario,'') = '' THEN
+        SET Mensaje = 'El nombre de usuario no puede ser vacío.';
+    ELSEIF COALESCE(pEmail,'') = '' THEN
+        SET Mensaje = 'La dirección de email no puede ser vacía.';
+    ELSE
+        START TRANSACTION;
+        IF EXISTS(SELECT Usuario FROM Personas WHERE Usuario = pUsuario LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe una persona con nombre de usuario ',pUsuario,'.');
+            ROLLBACK;
+        ELSEIF EXISTS(SELECT Email FROM Personas WHERE Email = pEmail LIMIT 1) THEN
+            SET Mensaje = 'Ya existe un usuario con el email ingresado.';
+            ROLLBACK;
+        ELSE
+            SET id = (  
+                SELECT COALESCE(MAX(IdPersona),0)+1 
+                FROM    Personas);
+            INSERT INTO Personas
+                (IdPersona, Apellido, Nombre, Usuario, Email, Contraseña, UltimoAcceso, Estado)
+            VALUES (id, pApellido, pNombre, pUsuario, pEmail, 
+                pContraseña, NOW(), 'A');
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;

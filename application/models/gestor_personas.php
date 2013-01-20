@@ -8,6 +8,27 @@ class Gestor_personas extends CI_Model{
 	function __construct() {
     parent::__construct();		
 	}
+
+    
+  /**
+   * Da de Alta una nueva persona. Devuleve el id en caso de éxito o un mensaje en caso de error.
+   *
+   * @access  public
+   * @param nombre del departamento
+   * @return  string
+   */
+  public function alta($Apellido, $Nombre, $Usuario, $Email, $Contraseña){
+    $Apellido = $this->db->escape($Apellido);
+    $Nombre = $this->db->escape($Nombre);
+    $Usuario = $this->db->escape($Usuario);
+    $Email = $this->db->escape($Email);
+    $Contraseña = $this->db->escape($Contraseña);
+    $query = $this->db->query("call esp_alta_persona($Apellido, $Nombre, $Usuario, $Email, $Contraseña)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
   
   
   /**

@@ -28,7 +28,7 @@
             <input type="hidden" name="IdDepartamento" value="<?php echo $departamento['IdDepartamento']?>" />
             <label for="campoNombre" for="campoNombre">Nombre: </label>
             <input type="text" id="campoNombre" name="Nombre" value="<?php echo $departamento['Nombre']?>" />
-            <?php echo form_error('nombre')?>
+            <?php echo form_error('Nombre')?>
             <div class="six columns centered">
               <div class="six mobile-one columns push-one-mobile">
                 <button id="botonVolver" class="button">Cancelar</button>
