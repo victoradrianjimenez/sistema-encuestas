@@ -43,7 +43,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/listar/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
+                  <td><a href="<?php echo site_url("materias/listar/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
                   <td><?php echo $fila['Plan']?></td>
                   <td><?php echo $fila['Departamento']?></td>
                   <td>

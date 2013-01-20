@@ -62,7 +62,7 @@ class Carreras extends CI_Controller{
       }
     }
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("carreras/listar");
+    $config['base_url'] = site_url("carreras/listar/$idDepartamento");
     $config['total_rows'] = $cantidadCarreras;
     $config['per_page'] = 5;
     $config['uri_segment'] = 4;

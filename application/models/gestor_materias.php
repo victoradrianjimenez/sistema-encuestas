@@ -24,5 +24,40 @@ class Gestor_materias extends CI_Model{
     $this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
+  
+  
+  /**
+   * Obtener el listado de materias. Devuleve un array de objetos.
+   *
+   * @access  public
+   * @param posicion del primer item de la lista a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
+   * @return  array
+   */  
+  public function listar($pagNumero, $pagLongitud){
+    $pagNumero = $this->db->escape($pagNumero);
+    $pagLongitud = $this->db->escape($pagLongitud);
+    $query = $this->db->query("call esp_listar_materias($pagNumero, $pagLongitud)");
+    $data = $query->result('Materia');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
+  
+  /**
+   * Obtener la cantidad total de materias.
+   *
+   * @access public
+   * @return int
+   */ 
+  public function cantidad(){
+    $query = $this->db->query("call esp_cantidad_materias()");
+    $data=$query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Cantidad:0;
+  }
+  
 }
 ?>
