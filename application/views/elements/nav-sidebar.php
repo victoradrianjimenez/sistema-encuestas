@@ -14,9 +14,9 @@
       <a href="#">Facultad</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
-        <li><a href="departamentos">Departamentos</a></li>
-        <li><a href="carreras">Carreras</a></li>
-        <li><a href="materias">Materias</a></li>
+        <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
+        <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
+        <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
         <li><a href="#">Docentes</a></li>
         <li><a href="#">Autoridades</a></li>
       </ul>

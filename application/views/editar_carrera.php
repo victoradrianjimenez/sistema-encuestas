@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Nueva Carrera</title>
+  <title>Editar Carrera</title>
 </head>
 <body>
   <!-- Header -->
@@ -24,29 +24,29 @@
       <form class="custom" action="<?php echo $link?>" method="post"> 
         <fieldset>
           <legend>Carrera</legend>
-          <input type="hidden" name="idCarrera" value="<?php echo $carrera['idCarrera']?>"/>
+          <input type="hidden" name="IdCarrera" value="<?php echo $carrera['IdCarrera']?>"/>
           <div class="twelve columns">
             <label for="campoIdDepartamento">Departamento: </label>
             <?php 
               $selOpt = 0; //posicion del item seleccionado
               $options = '';
               foreach ($departamentos as $i => $departamento) {
-                $options = $options.'<option value="'.$departamento['idDepartamento'].'">'.$departamento['nombre'].'</option>';
-                if ($departamento['idDepartamento'] == $carrera['idDepartamento']){
+                $options = $options.'<option value="'.$departamento['IdDepartamento'].'">'.$departamento['Nombre'].'</option>';
+                if ($departamento['IdDepartamento'] == $carrera['IdDepartamento']){
                   $selOpt = $i;
                 }
               }
-              echo '<select id="campoIdDepartamento" name="idDepartamento" value="'.$selOpt.'">'.$options.'</select>';
+              echo '<select id="campoIdDepartamento" name="IdDepartamento" value="'.$selOpt.'">'.$options.'</select>';
             ?>
           </div>
           <div class="nine mobile-three columns">
             <label for="campoNombre">Nombre: </label>
-            <input id="campoNombre" type="text" name="nombre" autofocus value="<?php echo $carrera['nombre']?>"/>
+            <input id="campoNombre" type="text" name="Nombre" value="<?php echo $carrera['Nombre']?>"/>
             <?php echo form_error('nombre'); ?>
           </div>
           <div class="three mobile-one columns">
             <label for="campoPlan">Plan: </label>
-            <input id="campoPlan" type="number" min="1900" max="2100" name="plan" value="<?php echo $carrera['plan']?>"/>
+            <input id="campoPlan" type="number" min="1900" max="2100" name="Plan" value="<?php echo $carrera['Plan']?>"/>
           </div>
           <div class="row">         
             <div class="six columns centered">

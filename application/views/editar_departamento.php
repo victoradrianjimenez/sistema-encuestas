@@ -7,12 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Nuevo Departamento</title>
-  <style>
-    button.button, input[type="button"].button, input[type="submit"].button{
-      width: 100%;
-    }
-  </style>
+  <title>Editar Departamento</title>
 </head>
 <body>
   <!-- Header -->
@@ -30,9 +25,9 @@
         <fieldset>
           <legend>Departamento</legend>
           <div class="twelve columns">
-            <input type="hidden" name="idDepartamento" value="<?php echo $departamento['idDepartamento']?>" />
+            <input type="hidden" name="IdDepartamento" value="<?php echo $departamento['IdDepartamento']?>" />
             <label for="campoNombre" for="campoNombre">Nombre: </label>
-            <input type="text" id="campoNombre" name="nombre" autofocus value="<?php echo $departamento['nombre']?>" />
+            <input type="text" id="campoNombre" name="Nombre" value="<?php echo $departamento['Nombre']?>" />
             <?php echo form_error('nombre')?>
             <div class="six columns centered">
               <div class="six mobile-one columns push-one-mobile">

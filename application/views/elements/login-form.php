@@ -1,15 +1,15 @@
 <?php if(!(isset($usuarioLogin) && is_a($usuarioLogin, 'Persona'))): ?>
-  <form id="login" action="personas/login" method="post"> 
+  <form id="login" action="<?php echo site_url("personas/login")?>" method="post"> 
     <fieldset>
       <legend>Iniciar sesión</legend>
       <div class="row">
         <label for="loginUsuario">Usuario</label>
-        <input id="loginUsuario" type="text" name="usuario" required />
+        <input id="loginUsuario" type="text" name="Usuario" required />
         <label for="loginContraseña">Contraseña</label>
-        <input id="loginContraseña" type="password" name="contrasena" required />
+        <input id="loginContraseña" type="password" name="Contrasena" required />
       </div>
       <div class="row">
-        <input type="checkbox" name="recordarme" />Recordarme              
+        <input type="checkbox" name="Recordarme" />Recordarme              
       </div>
       <div class="row">
         <div class="twelve mobile-one columns pull-three-mobile">
@@ -23,13 +23,13 @@
         </div>
       <?php endif ?>
       <div class="row">  
-        <a href="personas/resetearContraseña">¿Olvidó la contraseña?</a>
+        <a href="<?php echo site_url("personas/resetearContraseña")?>">¿Olvidó la contraseña?</a>
       </div>
     </fieldset>
   </form>
 <?php else: ?>
   <div id="datosUsuario">
-    <form id="logout" action="personas/logout" method="post"> 
+    <form id="logout" action="<?php echo site_url("personas/logout")?>" method="post"> 
       <h6><?php echo $usuarioLogin->Nombre.' '.$usuarioLogin->Apellido?></h6>
       <input type="submit" name="submit" value="Cerrar sesión" class="small button" />
     </form>      

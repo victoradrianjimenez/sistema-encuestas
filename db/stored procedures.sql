@@ -9,6 +9,40 @@ SET Tamaño = 2
 WHERE IdCarrera >= 0 AND IdFormulario = 1 AND IdPregunta = 39;
 
 
+DROP PROCEDURE IF EXISTS `esp_listar_personas`;
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_personas`(
+    pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  IdPersona, Apellido, Nombre, Usuario, Email,
+			Contraseña, UltimoAcceso, Estado
+    FROM    Personas
+    ORDER BY Apellido, Nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_personas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_personas`()
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Personas;
+END $$
 
 DELIMITER ;
 
@@ -638,6 +672,12 @@ DROP PROCEDURE IF EXISTS `esp_respuestas_clave`;
 
 DELIMITER $$
 
+-- --------------------------------------------------------------------------------
+-- Routine DDL
+-- Note: comments before and after the routine body will not be stored by the server
+-- --------------------------------------------------------------------------------
+DELIMITER $$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_clave`(
     pIdClave INT,
     pIdMateria SMALLINT,
@@ -645,13 +685,16 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_clave`(
     pIdEncuesta INT,
     pIdFormulario INT)
 BEGIN
-    SELECT  IC.IdSeccion, R.IdPregunta, R.IdDocente, R.Opcion, R.Texto
-    FROM    Respuestas R 
+    SELECT  IC.IdSeccion, R.IdPregunta, P.Tipo, R.IdDocente, R.Opcion, R.Texto,
+			COUNT(IdOpcion) as Opciones, IC.Importancia
+    FROM    Respuestas R INNER JOIN Preguntas P ON R.IdPregunta = P.IdPregunta
             LEFT JOIN Items I ON I.IdFormulario = R.IdFormulario AND I.IdPregunta = R.IdPregunta
             LEFT JOIN Items_Carreras IC ON IC.IdCarrera = R.IdCarrera AND IC.IdFormulario = R.IdFormulario AND IC.IdPregunta = R.IdPregunta
             LEFT JOIN Docentes_Materias DM ON DM.IdDocente = R.IdDocente AND DM.IdMateria = R.IdMateria
+			LEFT JOIN Opciones O On O.IdPregunta = R.IdPregunta
     WHERE   R.IdClave = pIdClave AND R.IdMateria = pIdMateria AND R.IdCarrera = pIdCarrera AND 
             R.IdEncuesta = pIdEncuesta AND R.IdFormulario = pIdFormulario
+	GROUP BY R.IdPregunta, R.IdDocente
     ORDER BY IC.IdSeccion, COALESCE(DM.OrdenFormulario,255), COALESCE(IC.Posicion, I.Posicion);
 END $$
 

@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Listar Departamentos</title>
+  <title>Lista Departamentos</title>
 </head>
 <body>
   <!-- Header -->
@@ -34,10 +34,10 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo "carreras/listarDepartamento/".$fila['idDepartamento']?>"/><?php echo $fila['nombre']?></a></td>
+                  <td><a href="<?php echo site_url("carreras/listarDepartamento/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
                   <td>
-                    <a href="<?php echo "departamentos/modificar/".$fila['idDepartamento']?>">Modificar</a> /
-                    <a href="<?php echo "departamentos/eliminar/".$fila['idDepartamento']?>">Eliminar</a>
+                    <a href="<?php echo site_url("departamentos/modificar/".$fila['IdDepartamento'])?>">Modificar</a> /
+                    <a href="<?php echo site_url("departamentos/eliminar/".$fila['IdDepartamento'])?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -48,7 +48,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="departamentos/nuevo">Nuevo Departamento</a>
+          <a class="button" href="<?php echo site_url("departamentos/nuevo")?>">Nuevo Departamento</a>
         </div>          
       </div>
     </div>

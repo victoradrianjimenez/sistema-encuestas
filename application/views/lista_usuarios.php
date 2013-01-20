@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Lista Carreras</title>
+  <title>Lista Usuarios</title>
 </head>
 <body>
   <!-- Header -->
@@ -24,11 +24,11 @@
       <div class="row">
         <div class="twelve columns">
           
-          <h4>Carreras</h4>
+          <h4>Usuarios</h4>
           <?php if(isset($departamento)):?>
             <h6>
               <?php echo $departamento['Nombre']?>
-              <a href="<?php echo site_url('carreras/listar')?>">(Ver todas)</a>
+              <a href="<?php echo site_url('personas/listar')?>">(Ver todas)</a>
             </h6>
           <?php endif ?>
           <?php if(count($tabla)== 0):?>
@@ -36,19 +36,24 @@
           <?php else:?>
             <table class="twelve">
               <thead>
+                <th>Apellido</th>
                 <th>Nombre</th>
-                <th>Plan</th>
-                <th>Departamento</th>
+                <th>Email</th>
+                <th>Último acceso</th>
+                <th>Estado</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/listar/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
-                  <td><?php echo $fila['Plan']?></td>
-                  <td><?php echo $fila['Departamento']?></td>
+                  <td><?php echo $fila['Apellido']?></td>
+                  <td><?php echo $fila['Nombre']?></td>
+                  <td><?php echo $fila['Email']?></td>
+                  <td><?php echo $fila['UltimoAcceso']?></td>
+                  <td><?php echo $fila['Estado']?></td>
                   <td>
-                    <a href="<?php echo site_url("carreras/modificar/".$fila['IdCarrera'])?>">Editar</a> /
-                    <a href="<?php echo site_url("carreras/eliminar/".$fila['IdCarrera'])?>">Eliminar</a>
+                    <a href="<?php echo site_url("personas/modificar/".$fila['IdPersona'])?>">Editar</a> /
+                    <a href="<?php echo site_url("personas/eliminar/".$fila['IdPersona'])?>">Eliminar</a>
+                    <a href="<?php echo site_url("personas/permisos")?>">Permisos</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -59,7 +64,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url("carreras/nueva")?>">Nueva Carrera</a>
+          <a class="button" href="<?php echo site_url("personas/nueva")?>">Nuevo Usuario</a>
         </div>          
       </div>
     </div>
