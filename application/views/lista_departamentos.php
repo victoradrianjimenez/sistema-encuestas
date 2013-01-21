@@ -34,7 +34,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/listarDepartamento/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
+                  <td><a href="<?php echo site_url("carreras/listar/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
                   <td>
                     <a href="<?php echo site_url("departamentos/modificar/".$fila['IdDepartamento'])?>">Modificar</a> /
                     <a href="<?php echo site_url("departamentos/eliminar/".$fila['IdDepartamento'])?>">Eliminar</a>

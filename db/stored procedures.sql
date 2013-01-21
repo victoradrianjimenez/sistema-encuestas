@@ -921,3 +921,101 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_personas`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `sistema_encuestas`.`esp_buscar_personas` (
+	pNombre VARCHAR(40))
+BEGIN
+	IF COALESCE(pNombre,'') != '' THEN
+		SELECT	IdPersona, Apellido, Nombre, Usuario, Email, 
+				Contraseña, UltimoAcceso, Estado
+		FROM	Personas
+		WHERE	Apellido like CONCAT('%',pNombre,'%') OR Nombre like CONCAT('%',pNombre,'%');
+	END IF;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_carreras`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_carreras`(
+	pNombre VARCHAR(60))
+BEGIN
+	IF COALESCE(pNombre,'') != '' THEN
+		SELECT	IdCarrera, IdDepartamento, Nombre, Plan 
+		FROM	Carreras
+		WHERE	Nombre like CONCAT('%',pNombre,'%');
+	END IF;
+END $$
+
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_materias`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_materias`(
+	pNombre VARCHAR(60))
+BEGIN
+	IF COALESCE(pNombre,'') != '' THEN
+		SELECT	IdMateria, Nombre, Codigo, Alumnos
+		FROM	Materias
+		WHERE	Nombre like CONCAT('%',pNombre,'%');
+	END IF;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_asociar_materia_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_asociar_materia_carrera`(
+    pIdMateria SMALLINT,
+	pIdCarrera SMALLINT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF NOT EXISTS(SELECT IdMateria FROM Materias WHERE IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'No se encuestra una materia con ID dado.';
+        ROLLBACK;
+    ELSEIF NOT EXISTS(SELECT IdCarrera FROM Carreras WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+        SET Mensaje = 'No se encuestra una carrera con ID dado.';
+        ROLLBACK;
+    ELSEIF NOT EXISTS(  SELECT IdCarrera FROM Materias_Carreras 
+                        WHERE  IdCarrera = pIdCarrera AND IdMateria = pIdMateria LIMIT 1) THEN
+        INSERT INTO Materias_Carreras
+            (IdMateria, IdCarrera)
+        VALUES (pIdMateria, pIdCarrera);
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = 'ok';
+            COMMIT;
+        END IF;
+    ELSE
+        SET Mensaje = 'ok';
+        COMMIT;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;

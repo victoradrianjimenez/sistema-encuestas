@@ -121,5 +121,22 @@ class Gestor_carreras extends CI_Model{
     return ($data!=FALSE)?$data->Cantidad:0;
   }
   
+      
+  /**
+   * Buscar carreras por el nombre. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param fragmento del nombre de la carrera
+   * @return arrayPersonas
+   */
+  public function buscar($nombre){
+    $nombre = $this->db->escape($nombre);
+    $query = $this->db->query("call esp_buscar_carreras($nombre)");
+    $data = $query->result('Carrera');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
 }
 ?>

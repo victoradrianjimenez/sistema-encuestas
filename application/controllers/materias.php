@@ -42,6 +42,7 @@ class Materias extends CI_Controller{
         $cantidadMaterias = $carrera->cantidadMaterias();
         $materias = $carrera->listarMaterias($pagInicio, 5);
         $data['carrera'] = array(
+          'IdCarrera' => $carrera->IdCarrera,
           'Nombre' => $carrera->Nombre,
           'Plan' => $carrera->Plan
         );
@@ -76,7 +77,30 @@ class Materias extends CI_Controller{
     $this->load->view('lista_materias', $data);
   }
   
-    
+  //funcion para responder solicitudes AJAX
+  public function buscar(){
+    $buscar = $this->input->post('Buscar');
+    //VERIFICAR
+    $this->load->model('Materia');
+    $this->load->model('Gestor_materias','gm');
+    $materias = $this->gm->buscar($buscar);
+    foreach ($materias as $materia) {
+      echo  "$materia->IdMateria\t".
+            "$materia->Nombre\t".
+            "$materia->Codigo\t\n";
+    }
+  }
+  
+  //funcion para responder solicitudes AJAX
+  public function asociar(){
+    $IdMateria = $this->input->post('IdMateria');
+    $IdCarrera = $this->input->post('IdCarrera');
+    //VERIFICAR
+    $this->load->model('Carrera');
+    $this->Carrera->IdCarrera = $IdCarrera;
+    echo $this->Carrera->asociarMateria($IdMateria);
+  }
+
 }
 
 ?>

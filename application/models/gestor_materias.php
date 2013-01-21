@@ -59,5 +59,23 @@ class Gestor_materias extends CI_Model{
     return ($data!=FALSE)?$data->Cantidad:0;
   }
   
+  
+        
+  /**
+   * Buscar materias por el nombre. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param fragmento del nombre de la materia
+   * @return arrayPersonas
+   */
+  public function buscar($nombre){
+    $nombre = $this->db->escape($nombre);
+    $query = $this->db->query("call esp_buscar_materias($nombre)");
+    $data = $query->result('Materia');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
 }
 ?>

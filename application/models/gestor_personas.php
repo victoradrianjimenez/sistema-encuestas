@@ -100,5 +100,21 @@ class Gestor_personas extends CI_Model{
     return ($data!=FALSE)?$data->Cantidad:0;
   }
   
+    
+  /**
+   * Buscar personas por nombre o apellido. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param fragmento del nombre o apellido de la persona
+   * @return arrayPersonas
+   */
+  public function buscar($nombre){
+    $nombre = $this->db->escape($nombre);
+    $query = $this->db->query("call esp_buscar_personas($nombre)");
+    $data = $query->result('Persona');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
   
 }

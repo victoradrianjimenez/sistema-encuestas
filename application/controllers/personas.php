@@ -93,7 +93,7 @@ class Personas extends CI_Controller {
     //envio datos a la vista
     $data['tabla'] = $tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuario'] = unserialize($this->session->userdata('usuario')); //objeto Persona (usuario logueado)
+    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
     $this->load->view('lista_usuarios', $data);
   }
   
@@ -153,8 +153,29 @@ class Personas extends CI_Controller {
     }
   }
 
+  public function buscar(){
+    
+    $nombre = $this->input->post('Nombre');
+    $this->load->model('Persona');
+    $this->load->model('Gestor_personas','gp');
+    
+    $personas = $this->gp->buscar($nombre);
+    
+    foreach ($personas as $i => $persona) {
+      echo  "$persona->IdPersona\t".
+            "$persona->Apellido\t".
+            "$persona->Nombre\t".
+            "$persona->Usuario\t".
+            "\n";
+    }
+  }
   
- 
+  
+  public function tmp(){
+    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+    $this->load->view('tmp',$data);
+  }
+  
 }
 
 ?>

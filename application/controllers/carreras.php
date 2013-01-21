@@ -212,6 +212,28 @@ class Carreras extends CI_Controller{
       }
     }
   }
+
+
+  //funcion para responder solicitudes AJAX
+  public function buscar(){
+    $buscar = $this->input->post('Buscar');
+    $this->load->model('Carrera');
+    $this->load->model('Gestor_carreras','gc');
+    $carreras = $this->gc->buscar($buscar);
+    foreach ($carreras as $carrera) {
+      echo  "$carrera->IdCarrera\t".
+            "$carrera->Nombre\t".
+            "$carrera->Plan\t".
+            "\n";
+    }
+  }
+  
+  
+  public function tmp(){
+    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+    $this->load->view('tmp',$data);
+  }
+  
 }
 
 ?>
