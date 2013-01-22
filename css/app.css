@@ -76,6 +76,16 @@ button.button, input[type="button"].button, input[type="submit"].button{
   width: 100%;
 }
 
+
+
+/* ubicacion del icono del imput para buscar */
+.buscador{
+  position: relative;
+}
+.buscador i{
+  position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
+}
+
 /* -----------------------------------------
    Page Name 1
 ----------------------------------------- */

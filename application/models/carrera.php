@@ -68,6 +68,24 @@ class Carrera extends CI_Model{
     return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
   }
   
+  
+  /**
+   * Elimina la asociación de una materia a la carrera. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de materia
+   * @return string
+   */
+  public function desasociarMateria($IdMateria){
+    $IdCarrera = $this->db->escape($this->IdCarrera);
+    $IdMateria = $this->db->escape($IdMateria);
+    $query = $this->db->query("call esp_desasociar_materia_carrera($IdMateria, $IdCarrera)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
 }
 
 ?>

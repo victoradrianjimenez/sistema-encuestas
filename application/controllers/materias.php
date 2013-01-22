@@ -90,16 +90,6 @@ class Materias extends CI_Controller{
             "$materia->Codigo\t\n";
     }
   }
-  
-  //funcion para responder solicitudes AJAX
-  public function asociar(){
-    $IdMateria = $this->input->post('IdMateria');
-    $IdCarrera = $this->input->post('IdCarrera');
-    //VERIFICAR
-    $this->load->model('Carrera');
-    $this->Carrera->IdCarrera = $IdCarrera;
-    echo $this->Carrera->asociarMateria($IdMateria);
-  }
 
 }
 

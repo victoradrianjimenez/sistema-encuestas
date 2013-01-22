@@ -159,6 +159,17 @@ class Departamentos extends CI_Controller{
       }
     }
   }
+
+  //funcion para responder solicitudes AJAX
+  public function listarAjax(){
+    $this->load->model('Departamento');
+    $this->load->model('Gestor_departamentos','gd');
+    $departamentos = $this->gd->listar(0, 1000);
+    foreach ($departamentos as $departamento) {
+      echo  "$departamento->IdDepartamento\t".
+            "$departamento->Nombre\t\n";
+    }
+  }
   
 }
 

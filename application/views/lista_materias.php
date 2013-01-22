@@ -15,6 +15,11 @@
     .buscador i{
       position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
     }
+    
+    .button-group li a{
+      margin-right: 5px;
+    }
+    
   </style>
 </head>
 <body>
@@ -31,14 +36,14 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          
-          <h4>Materias</h4>
           <?php if(isset($carrera)):?>
+            <h3>Carrera</h3>
             <h6>
-              <?php echo $carrera['Nombre']?> - Plan <?php echo $carrera['Plan']?>
-              <a href="<?php echo site_url('materias/listar')?>">(Ver todas)</a>
+              <?php echo $carrera['Nombre']?> - Plan <?php echo $carrera['Plan'] ?>
+              
             </h6>
           <?php endif ?>
+          <h4>Materias</h4>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron carreras.</p>
           <?php else:?>
@@ -57,7 +62,8 @@
                   <td>
                     <a href="<?php echo site_url("materias/modificar/".$fila['IdMateria'])?>">Editar</a> /
                     <a href="<?php echo site_url("materias/eliminar/".$fila['IdMateria'])?>">Eliminar</a> /
-                    <a href="<?php echo site_url("materias/docentes/".$fila['IdMateria'])?>">Docentes</a>
+                    <a href="<?php echo site_url("materias/docentes/".$fila['IdMateria'])?>">Docentes</a> /
+                    <a href="<?php echo site_url("materias/docentes/".$fila['IdMateria'])?>" title="Quitar asociación de la materia con la carrera">Quitar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -67,14 +73,16 @@
         </div>
       </div>
       <div class="row">
-        <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url("materias/nueva")?>">Nueva Materia</a>
+        <div class="twelve columns">
+          <ul class="button-group">
+            <li><a class="button" href="<?php echo site_url("materias/nueva")?>">Nueva Materia</a></li>
+          <?php if(isset($carrera)):?>
+            <li><a class="button" href="<?php echo site_url('carreras/listar')?>">Cambiar de carrera</a></li>
+            <li><a class="button" data-reveal-id="modalAsociar">Asociar materia</a></li>
+          <?php else:?>
+            <li><a class="button" href="<?php echo site_url('carreras/listar')?>">Seleccionar carrera</a></li>
+          <?php endif?>
         </div>
-        <?php if(isset($carrera)):?>
-          <div class="six mobile-two columns pull-one-mobile">
-            <a class="button" data-reveal-id="modalAsociar">Asociar materia</a>
-          </div>  
-        <?php endif?>
       </div>
     </div>
 

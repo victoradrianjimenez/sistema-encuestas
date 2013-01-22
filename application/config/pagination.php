@@ -2,7 +2,7 @@
 
 //configuración para personalizar la barra de paginación (se la adapta para Foundation 3 Framework)
 $config = array(
-  'num_links' => 2,
+  'num_links' => 4,
   //contenedor
   'full_tag_open' => '<ul class="pagination">',
   'full_tag_close' => '</ul>',
