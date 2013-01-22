@@ -49,6 +49,41 @@ class Departamentos extends CI_Controller{
     $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
     $this->load->view('lista_departamentos', $data);
   }
+
+
+  /*
+   * Editar todo lo relacionado a un departamento
+   */
+  public function editar($idDepartamento=0, $pagInicio=0){
+    if (!is_numeric($idDepartamento) || $idDepartamento<1){
+      show_error('El Identificador de Departamento no es válido.');
+      return;
+    }
+    elseif (!is_numeric($pagInicio)){
+      show_error('El número de página es inválido.');
+      return;
+    }
+    
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    
+    //cargo modelos, librerias, etc.
+    $this->load->model('Departamento');
+    $this->load->model('Gestor_departamentos','gd');
+    $departamento = $this->gd->dame($idDepartamento);
+    if ($departamento != FALSE){
+      $data['departamento'] = array(
+        'IdDepartamento' => $departamento->IdDepartamento,
+        'IdJefeDepartamento' => $departamento->IdJefeDepartamento,
+        'Nombre' => $departamento->Nombre
+      );
+      //envio datos a la vista
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+      $this->load->view('editar_departamento', $data);
+    }
+    else{
+      show_error('El Identificador de Departamento no es válido.');
+    }
+  }
   
   /*
    * Agregar nuevo departamento

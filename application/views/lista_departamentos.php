@@ -22,7 +22,7 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h4>Departamentos</h4>
+          <h3>Departamentos</h3>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron departamentos.</p>
           <?php else:?>
@@ -32,7 +32,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/listar/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
+                  <td><a href="<?php echo site_url("departamentos/editar/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
                   <td><a class="eliminar" href="" value="<?php echo $fila['IdDepartamento']?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>

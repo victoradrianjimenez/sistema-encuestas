@@ -90,7 +90,6 @@ class Carreras extends CI_Controller{
   
   /*
    * Editar todo lo relacionado a una carrera
-   * POST: IdCarrera, IdDepartamento, Nombre, Plan
    */
   public function editar($idCarrera=0, $pagInicio=0){
     if (!is_numeric($idCarrera) || $idCarrera<1){
@@ -120,28 +119,31 @@ class Carreras extends CI_Controller{
         'Nombre' => $carrera->Nombre,
         'Plan' => $carrera->Plan
       );
+      //genero la lista de links de paginación
+      $config['base_url'] = site_url("carreras/editar/$idCarrera");
+      $config['total_rows'] = $cantidadMaterias;
+      $config['per_page'] = 5;
+      $config['uri_segment'] = 4;
+      $this->pagination->initialize($config);
+      //obtengo lista de materias
+      $tabla = array();
+      foreach ($materias as $i => $materia) {
+        $tabla[$i]=array(
+          'IdMateria' => $materia->IdMateria,
+          'Nombre' => $materia->Nombre,
+          'Codigo' => $materia->Codigo,
+          'Alumnos' => $materia->Alumnos
+         );
+      }
+      //envio datos a la vista
+      $data['tabla'] = $tabla; //array de datos de los Departamentos
+      $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+      $this->load->view('editar_carrera', $data);
     }
-    //genero la lista de links de paginación
-    $config['base_url'] = site_url("carreras/editar/$idCarrera");
-    $config['total_rows'] = $cantidadMaterias;
-    $config['per_page'] = 5;
-    $config['uri_segment'] = 4;
-    $this->pagination->initialize($config);
-    //obtengo lista de materias
-    $tabla = array();
-    foreach ($materias as $i => $materia) {
-      $tabla[$i]=array(
-        'IdMateria' => $materia->IdMateria,
-        'Nombre' => $materia->Nombre,
-        'Codigo' => $materia->Codigo,
-        'Alumnos' => $materia->Alumnos
-       );
+    else{
+      show_error('El Identificador de Carrera no es válido.');
     }
-    //envio datos a la vista
-    $data['tabla'] = $tabla; //array de datos de los Departamentos
-    $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
-    $this->load->view('editar_carrera', $data);
   }
 
   /*
