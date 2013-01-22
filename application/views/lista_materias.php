@@ -45,7 +45,7 @@
           <?php endif ?>
           <h4>Materias</h4>
           <?php if(count($tabla)== 0):?>
-            <p>No se encontraron carreras.</p>
+            <p>No se encontraron materias.</p>
           <?php else:?>
             <table class="twelve">
               <thead>

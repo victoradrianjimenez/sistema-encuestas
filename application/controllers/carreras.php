@@ -87,55 +87,6 @@ class Carreras extends CI_Controller{
     $this->load->view('lista_carreras', $data);
   }
 
-
-  public function nueva(){
-    
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
-
-    //si no recibimos ningún valor proveniente del formulario
-    if(!$this->input->post('submit')){
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
-      $data['departamentos'] = $this->_datosDepartamentos();
-      $data['carrera'] = array(
-        'IdCarrera' => 0,
-        'IdDepartamento' => 0,
-        'Nombre' => '',
-        'Plan' => date('Y'));
-      $data['link'] = site_url("carreras/nueva"); //hacia donde mandar los datos      
-      $this->load->view('editar_carrera',$data); 
-    }
-    else{
-      //verifico si los datos son correctos
-      $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero');
-      $this->form_validation->set_rules('Nombre','Nombre','required');
-      $this->form_validation->set_rules('Plan','Plan','required|is_natural_no_zero|less_than[2100]|greater_than[1900]');
-      $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
-      if($this->form_validation->run()==FALSE){
-        //en caso de que los datos sean incorrectos, cargo el formulario nuevamente
-        $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
-        $data['departamentos'] = $this->_datosDepartamentos();
-        $data['carrera'] = array(
-          'IdCarrera' => 0,
-          'IdDepartamento' => 0,
-          'Plan' => $this->input->post('Plan'),
-          'Nombre' => $this->input->post('Nombre'));
-        $data['link'] = site_url("carreras/nueva"); //hacia donde mandar los datos
-        $this->load->view('editar_carrera',$data);
-      }
-      else{
-        //agrego carrera y cargo vista para mostrar resultado
-        $this->load->model('Gestor_carreras','gc');
-        $res = $this->gc->alta($this->input->post('IdDepartamento',TRUE), $this->input->post('Nombre',TRUE),$this->input->post('Plan',TRUE));
-        $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
-        $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
-        $data['link'] = site_url("carreras"); //hacia donde redirigirse
-        $this->load->view('resultado_operacion', $data);
-      }
-    }
-  }
-
-
-  
   
   /*
    * Editar todo lo relacionado a una carrera
@@ -193,6 +144,30 @@ class Carreras extends CI_Controller{
     $this->load->view('editar_carrera', $data);
   }
 
+  /*
+   * Agregar nueva carrera
+   * POST: IdDepartamento, Nombre, Plan
+   */
+  public function nueva(){
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero');
+    $this->form_validation->set_rules('Nombre','Nombre','required');
+    $this->form_validation->set_rules('Plan','Plan','required|is_natural_no_zero|less_than[2100]|greater_than[1900]');
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
+    if($this->form_validation->run()!=FALSE){
+      $this->load->model('Gestor_carreras','gc');
+      //agrego carrera y cargo vista para mostrar resultado
+      $res = $this->gc->alta($this->input->post('IdDepartamento',TRUE), $this->input->post('Nombre',TRUE), $this->input->post('Plan',TRUE));
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
+      $data['link'] = site_url("carreras/listar"); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $data);
+    }
+    else{
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
+      $this->listar();
+    }
+  }
 
   /*
    * Modificar los datos de una carrera
@@ -208,7 +183,7 @@ class Carreras extends CI_Controller{
     if($this->form_validation->run()!=FALSE){
       $this->load->model('Carrera');
       $this->load->model('Gestor_carreras','gc');
-      //agrego carrera y cargo vista para mostrar resultado
+      //modifico carrera y cargo vista para mostrar resultado
       $res = $this->gc->modificar($IdCarrera, $this->input->post('IdDepartamento',TRUE), $this->input->post('Nombre',TRUE),$this->input->post('Plan',TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
@@ -271,7 +246,6 @@ class Carreras extends CI_Controller{
     }
   }
 
-
   /*
    * Elimina una asociacion entre una materia y una carrera
    * POST: IdMateria, IdCarrera
@@ -298,7 +272,6 @@ class Carreras extends CI_Controller{
     }
   }
 
-
   /*
    * Método para responder solicitudes AJAX
    * POST: Buscar
@@ -315,8 +288,6 @@ class Carreras extends CI_Controller{
             "\n";
     }
   }
-  
-  
   
 }
 

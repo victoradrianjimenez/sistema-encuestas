@@ -69,12 +69,7 @@
       <div class="row">
         <div class="three mobile-one columns">
           <a class="button" data-reveal-id="modalNueva">Nueva Carrera</a>
-        </div>
-        <?php if(isset($departamento)):?>
-          <div class="three mobile-one columns end">
-            <a class="button" id="asociarCarrera">Asociar carrera</a>
-          </div>
-        <?php endif?>          
+        </div>       
       </div>
     </div>
 

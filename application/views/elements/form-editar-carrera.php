@@ -5,12 +5,12 @@
       <label for="listaDepartamentos">Departamento: </label>
       <select id="listaDepartamentos" name="IdDepartamento"></select>
     </div>
-    <div class="nine mobile-three columns">
+    <div class="eight mobile-three columns">
       <label for="campoNombre">Nombre: </label>
       <input id="campoNombre" type="text" name="Nombre" value="<?php echo $carrera['Nombre']?>"/>
       <?php echo form_error('Nombre'); ?>
     </div>
-    <div class="three mobile-one columns">
+    <div class="four mobile-one columns">
       <label for="campoPlan">Plan: </label>
       <input id="campoPlan" type="number" min="1900" max="2100" name="Plan" value="<?php echo $carrera['Plan']?>"/>
       <?php echo form_error('Plan'); ?>

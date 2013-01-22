@@ -28,7 +28,7 @@
         <div class="twelve columns">
           <h3><?php echo $carrera['Nombre']?> - Plan <?php echo $carrera['Plan'] ?></h3>
           <?php if(count($tabla)== 0):?>
-            <p>No se encontraron carreras.</p>
+            <p>No se encontraron materias.</p>
           <?php else:?>
             <table class="twelve">
               <thead>
