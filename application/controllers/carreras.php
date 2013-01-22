@@ -135,23 +135,7 @@ class Carreras extends CI_Controller{
   }
 
 
-  public function eliminar($IdCarrera=0){ //PASAR DATOS POR POST!!!!
-    if (!is_numeric($IdCarrera)){
-      show_error('El ID Carrera es inválido.');
-      return;
-    }
-
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
-
-    //doy de baja y cargo vista para mostrar resultado
-    $this->load->model('Gestor_carreras','gc');
-    $res = $this->gc->baja($IdCarrera);
-    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
-    $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-    $data['link'] = site_url("carreras"); //link para boton aceptar/continuar
-    $this->load->view('resultado_operacion', $data);
-  }
-
+  
   
   /*
    * Editar todo lo relacionado a una carrera
@@ -237,6 +221,29 @@ class Carreras extends CI_Controller{
     }
   }
 
+  /*
+   * Eliminar una carrera
+   * POST: IdCarrera
+   */
+  public function eliminar(){
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    $IdCarrera = $this->input->post('IdCarrera',TRUE);
+    $this->form_validation->set_rules('IdCarrera','ID Carrera','is_natural_no_zero|required');
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
+    if($this->form_validation->run()!=FALSE){
+      $this->load->model('Gestor_carreras','gc');
+      //doy de baja y cargo vista para mostrar resultado
+      $res = $this->gc->baja($IdCarrera);
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+      $data['link'] = site_url("carreras"); //link para boton aceptar/continuar
+      $this->load->view('resultado_operacion', $data);
+    }
+    else{
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
+      $this->listar();
+    }
+  }
 
   /*
    * Crear una asociacion entre una materia y una carrera
@@ -250,7 +257,7 @@ class Carreras extends CI_Controller{
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
     if($this->form_validation->run()!=FALSE){
       $this->load->model('Carrera');
-      $this->Carrera->IdCarrera = $this->input->post('IdCarrera', TRUE);
+      $this->Carrera->IdCarrera = $IdCarrera;
       //creo la asociacion y cargo vista para mostrar resultado
       $res = $this->Carrera->asociarMateria($this->input->post('IdMateria'), TRUE);
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session

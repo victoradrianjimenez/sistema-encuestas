@@ -40,14 +40,7 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          
-          <h4>Carreras</h4>
-          <?php if(isset($departamento)):?>
-            <h6>
-              <?php echo $departamento['Nombre']?>
-              <a href="<?php echo site_url('carreras/listar')?>">(Ver todas)</a>              
-            </h6>
-          <?php endif ?>
+          <h3>Carreras</h3>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron carreras.</p>
           <?php else:?>
@@ -64,8 +57,7 @@
                   <td><?php echo $fila['Plan']?></td>
                   <td><?php echo $fila['Departamento']?></td>
                   <td>
-                    <a href="<?php echo site_url("carreras/modificar/".$fila['IdCarrera'])?>">Editar</a> /
-                    <a href="<?php echo site_url("carreras/eliminar/".$fila['IdCarrera'])?>">Eliminar</a>
+                    <a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -76,7 +68,7 @@
       </div>
       <div class="row">
         <div class="three mobile-one columns">
-          <a class="button" href="<?php echo site_url("carreras/nueva")?>">Nueva Carrera</a>
+          <a class="button" data-reveal-id="modalNueva">Nueva Carrera</a>
         </div>
         <?php if(isset($departamento)):?>
           <div class="three mobile-one columns end">
@@ -98,33 +90,38 @@
     <?php include 'elements/footer.php'?>
   </div>
   
-  
-  
-  <?php if(isset($departamento)):?>
-    <div id="modalAsociar" class="reveal-modal medium">
-      <h3>Asociar carrera</h3>
-      <h5><?php echo $departamento['Nombre']?></h5>
-      <label for="buscarModalAsociar">Buscar carrera: </label>
-      <div class="buscador">
-        <input id="buscarModalAsociar" type="text">
-        <i class="gen-enclosed foundicon-search"></i>
-      </div>
-      <select id="listaModalAsociar" class="hide" size="5">
-      </select>
+
+  <!-- ventana modal para editar datos de la carrera -->
+  <div id="modalNueva" class="reveal-modal medium">
+    <?php
+      //a donde mandar los datos editados para darse de alta
+      $link = site_url('carreras/nueva');  
+      $carrera = array('IdCarrera' => 0, 'IdDepartamento' => 0, 'Nombre' => '', 'Plan' => date('Y'));
+      include 'elements/form-editar-carrera.php'; 
+    ?>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
+    
+  <!-- ventana modal para desasociar materias a la carrera -->
+  <div id="modalEliminar" class="reveal-modal medium">
+    <form action="<?php echo site_url('carreras/eliminar')?>" method="post">
+      <h3>Eliminar carrera</h3>
+      <p>¿Desea continuar?</p>
+      <input type="hidden" name="IdCarrera" value="" />
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">
-            <input id="cerrarModalAsociar" class="button" type="button" value="Cancelar"/>
+            <input class="button cancelar" type="button" value="Cancelar"/>
           </div>
           <div class="six mobile-one columns pull-one-mobile ">
             <input class="button" type="submit" name="submit" value="Aceptar" />
           </div>
         </div>
       </div>
-      <a class="close-reveal-modal">&#215;</a>
-    </div>
-  <?php endif?>
-    
+    </form>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
+  
   
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
@@ -132,43 +129,16 @@
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
   
   <script>
-    $('#asociarCarrera').click(function(){
-      //mostrar ventana
-      $("#modalAsociar").reveal();
+    $('.cancelar').click(function(){
+      $('.cancelar').trigger('reveal:close'); //cerrar ventana
     });
     
-    $('#cerrarModalAsociar').click(function(){
-      //cerrar ventana
-      $('#modalAsociar').trigger('reveal:close'); 
-    });
-    
-    $('#buscarModalAsociar').keyup(function(){
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('carreras/buscar')?>", 
-        data:{ Buscar: $('#buscarModalAsociar').val() }
-      }).done(function(msg){
-        //si el servidor no envia datos
-        if (msg.length == 0){
-          //ocultar listado
-          $('#listaModalAsociar').hide('fast');
-          return;
-        }
-        //separo los datos separados en filas
-        var filas = msg.split("\n");
-        $('#listaModalAsociar').empty().show('fast');
-        for (var i=0; i<filas.length-1; i++){
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0];
-          var datos = columnas[1]+' ('+columnas[2]+')';
-          //agregar fila a la lista desplegable
-          $('#listaModalAsociar').append('<option id="'+id+'">'+datos+'</option>');
-        }
-      });
+    $('.eliminar').click(function(){
+      IdCarrera = $(this).attr('value');
+      $('#modalEliminar input[name="IdCarrera"]').val(IdCarrera);
+      $("#modalEliminar").reveal();
+      return false;
     });
   </script>
-  
-  
 </body>
 </html>

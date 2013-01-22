@@ -104,7 +104,7 @@
             <input class="button cancelar" type="button" value="Cancelar"/>
           </div>
           <div class="six mobile-one columns pull-one-mobile ">
-            <input id="aceptarModalAsociar"  class="button" type="submit" name="submit" value="Aceptar" />
+            <input class="button" type="submit" name="submit" value="Aceptar" />
           </div>
         </div>
       </div>
