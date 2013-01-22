@@ -153,7 +153,7 @@ class Carreras extends CI_Controller{
   public function nueva(){
     //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
     $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero');
-    $this->form_validation->set_rules('Nombre','Nombre','required');
+    $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space|required');
     $this->form_validation->set_rules('Plan','Plan','required|is_natural_no_zero|less_than[2100]|greater_than[1900]');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
     if($this->form_validation->run()!=FALSE){
@@ -179,7 +179,7 @@ class Carreras extends CI_Controller{
     //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
     $IdCarrera = $this->input->post('IdCarrera',TRUE);
     $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero|required');
-    $this->form_validation->set_rules('Nombre','Nombre','required');
+    $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space|required');
     $this->form_validation->set_rules('Plan','Plan','required|is_natural_no_zero|less_than[2100]|greater_than[1900]');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
     if($this->form_validation->run()!=FALSE){
@@ -236,7 +236,7 @@ class Carreras extends CI_Controller{
       $this->load->model('Carrera');
       $this->Carrera->IdCarrera = $IdCarrera;
       //creo la asociacion y cargo vista para mostrar resultado
-      $res = $this->Carrera->asociarMateria($this->input->post('IdMateria'), TRUE);
+      $res = $this->Carrera->asociarMateria($this->input->post('IdMateria', TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("carreras/editar/$IdCarrera"); //hacia donde redirigirse
@@ -260,9 +260,9 @@ class Carreras extends CI_Controller{
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
     if($this->form_validation->run()!=FALSE){
       $this->load->model('Carrera');
-      $this->Carrera->IdCarrera = $this->input->post('IdCarrera', TRUE);
+      $this->Carrera->IdCarrera = $IdCarrera;
       //creo la asociacion y cargo vista para mostrar resultado
-      $res = $this->Carrera->desasociarMateria($this->input->post('IdMateria'), TRUE);
+      $res = $this->Carrera->desasociarMateria($this->input->post('IdMateria', TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("carreras/editar/$IdCarrera"); //hacia donde redirigirse

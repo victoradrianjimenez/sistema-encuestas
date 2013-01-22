@@ -56,9 +56,7 @@
                   <td><a href="<?php echo site_url("carreras/editar/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
                   <td><?php echo $fila['Plan']?></td>
                   <td><?php echo $fila['Departamento']?></td>
-                  <td>
-                    <a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a>
-                  </td>
+                  <td><a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -86,7 +84,7 @@
   </div>
   
 
-  <!-- ventana modal para editar datos de la carrera -->
+  <!-- ventana modal para agregar una carrera -->
   <div id="modalNueva" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta

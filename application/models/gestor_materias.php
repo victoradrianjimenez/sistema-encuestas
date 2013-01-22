@@ -77,5 +77,63 @@ class Gestor_materias extends CI_Model{
     return $data;
   }
   
+
+  /**
+   * Modifica una materia. Devuleve 'ok.' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de la materia
+   * @param nuevo nombre de la materia
+   * @param nuevo codigo de la materia
+   * @return string
+   */
+  public function modificar($IdMateria, $Nombre, $Codigo){
+    $IdMateria = $this->db->escape($IdMateria);
+    $Nombre = $this->db->escape($Nombre);
+    $Codigo = $this->db->escape($Codigo);
+    $query = $this->db->query("call esp_modificar_materia($IdMateria, $Nombre, $Codigo)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
+  /**
+   * Da de Alta una nueva materia. Devuleve el id en caso de éxito o un mensaje en caso de error.
+   *
+   * @access  public
+   * @param nombre de la materia
+   * @param código de la materia
+   * @return  string
+   */
+  public function alta($Nombre, $Codigo){
+    $Nombre = $this->db->escape($Nombre);
+    $Codigo = $this->db->escape($Codigo);
+    $query = $this->db->query("call esp_alta_materia($Nombre, $Codigo)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
+  /**
+   * Da de Baja una materia. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de la materia
+   * @return string
+   */
+  public function baja($IdMateria){
+    $IdMateria = $this->db->escape($IdMateria);
+    $query = $this->db->query("call esp_baja_materia($IdMateria)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
 }
 ?>

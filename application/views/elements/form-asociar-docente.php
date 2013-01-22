@@ -1,14 +1,23 @@
 <form action="<?php echo $link?>" method="post">
-  <h3>Asociar materia</h3>
-  <h5><?php echo $carrera['Nombre'].' - Plan '.$carrera['Plan']?></h5>
-  <input type="hidden" name="IdCarrera" value="<?php echo $carrera['IdCarrera']?>" />
-  <label for="buscarMateria">Buscar materia: </label>
+  <h3>Asociar docente</h3>
+  <h5><?php echo $materia['Nombre'].' - Código '.$materia['Codigo']?></h5>
+  <input type="hidden" name="IdMateria" value="<?php echo $materia['IdMateria']?>" />
+  <label for="buscarPersona">Buscar persona: </label>
   <div class="buscador">
-    <input id="buscarMateria" type="text" autocomplete="off">
+    <input id="buscarPersona" type="text" autocomplete="off">
     <i class="gen-enclosed foundicon-search"></i>
   </div>
-  <select id="listaResultado" class="hide" name="IdMateria" size="5">
+  <select id="listaResultado" class="hide" name="IdDocente" size="5">
   </select>
+  <label for="campoTipoAcceso">Tipo de acceso:</label>
+  <select id="campoTipoAcceso" name="TipoAcceso">
+    <option value="D">Docente</option>
+    <option value="J">Jefe de cátedra</option>
+  </select>
+  <label for="campoOrdenFormulario">Orden en el que aparece en el formulario:</label>
+  <input id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="OrdenFormulario" />
+  <label for="campoCargo">Cargo:</label>
+  <input id="campoCargo" type="text" name="Cargo" />
   <div class="row">         
     <div class="ten columns centered">
       <div class="six mobile-one columns push-one-mobile">
@@ -22,11 +31,11 @@
 </form>
 <script>
   //realizo la busqueda de materias con AJAX
-  $('#buscarMateria').keyup(function(){
+  $('#buscarPersona').keyup(function(){
     $.ajax({
       type: "POST", 
-      url: "<?php echo site_url('materias/buscar')?>", 
-      data:{ Buscar: $('#buscarMateria').val() }
+      url: "<?php echo site_url('personas/buscar')?>", 
+      data:{ Buscar: $('#buscarPersona').val() }
     }).done(function(msg){
       //si el servidor no envia datos
       if (msg.length == 0){
@@ -41,7 +50,7 @@
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];
-        var datos = columnas[1]+' ('+columnas[2]+')';
+        var datos = columnas[1] + ' ' + columnas[2] +' ('+columnas[3]+')';
         //agregar fila a la lista desplegable
         $('#listaResultado').append('<option value="'+id+'">'+datos+'</option>');
       }

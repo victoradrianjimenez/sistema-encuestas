@@ -153,20 +153,18 @@ class Personas extends CI_Controller {
     }
   }
 
+  //funcion para responder solicitudes AJAX
   public function buscar(){
-    
-    $nombre = $this->input->post('Nombre');
+    $buscar = $this->input->post('Buscar');
+    //VERIFICAR
     $this->load->model('Persona');
     $this->load->model('Gestor_personas','gp');
-    
-    $personas = $this->gp->buscar($nombre);
-    
-    foreach ($personas as $i => $persona) {
+    $personas = $this->gp->buscar($buscar);
+    foreach ($personas as $persona) {
       echo  "$persona->IdPersona\t".
             "$persona->Apellido\t".
             "$persona->Nombre\t".
-            "$persona->Usuario\t".
-            "\n";
+            "$persona->Usuario\t\n";
     }
   }
   

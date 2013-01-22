@@ -1019,3 +1019,257 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_docentes_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_docentes_materia`(
+	pIdMateria SMALLINT)
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Docentes_Materias
+	WHERE	IdMateria = pIdMateria;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_docentes_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
+	pIdMateria SMALLINT,
+    pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  P.IdPersona, P.Apellido, P.Nombre, P.Usuario, P.Email, P.UltimoAcceso, P.Estado, 
+			DM.TipoAcceso, DM.OrdenFormulario, DM.Cargo
+    FROM    Personas P INNER JOIN Docentes_Materias DM ON P.IdPersona = DM.IdDocente
+	WHERE	DM.IdMateria = ?
+    ORDER BY P.Apellido, P.Nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pIdMateria;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_asociar_docente_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_asociar_docente_materia`(
+    pIdDocente INT,
+	pIdMateria SMALLINT,
+	pTipoAcceso CHAR(1),
+	pOrdenFormulario TINYINT,
+	pCargo VARCHAR(40))
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF NOT EXISTS(SELECT IdMateria FROM Materias WHERE IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'No se encuestra una materia con ID dado.';
+        ROLLBACK;
+    ELSEIF NOT EXISTS(SELECT IdPersona FROM Personas WHERE IdPersona = pIdDocente LIMIT 1) THEN
+        SET Mensaje = 'No se encuestra una docente con ID dado.';
+        ROLLBACK;
+    ELSEIF EXISTS(	SELECT IdDocente FROM Docentes_Materias
+					WHERE  IdDocente = pIdDocente AND IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'Ya existe una asociación entre el docente y la materia dados.';
+        ROLLBACK;
+	ELSE
+        INSERT INTO Docentes_Materias
+            (IdDocente, IdMateria, TipoAcceso, OrdenFormulario, Cargo)
+        VALUES (pIdDocente, pIdMateria, pTipoAcceso, pOrdenFormulario, pCargo);
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = 'ok';
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_desasociar_docente_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_desasociar_docente_materia`(
+    pIdDocente INT,
+	pIdMateria SMALLINT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+	DELETE FROM Docentes_Materias
+	WHERE IdDocente = pIdDocente AND IdMateria = pIdMateria;
+	IF err THEN
+		SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+		ROLLBACK;
+	ELSE 
+		SET Mensaje = 'ok';
+		COMMIT;
+	END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_materia`;
+
+
+DELIMITER $$
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_materia`(
+    pNombre VARCHAR(60),
+    pCodigo CHAR(5))
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'')='' THEN
+        SET Mensaje = 'El nombre de la materia no puede estar vacío.';
+	ELSEIF COALESCE(pCodigo,'')='' THEN
+        SET Mensaje = 'El código no puede ser nulo.';
+	ELSE
+        START TRANSACTION;
+        IF EXISTS( SELECT Codigo FROM Materias WHERE Codigo = pCodigo LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe una materia con código ',pCodigo,'.');
+            ROLLBACK;
+        ELSE
+            SET id = (  
+                SELECT COALESCE(MAX(IdMateria),0)+1 
+                FROM    Materias );
+            INSERT INTO Materias 
+                (IdMateria, Nombre, Codigo, Alumnos)
+            VALUES (id, pNombre, pCodigo, 0);
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS `esp_modificar_materia`;
+
+
+DELIMITER $$
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_materia`(
+	pIdMateria SMALLINT,
+    pNombre VARCHAR(60),
+    pCodigo CHAR(5))
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'')='' THEN
+        SET Mensaje = 'El nombre de la materia no puede estar vacío.';
+    ELSEIF COALESCE(pCodigo,'')='' THEN
+        SET Mensaje = 'El código no puede ser nulo.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS( SELECT IdMateria FROM Materias WHERE IdMateria = pIdMateria LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe la materia con ID=',pIdMateria,'.');
+            ROLLBACK;
+        ELSEIF EXISTS( SELECT Codigo FROM Materias WHERE Codigo = pCodigo AND IdMateria != pIdMateria LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe una materia con código ',pCodigo,'.');
+            ROLLBACK;
+        ELSE
+            UPDATE Materias 
+			SET Nombre = pNombre, Codigo = pCodigo
+			WHERE IdMateria = pIdMateria;
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = 'ok';
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_materia`(
+    pIdMateria SMALLINT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT IdMateria FROM Materias_Carreras WHERE IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar la materia ya que esta relacionada con una carrera.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdMateria FROM Devoluciones WHERE IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe al menos una devolucion asociada a la materia.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdMateria FROM Alumnos_Materias WHERE IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe un alumno asociado a la materia.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdMateria FROM Docentes_Materias WHERE IdMateria = pIdMateria LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe un docente asociado a la materia.';
+        ROLLBACK;
+    ELSE
+        DELETE FROM Materias
+        WHERE IdMateria = pIdMateria;
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = 'ok';
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
