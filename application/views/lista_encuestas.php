@@ -54,7 +54,7 @@
                   </a></td>
                   <td><?php echo $fila['FechaInicio']?></td>
                   <td><?php echo $fila['FechaFin']?></td>
-                  <td><?php echo ($fila['FechaFin']=='')?'<a>Cerrar período</a>':''?></td>
+                  <td><a class="Finalizar" href="" value="<?php echo $fila['IdEncuesta'].".".$fila['IdFormulario']?>"><?php echo ($fila['FechaFin']=='')?'Finalizar período':''?></a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -86,9 +86,29 @@
   <div id="modalNueva" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
-      //$link = site_url('encuestas/nueva');  
-      //include 'elements/form-editar-encuesta.php'; 
+      include 'elements/form-editar-encuesta.php'; 
     ?>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
+  
+    <!-- ventana modal para cerrar encuesta -->
+  <div id="modalFinalizar" class="reveal-modal medium">
+    <form action="<?php echo site_url('encuestas/finalizar')?>" method="post">
+      <h3>Finalizar encuesta</h3>
+      <p>¿Desea continuar?</p>
+      <input type="hidden" name="IdEncuesta" value="" />
+      <input type="hidden" name="IdFormulario" value="" />
+      <div class="row">         
+        <div class="ten columns centered">
+          <div class="six mobile-one columns push-one-mobile">
+            <input class="button cancelar" type="button" value="Cancelar"/>
+          </div>
+          <div class="six mobile-one columns pull-one-mobile ">
+            <input class="button" type="submit" name="submit" value="Aceptar" />
+          </div>
+        </div>
+      </div>
+    </form>
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
@@ -96,11 +116,21 @@
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
+  s
   <script>
     $('.cancelar').click(function(){
       $('.cancelar').trigger('reveal:close'); //cerrar ventana
     });
+       
+    $('.Finalizar').click(function(){
+      value = $(this).attr('value');
+      datos = value.split(".");
+      $('#modalFinalizar input[name="IdEncuesta"]').val(datos[0]);
+      $('#modalFinalizar input[name="IdFormulario"]').val(datos[1]);
+      $("#modalFinalizar").reveal();
+      return false;
+    });
+    
   </script>
 </body>
 </html>

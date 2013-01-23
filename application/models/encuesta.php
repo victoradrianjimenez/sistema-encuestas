@@ -57,6 +57,21 @@ class Encuesta extends CI_Model{
     return $data;
   }
   
+  /**
+   * Cerrar o finalizar una encuesta. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @return string
+   */
+  public function finalizar(){
+    $IdEncuesta = $this->db->escape($this->IdEncuesta);
+    $IdFormulario = $this->db->escape($this->IdFormulario);
+    $query = $this->db->query("call esp_finalizar_encuesta($IdEncuesta, $IdFormulario)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
   
   /**
    * Obtiene cuantas claves se generaron y cuantas se usaron de una encuesta para una materia y una carrera.

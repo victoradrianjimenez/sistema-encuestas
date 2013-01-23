@@ -1453,7 +1453,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_encuesta`(
     pIdFormulario INT,
     pAño SMALLINT, 
-    pCuantrimestre TINYINT)
+    pCuatrimestre TINYINT)
 BEGIN
     DECLARE id SMALLINT;
     DECLARE Mensaje VARCHAR(100);
@@ -1474,8 +1474,8 @@ BEGIN
                 FROM    Encuestas
                 WHERE   IdFormulario = pIdFormulario);
             INSERT INTO Encuestas 
-                (IdEncuesta, IdFormulario, Año, Cuantrimestre, FechaInicio, FechaFin)
-            VALUES (id, pIdFormulario, pAño, pCuantrimestre, NOW(), NULL);
+                (IdEncuesta, IdFormulario, Año, Cuatrimestre, FechaInicio, FechaFin)
+            VALUES (id, pIdFormulario, pAño, pCuatrimestre, NOW(), NULL);
             IF err THEN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -1520,4 +1520,66 @@ BEGIN
     SET @b = pPagLongitud;
     EXECUTE stmt USING @c, @d, @e, @f, @a, @b;
     DEALLOCATE PREPARE stmt;
-END
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_formularios`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_formularios`(
+	pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+	SET @qry = '
+    SELECT  IdFormulario, Nombre, Titulo, Descripcion, Creacion, 
+            PreguntasAdicionales
+    FROM    Formularios
+    ORDER BY Nombre
+	LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_finalizar_encuesta`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `sistema_encuestas`.`esp_finalizar_encuesta` (
+	pIdEncuesta INT,
+	pIdFormulario INT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;   
+	START TRANSACTION;
+	IF NOT EXISTS(SELECT IdEncuesta FROM Encuestas WHERE IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario LIMIT 1) THEN
+		SET Mensaje = CONCAT('No se encontró la encuesta con ID dado.');
+		ROLLBACK;
+	ELSE
+		UPDATE	Encuestas
+		SET		FechaFin = NOW()
+		WHERE	IdEncuesta = pIdEncuesta AND 
+				IdFormulario = pIdFormulario;
+		IF err THEN
+			SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET Mensaje = 'ok';
+			COMMIT;
+		END IF;
+	END IF;
+	SELECT Mensaje;
+END $$
+
+DELIMITER ;

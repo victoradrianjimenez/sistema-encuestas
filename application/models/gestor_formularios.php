@@ -26,6 +26,24 @@ class Gestor_formularios extends CI_Model{
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
+  /**
+   * Obtener el listado de formularios. Devuleve un array de objetos.
+   *
+   * @access  public
+   * @param posicion del primer item de la lista a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
+   * @return  array
+   */  
+  public function listar($pagNumero, $pagLongitud){
+    $pagNumero = $this->db->escape($pagNumero);
+    $pagLongitud = $this->db->escape($pagLongitud);
+    $query = $this->db->query("call esp_listar_formularios($pagNumero, $pagLongitud)");
+    $data = $query->result('Formulario');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
 }
 
 ?>

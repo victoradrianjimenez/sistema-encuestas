@@ -118,6 +118,57 @@ class Encuestas extends CI_Controller{
     }
   }
 
+  /*
+   * Agregar nueva encuesta
+   * POST: IdFormulario, Anio, Cuatrimestre
+   */
+  public function nueva(){
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    $this->form_validation->set_rules('IdFormulario','ID Formulario','required|is_natural_no_zero');
+    $this->form_validation->set_rules('Anio','Año','required|is_natural_no_zero|less_than[2100]|greater_than[1900]');
+    $this->form_validation->set_rules('Cuatrimestre','Periodo/Cuatrimestre','required|is_natural_no_zero|less_than[12]');
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
+    if($this->form_validation->run()!=FALSE){
+      $this->load->model('Gestor_encuestas','ge');
+      //agrego encuesta y cargo vista para mostrar resultado
+      $res = $this->ge->alta($this->input->post('IdFormulario',TRUE), $this->input->post('Anio',TRUE), $this->input->post('Cuatrimestre',TRUE));
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
+      $data['link'] = site_url("encuestas/listar"); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $data);
+    }
+    else{
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
+      $this->listar();
+    }
+  }
+
+  /*
+   * Finalizar una Encuesta
+   * POST: IdEncuesta, IdFormulario
+   */
+  public function finalizar(){
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    $this->form_validation->set_rules('IdEncuesta','ID Encuesta','is_natural_no_zero|required');
+    $this->form_validation->set_rules('IdFormulario','ID Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
+    if($this->form_validation->run()!=FALSE){
+      $this->load->model('Encuesta');
+      $this->Encuesta->IdEncuesta = $this->input->post('IdEncuesta', TRUE); 
+      $this->Encuesta->IdFormulario = $this->input->post('IdFormulario', TRUE);
+      //finalizo la encuesta y cargo vista para mostrar resultado
+      $res = $this->Encuesta->finalizar();
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+      $data['link'] = site_url("encuestas/listar"); //link para boton aceptar/continuar
+      $this->load->view('resultado_operacion', $data);
+    }
+    else{
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
+      $this->listar();
+    }
+  }
+
   public function informeMateria(){
     $IdMateria = 5;
     $IdCarrera = 5;
@@ -258,8 +309,7 @@ class Encuestas extends CI_Controller{
             "$clave->Utilizada\t\n";
     }
   }
-  
-  
+
   
 }
 

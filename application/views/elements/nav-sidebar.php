@@ -17,8 +17,7 @@
         <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
         <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
         <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        <li><a href="#"><i>Docentes</i></a></li>
-        <li><a href="#"><i>Autoridades</i></a></i></li>
+        <li><a href="#"><i>Docentes y Autoridades</i></a></li>
       </ul>
     </li>
     <li class="has-flyout">
