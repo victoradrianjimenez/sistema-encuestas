@@ -11,16 +11,57 @@
 -- Target DBMS : MySQL 5.x
 --
 
--- 
--- TABLE: Accesos_Carreras 
---
+DROP TABLE IF EXISTS `groups`;
 
-CREATE TABLE Accesos_Carreras(
-    IdPersona    INT         NOT NULL,
-    IdCarrera    SMALLINT    NOT NULL,
-    PRIMARY KEY (IdPersona, IdCarrera)
-)ENGINE=INNODB
-;
+CREATE TABLE `groups` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `users`;
+
+CREATE TABLE `users` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `ip_address` varbinary(16) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(80) NOT NULL,
+  `salt` varchar(40) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `activation_code` varchar(40) DEFAULT NULL,
+  `forgotten_password_code` varchar(40) DEFAULT NULL,
+  `forgotten_password_time` int(11) unsigned DEFAULT NULL,
+  `remember_code` varchar(40) DEFAULT NULL,
+  `created_on` int(11) unsigned NOT NULL,
+  `last_login` int(11) unsigned DEFAULT NULL,
+  `active` tinyint(1) unsigned DEFAULT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `company` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `users_groups`;
+
+CREATE TABLE `users_groups` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` mediumint(8) unsigned NOT NULL,
+  `group_id` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+DROP TABLE IF EXISTS `login_attempts`;
+
+CREATE TABLE `login_attempts` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `ip_address` varbinary(16) NOT NULL,
+  `login` varchar(100) NOT NULL,
+  `time` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
 
 
 
@@ -59,6 +100,7 @@ CREATE TABLE Alumnos_Materias(
 CREATE TABLE Carreras(
     IdCarrera         SMALLINT       NOT NULL,
     IdDepartamento    SMALLINT       NOT NULL,
+	IdDirectorCarrera	INT       NULL,
     Nombre            VARCHAR(60)    NOT NULL,
     Plan              SMALLINT       NOT NULL,
     PRIMARY KEY (IdCarrera)
@@ -255,6 +297,7 @@ CREATE TABLE Opciones(
 
 CREATE TABLE Personas(
     IdPersona       INT             NOT NULL,
+	IdUsuario		mediumint(8) unsigned NULL,
     Apellido        VARCHAR(40)     NOT NULL,
     Nombre          VARCHAR(40),
     Usuario         VARCHAR(40)     NOT NULL,
@@ -359,20 +402,6 @@ CREATE UNIQUE INDEX AK_Email_Personas ON Personas(Email)
 
 CREATE UNIQUE INDEX AK_Usuario_Personas ON Personas(Usuario)
 ;
--- 
--- TABLE: Accesos_Carreras 
---
-
-ALTER TABLE Accesos_Carreras ADD CONSTRAINT RefPersonas63 
-    FOREIGN KEY (IdPersona)
-    REFERENCES Personas(IdPersona)
-;
-
-ALTER TABLE Accesos_Carreras ADD CONSTRAINT RefCarreras64 
-    FOREIGN KEY (IdCarrera)
-    REFERENCES Carreras(IdCarrera)
-;
-
 
 -- 
 -- TABLE: Alumnos_Materias 

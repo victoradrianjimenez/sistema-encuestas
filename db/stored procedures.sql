@@ -274,7 +274,9 @@ INSERT INTO users_groups VALUES
 ('99', '71', '6'),
 ('100', '72', '6');
 
-
+update personas
+set idusuario = idpersona
+where idpersona >= 0;
 
 DELIMITER ;
 
