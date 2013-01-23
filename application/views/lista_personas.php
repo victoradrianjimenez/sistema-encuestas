@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Lista Usuarios</title>
+  <title>Lista Personas</title>
 </head>
 <body>
   <!-- Header -->
@@ -23,21 +23,14 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          
-          <h4>Usuarios</h4>
-          <?php if(isset($departamento)):?>
-            <h6>
-              <?php echo $departamento['Nombre']?>
-              <a href="<?php echo site_url('personas/listar')?>">(Ver todas)</a>
-            </h6>
-          <?php endif ?>
+          <h4>Personas</h4>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron carreras.</p>
           <?php else:?>
             <table class="twelve">
               <thead>
-                <th>Apellido</th>
                 <th>Nombre</th>
+                <th>Usuario</th>
                 <th>Email</th>
                 <th>Último acceso</th>
                 <th>Estado</th>
@@ -45,15 +38,13 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><?php echo $fila['Apellido']?></td>
-                  <td><?php echo $fila['Nombre']?></td>
+                  <td><?php echo $fila['Apellido'].(($fila['Nombre']!='')?', ':'').$fila['Nombre']?></td>
+                  <td><?php echo $fila['Usuario']?></td>
                   <td><?php echo $fila['Email']?></td>
                   <td><?php echo $fila['UltimoAcceso']?></td>
                   <td><?php echo $fila['Estado']?></td>
                   <td>
-                    <a href="<?php echo site_url("personas/modificar/".$fila['IdPersona'])?>">Editar</a> /
-                    <a href="<?php echo site_url("personas/eliminar/".$fila['IdPersona'])?>">Eliminar</a>
-                    <a href="<?php echo site_url("personas/permisos")?>">Permisos</a>
+                    <a href="<?php echo site_url("personas/ver/".$fila['IdPersona'])?>">Ver</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -64,7 +55,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url("personas/nueva")?>">Nuevo Usuario</a>
+          <a class="button" data-reveal-id="modalNueva">Nuevo Usuario</a>
         </div>          
       </div>
     </div>
@@ -81,9 +72,33 @@
     <?php include 'elements/footer.php'?>
   </div>
   
+  <!-- ventana modal para agregar una persona -->
+  <div id="modalNueva" class="reveal-modal medium">
+    <?php
+      //a donde mandar los datos editados para darse de alta
+      $link = site_url('personas/nueva');  
+      $persona = array('IdPersona'=>0, 'Nombre'=>'', 'Apellido'=>'', 'Email'=>'', 'Usuario'=>'', 'Contraseña'=>'');
+      include 'elements/form-editar-persona.php'; 
+    ?>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
+  
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+  
+  <script>
+    $('.cancelar').click(function(){
+      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+    });
+    
+    $('.eliminar').click(function(){
+      IdMateria = $(this).attr('value');
+      $('#modalEliminar input[name="IdMateria"]').val(IdMateria);
+      $("#modalEliminar").reveal();
+      return false;
+    });
+  </script>
 </body>
 </html>

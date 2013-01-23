@@ -10,7 +10,7 @@ class Personas extends CI_Controller {
 	}
   
   public function index(){
-    $this->listarUsuarios();
+    $this->listar();
   }
   
   function login(){
@@ -56,7 +56,7 @@ class Personas extends CI_Controller {
   }
   
   
-  public function listarUsuarios($pagInicio=0){
+  public function listar($pagInicio=0){
     if (!is_numeric($pagInicio)){
       show_error('El número de página es inválido.');
       return;
@@ -70,7 +70,7 @@ class Personas extends CI_Controller {
     $this->load->model('Gestor_personas','gp');
        
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("personas/listarUsuarios");
+    $config['base_url'] = site_url("personas/listar");
     $config['total_rows'] = $this->gp->cantidad();
     $config['per_page'] = 5;
     $config['uri_segment'] = 3;
@@ -84,6 +84,7 @@ class Personas extends CI_Controller {
         'IdPersona' => $persona->IdPersona,
         'Apellido' => $persona->Apellido,
         'Nombre' => $persona->Nombre,
+        'Usuario' => $persona->Usuario,
         'Email' => $persona->Email,
         'UltimoAcceso' => $persona->UltimoAcceso,
         'Estado' => $persona->Estado
@@ -94,7 +95,7 @@ class Personas extends CI_Controller {
     $data['tabla'] = $tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
-    $this->load->view('lista_usuarios', $data);
+    $this->load->view('lista_personas', $data);
   }
   
   
