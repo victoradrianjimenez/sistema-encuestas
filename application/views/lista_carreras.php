@@ -53,7 +53,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/editar/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
+                  <td><a href="<?php echo site_url("carreras/ver/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
                   <td><?php echo $fila['Plan']?></td>
                   <td><?php echo $fila['Departamento']?></td>
                   <td><a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a></td>

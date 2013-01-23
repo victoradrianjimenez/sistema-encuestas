@@ -17,28 +17,35 @@
         <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
         <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
         <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        <li><a href="#">Docentes</a></li>
-        <li><a href="#">Autoridades</a></li>
+        <li><a href="#"><i>Docentes</i></a></li>
+        <li><a href="#"><i>Autoridades</i></a></i></li>
       </ul>
     </li>
     <li class="has-flyout">
       <a href="#">Encuestas</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
-        <li><a href="#">Formularios</a></li>
-        <li><a href="#">Preguntas</a></li>
-        <li><a href="#">Claves de acceso</a></li>
-        <li><a href="#">Devoluciones</a></li>
+        <li><a href="#"><i>Encuestas realizadas</i></a></li>
+        <li><a href="#"><i>Claves de acceso</i></a></li>
+        <li><a href="#"><i>Devoluciones</i></a></li>
       </ul>
+    </li>
+    <li class="has-flyout">
+      <a href="#">Formularios</a>
+      <a href="#" class="flyout-toggle"><span> </span></a>
+      <ul class="flyout">
+        <li><a href="#"><i>Formularios</i></a></li>
+        <li><a href="#"><i>Preguntas</i></a></li>
+      </ul>      
     </li>
     <li class="has-flyout">
       <a href="#">Resultados</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
-        <li><a href="#">Facultad</a></li>
-        <li><a href="#">Departamentos</a></li>
-        <li><a href="#">Carreras</a></li>
-        <li><a href="#">Materias</a></li>
+        <li><a href="#"><i>Facultad</i></a></li>
+        <li><a href="#"><i>Departamentos</i></a></li>
+        <li><a href="#"><i>Carreras</i></a></li>
+        <li><a href="#"><i>Materias</i></a></li>
       </ul>
     </li>
     <li><a href="#">Enlaces</a></li>

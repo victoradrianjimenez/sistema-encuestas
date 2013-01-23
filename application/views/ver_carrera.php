@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Editar materia</title>
+  <title>Ver materia</title>
   <style>
     .button-group li a { margin-right: 5px; }
   </style>

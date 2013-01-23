@@ -114,7 +114,7 @@ class Personas extends CI_Controller {
         'Contraseña' => ''
       );
       $data['link'] = site_url("personas/nueva"); //hacia donde mandar los datos      
-      $this->load->view('editar_persona',$data); 
+      $this->load->view('ver_persona',$data); 
     }
     else{
       //verifico si los datos son correctos
@@ -137,7 +137,7 @@ class Personas extends CI_Controller {
           'Contraseña' => ''
         );
         $data['link'] = site_url("personas/nueva"); //hacia donde mandar los datos
-        $this->load->view('editar_persona',$data);
+        $this->load->view('ver_persona',$data);
       }
       else{
         //agrego departamento y cargo vista para mostrar resultado

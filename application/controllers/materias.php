@@ -79,9 +79,9 @@ class Materias extends CI_Controller{
   
   
   /*
-   * Editar todo lo relacionado a una materia
+   * Ver todo lo relacionado a una materia
    */
-  public function editar($idMateria=0, $pagInicio=0){
+  public function ver($idMateria=0, $pagInicio=0){
     if (!is_numeric($idMateria) || $idMateria<1){
       show_error('El Identificador de Materia no es válido.');
       return;
@@ -111,7 +111,7 @@ class Materias extends CI_Controller{
       $cantidadDocentes = $materia->cantidadDocentes();
       $datosDocentes = $materia->listarDocentes($pagInicio, 5);
       //genero la lista de links de paginación
-      $config['base_url'] = site_url("materias/editar/$idMateria");
+      $config['base_url'] = site_url("materias/ver/$idMateria");
       $config['total_rows'] = $cantidadDocentes;
       $config['per_page'] = 5;
       $config['uri_segment'] = 4;
@@ -120,7 +120,7 @@ class Materias extends CI_Controller{
       $data['tabla'] = $datosDocentes; //array de datos de los Departamentos
       $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
-      $this->load->view('editar_materia', $data);
+      $this->load->view('ver_materia', $data);
     }
     else{
       show_error('El Identificador de Materia no es válido.');
@@ -194,12 +194,12 @@ class Materias extends CI_Controller{
       $res = $this->gm->modificar($IdMateria, $this->input->post('Nombre',TRUE), $this->input->post('Codigo',TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("materias/editar/$IdMateria"); //hacia donde redirigirse
+      $data['link'] = site_url("materias/ver/$IdMateria"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdMateria);
+      $this->ver($IdMateria);
     }
   }
 
@@ -228,12 +228,12 @@ class Materias extends CI_Controller{
                                 $this->input->post('Cargo', TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("materias/editar/$IdMateria"); //hacia donde redirigirse
+      $data['link'] = site_url("materias/ver/$IdMateria"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);      
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdMateria);
+      $this->ver($IdMateria);
     }
   }
 
@@ -254,12 +254,12 @@ class Materias extends CI_Controller{
       $res = $this->Materia->desasociarDocente($this->input->post('IdDocente', TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("materias/editar/$IdMateria"); //hacia donde redirigirse
+      $data['link'] = site_url("materias/ver/$IdMateria"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);      
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdMateria);
+      $this->ver($IdMateria);
     }
   }
   

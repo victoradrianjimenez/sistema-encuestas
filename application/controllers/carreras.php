@@ -89,9 +89,9 @@ class Carreras extends CI_Controller{
 
   
   /*
-   * Editar todo lo relacionado a una carrera
+   * Ver todo lo relacionado a una carrera
    */
-  public function editar($idCarrera=0, $pagInicio=0){
+  public function ver($idCarrera=0, $pagInicio=0){
     if (!is_numeric($idCarrera) || $idCarrera<1){
       show_error('El Identificador de Carrera no es válido.');
       return;
@@ -120,7 +120,7 @@ class Carreras extends CI_Controller{
         'Plan' => $carrera->Plan
       );
       //genero la lista de links de paginación
-      $config['base_url'] = site_url("carreras/editar/$idCarrera");
+      $config['base_url'] = site_url("carreras/ver/$idCarrera");
       $config['total_rows'] = $cantidadMaterias;
       $config['per_page'] = 5;
       $config['uri_segment'] = 4;
@@ -139,7 +139,7 @@ class Carreras extends CI_Controller{
       $data['tabla'] = $tabla; //array de datos de los Departamentos
       $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
-      $this->load->view('editar_carrera', $data);
+      $this->load->view('ver_carrera', $data);
     }
     else{
       show_error('El Identificador de Carrera no es válido.');
@@ -189,12 +189,12 @@ class Carreras extends CI_Controller{
       $res = $this->gc->modificar($IdCarrera, $this->input->post('IdDepartamento',TRUE), $this->input->post('Nombre',TRUE),$this->input->post('Plan',TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("carreras/editar/$IdCarrera"); //hacia donde redirigirse
+      $data['link'] = site_url("carreras/ver/$IdCarrera"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdCarrera);
+      $this->ver($IdCarrera);
     }
   }
 
@@ -239,12 +239,12 @@ class Carreras extends CI_Controller{
       $res = $this->Carrera->asociarMateria($this->input->post('IdMateria', TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("carreras/editar/$IdCarrera"); //hacia donde redirigirse
+      $data['link'] = site_url("carreras/ver/$IdCarrera"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);      
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdCarrera);
+      $this->ver($IdCarrera);
     }
   }
 
@@ -265,12 +265,12 @@ class Carreras extends CI_Controller{
       $res = $this->Carrera->desasociarMateria($this->input->post('IdMateria', TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("carreras/editar/$IdCarrera"); //hacia donde redirigirse
+      $data['link'] = site_url("carreras/ver/$IdCarrera"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);      
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdCarrera);
+      $this->ver($IdCarrera);
     }
   }
 

@@ -32,7 +32,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("departamentos/editar/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
+                  <td><a href="<?php echo site_url("departamentos/ver/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
                   <td><a class="eliminar" href="" value="<?php echo $fila['IdDepartamento']?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>

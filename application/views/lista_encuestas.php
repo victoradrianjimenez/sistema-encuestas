@@ -7,9 +7,19 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Editar carrera</title>
+  <title>Lista Materias</title>
   <style>
-    .button-group li a { margin-right: 5px; }
+    .buscador{
+      position: relative;
+    }
+    .buscador i{
+      position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
+    }
+    
+    .button-group li a{
+      margin-right: 5px;
+    }
+    
   </style>
 </head>
 <body>
@@ -26,16 +36,36 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $departamento['Nombre']?></h3>
-
+          <h3>Encuestas</h3>
+          <?php if(count($tabla)== 0):?>
+            <p>No se encontraron encuestas.</p>
+          <?php else:?>
+            <table class="twelve">
+              <thead>
+                <th>Año / Periodo</th>
+                <th>Fecha inicio</th>
+                <th>Fecha cierre</th>
+                <th>Acciones</th>
+              </thead>
+              <?php foreach($tabla as $fila): ?>  
+                <tr>
+                  <td><a href="<?php echo site_url("encuesta/ver/".$fila['IdEncuesta'].'/'.$fila['IdFormulario'])?>">
+                    <?php echo $fila['Año'].' / '.$fila['Cuatrimestre']?>
+                  </a></td>
+                  <td><?php echo $fila['FechaInicio']?></td>
+                  <td><?php echo $fila['FechaFin']?></td>
+                  <td><?php echo ($fila['FechaFin']=='')?'<a>Cerrar período</a>':''?></td>
+                </tr>
+              <?php endforeach ?>
+            </table>
+          <?php endif ?>
+          <?php echo $paginacion ?>
         </div>
       </div>
       <div class="row">
-        <div class="twelve columns">
-          <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalModificar">Modificar departamento</a></li>
-          </ul>
-        </div>
+        <div class="three mobile-one columns">
+          <a class="button" data-reveal-id="modalNueva">Nueva Encuesta</a>
+        </div>       
       </div>
     </div>
 
@@ -51,16 +81,17 @@
     <?php include 'elements/footer.php'?>
   </div>
   
-  <!-- ventana modal para editar datos de la carrera -->
-  <div id="modalModificar" class="reveal-modal medium">
+  
+  <!-- ventana modal para agregar una materia -->
+  <div id="modalNueva" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
-      $link = site_url('departamentos/modificar');  
-      include 'elements/form-editar-departamento.php'; 
+      //$link = site_url('encuestas/nueva');  
+      //include 'elements/form-editar-encuesta.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
-    
+  
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->

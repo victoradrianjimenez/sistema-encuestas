@@ -49,7 +49,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("materias/editar/".$fila['IdMateria'])?>"><?php echo $fila['Nombre']?></a></td>
+                  <td><a href="<?php echo site_url("materias/ver/".$fila['IdMateria'])?>"><?php echo $fila['Nombre']?></a></td>
                   <td><?php echo $fila['Codigo']?></td>
                   <td><?php echo $fila['Alumnos']?></td>
                   <td><a class="eliminar" href="" value="<?php echo $fila['IdMateria']?>">Eliminar</a></td>

@@ -14,6 +14,50 @@ class Encuestas extends CI_Controller{
     $this->load->view('index.php', $data);
   }
   
+ 
+  public function listar($pagInicio=0){
+    if (!is_numeric($pagInicio)){
+      show_error('El número de página es inválido.');
+      return;
+    }
+    
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    
+    //cargo modelos, librerias, etc.
+    $this->load->library('pagination');
+    $this->load->model('Encuesta');
+    $this->load->model('Gestor_encuestas','ge');
+    
+    $cantidadEncuestas = $this->ge->cantidad();
+    $encuestas = $this->ge->listar($pagInicio, 5);
+
+    //genero la lista de links de paginación
+    $config['base_url'] = site_url("encuestas/listar");
+    $config['total_rows'] = $cantidadEncuestas;
+    $config['per_page'] = 5;
+    $config['uri_segment'] = 3;
+    $this->pagination->initialize($config);
+    
+    //obtengo lista de encuestas
+    $tabla = array();
+    foreach ($encuestas as $i => $encuesta) {
+      $tabla[$i]=array(
+        'IdEncuesta' => $encuesta->IdEncuesta,
+        'IdFormulario' => $encuesta->IdFormulario,
+        'Año' => $encuesta->Año,
+        'Cuatrimestre' => $encuesta->Cuatrimestre,
+        'FechaInicio' => $encuesta->FechaInicio,
+        'FechaFin' => $encuesta->FechaFin
+       );
+    }
+
+    //envio datos a la vista
+    $data['tabla'] = $tabla; //array de datos de los Departamentos
+    $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+    $this->load->view('lista_encuestas', $data);
+  }
+  
   
   public function informeMateria(){
     $IdMateria = 5;

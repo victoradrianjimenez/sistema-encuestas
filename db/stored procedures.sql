@@ -1273,3 +1273,218 @@ END $$
 
 DELIMITER ;
 
+
+DROP PROCEDURE IF EXISTS `esp_modificar_persona`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_persona`(
+	pIdPersona INT,
+    pApellido VARCHAR(40),
+    pNombre VARCHAR(40),
+    pUsuario VARCHAR(40),
+    pEmail VARCHAR(200),
+    pContraseñaAnterior CHAR(64),
+	pContraseña CHAR(64))
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pApellido,'') = '' THEN
+        SET Mensaje = 'El apellido no puede ser vacío.';
+    ELSEIF COALESCE(pUsuario,'') = '' THEN
+        SET Mensaje = 'El nombre de usuario no puede ser vacío.';
+    ELSEIF COALESCE(pEmail,'') = '' THEN
+        SET Mensaje = 'La dirección de email no puede ser vacía.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS(SELECT IdPersona FROM Personas WHERE IdPersona = pIdPersona LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe registro de la  persona con ID=',pIdPersona,'.');
+            ROLLBACK;
+        ELSEIF pContraseñaAnterior != (SELECT Contraseña FROM Personas WHERE IdPersona = pIdPersona LIMIT 1) THEN
+            SET Mensaje = CONCAT('La contraseña ingresada en incorrecta.');
+            ROLLBACK;
+        ELSEIF EXISTS(SELECT Usuario FROM Personas WHERE Usuario = pUsuario AND IdPersona != pIdPersona LIMIT 1) THEN
+            SET Mensaje = CONCAT('Ya existe una persona con nombre de usuario ',pUsuario,'.');
+            ROLLBACK;
+        ELSEIF EXISTS(SELECT Email FROM Personas WHERE Email = pEmail AND IdPersona != pIdPersona LIMIT 1) THEN
+            SET Mensaje = 'Ya existe un usuario con el email ingresado.';
+            ROLLBACK;
+        ELSE
+            UPDATE Personas
+			SET Apellido = pApellido, Nombre = pNombre, Usuario = pUsuario,
+				Email = pEmail, Contraseña = pContraseña
+			WHERE IdPersona = pIdPersona;
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = 'ok';
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_estado_persona`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_estado_persona`(
+	pIdPersona INT,
+	pEstado CHAR(1))
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF NOT pEstado IN ('A','I') THEN
+        SET Mensaje = 'El estado es inválido.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS(SELECT IdPersona FROM Personas WHERE IdPersona = pIdPersona LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe registro de la  persona con ID=',pIdPersona,'.');
+            ROLLBACK;
+        ELSE
+            UPDATE Personas
+			SET Estado = pEstado
+			WHERE IdPersona = pIdPersona;
+			IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = 'ok';
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_asignar_cantidad_alumnos`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_asignar_cantidad_alumnos`(
+    pIdMateria SMALLINT,
+	pAlumnos SMALLINT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+	START TRANSACTION;
+	IF NOT EXISTS(SELECT IdMateria FROM Materias WHERE IdMateria = pIdMateria LIMIT 1) THEN
+		SET Mensaje = CONCAT('No existe registro de la  materia con ID=',pIdMateria,'.');
+		ROLLBACK;
+	ELSE
+		UPDATE Materias
+		SET Alumnos = pAlumnos
+		WHERE IdMateria = pIdMateria;
+		IF err THEN
+			SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET Mensaje = id;
+			COMMIT;
+		END IF;
+	END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_encuestas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_encuestas`(
+	pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  IdEncuesta, IdFormulario, Año, Cuatrimestre, FechaInicio, FechaFin
+    FROM    Encuestas
+    ORDER BY Año DESC, Cuatrimestre DESC, FechaInicio DESC, FechaFin DESC
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_encuestas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_encuestas`()
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Encuestas;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_encuesta`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_encuesta`(
+    pIdFormulario INT,
+    pAño SMALLINT, 
+    pCuantrimestre TINYINT)
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF pAño < 1900 OR pAño > 2100 THEN
+        SET Mensaje = 'El año ingresado es incorrecto.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS(  SELECT IdFormulario FROM Formularios    
+                        WHERE IdFormulario = pIdFormulario LIMIT 1) THEN
+            SET Mensaje = CONCAT('No se encontró el formulario con ID=',pIdFormulario,'.');
+            ROLLBACK;
+        ELSE
+            SET id = (  
+                SELECT COALESCE(MAX(IdEncuesta),0)+1 
+                FROM    Encuestas
+                WHERE   IdFormulario = pIdFormulario);
+            INSERT INTO Encuestas 
+                (IdEncuesta, IdFormulario, Año, Cuantrimestre, FechaInicio, FechaFin)
+            VALUES (id, pIdFormulario, pAño, pCuantrimestre, NOW(), NULL);
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+

@@ -52,9 +52,9 @@ class Departamentos extends CI_Controller{
 
 
   /*
-   * Editar todo lo relacionado a un departamento
+   * Ver todo lo relacionado a un departamento
    */
-  public function editar($idDepartamento=0, $pagInicio=0){
+  public function ver($idDepartamento=0, $pagInicio=0){
     if (!is_numeric($idDepartamento) || $idDepartamento<1){
       show_error('El Identificador de Departamento no es válido.');
       return;
@@ -78,7 +78,7 @@ class Departamentos extends CI_Controller{
       );
       //envio datos a la vista
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
-      $this->load->view('editar_departamento', $data);
+      $this->load->view('ver_departamento', $data);
     }
     else{
       show_error('El Identificador de Departamento no es válido.');
@@ -124,12 +124,12 @@ class Departamentos extends CI_Controller{
       $res = $this->gd->modificar($IdDepartamento, $this->input->post('Nombre',TRUE));
       $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("departamentos/editar/$IdDepartamento"); //hacia donde redirigirse
+      $data['link'] = site_url("departamentos/ver/$IdDepartamento"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->editar($IdDepartamento);
+      $this->ver($IdDepartamento);
     }
   }
 
