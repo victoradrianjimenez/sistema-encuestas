@@ -32,6 +32,30 @@ class Encuesta extends CI_Model{
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
+
+  /**
+   * Obtener el listado de claves de acceso de la encuesta para una materia y carrera dada. Devuleve un array de objetos.
+   *
+   * @access  public
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @param posicion del primer item de la lista a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
+   * @return  array
+   */  
+  public function listarClavesMateria($IdMateria, $IdCarrera, $pagNumero, $pagLongitud){
+    $IdEncuesta = $this->db->escape($this->IdEncuesta);
+    $IdFormulario = $this->db->escape($this->IdFormulario);
+    $IdMateria = $this->db->escape($IdMateria);
+    $IdCarrera = $this->db->escape($IdCarrera);
+    $pagNumero = $this->db->escape($pagNumero);
+    $pagLongitud = $this->db->escape($pagLongitud);
+    $query = $this->db->query("call esp_listar_claves_encuesta_materia($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario, $pagNumero, $pagLongitud)");
+    $data = $query->result('Clave');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
   
   
   /**

@@ -49,7 +49,7 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("encuesta/ver/".$fila['IdEncuesta'].'/'.$fila['IdFormulario'])?>">
+                  <td><a href="<?php echo site_url("encuestas/ver/".$fila['IdEncuesta'].'/'.$fila['IdFormulario'])?>">
                     <?php echo $fila['Año'].' / '.$fila['Cuatrimestre']?>
                   </a></td>
                   <td><?php echo $fila['FechaInicio']?></td>

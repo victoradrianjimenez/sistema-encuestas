@@ -1488,3 +1488,36 @@ BEGIN
     SELECT Mensaje;
 END $$
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_claves_encuesta_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_claves_encuesta_materia`(
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+    SET @qry = '
+    SELECT  IdClave, IdMateria, IdCarrera, IdEncuesta, IdFormulario, 
+			Clave, Tipo, Generada, Utilizada
+    FROM    Claves
+	WHERE	IdMateria = ? AND IdCarrera = ? AND IdEncuesta = ? AND IdFormulario = ?
+    ORDER BY Generada DESC, Utilizada DESC
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pIdMateria;
+	SET @d = pIdCarrera;
+	SET @e = pIdEncuesta;
+	SET @f = pIdFormulario;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @d, @e, @f, @a, @b;
+    DEALLOCATE PREPARE stmt;
+END

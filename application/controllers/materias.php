@@ -277,7 +277,7 @@ class Materias extends CI_Controller{
             "$materia->Codigo\t\n";
     }
   }
-
+  
 }
 
 ?>

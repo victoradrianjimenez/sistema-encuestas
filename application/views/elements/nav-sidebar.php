@@ -25,7 +25,7 @@
       <a href="#">Encuestas</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
-        <li><a href="#"><i>Encuestas realizadas</i></a></li>
+        <li><a href="<?php echo site_url("encuestas")?>">Encuestas realizadas</a></li>
         <li><a href="#"><i>Claves de acceso</i></a></li>
         <li><a href="#"><i>Devoluciones</i></a></li>
       </ul>

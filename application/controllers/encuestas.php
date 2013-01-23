@@ -10,8 +10,7 @@ class Encuestas extends CI_Controller{
   }
   
   public function index(){
-    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
-    $this->load->view('index.php', $data);
+    $this->listar();
   }
   
  
@@ -58,7 +57,67 @@ class Encuestas extends CI_Controller{
     $this->load->view('lista_encuestas', $data);
   }
   
-  
+
+  /*
+   * Ver todo lo relacionado a una encuesta
+   */
+  public function ver($idEncuesta=0, $idFormulario=0, $pagInicio=0){
+    if (!is_numeric($idEncuesta) || $idEncuesta<1 || !is_numeric($idFormulario) || $idFormulario<1){
+      show_error('El Identificador de Encuesta no es válido.');
+      return;
+    }
+    elseif (!is_numeric($pagInicio)){
+      show_error('El número de página es inválido.');
+      return;
+    }
+    
+    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    
+    //cargo modelos, librerias, etc.
+    $this->load->library('pagination');
+    $this->load->model('Clave');
+    $this->load->model('Encuesta');
+    $this->load->model('Gestor_encuestas','ge');
+    $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+    if ($encuesta != FALSE){
+      $cantidadClaves = 0; //$encuesta->cantidadClaves();
+      $claves = array();//$encuesta->listarClaves($pagInicio, 5);
+      $data['encuesta'] = array(
+        'IdEncuesta' => $encuesta->IdEncuesta,
+        'IdFormulario' => $encuesta->IdFormulario,
+        'Año' => $encuesta->Año,
+        'Cuatrimestre' => $encuesta->Cuatrimestre,
+        'FechaInicio' => $encuesta->FechaInicio,
+        'FechaFin' => $encuesta->FechaFin
+      );
+      //genero la lista de links de paginación
+      $config['base_url'] = site_url("encuestas/ver/$idEncuesta/$idFormulario");
+      $config['total_rows'] = $cantidadClaves;
+      $config['per_page'] = 5;
+      $config['uri_segment'] = 5;
+      $this->pagination->initialize($config);
+      //obtengo lista de claves
+      $tabla = array();
+      foreach ($claves as $i => $clave) {
+        $tabla[$i]=array(
+          'IdClave' => $clave->IdClave,
+          'Clave' => $clave->Clave,
+          'Tipo' => $clave->Tipo,
+          'Generada' => $clave->Generada,
+          'Utilizada' => $clave->Utilizada
+         );
+      }
+      //envio datos a la vista
+      $data['tabla'] = $tabla; //array de datos de los Departamentos
+      $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+      $this->load->view('ver_encuesta', $data);
+    }
+    else{
+      show_error('El Identificador de Encuesta no es válido.');
+    }
+  }
+
   public function informeMateria(){
     $IdMateria = 5;
     $IdCarrera = 5;
@@ -177,6 +236,30 @@ class Encuestas extends CI_Controller{
     $this->pchart->drawStackedBarGraph($this->pdata->GetData(),$this->pdata->GetDataDescription(),100);
     $this->pchart->Stroke();
   }
+  
+  
+  //funcion para responder solicitudes AJAX
+  public function listarClavesAJAX(){
+    $IdMateria = $this->input->post('IdMateria');
+    $IdCarrera = $this->input->post('IdCarrera');
+    $IdEncuesta = $this->input->post('IdEncuesta');
+    $IdFormulario = $this->input->post('IdFormulario');
+    //VERIFICAR
+    $this->load->model('Clave');
+    $this->load->model('Encuesta');
+    $this->Encuesta->IdEncuesta = $IdEncuesta;
+    $this->Encuesta->IdFormulario = $IdFormulario;
+    $claves = $this->Encuesta->listarClavesMateria($IdMateria, $IdCarrera, 0,1000);
+    foreach ($claves as $clave) {
+      echo  "$clave->IdClave\t".
+            "$clave->Clave\t".
+            "$clave->Tipo\t".
+            "$clave->Generada\t".
+            "$clave->Utilizada\t\n";
+    }
+  }
+  
+  
   
 }
 
