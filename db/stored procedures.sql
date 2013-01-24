@@ -1,4 +1,9 @@
 
+UPDATE Respuestas
+SET Opcion = NULL
+WHERE Opcion = 0 AND IdRespuesta >= 0;
+
+
 UPDATE Items_Carreras 
 SET 
     Tamaño = 2
@@ -1814,3 +1819,422 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_global`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global`(
+	pIdClave INT,
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	OUT Indice FLOAT)
+BEGIN
+	-- calculo el indice con las sumas realizadas
+	SET Indice = (
+	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
+	FROM(
+		-- realizo las sumatorias necesarias
+		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T, COUNT(Respuesta) AS C
+		FROM(
+			-- obtener datos de respuestas y preguntas(importancias, cantidad de opciones, etc)
+			SELECT	IF(P.OrdenInverso='S', IF(P.Tipo='N',(LimiteSuperior-LimiteInferior)/Paso+1,COUNT(IdOpcion)) - Opcion + 1, Opcion) AS Respuesta, 
+					IF(P.Tipo='N',(LimiteSuperior-LimiteInferior)/Paso+1,COUNT(IdOpcion)) AS Alternativa, 
+					COALESCE(IC.Importancia,1) AS Importancia
+			FROM	Respuestas R
+					INNER JOIN Preguntas P ON
+						P.IdPregunta = R.IdPregunta
+					INNER JOIN Items I ON
+						I.IdPregunta = P.IdPregunta
+					LEFT JOIN Items_Carreras IC ON
+						IC.IdCarrera = R.IdCarrera AND IC.IdSeccion = I.IdSeccion AND
+						IC.IdFormulario = I.IdFormulario AND IC.IdPregunta = I.IdPregunta
+					LEFT JOIN Opciones O ON
+						O.IdPregunta = P.IdPregunta
+			WHERE	R.IdClave = pIdClave AND R.IdMateria = pIdMateria AND 
+					R.IdCarrera = pIdCarrera AND R.IdEncuesta = pIdEncuesta AND 
+					R.IdFormulario = pIdFormulario AND R.Opcion IS NOT NULL
+			GROUP BY O.IdPregunta
+		)Datos
+	)Sumas
+	);
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_seccion`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion`(
+	pIdClave INT,
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT,
+	OUT Indice FLOAT)
+BEGIN
+	-- calculo el indice con las sumas realizadas
+	SET Indice = (
+	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
+	FROM(
+		-- realizo las sumatorias necesarias
+		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T, COUNT(Respuesta) AS C
+		FROM(
+			-- obtener datos de respuestas y preguntas(importancias, cantidad de opciones, etc)
+			SELECT	IF(P.OrdenInverso='S', IF(P.Tipo='N',(LimiteSuperior-LimiteInferior)/Paso+1,COUNT(IdOpcion)) - Opcion + 1, Opcion) AS Respuesta, 
+					IF(P.Tipo='N',(LimiteSuperior-LimiteInferior)/Paso+1,COUNT(IdOpcion)) AS Alternativa, 
+					COALESCE(IC.Importancia,1) AS Importancia
+			FROM	Respuestas R
+					INNER JOIN Preguntas P ON
+						P.IdPregunta = R.IdPregunta
+					INNER JOIN Items I ON
+						I.IdPregunta = P.IdPregunta
+					LEFT JOIN Items_Carreras IC ON
+						IC.IdCarrera = R.IdCarrera AND IC.IdSeccion = I.IdSeccion AND
+						IC.IdFormulario = I.IdFormulario AND IC.IdPregunta = I.IdPregunta
+					LEFT JOIN Opciones O ON
+						O.IdPregunta = P.IdPregunta
+			WHERE	R.IdClave = pIdClave AND R.IdMateria = pIdMateria AND 
+					R.IdCarrera = pIdCarrera AND R.IdEncuesta = pIdEncuesta AND 
+					R.IdFormulario = pIdFormulario AND IC.IdSeccion = pIdSeccion AND 
+					R.Opcion IS NOT NULL
+			GROUP BY O.IdPregunta
+		)Datos
+	)Sumas
+	);
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_docente`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente`(
+	pIdClave INT,
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT,
+	pIdDocente INT,
+	OUT Indice FLOAT)
+BEGIN
+	-- calculo el indice con las sumas realizadas
+	SET Indice = (
+	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
+	FROM(
+		-- realizo las sumatorias necesarias
+		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T, COUNT(Respuesta) AS C
+		FROM(
+			-- obtener datos de respuestas y preguntas(importancias, cantidad de opciones, etc)
+			SELECT	IF(P.OrdenInverso='S', IF(P.Tipo='N',(LimiteSuperior-LimiteInferior)/Paso+1,COUNT(IdOpcion)) - Opcion + 1, Opcion) AS Respuesta, 
+					IF(P.Tipo='N',(LimiteSuperior-LimiteInferior)/Paso+1,COUNT(IdOpcion)) AS Alternativa, 
+					COALESCE(IC.Importancia,1) AS Importancia
+			FROM	Respuestas R
+					INNER JOIN Preguntas P ON
+						P.IdPregunta = R.IdPregunta
+					INNER JOIN Items I ON
+						I.IdPregunta = P.IdPregunta
+					LEFT JOIN Items_Carreras IC ON
+						IC.IdCarrera = R.IdCarrera AND IC.IdSeccion = I.IdSeccion AND
+						IC.IdFormulario = I.IdFormulario AND IC.IdPregunta = I.IdPregunta
+					LEFT JOIN Opciones O ON
+						O.IdPregunta = P.IdPregunta
+			WHERE	R.IdClave = pIdClave AND R.IdMateria = pIdMateria AND 
+					R.IdCarrera = pIdCarrera AND R.IdEncuesta = pIdEncuesta AND 
+					R.IdFormulario = pIdFormulario AND IC.IdSeccion = pIdSeccion AND 
+					R.Opcion IS NOT NULL AND R.IdDocente = pIdDocente
+			GROUP BY O.IdPregunta
+		)Datos
+	)Sumas
+	);
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_docente_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente_clave`(
+	pIdClave INT,
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT,
+	pIdDocente INT)
+BEGIN
+	DECLARE Indice FLOAT;
+	CALL esp_indice_docente(pIdClave, pIdMateria, pIdCarrera, 
+							pIdEncuesta, pIdFormulario, pIdSeccion,
+							pIdDocente, Indice);
+	SELECT ROUND(Indice,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_docente_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente_materia`(
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT,
+	pIdDocente INT)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pIdClave INT;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT IdClave 
+		FROM Claves
+		WHERE	IdMateria = pIdMateria AND IdCarrera = pIdCarrera AND
+				IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pIdClave;
+		IF NOT done THEN
+			CALL esp_indice_docente(pIdClave, pIdMateria, pIdCarrera, 
+									pIdEncuesta, pIdFormulario, pIdSeccion, 
+									pIdDocente, indice);
+			SET s = s + indice;
+			SET n = n + 1;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT ROUND(s/n,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_global_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_carrera`(
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pIdClave INT;
+	DECLARE pIdMateria INT;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT	IdClave, IdMateria
+		FROM	Claves
+		WHERE	IdCarrera = pIdCarrera AND
+				IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de cada materia tomar el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pIdClave, pIdMateria;
+		IF NOT done THEN
+			CALL esp_indice_global(pIdClave, pIdMateria, pIdCarrera, pIdEncuesta, pIdFormulario, indice);
+			SET s = s + indice;
+			SET n = n + 1;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT ROUND(s/n,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_global_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_materia`(
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pIdClave INT;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT IdClave 
+		FROM Claves
+		WHERE	IdMateria = pIdMateria AND IdCarrera = pIdCarrera AND
+				IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pIdClave;
+		IF NOT done THEN
+			CALL esp_indice_global(pIdClave, pIdMateria, pIdCarrera, pIdEncuesta, pIdFormulario, indice);
+			SET s = s + indice;
+			SET n = n + 1;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT ROUND(s/n,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_global_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_clave`(
+	pIdClave INT,
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT)
+BEGIN
+	DECLARE Indice FLOAT;
+	CALL esp_indice_global(	pIdClave, pIdMateria, pIdCarrera, 
+							pIdEncuesta, pIdFormulario, Indice);
+	SELECT ROUND(Indice,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_seccion_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_carrera`(
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pIdClave INT;
+	DECLARE pIdMateria SMALLINT;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT IdClave, IdMateria
+		FROM Claves
+		WHERE	IdCarrera = pIdCarrera AND
+				IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pIdClave, pIdMateria;
+		IF NOT done THEN
+			CALL esp_indice_seccion(pIdClave, pIdMateria, pIdCarrera, 
+									pIdEncuesta, pIdFormulario, pIdSeccion, 
+									indice);
+			SET s = s + indice;
+			SET n = n + 1;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT ROUND(s/n,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_seccion_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_clave`(
+	pIdClave INT,
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT)
+BEGIN
+	DECLARE Indice FLOAT;
+	CALL esp_indice_seccion(pIdClave, pIdMateria, pIdCarrera, 
+							pIdEncuesta, pIdFormulario, pIdSeccion,
+							Indice);
+	SELECT ROUND(Indice,2) AS Indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_seccion_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_materia`(
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT,
+	pIdSeccion INT)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pIdClave INT;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT IdClave 
+		FROM Claves
+		WHERE	IdMateria = pIdMateria AND IdCarrera = pIdCarrera AND
+				IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pIdClave;
+		IF NOT done THEN
+			CALL esp_indice_seccion(pIdClave, pIdMateria, pIdCarrera, 
+									pIdEncuesta, pIdFormulario, pIdSeccion, 
+									indice);
+			SET s = s + indice;
+			SET n = n + 1;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT ROUND(s/n,2) AS Indice;
+END
