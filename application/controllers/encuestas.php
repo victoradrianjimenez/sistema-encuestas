@@ -53,7 +53,7 @@ class Encuestas extends CI_Controller{
     //envio datos a la vista
     $data['tabla'] = $tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
     $this->load->view('lista_encuestas', $data);
   }
   
@@ -110,7 +110,7 @@ class Encuestas extends CI_Controller{
       //envio datos a la vista
       $data['tabla'] = $tabla; //array de datos de los Departamentos
       $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
       $this->load->view('ver_encuesta', $data);
     }
     else{
@@ -132,7 +132,7 @@ class Encuestas extends CI_Controller{
       $this->load->model('Gestor_encuestas','ge');
       //agrego encuesta y cargo vista para mostrar resultado
       $res = $this->ge->alta($this->input->post('IdFormulario',TRUE), $this->input->post('Anio',TRUE), $this->input->post('Cuatrimestre',TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
       $data['link'] = site_url("encuestas/listar"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
@@ -158,7 +158,7 @@ class Encuestas extends CI_Controller{
       $this->Encuesta->IdFormulario = $this->input->post('IdFormulario', TRUE);
       //finalizo la encuesta y cargo vista para mostrar resultado
       $res = $this->Encuesta->finalizar();
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("encuestas/listar"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $data);

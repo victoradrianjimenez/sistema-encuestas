@@ -1,4 +1,4 @@
-<?php if(!(isset($usuarioLogin) && is_a($usuarioLogin, 'Persona'))): ?>
+<?php if(!(isset($usuarioLogin) && is_object($usuarioLogin))): ?>
   <form id="login" action="<?php echo site_url("personas/login")?>" method="post"> 
     <fieldset>
       <legend>Iniciar sesión</legend>
@@ -30,7 +30,7 @@
 <?php else: ?>
   <div id="datosUsuario">
     <form id="logout" action="<?php echo site_url("personas/logout")?>" method="post"> 
-      <h6><?php echo $usuarioLogin->Nombre.' '.$usuarioLogin->Apellido?></h6>
+      <h6><?php echo $usuarioLogin->username?></h6>
       <input type="submit" name="submit" value="Cerrar sesión" class="small button" />
     </form>      
   </div>

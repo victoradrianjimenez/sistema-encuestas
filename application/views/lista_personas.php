@@ -29,20 +29,14 @@
           <?php else:?>
             <table class="twelve">
               <thead>
+                <th>Apellido</th>
                 <th>Nombre</th>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Último acceso</th>
-                <th>Estado</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><?php echo $fila['Apellido'].(($fila['Nombre']!='')?', ':'').$fila['Nombre']?></td>
-                  <td><?php echo $fila['Usuario']?></td>
-                  <td><?php echo $fila['Email']?></td>
-                  <td><?php echo $fila['UltimoAcceso']?></td>
-                  <td><?php echo $fila['Estado']?></td>
+                  <td><?php echo $fila['Apellido']?></td>
+                  <td><?php echo $fila['Nombre']?></td>
                   <td>
                     <a href="<?php echo site_url("personas/ver/".$fila['IdPersona'])?>">Ver</a>
                   </td>
@@ -55,7 +49,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" data-reveal-id="modalNueva">Nuevo Usuario</a>
+          <a class="button" data-reveal-id="modalNueva">Nueva Persona</a>
         </div>          
       </div>
     </div>
@@ -77,7 +71,7 @@
     <?php
       //a donde mandar los datos editados para darse de alta
       $link = site_url('personas/nueva');  
-      $persona = array('IdPersona'=>0, 'Nombre'=>'', 'Apellido'=>'', 'Email'=>'', 'Usuario'=>'', 'Contraseña'=>'');
+      $persona = array('IdPersona'=>0, 'Nombre'=>'', 'Apellido'=>'');
       include 'elements/form-editar-persona.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>

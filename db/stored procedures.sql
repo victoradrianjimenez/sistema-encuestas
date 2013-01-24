@@ -1,62 +1,68 @@
 
-UPDATE Items_Carreras
-SET Tamaño = 2
-WHERE IdCarrera >= 0 AND IdFormulario = 1 AND IdPregunta = 39;
+UPDATE Items_Carreras 
+SET 
+    Tamaño = 2
+WHERE
+    IdCarrera >= 0 AND IdFormulario = 1
+        AND IdPregunta = 39;
 
 
-UPDATE Items
-SET Tamaño = 2
-WHERE IdCarrera >= 0 AND IdFormulario = 1 AND IdPregunta = 39;
+UPDATE Items 
+SET 
+    Tamaño = 2
+WHERE
+    IdCarrera >= 0 AND IdFormulario = 1
+        AND IdPregunta = 39;
 
 DROP TABLE IF EXISTS `groups`;
 
 CREATE TABLE `groups` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) NOT NULL,
-  `description` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+    `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(20) NOT NULL,
+    `description` varchar(100) NOT NULL,
+    PRIMARY KEY (`id`)
 );
 
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `ip_address` varbinary(16) NOT NULL,
-  `username` varchar(100) NOT NULL,
-  `password` varchar(80) NOT NULL,
-  `salt` varchar(40) DEFAULT NULL,
-  `email` varchar(100) NOT NULL,
-  `activation_code` varchar(40) DEFAULT NULL,
-  `forgotten_password_code` varchar(40) DEFAULT NULL,
-  `forgotten_password_time` int(11) unsigned DEFAULT NULL,
-  `remember_code` varchar(40) DEFAULT NULL,
-  `created_on` int(11) unsigned NOT NULL,
-  `last_login` int(11) unsigned DEFAULT NULL,
-  `active` tinyint(1) unsigned DEFAULT NULL,
-  `first_name` varchar(50) DEFAULT NULL,
-  `last_name` varchar(50) DEFAULT NULL,
-  `company` varchar(100) DEFAULT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+    `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+    `ip_address` varbinary(16) NOT NULL,
+    `username` varchar(100) NOT NULL,
+    `password` varchar(80) NOT NULL,
+    `salt` varchar(40) DEFAULT NULL,
+    `email` varchar(100) NOT NULL,
+    `activation_code` varchar(40) DEFAULT NULL,
+    `forgotten_password_code` varchar(40) DEFAULT NULL,
+    `forgotten_password_time` int(11) unsigned DEFAULT NULL,
+    `remember_code` varchar(40) DEFAULT NULL,
+    `created_on` int(11) unsigned NOT NULL,
+    `last_login` int(11) unsigned DEFAULT NULL,
+    `active` tinyint(1) unsigned DEFAULT NULL,
+    `first_name` varchar(50) DEFAULT NULL,
+    `last_name` varchar(50) DEFAULT NULL,
+    `company` varchar(100) DEFAULT NULL,
+    `phone` varchar(20) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 DROP TABLE IF EXISTS `users_groups`;
 
 CREATE TABLE `users_groups` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` mediumint(8) unsigned NOT NULL,
-  `group_id` mediumint(8) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
+    `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` mediumint(8) unsigned NOT NULL,
+    `group_id` mediumint(8) unsigned NOT NULL,
+    PRIMARY KEY (`id`)
 );
 
 DROP TABLE IF EXISTS `login_attempts`;
 
 CREATE TABLE `login_attempts` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `ip_address` varbinary(16) NOT NULL,
-  `login` varchar(100) NOT NULL,
-  `time` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`)
+    `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+    `ip_address` varbinary(16) NOT NULL,
+    `login` varchar(100) NOT NULL,
+    `time` int(11) unsigned DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 
@@ -172,6 +178,12 @@ INSERT INTO users VALUES
 ('101', 0x7f000001, 'cgoy', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'cgoy@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
 ('102', 0x7f000001, 'rlabastida', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'rlabastida@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL);
 
+UPDATE users 
+SET 
+    active = 1
+where
+    id >= 0;
+
 INSERT INTO users_groups VALUES
 ('1', '1', '1'),
 ('2', '1', '6'),
@@ -274,9 +286,11 @@ INSERT INTO users_groups VALUES
 ('99', '71', '6'),
 ('100', '72', '6');
 
-update personas
-set idusuario = idpersona
-where idpersona >= 0;
+update personas 
+set 
+    idusuario = idpersona
+where
+    idpersona >= 0;
 
 DELIMITER ;
 
@@ -372,8 +386,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_personas`(
     pPagLongitud INT)
 BEGIN
     SET @qry = '
-    SELECT  IdPersona, Apellido, Nombre, Usuario, Email,
-			Contraseña, UltimoAcceso, Estado
+    SELECT  IdPersona, Apellido, Nombre
     FROM    Personas
     ORDER BY Apellido, Nombre
     LIMIT ?,?';
@@ -447,7 +460,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_persona`(
     pIdPersona INT)
 BEGIN
-    SELECT IdPersona, Apellido, Nombre, Usuario, Email, Contraseña, UltimoAcceso, Estado
+    SELECT IdPersona, Apellido, Nombre
     FROM Personas
     WHERE IdPersona = pIdPersona;
 END $$
@@ -456,22 +469,6 @@ DELIMITER ;
 
 
 DROP PROCEDURE IF EXISTS `esp_validar_usuario`;
-
-
-DELIMITER $$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_validar_usuario`(
-    pUsuario VARCHAR(40),
-    pContraseña CHAR(64))
-BEGIN
-    SELECT IdPersona, Apellido, Nombre, Usuario, Email, Contraseña, UltimoAcceso, Estado
-    FROM Personas
-    WHERE Usuario = pUsuario AND Contraseña = pContraseña AND Estado != 'I'
-    LIMIT 1;
-END $$
-
-DELIMITER ;
-
 
 DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
 
@@ -1146,10 +1143,7 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_persona`(
     pApellido VARCHAR(40),
-    pNombre VARCHAR(40),
-    pUsuario VARCHAR(40),
-    pEmail VARCHAR(200),
-    pContraseña CHAR(64))
+    pNombre VARCHAR(40),)
 BEGIN
     DECLARE id INT;
     DECLARE Mensaje VARCHAR(100);
@@ -1158,34 +1152,21 @@ BEGIN
     
     IF COALESCE(pApellido,'') = '' THEN
         SET Mensaje = 'El apellido no puede ser vacío.';
-    ELSEIF COALESCE(pUsuario,'') = '' THEN
-        SET Mensaje = 'El nombre de usuario no puede ser vacío.';
-    ELSEIF COALESCE(pEmail,'') = '' THEN
-        SET Mensaje = 'La dirección de email no puede ser vacía.';
     ELSE
         START TRANSACTION;
-        IF EXISTS(SELECT Usuario FROM Personas WHERE Usuario = pUsuario LIMIT 1) THEN
-            SET Mensaje = CONCAT('Ya existe una persona con nombre de usuario ',pUsuario,'.');
-            ROLLBACK;
-        ELSEIF EXISTS(SELECT Email FROM Personas WHERE Email = pEmail LIMIT 1) THEN
-            SET Mensaje = 'Ya existe un usuario con el email ingresado.';
-            ROLLBACK;
-        ELSE
-            SET id = (  
-                SELECT COALESCE(MAX(IdPersona),0)+1 
-                FROM    Personas);
-            INSERT INTO Personas
-                (IdPersona, Apellido, Nombre, Usuario, Email, Contraseña, UltimoAcceso, Estado)
-            VALUES (id, pApellido, pNombre, pUsuario, pEmail, 
-                pContraseña, NOW(), 'A');
-            IF err THEN
-                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
-                ROLLBACK;
-            ELSE 
-                SET Mensaje = id;
-                COMMIT;
-            END IF;
-        END IF;
+		SET id = (  
+			SELECT COALESCE(MAX(IdPersona),0)+1 
+			FROM    Personas);
+		INSERT INTO Personas
+			(IdPersona, Apellido, Nombre)
+		VALUES (id, pApellido, pNombre);
+		IF err THEN
+			SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET Mensaje = id;
+			COMMIT;
+		END IF;
     END IF;
     SELECT Mensaje;
 END $$
@@ -1202,8 +1183,7 @@ CREATE PROCEDURE `sistema_encuestas`.`esp_buscar_personas` (
 	pNombre VARCHAR(40))
 BEGIN
 	IF COALESCE(pNombre,'') != '' THEN
-		SELECT	IdPersona, Apellido, Nombre, Usuario, Email, 
-				Contraseña, UltimoAcceso, Estado
+		SELECT	IdPersona, Apellido, Nombre
 		FROM	Personas
 		WHERE	Apellido like CONCAT('%',pNombre,'%') OR Nombre like CONCAT('%',pNombre,'%');
 	END IF;
@@ -1318,8 +1298,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
     pPagLongitud INT)
 BEGIN
     SET @qry = '
-    SELECT  P.IdPersona, P.Apellido, P.Nombre, P.Usuario, P.Email, P.UltimoAcceso, P.Estado, 
-			DM.TipoAcceso, DM.OrdenFormulario, DM.Cargo
+    SELECT  P.IdPersona, P.Apellido, P.Nombre, DM.TipoAcceso, DM.OrdenFormulario, DM.Cargo
     FROM    Personas P INNER JOIN Docentes_Materias DM ON P.IdPersona = DM.IdDocente
 	WHERE	DM.IdMateria = ?
     ORDER BY P.Apellido, P.Nombre
@@ -1552,11 +1531,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_persona`(
 	pIdPersona INT,
     pApellido VARCHAR(40),
-    pNombre VARCHAR(40),
-    pUsuario VARCHAR(40),
-    pEmail VARCHAR(200),
-    pContraseñaAnterior CHAR(64),
-	pContraseña CHAR(64))
+    pNombre VARCHAR(40))
 BEGIN
     DECLARE Mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
@@ -1564,28 +1539,14 @@ BEGIN
     
     IF COALESCE(pApellido,'') = '' THEN
         SET Mensaje = 'El apellido no puede ser vacío.';
-    ELSEIF COALESCE(pUsuario,'') = '' THEN
-        SET Mensaje = 'El nombre de usuario no puede ser vacío.';
-    ELSEIF COALESCE(pEmail,'') = '' THEN
-        SET Mensaje = 'La dirección de email no puede ser vacía.';
     ELSE
         START TRANSACTION;
         IF NOT EXISTS(SELECT IdPersona FROM Personas WHERE IdPersona = pIdPersona LIMIT 1) THEN
             SET Mensaje = CONCAT('No existe registro de la  persona con ID=',pIdPersona,'.');
             ROLLBACK;
-        ELSEIF pContraseñaAnterior != (SELECT Contraseña FROM Personas WHERE IdPersona = pIdPersona LIMIT 1) THEN
-            SET Mensaje = CONCAT('La contraseña ingresada en incorrecta.');
-            ROLLBACK;
-        ELSEIF EXISTS(SELECT Usuario FROM Personas WHERE Usuario = pUsuario AND IdPersona != pIdPersona LIMIT 1) THEN
-            SET Mensaje = CONCAT('Ya existe una persona con nombre de usuario ',pUsuario,'.');
-            ROLLBACK;
-        ELSEIF EXISTS(SELECT Email FROM Personas WHERE Email = pEmail AND IdPersona != pIdPersona LIMIT 1) THEN
-            SET Mensaje = 'Ya existe un usuario con el email ingresado.';
-            ROLLBACK;
         ELSE
             UPDATE Personas
-			SET Apellido = pApellido, Nombre = pNombre, Usuario = pUsuario,
-				Email = pEmail, Contraseña = pContraseña
+			SET Apellido = pApellido, Nombre = pNombre
 			WHERE IdPersona = pIdPersona;
             IF err THEN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';

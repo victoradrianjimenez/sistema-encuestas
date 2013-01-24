@@ -14,16 +14,14 @@ class Gestor_personas extends CI_Model{
    * Da de Alta una nueva persona. Devuleve el id en caso de éxito o un mensaje en caso de error.
    *
    * @access  public
-   * @param nombre del departamento
+   * @param apellido de la persona
+   * @param nombre de la persona
    * @return  string
    */
-  public function alta($Apellido, $Nombre, $Usuario, $Email, $Contraseña){
+  public function alta($Apellido, $Nombre){
     $Apellido = $this->db->escape($Apellido);
     $Nombre = $this->db->escape($Nombre);
-    $Usuario = $this->db->escape($Usuario);
-    $Email = $this->db->escape($Email);
-    $Contraseña = $this->db->escape($Contraseña);
-    $query = $this->db->query("call esp_alta_persona($Apellido, $Nombre, $Usuario, $Email, $Contraseña)");
+    $query = $this->db->query("call esp_alta_persona($Apellido, $Nombre)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
@@ -46,26 +44,6 @@ class Gestor_personas extends CI_Model{
     $this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
-  
-  
-  /**
-   * Verificar un usuario y contraseña. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
-   *
-   * @access public
-   * @param nombre de usuario
-   * @param contraseña (cifrada) 
-   * @return object
-   */
-  function validarUsuario($Usuario, $Contraseña){
-    $Usuario = $this->db->escape($Usuario);
-    $Contraseña = $this->db->escape($Contraseña);
-    $query = $this->db->query("call esp_validar_usuario($Usuario, $Contraseña)");
-    $data = $query->result('Persona');
-    $query->free_result();
-    $this->db->reconnect();
-    return ($data != FALSE)?$data[0]:FALSE;
-  }
-  
   
   /**
    * Obtener el listado de personas. Devuleve un array de objetos.

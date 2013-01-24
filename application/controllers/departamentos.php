@@ -46,7 +46,7 @@ class Departamentos extends CI_Controller{
     //envio datos a la vista
     $data['tabla'] = $tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
     $this->load->view('lista_departamentos', $data);
   }
 
@@ -77,7 +77,7 @@ class Departamentos extends CI_Controller{
         'Nombre' => $departamento->Nombre
       );
       //envio datos a la vista
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $this->load->view('ver_departamento', $data);
     }
     else{
@@ -97,7 +97,7 @@ class Departamentos extends CI_Controller{
       $this->load->model('Gestor_departamentos','gd');
       //agrego departamento y cargo vista para mostrar resultado
       $res = $this->gd->alta($this->input->post('Nombre',TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID del nuevo departamento es $res.":$res;
       $data['link'] = site_url("departamentos/listar"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
@@ -122,7 +122,7 @@ class Departamentos extends CI_Controller{
       $this->load->model('Gestor_departamentos','gd');
       //modifico departamento y cargo vista para mostrar resultado
       $res = $this->gd->modificar($IdDepartamento, $this->input->post('Nombre',TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("departamentos/ver/$IdDepartamento"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
@@ -146,7 +146,7 @@ class Departamentos extends CI_Controller{
       $this->load->model('Gestor_departamentos','gd');
       //doy de baja y cargo vista para mostrar resultado
       $res = $this->gd->baja($IdDepartamento);
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("departamentos"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $data);

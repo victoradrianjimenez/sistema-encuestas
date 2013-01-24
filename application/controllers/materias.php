@@ -73,7 +73,7 @@ class Materias extends CI_Controller{
     //envio datos a la vista
     $data['tabla'] = $tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
     $this->load->view('lista_materias', $data);
   }
   
@@ -119,7 +119,7 @@ class Materias extends CI_Controller{
       //envio datos a la vista
       $data['tabla'] = $datosDocentes; //array de datos de los Departamentos
       $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //objeto Persona (usuario logueado)
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
       $this->load->view('ver_materia', $data);
     }
     else{
@@ -141,7 +141,7 @@ class Materias extends CI_Controller{
       $this->load->model('Gestor_materias','gm');
       //agrego materia y cargo vista para mostrar resultado
       $res = $this->gm->alta($this->input->post('Nombre',TRUE), $this->input->post('Codigo',TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
       $data['link'] = site_url("materias/listar"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
@@ -165,7 +165,7 @@ class Materias extends CI_Controller{
       $this->load->model('Gestor_materias','gm');
       //doy de baja y cargo vista para mostrar resultado
       $res = $this->gm->baja($IdMateria);
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("materias"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $data);
@@ -192,7 +192,7 @@ class Materias extends CI_Controller{
       $this->load->model('Gestor_materias','gm');
       //modifico Materia y cargo vista para mostrar resultado
       $res = $this->gm->modificar($IdMateria, $this->input->post('Nombre',TRUE), $this->input->post('Codigo',TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("materias/ver/$IdMateria"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
@@ -226,7 +226,7 @@ class Materias extends CI_Controller{
                                 $this->input->post('TipoAcceso', TRUE), 
                                 $this->input->post('OrdenFormulario', TRUE), 
                                 $this->input->post('Cargo', TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("materias/ver/$IdMateria"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);      
@@ -252,7 +252,7 @@ class Materias extends CI_Controller{
       $this->Materia->IdMateria = $IdMateria;
       //creo la asociacion y cargo vista para mostrar resultado
       $res = $this->Materia->desasociarDocente($this->input->post('IdDocente', TRUE));
-      $data['usuarioLogin'] = unserialize($this->session->userdata('usuarioLogin')); //datos de session
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("materias/ver/$IdMateria"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);      

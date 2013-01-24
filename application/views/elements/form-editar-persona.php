@@ -9,22 +9,6 @@
       <label for="campoApellido">Apellido: </label>
       <input id="campoApellido" type="text" name="Apellido" required value="<?php echo $persona['Apellido']?>"/>
       <?php echo form_error('Nombre'); ?>
-      
-      <label for="campoEmail">Dirección de correo electrónico: </label>
-      <input id="campoEmail" type="text" name="Email" required value="<?php echo $persona['Email']?>"/>
-      <?php echo form_error('Email'); ?>
-      
-      <label for="campoUsuario">Nombre de usuario: </label>
-      <input id="campoUsuario" type="text" name="Usuario" required value="<?php echo $persona['Usuario']?>"/>
-      <?php echo form_error('Usuario'); ?>
-      
-      <label for="campoContraseña">Contraseña: </label>
-      <input id="campoContraseña" type="password" name="Contrasena" required value="<?php echo $persona['Contraseña']?>"/>
-      <?php echo form_error('Contrasena'); ?>
-      
-      <label for="campoContraseña2">Repetir la contraseña: </label>
-      <input id="campoContraseña2" type="password" name="Contrasena2" required/>
-      <?php echo form_error('Contrasena2'); ?>
     </div>
     <div class="row">         
       <div class="ten columns centered">

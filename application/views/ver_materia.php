@@ -44,18 +44,14 @@
               <thead>
                 <th>Docente</th>
                 <th>Cargo</th>
-                <th>Último acceso</th>
                 <th title="D=Docente, J=Jefe de cátedra">Tipo acceso</th>
-                <th title="A=Activo, I=Inactivo">Estado</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
                   <td><?php echo $fila['Apellido'].', '.$fila['Nombre']?></td>
                   <td><?php echo $fila['Cargo']?></td>
-                  <td><?php echo $fila['UltimoAcceso']?></td>
                   <td><?php echo $fila['TipoAcceso']?></td>
-                  <td><?php echo $fila['Estado']?></td>
                   <td>
                     <a class="Quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $fila['IdPersona']?>">Quitar</a>
                   </td>
