@@ -6,7 +6,7 @@
       <a href="#">Alumnos</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
-        <li><a href="#">Encuestas</a></li>
+        <li><a href="<?php echo site_url("claves/ingresar")?>">Encuestas</a></li>
         <li><a href="#">Consultar estado</a></li>
       </ul>
     </li>
