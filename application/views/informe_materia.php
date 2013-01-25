@@ -50,48 +50,44 @@
   <div class="row">
     <?php foreach ($secciones as $i => $seccion):?>
 
-      <h5 class="separador"><?php echo $seccion['texto']?></h5>
+      <h5 class="separador"><?php echo $seccion['Texto']?></h5>
       <div class="row">
-          
-        <?php foreach ($seccion['preguntas'] as $j => $pregunta){
-          switch($pregunta['tipo']){
-          case 'S':case 'N': //selección simple
+        <?php
+          //por cada subseccion o docente
+          foreach ($seccion['Subsecciones'] as $j => $subseccion){
             echo '
-            <div class="nine columns">
-              <p>'.$pregunta['texto'].'</p>
-              <div class="row">';
-                foreach ($pregunta['opciones'] as $k => $opcion){
-                  echo '<div class="three mobile-one columns">'.$opcion['texto'].': ';
-                  $cant = 0;
-                  foreach ($pregunta['respuestas'] as $r){
-                    if ($opcion['idOpcion'] == $r['Opcion']){
-                      $cant = $r['Cantidad'];
-                      break;
-                    }
+              <div class="row ">
+                <div class="twelve columns">
+                <h2>'.$subseccion['Nombre'].' '.$subseccion['Apellido'].'</h2>';
+                
+                //por cada pregunta perteneciente a la seccion
+                foreach ($subseccion['Preguntas'] as $pregunta){
+                  
+                  switch($pregunta['Tipo']){
+                  case 'S':case 'N': //selección simple
+                    echo '
+                    <div class="nine columns">
+                      <p>'.$pregunta['Texto'].'</p>
+                      <div class="row">';
+                        foreach ($pregunta['Respuestas'] as $k => $respuesta){   
+                          echo '<div class="three mobile-one columns end">'.
+                                  (($respuesta['Texto']!='')?$respuesta['Texto']:'No Contesta').
+                                  ': <b>'.$respuesta['Cantidad'].'</b>'.
+                                '</div>';
+                        }
+                      echo '
+                      </div>
+                    </div>
+                    <div class="three columns">
+                      <img src="'.site_url("pcharts/graficoPregunta/1/1/".$pregunta['IdPregunta'].'/'.$subseccion['IdPersona'].'/5/5').'" width="400" height="160" />
+                    </div>';
                   }
-                  echo "<b>$cant</b></div>";
                 }
-              echo '
-              </div>
-            </div>
-            <div class="three columns">
-              <img src="'.site_url("encuestas/graficoPregunta/1/1/".$pregunta['idPregunta'].'/5/5').'" width="400" height="160" />
-            </div>';
-            break;
-          case 'T': //testo simple
             echo '
-            <div class="twelve columns">
-              <p>'.$pregunta['texto'].'</p>
-              <ul>';
-                foreach ($pregunta['respuestas'] as $r){
-                  echo '<li>'.$r['Texto'].'</li>';
-                }
-              echo '
-              </ul>
-            </div>';
-            break;
-          }//switch
-        }//foreach?> 
+              </div></div>' ;
+          }                
+
+        ?> 
       </div>   
     <?php endforeach //secciones?>
     <h5 class="separador"></h5>

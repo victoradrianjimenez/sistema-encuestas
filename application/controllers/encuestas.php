@@ -7,6 +7,7 @@ class Encuestas extends CI_Controller{
   
   function __construct() {
     parent::__construct();
+    $this->load->library(array('session', 'ion_auth', 'form_validation'));
   }
   
   public function index(){
@@ -169,7 +170,32 @@ class Encuestas extends CI_Controller{
     }
   }
 
+
+  private function _dameDatosSeccion($seccion, $IdDocente, $encuesta, $materia, $carrera){
+      $items = $seccion->listarItems();
+      $datos_items = array();
+      foreach ($items as $k => $item) {
+        switch ($item->Tipo) {
+          case 'S': case 'M': case 'N':
+            $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->IdPregunta, $IdDocente, $materia->IdMateria, $carrera->IdCarrera);
+            break;
+          case 'T': case 'X':
+            $datos_respuestas = $encuesta->textosPreguntaMateria($item->IdPregunta, $materia->IdMateria, $carrera->IdCarrera);
+          default:
+            break;
+        }
+        $datos_items[$k] = array(
+          'IdPregunta' => $item->IdPregunta,
+          'Texto' => $item->Texto,
+          'Tipo' => $item->Tipo,
+          'Respuestas' => $datos_respuestas
+        );
+      }
+      return $datos_items;
+  }
+
   public function informeMateria(){
+   
     $IdMateria = 5;
     $IdCarrera = 5;
     $IdEncuesta = 1;
@@ -179,6 +205,7 @@ class Encuestas extends CI_Controller{
     $this->load->model('Pregunta');
     $this->load->model('Item');
     $this->load->model('Seccion');
+    $this->load->model('Persona');
     $this->load->model('Materia');
     $this->load->model('Carrera');
     $this->load->model('Formulario');
@@ -193,44 +220,37 @@ class Encuestas extends CI_Controller{
     $carrera = $this->gc->dame($IdCarrera);
     $materia = $this->gm->dame($IdMateria);
     
+    $docentes = $encuesta->listarDocentes($IdMateria, $IdCarrera);
     $secciones = $formulario->listarSeccionesCarrera($IdCarrera);
+    
     $datos_secciones = array(); 
     foreach ($secciones as $i => $seccion) {
-      $items = $seccion->listarItems();
-      $datos_items = array();
-      foreach ($items as $j => $item) {
-        $opciones = $item->listarOpciones();
-        $datos_opciones = array();
-        foreach ($opciones as $k => $opcion) {
-          $datos_opciones[$k] = array(
-            'idOpcion' => $opcion->IdOpcion,
-            'texto' => $opcion->Texto
-            );
-        }
-        switch ($item->Tipo) {
-          case 'S': case 'M': case 'N':
-            $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->IdPregunta, $IdMateria, $IdCarrera);
-            break;
-          case 'T': case 'X':
-            $datos_respuestas = $encuesta->textosPreguntaMateria($item->IdPregunta, $IdMateria, $IdCarrera);
-          default:
-            break;
-        }
-        
-        $datos_items[$j] = array(
-          'idPregunta' => $item->IdPregunta,
-          'texto' => $item->Texto,
-          'tipo' => $item->Tipo,
-          'opciones' => $datos_opciones,
-          'respuestas' => $datos_respuestas 
+      $datos_subsecciones = array();
+      //si la sección es referida a docentes
+      if ($seccion->Tipo == 'D'){
+        foreach ($docentes as $j => $docente) {
+          $datos_subsecciones[$j] = array(
+            'IdPersona' => $docente->IdPersona,
+            'Apellido' => $docente->Apellido,
+            'Nombre' => $docente->Nombre,
+            'Preguntas' => $this->_dameDatosSeccion($seccion, $docente->IdPersona, $encuesta, $materia, $carrera)
           );
+        }
       }
-      $datos_secciones[$i] =  array(
-        'texto' => $seccion->Texto,
-        'preguntas' => $datos_items
+      //si la sección es referida a la materia (sección comun)
+      else{
+        $datos_subsecciones[0] =  array(
+          'IdPersona' => 0,
+          'Apellido' => '',
+          'Nombre' => '',
+          'Preguntas' => $this->_dameDatosSeccion($seccion, 0, $encuesta, $materia, $carrera)
         );
+      }
+      $datos_secciones[$i] = array(
+        'Texto' => $seccion->Texto,
+        'Subsecciones' => $datos_subsecciones
+      );
     }
-
     $datos['encuesta'] = array(
       'año' => $encuesta->Año,
       'cuatrimestre' => $encuesta->Cuatrimestre,
@@ -248,46 +268,6 @@ class Encuestas extends CI_Controller{
     $this->load->view('informe_materia', $datos);
   }
 
-
-
-
-  public function graficoPregunta($IdEncuesta, $IdFormulario, $IdPregunta, $IdMateria, $IdCarrera){
-    // Standard inclusions   
-    $this->load->model('Encuesta');
-    $this->load->library('pChart/pData');
-    $this->load->library('pChart/pChart', array(500,160));
-    
-    $this->Encuesta->IdEncuesta = $IdEncuesta;
-    $this->Encuesta->IdFormulario = $IdFormulario;
-    $datos_respuestas = $this->Encuesta->respuestasPreguntaMateria($IdPregunta, $IdMateria, $IdCarrera);
-    $datos = array(1,1,1,3);
-    $etiquetas = array(1,2,3,4);
-    foreach ($datos_respuestas as $i => $val) {
-      $datos[$i] = $val['Cantidad'];
-      $etiquetas[$i] = $val['Opcion'];
-    }
-    
-    // Dataset definition 
-    $this->pdata->AddPoint($datos,"Serie1");
-    $this->pdata->AddPoint($etiquetas,"AbsciseLabels");
-    $this->pdata->AddAllSeries();
-    $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
-    
-     // Inicializar gráfico
-    $this->pchart->setFontProperties("Fonts/tahoma.ttf",14);
-    $this->pchart->setGraphArea(36,8,464,140);
-    $this->pchart->drawFilledRectangle(0,0,500,160,255,255,255,FALSE);
-    $this->pchart->drawGraphArea(255,255,255,TRUE);
-    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,2,TRUE);  
-    $this->pchart->drawGrid(4,TRUE,230,230,230,50);
-     
-    // Dibujar el grafico de barras    
-    $this->pdata->RemoveSerie("AbsciseLabels");
-    $this->pchart->setColorPalette(0,0,150,110);
-    $this->pchart->drawStackedBarGraph($this->pdata->GetData(),$this->pdata->GetDataDescription(),100);
-    $this->pchart->Stroke();
-  }
-  
   
   //funcion para responder solicitudes AJAX
   public function listarClavesAJAX(){

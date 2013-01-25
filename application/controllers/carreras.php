@@ -7,6 +7,7 @@ class Carreras extends CI_Controller{
   
   function __construct() {
     parent::__construct();
+    $this->load->library(array('session', 'ion_auth', 'form_validation'));
   }
   
   private function _datosDepartamentos(){

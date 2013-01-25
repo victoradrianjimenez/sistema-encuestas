@@ -1065,17 +1065,21 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_materia`(
     pIdPregunta INT,
+	pIdDocente INT,
     pIdMateria SMALLINT,
     pIdCarrera SMALLINT,
     pIdEncuesta INT,
     pIdFormulario INT)
 BEGIN
-	SELECT  Opcion, COUNT(IdRespuesta) AS Cantidad
-	FROM    Respuestas R
+	SELECT	R.IdDocente, R.Opcion, IF(P.Tipo='N',P.LimiteInferior+P.Paso*(R.Opcion-1),O.Texto) AS Texto, COUNT(IdRespuesta) AS Cantidad
+	FROM 	Respuestas R 
+			INNER JOIN Preguntas P ON P.IdPregunta = R.IdPregunta
+			LEFT JOIN Opciones O ON O.IdPregunta = R.IdPregunta AND O.IdOpcion = R.Opcion
 	WHERE   R.IdPregunta = pIdPregunta AND R.IdMateria = pIdMateria AND 
 			R.IdCarrera = pIdCarrera AND R.IdEncuesta = pIdEncuesta AND
-			R.IdFormulario = pIdFormulario
-	GROUP BY Opcion;
+			R.IdFormulario = pIdFormulario AND COALESCE(R.IdDocente,0) = pIdDocente
+	GROUP BY R.Opcion
+	ORDER BY R.Opcion;
 END $$
 
 DELIMITER ;
@@ -2237,4 +2241,29 @@ BEGIN
 	CLOSE cur;
 	-- devolver el indice promedio
 	SELECT ROUND(s/n,2) AS Indice;
-END
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_docentes_encuesta`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_encuesta`(
+	pIdMateria SMALLINT,
+	pIdCarrera SMALLINT,
+	pIdEncuesta INT,
+	pIdFormulario INT)
+BEGIN
+	SELECT DISTINCT P.IdPersona, P.IdUsuario, P.Apellido, P.Nombre
+	FROM 	Respuestas R 
+			INNER JOIN Personas P ON P.IdPersona = R.IdDocente
+			LEFT JOIN Docentes_Materias DM ON DM.IdDocente = R.IdDocente AND DM.IdMateria = R.IdMateria
+	WHERE   R.IdMateria = pIdMateria AND R.IdCarrera = pIdCarrera AND 
+			R.IdEncuesta = pIdEncuesta AND R.IdFormulario = pIdFormulario
+	ORDER BY DM.OrdenFormulario;
+END $$
+
+DELIMITER ;

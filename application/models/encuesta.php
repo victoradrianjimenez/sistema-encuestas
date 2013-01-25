@@ -102,13 +102,14 @@ class Encuesta extends CI_Model{
    * @param idenificador de carrera
    * @return array
    */  
-  public function respuestasPreguntaMateria($IdPregunta, $IdMateria, $IdCarrera){
+  public function respuestasPreguntaMateria($IdPregunta, $IdDocente, $IdMateria, $IdCarrera){
     $IdPregunta = $this->db->escape($IdPregunta);
+    $IdDocente = $this->db->escape($IdDocente);
     $IdMateria = $this->db->escape($IdMateria);
     $IdCarrera = $this->db->escape($IdCarrera);
     $IdEncuesta = $this->db->escape($this->IdEncuesta);
     $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_respuestas_pregunta_materia($IdPregunta, $IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+    $query = $this->db->query("call esp_respuestas_pregunta_materia($IdPregunta, $IdDocente, $IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
     $data=$query->result_array();
     $query->free_result();
     $this->db->reconnect();
@@ -137,6 +138,29 @@ class Encuesta extends CI_Model{
     $this->db->reconnect();
     return $data;
   }
+  
+  
+    
+  /**
+   * Obtener el listado de docentes de las que hace referencia la encuesta. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param identificador de la materia
+   * @param identificador de la carrera
+   * @return arrayPersonas
+   */
+  public function listarDocentes($IdMateria, $IdCarrera){
+    $IdMateria = $this->db->escape($IdMateria);
+    $IdCarrera = $this->db->escape($IdCarrera);
+    $IdEncuesta = $this->db->escape($this->IdEncuesta);
+    $IdFormulario = $this->db->escape($this->IdFormulario);
+    $query = $this->db->query("call esp_listar_docentes_encuesta($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+    $data = $query->result('Persona');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
 }
 
 ?>
