@@ -110,7 +110,7 @@ class Materias extends CI_Controller{
       );
       //obtengo lista de datos de docentes
       $cantidadDocentes = $materia->cantidadDocentes();
-      $datosDocentes = $materia->listarDocentes($pagInicio, 5);
+      $docentes = $materia->listarDocentes();
       //genero la lista de links de paginación
       $config['base_url'] = site_url("materias/ver/$idMateria");
       $config['total_rows'] = $cantidadDocentes;
@@ -118,7 +118,12 @@ class Materias extends CI_Controller{
       $config['uri_segment'] = 4;
       $this->pagination->initialize($config);
       //envio datos a la vista
-      $data['tabla'] = $datosDocentes; //array de datos de los Departamentos
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      $data['tabla'] = array(
+        'IdPersona'=> $docentes->IdPersona,
+        'Nombre'=> $docentes->Nombre,
+        'Apellido'=> $docentes->Apellido
+      );
       $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
       $this->load->view('ver_materia', $data);
@@ -277,6 +282,16 @@ class Materias extends CI_Controller{
             "$materia->Nombre\t".
             "$materia->Codigo\t\n";
     }
+  }
+  
+  //funcion para responder solicitudes AJAX
+  public function cantidadAlumnosAJAX(){
+    $IdMateria = $this->input->post('IdMateria');
+    //VERIFICAR
+    $this->load->model('Materia');
+    $this->load->model('Gestor_materias', 'gm');
+    $materia = $this->gm->dame($IdMateria);
+    echo ($materia)?$materia->Alumnos:0;
   }
   
 }

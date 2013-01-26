@@ -110,6 +110,14 @@ class Encuestas extends CI_Controller{
       }
       //envio datos a la vista
       $data['tabla'] = $tabla; //array de datos de los Departamentos
+      $data['encuesta'] = array(
+        'IdEncuesta' => $encuesta->IdEncuesta, 
+        'IdFormulario' => $encuesta->IdFormulario,
+        'Año' => $encuesta->Año,  
+        'Cuatrimestre' => $encuesta->Cuatrimestre,
+        'FechaInicio' => $encuesta->FechaInicio,
+        'FechaFin' => $encuesta->FechaFin
+      );
       $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
       $this->load->view('ver_encuesta', $data);

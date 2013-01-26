@@ -14,7 +14,24 @@ class Carrera extends CI_Model{
     parent::__construct();
   }
 
-
+  /**
+   * Buscar materias que pertenecen a la carrera. Devuleve un array de objetos.
+   *
+   * @access  public
+   * @param nombre o fragmento del nombre de la materia a buscar.
+   * @return  arrayMaterias
+   */  
+  public function buscarMaterias($nombre){
+    $idCarrera = $this->db->escape($this->IdCarrera);
+    $nombre = $this->db->escape($nombre);
+    $query = $this->db->query("call esp_buscar_materias_carrera($idCarrera, $nombre)");
+    $data = $query->result('Materia');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
+  
   /**
    * Obtener el listado de materias que pertenecen a la carrera. Devuleve un array de objetos.
    *

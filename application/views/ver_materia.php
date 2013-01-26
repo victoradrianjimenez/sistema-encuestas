@@ -42,16 +42,14 @@
           <?php else:?>
             <table class="twelve">
               <thead>
+                <th>Apellido</th>
                 <th>Docente</th>
-                <th>Cargo</th>
-                <th title="D=Docente, J=Jefe de cátedra">Tipo acceso</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><?php echo $fila['Apellido'].', '.$fila['Nombre']?></td>
-                  <td><?php echo $fila['Cargo']?></td>
-                  <td><?php echo $fila['TipoAcceso']?></td>
+                  <td><?php echo $fila['Apellido']?></td>
+                  <td><?php echo $fila['Nombre']?></td>
                   <td>
                     <a class="Quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $fila['IdPersona']?>">Quitar</a>
                   </td>

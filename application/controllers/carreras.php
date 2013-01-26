@@ -279,7 +279,7 @@ class Carreras extends CI_Controller{
    * Método para responder solicitudes AJAX
    * POST: Buscar
    */
-  public function buscar(){
+  public function buscarAJAX(){
     $buscar = $this->input->post('Buscar');
     $this->load->model('Carrera');
     $this->load->model('Gestor_carreras','gc');
@@ -291,7 +291,24 @@ class Carreras extends CI_Controller{
             "\n";
     }
   }
-
+  
+  /*
+   * Método para responder solicitudes AJAX
+   * POST: IdCarrera, Buscar
+   */
+  public function buscarMateriasAJAX(){
+    $idCarrera = $this->input->post('IdCarrera');
+    $buscar = $this->input->post('Buscar');
+    $this->load->model('Materia');
+    $this->load->model('Carrera');
+    $this->Carrera->IdCarrera = $idCarrera; 
+    $materias = $this->Carrera->buscarMaterias($buscar);
+    foreach ($materias as $materia) {
+      echo  "$materia->IdMateria\t".
+            "$materia->Nombre\t".
+            "$materia->Codigo\t\n";
+    }
+  }
 
   /*
    * Método para responder solicitudes AJAX

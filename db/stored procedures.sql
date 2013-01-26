@@ -1,3 +1,12 @@
+-- CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
+-- 	pIdMateria SMALLINT)
+-- BEGIN
+--     SELECT  P.IdPersona, P.Apellido, P.Nombre, DM.TipoAcceso, DM.OrdenFormulario, DM.Cargo
+--     FROM    Personas P INNER JOIN Docentes_Materias DM ON P.IdPersona = DM.IdDocente
+-- 	WHERE	DM.IdMateria = pIdMateria
+--     ORDER BY DM.OrdenFormulario, P.Apellido, P.Nombre;
+-- END
+
 
 UPDATE Respuestas
 SET Opcion = NULL
@@ -1302,22 +1311,12 @@ DROP PROCEDURE IF EXISTS `esp_listar_docentes_materia`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
-	pIdMateria SMALLINT,
-    pPagInicio INT,
-    pPagLongitud INT)
+	pIdMateria SMALLINT)
 BEGIN
-    SET @qry = '
-    SELECT  P.IdPersona, P.Apellido, P.Nombre, DM.TipoAcceso, DM.OrdenFormulario, DM.Cargo
+    SELECT  P.IdPersona, P.Apellido, P.Nombre
     FROM    Personas P INNER JOIN Docentes_Materias DM ON P.IdPersona = DM.IdDocente
-	WHERE	DM.IdMateria = ?
-    ORDER BY P.Apellido, P.Nombre
-    LIMIT ?,?';
-    PREPARE stmt FROM  @qry;
-	SET @c = pIdMateria;
-    SET @a = pPagInicio;
-    SET @b = pPagLongitud;
-    EXECUTE stmt USING @c, @a, @b;
-    DEALLOCATE PREPARE stmt;
+	WHERE	DM.IdMateria = pIdMateria
+    ORDER BY DM.OrdenFormulario, P.Apellido, P.Nombre;
 END $$
 
 DELIMITER ;
@@ -2267,3 +2266,19 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_materias_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_materias_carrera`(
+	pIdCarrera SMALLINT,
+	pNombre VARCHAR(60))
+BEGIN
+	SELECT	M.IdMateria, M.Nombre, M.Codigo, M.Alumnos
+	FROM	Materias M INNER JOIN Materias_Carreras MC ON 
+			M.IdMateria = MC.IdMateria
+	WHERE	MC.IdCarrera = pIdCarrera AND M.Nombre like CONCAT('%',pNombre,'%');
+END $$

@@ -161,6 +161,30 @@ class Encuesta extends CI_Model{
     return $data;
   }
   
+  
+  /**
+   * Da de Alta una clave. Devuleve '=###' en caso de éxito donde ### es la clave generada, o un mensaje en caso de error.
+   *
+   * @access  public
+   * @param identificador de la materia
+   * @param identificador de la carrera
+   * @param tipo de clave a generar
+   * @return  string
+   */
+  public function altaClave($IdMateria, $IdCarrera, $Tipo){
+    $IdMateria = $this->db->escape($IdMateria);
+    $IdCarrera = $this->db->escape($IdCarrera);
+    $Tipo = $this->db->escape($Tipo);
+    $IdEncuesta = $this->db->escape($this->IdEncuesta);
+    $IdFormulario = $this->db->escape($this->IdFormulario);
+    $query = $this->db->query("call esp_alta_clave($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario, $Tipo)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
 }
 
 ?>

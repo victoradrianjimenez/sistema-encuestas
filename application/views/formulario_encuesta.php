@@ -26,6 +26,17 @@
     
   </style>  
 </head>
+<?php
+  function ncolumnas($tamaño){
+    switch ($tamaño) {
+      case 1: $numcol = 'three'; break;
+      case 2: $numcol = 'six'; break;
+      case 3: $numcol = 'nine'; break;
+      default: $numcol = 'twelve';
+    }
+    return $numcol;
+  }
+?>
 <body>
 
   <div class="row">
@@ -33,92 +44,102 @@
     
     <div class="twelve columns">
       <div id="titulo">
-        <h2><?php echo $formulario['titulo']?></h2>
-        <h5><?php echo $carrera['nombre']?></h5>
-        <h4>Asignatura: <?php echo $materia['nombre']?></h4>
+        <h2><?php echo $formulario['Titulo']?></h2>
+        <h5><?php echo $carrera['Nombre']?></h5>
+        <h4>Asignatura: <?php echo $materia['Nombre']?></h4>
       </div>
-      <form action="" method="post">
-        
+      <form id="formulario" action="<?php echo site_url('claves/encuesta')?>" method="post">
+        <input type="hidden" name="Clave" value="<?php echo $clave['Clave']?>" />        
         <?php foreach ($secciones as $i => $seccion): ?>
-          
           <div class="row">
-            
-
             <div class="twelve columns">
               <div class="titulo_seccion">
-                <h5><?php echo $seccion['texto']?></h5>
-                <h6><?php echo $seccion['descripcion']?></h6>
+                <h5><?php echo $seccion['Texto']?></h5>
+                <h6><?php echo $seccion['Descripcion']?></h6>
               </div>  
               <?php 
               $colCount = 0; //variable para verificar si me paso del maximo de 4 columnas
-              foreach ($seccion['items'] as $j => $item){
-                //obtener numero de columnas (de un total de 12) en base al tamaño
-                switch ($item['tamaño']) {
-                  case 1: $numcol = 'three'; $colCount += 1; break;
-                  case 2: $numcol = 'six'; $colCount += 2; break;
-                  case 3: $numcol = 'nine'; $colCount += 3; break;
-                  default: $numcol = 'twelve'; $colCount += 4;
-                }
-                //verifico si se completaron las 4 columnas
-                if ($colCount > 4){
-                  $colCount-=4;
-                  echo '<div class="row"></div>';
-                }
-                //genero un contenedor para la pregunta
-                echo '<div class="item '.$numcol.' columns">';
+              
+              //SUBSECCIONES
+              
+              foreach ($seccion['Subsecciones'] as $j => $subseccion){
+
+                printf('
+                  <h3>%s %s</h3>',
+                  $subseccion['Nombre'], $subseccion['Apellido']);
                 
-                $tip = ($item['descripcion']!='')?'<span class="secondary round label has-tip" title="'.$item['descripcion'].'">!</span>':'';
+                //ITEMS
                 
-                //para las preguntas con opciones
-                if($item['tipo'] == 'S'){                  
-                  //texto de la pregunta
-                  printf(
-                    '<div class="eight mobile-three columns">'.
-                    ' <p>%s %s</p>'.
-                    '</div>'. 
-                    '<div class="four mobile-one columns"><select>'.
-                    ' <option value="0">(No Contesta)</option>',
-                    $item['texto'], $tip);
-                  //opciones
-                  foreach($item['opciones'] as $k => $opcion){
-                    echo '<option value="'.$opcion['idOpcion'].'">'.$opcion['texto'].'</option>';
-                  }
-                  echo '</select></div>';
-                }
-                //multiple choice
-                elseif($item['tipo'] == 'M'){
+                foreach ($subseccion['Items'] as $k => $item){
                   
-                }
-                //para las preguntas numericas
-                elseif($item['tipo'] == 'N'){
-                  printf (
-                    '<div class="eight mobile-three columns">'.
-                    '  <p>%s %s</p>'.
-                    '</div>'.
-                    '<div class="four mobile-one columns">'.
-                    '  <input type="number" min="%s" max="%s" step="%s"/>'.
-                    '</div>', 
-                    $item['texto'], $tip, $item['limiteInferior'], $item['limiteSuperior'], $item['paso']);
-                }
-                //texto de una linea
-                elseif($item['tipo'] == 'T'){
-                  printf (
-                    '<div class="twelve columns">'.
-                    '<p>%s %s<input type="text"/></p>'.
-                    '</div>', 
-                    $item['texto'], $tip);
-                }
-                //texto multilinea
-                elseif($item['tipo'] == 'X'){
-                  printf (
-                    '<div class="twelve columns">'.
-                    '<p>%s %s<textarea></textarea></p>'.
-                    '</div>', 
-                    $item['texto'], $tip);
-                }
-                //cierro contenedor de pregunta
-                echo '</div>';     
-              }?>
+                  //verifico si se llego a completar una fila de preguntas 
+                  $colCount += $item['Tamaño'];
+                  if ($colCount > 4){ //verifico si se completaron las 4 columnas
+                    $colCount-=4;
+                    echo '<div class="row"></div>';
+                  }
+                  
+                  //genero un contenedor para la pregunta
+                  echo '<div class="item '.ncolumnas($item['Tamaño']).' columns">';
+                    
+                    //genero el html de la ayuda contextual
+                    $tip = ($item['Descripcion']!='')?'<span class="secondary round label has-tip" title="'.$item['Descripcion'].'">!</span>':'';
+                    
+                    //para las preguntas con opciones
+                    if($item['Tipo'] == 'S'){
+                      $opciones = '';
+                      foreach($item['Opciones'] as $k => $opcion){
+                        $opciones .= '<option value="'.$opcion['IdOpcion'].'">'.$opcion['Texto'].'</option>';
+                      }
+                      printf('
+                        <div class="eight mobile-three columns">
+                          <p>%s %s</p>
+                        </div>
+                        <div class="four mobile-one columns">
+                          <select name="IdPregunta_%d_%d">
+                            <option value="">(No Contesta)</option>%s
+                          </select>
+                        </div>',
+                        $item['Texto'], $tip, $item['IdPregunta'], $subseccion['IdDocente'], $opciones);
+                    }
+                    //multiple choice
+                    elseif($item['Tipo'] == 'M'){
+                      
+                    }
+                    //para las preguntas numericas
+                    elseif($item['Tipo'] == 'N'){
+                      printf ('
+                        <div class="eight mobile-three columns">
+                          <p>%s %s</p>
+                        </div>
+                        <div class="four mobile-one columns">
+                          <input type="number" name="IdPregunta_%d_%d" min="%f" max="%f" step="%f"/>
+                        </div>',
+                        $item['Texto'], $tip, $item['IdPregunta'], $subseccion['IdDocente'], 
+                        $item['LimiteInferior'], $item['LimiteSuperior'], $item['Paso']);
+                    }
+                    //texto de una linea
+                    elseif($item['Tipo'] == 'T'){
+                      printf ('
+                        <div class="twelve columns">
+                          <p>%s %s<input type="text" name="IdPregunta_%d_%d"/></p>
+                        </div>', 
+                        $item['Texto'], $tip, $item['IdPregunta'], $subseccion['IdDocente']);
+                    }
+                    //texto multilinea
+                    elseif($item['Tipo'] == 'X'){
+                      printf ('
+                        <div class="twelve columns">
+                          <p>%s %s<textarea name="IdPregunta_%d_%d"></textarea></p>
+                        </div>',
+                        $item['Texto'], $tip, $item['IdPregunta'], $subseccion['IdDocente']);
+                    }
+                  //cierro contenedor de pregunta
+                  echo '</div>';
+                  
+                }//foreach items
+              }//foreach subsecciones
+              ?>
             </div>
           </div>
         <?php endforeach?>
@@ -144,5 +165,6 @@
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+    
 </body>
 </html>
