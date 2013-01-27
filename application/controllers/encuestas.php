@@ -13,7 +13,8 @@ class Encuestas extends CI_Controller{
   }
   
   public function index(){
-    $this->listar();
+    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
+    $this->load->view('index', $data);
   }
   
   /*

@@ -2387,3 +2387,24 @@ BEGIN
 	END IF;
 END $$
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_preguntas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_preguntas`(
+	pTexto VARCHAR(200))
+BEGIN
+	IF COALESCE(pTexto,'') != '' THEN
+		SELECT  IdPregunta, IdCarrera, Texto, Descripcion, Creacion,
+				Tipo, Obligatoria, OrdenInverso, LimiteInferior, LimiteSuperior,
+				Paso, Unidad
+		FROM    Preguntas
+		WHERE	Texto like CONCAT('%',pTexto,'%')
+		ORDER BY Texto;
+	END IF;
+END $$
+
