@@ -23,7 +23,7 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h4>Docentes y Autoridades</h4>
+          <h3>Docentes y Autoridades</h3>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron carreras.</p>
           <?php else:?>

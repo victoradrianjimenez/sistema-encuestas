@@ -9,17 +9,9 @@
   <?php include 'elements/head.php'?> 
   <title>Lista Materias</title>
   <style>
-    .buscador{
-      position: relative;
-    }
-    .buscador i{
-      position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
-    }
-    
     .button-group li a{
       margin-right: 5px;
     }
-    
   </style>
 </head>
 <body>

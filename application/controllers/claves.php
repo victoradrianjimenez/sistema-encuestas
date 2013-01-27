@@ -199,6 +199,7 @@ class Claves extends CI_Controller{
   public function ingresar(){
     //verifico si se envio clave
     $pClave = $this->input->post('clave');
+    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
     if($pClave){
       $this->load->model('Clave');
       $this->load->model('Encuesta');

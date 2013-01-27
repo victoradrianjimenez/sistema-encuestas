@@ -10,9 +10,9 @@
   <title>Ingresar Clave de Acceso</title>
   
   <style>
-    input[name="submit"]{width:100%;}
-    input[name="clave"]{text-align:center;}
-    form h6{text-align:center;}
+    #Main input[name="submit"]{width:100%;}
+    #Main input[name="clave"]{text-align:center;}
+    #Main form h6{text-align:center;}
     #info p{font-size: 11pt; text-align:justify;}
   </style>  
 </head>
