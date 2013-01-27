@@ -2367,3 +2367,23 @@ BEGIN
     SELECT Mensaje;
 END $$
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_formularios`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_formularios`(
+	pNombre VARCHAR(60))
+BEGIN
+	IF COALESCE(pNombre,'') != '' THEN
+		SELECT  IdFormulario, Nombre, Titulo, Descripcion, Creacion, 
+				PreguntasAdicionales
+		FROM    Formularios
+		WHERE	Nombre like CONCAT('%',pNombre,'%')
+		ORDER BY Nombre;
+	END IF;
+END $$
+

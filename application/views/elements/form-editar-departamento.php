@@ -35,15 +35,8 @@
       url: "<?php echo site_url('personas/buscar')?>", 
       data:{ Buscar: $(this).val() }
     }).done(function(msg){
-      //si el servidor no envia datos
-      if (msg.length == 0){
-        //vaciar listado
-        $('#listaPersonas').empty();
-        return;
-      }
-      //separo los datos separados en filas
-      var filas = msg.split("\n");
       $('#listaPersonas').empty();
+      var filas = msg.split("\n");
       for (var i=0; i<filas.length; i++){
         if (filas[i].length<2) continue;
         //separo datos en columnas

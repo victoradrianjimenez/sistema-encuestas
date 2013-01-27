@@ -5,6 +5,8 @@
  */
 class Encuestas extends CI_Controller{
   
+  const per_page = 10; //cuantos items se mostraran por pagina en un listado
+  
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
@@ -14,31 +16,25 @@ class Encuestas extends CI_Controller{
     $this->listar();
   }
   
- 
-  public function listar($pagInicio=0){
-    if (!is_numeric($pagInicio)){
-      show_error('El número de página es inválido.');
+  /*
+   * Muestra el listado de encuestas.
+   */
+  public function listar($PagInicio=0){
+    //verifico si el usuario tiene permisos para continuar    
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
-    
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    //chequeo parámetros de entrada
+    $PagInicio = (int)$PagInicio;
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Encuesta');
     $this->load->model('Gestor_encuestas','ge');
     
-    $cantidadEncuestas = $this->ge->cantidad();
-    $encuestas = $this->ge->listar($pagInicio, 5);
-
-    //genero la lista de links de paginación
-    $config['base_url'] = site_url("encuestas/listar");
-    $config['total_rows'] = $cantidadEncuestas;
-    $config['per_page'] = 5;
-    $config['uri_segment'] = 3;
-    $this->pagination->initialize($config);
-    
     //obtengo lista de encuestas
+    $encuestas = $this->ge->listar($PagInicio, self::per_page);
     $tabla = array();
     foreach ($encuestas as $i => $encuesta) {
       $tabla[$i]=array(
@@ -50,39 +46,43 @@ class Encuestas extends CI_Controller{
         'FechaFin' => $encuesta->FechaFin
        );
     }
-
+    //genero la lista de links de paginación
+    $config['base_url'] = site_url("encuestas/listar");
+    $config['total_rows'] = $this->ge->cantidad();
+    $config['per_page'] = self::per_page;
+    $config['uri_segment'] = 3;
+    $this->pagination->initialize($config);
+    
     //envio datos a la vista
-    $data['tabla'] = $tabla; //array de datos de los Departamentos
+    $data['tabla'] = &$tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
     $this->load->view('lista_encuestas', $data);
   }
   
-
   /*
-   * Ver todo lo relacionado a una encuesta
+   * Ver y editar datos relacionados a una encuesta
    */
-  public function ver($idEncuesta=0, $idFormulario=0, $pagInicio=0){
-    if (!is_numeric($idEncuesta) || $idEncuesta<1 || !is_numeric($idFormulario) || $idFormulario<1){
-      show_error('El Identificador de Encuesta no es válido.');
+  public function ver($IdEncuesta=null, $IdFormulario=null, $PagInicio=0){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
-    elseif (!is_numeric($pagInicio)){
-      show_error('El número de página es inválido.');
-      return;
-    }
-    
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    //chequeo parámetros de entrada
+    $PagInicio = (int)$PagInicio;
+    $IdEncuesta = (int)$IdEncuesta;
+    $IdFormulario = (int)$IdFormulario;
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Clave');
     $this->load->model('Encuesta');
     $this->load->model('Gestor_encuestas','ge');
-    $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-    if ($encuesta != FALSE){
-      $cantidadClaves = 0; //$encuesta->cantidadClaves();
-      $claves = array();//$encuesta->listarClaves($pagInicio, 5);
+    
+    //obtengo datos de la encuesta
+    $encuesta = $this->ge->dame($IdEncuesta, $IdFormulario);
+    if ($encuesta){
       $data['encuesta'] = array(
         'IdEncuesta' => $encuesta->IdEncuesta,
         'IdFormulario' => $encuesta->IdFormulario,
@@ -91,34 +91,6 @@ class Encuestas extends CI_Controller{
         'FechaInicio' => $encuesta->FechaInicio,
         'FechaFin' => $encuesta->FechaFin
       );
-      //genero la lista de links de paginación
-      $config['base_url'] = site_url("encuestas/ver/$idEncuesta/$idFormulario");
-      $config['total_rows'] = $cantidadClaves;
-      $config['per_page'] = 5;
-      $config['uri_segment'] = 5;
-      $this->pagination->initialize($config);
-      //obtengo lista de claves
-      $tabla = array();
-      foreach ($claves as $i => $clave) {
-        $tabla[$i]=array(
-          'IdClave' => $clave->IdClave,
-          'Clave' => $clave->Clave,
-          'Tipo' => $clave->Tipo,
-          'Generada' => $clave->Generada,
-          'Utilizada' => $clave->Utilizada
-         );
-      }
-      //envio datos a la vista
-      $data['tabla'] = $tabla; //array de datos de los Departamentos
-      $data['encuesta'] = array(
-        'IdEncuesta' => $encuesta->IdEncuesta, 
-        'IdFormulario' => $encuesta->IdFormulario,
-        'Año' => $encuesta->Año,  
-        'Cuatrimestre' => $encuesta->Cuatrimestre,
-        'FechaInicio' => $encuesta->FechaInicio,
-        'FechaFin' => $encuesta->FechaFin
-      );
-      $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
       $this->load->view('ver_encuesta', $data);
     }
@@ -128,17 +100,23 @@ class Encuestas extends CI_Controller{
   }
 
   /*
-   * Agregar nueva encuesta
+   * Recepción del formulario para agregar nueva encuesta
    * POST: IdFormulario, Anio, Cuatrimestre
    */
   public function nueva(){
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
+      return;
+    }
+    //verifico datos POST
     $this->form_validation->set_rules('IdFormulario','ID Formulario','required|is_natural_no_zero');
     $this->form_validation->set_rules('Anio','Año','required|is_natural_no_zero|less_than[2100]|greater_than[1900]');
     $this->form_validation->set_rules('Cuatrimestre','Periodo/Cuatrimestre','required|is_natural_no_zero|less_than[12]');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
-    if($this->form_validation->run()!=FALSE){
+    if($this->form_validation->run()){
       $this->load->model('Gestor_encuestas','ge');
+      
       //agrego encuesta y cargo vista para mostrar resultado
       $res = $this->ge->alta($this->input->post('IdFormulario',TRUE), $this->input->post('Anio',TRUE), $this->input->post('Cuatrimestre',TRUE));
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
@@ -153,23 +131,29 @@ class Encuestas extends CI_Controller{
   }
 
   /*
-   * Finalizar una Encuesta
+   * Recepción del formulario para finalizar una Encuesta
    * POST: IdEncuesta, IdFormulario
    */
   public function finalizar(){
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
+      return;
+    }
+    //verifico datos POST
     $this->form_validation->set_rules('IdEncuesta','ID Encuesta','is_natural_no_zero|required');
     $this->form_validation->set_rules('IdFormulario','ID Formulario','is_natural_no_zero|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
-    if($this->form_validation->run()!=FALSE){
+    if($this->form_validation->run()){
       $this->load->model('Encuesta');
       $this->Encuesta->IdEncuesta = $this->input->post('IdEncuesta', TRUE); 
       $this->Encuesta->IdFormulario = $this->input->post('IdFormulario', TRUE);
+      
       //finalizo la encuesta y cargo vista para mostrar resultado
       $res = $this->Encuesta->finalizar();
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("encuestas/listar"); //link para boton aceptar/continuar
+      $data['link'] = site_url("encuestas"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $data);
     }
     else{
@@ -297,6 +281,83 @@ class Encuestas extends CI_Controller{
             "$clave->Utilizada\t\n";
     }
   }
+
+
+
+
+
+
+
+
+
+
+/*
+ * public function ver($IdEncuesta=null, $IdFormulario=null, $PagInicio=0){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
+      return;
+    }
+    //chequeo parámetros de entrada
+    $PagInicio = (int)$PagInicio;
+    $IdEncuesta = (int)$IdEncuesta;
+    $IdFormulario = (int)$IdFormulario;
+    
+    //cargo modelos, librerias, etc.
+    $this->load->library('pagination');
+    $this->load->model('Clave');
+    $this->load->model('Encuesta');
+    $this->load->model('Gestor_encuestas','ge');
+    
+    //obtengo datos de la encuesta
+    $encuesta = $this->ge->dame($IdEncuesta, $IdFormulario);
+    if ($encuesta){
+      $cantidadClaves = 0;//$encuesta->cantidadClaves();
+      $claves = array();//$encuesta->listarClaves($PagInicio, 5);
+      $data['encuesta'] = array(
+        'IdEncuesta' => $encuesta->IdEncuesta,
+        'IdFormulario' => $encuesta->IdFormulario,
+        'Año' => $encuesta->Año,
+        'Cuatrimestre' => $encuesta->Cuatrimestre,
+        'FechaInicio' => $encuesta->FechaInicio,
+        'FechaFin' => $encuesta->FechaFin
+      );
+      //genero la lista de links de paginación
+      $config['base_url'] = site_url("encuestas/ver/$IdEncuesta/$IdFormulario");
+      $config['total_rows'] = $cantidadClaves;
+      $config['per_page'] = 5;
+      $config['uri_segment'] = 5;
+      $this->pagination->initialize($config);
+      //obtengo lista de claves
+      $tabla = array();
+      foreach ($claves as $i => $clave) {
+        $tabla[$i]=array(
+          'IdClave' => $clave->IdClave,
+          'Clave' => $clave->Clave,
+          'Tipo' => $clave->Tipo,
+          'Generada' => $clave->Generada,
+          'Utilizada' => $clave->Utilizada
+         );
+      }
+      //envio datos a la vista
+      $data['tabla'] = $tabla; //array de datos de los Departamentos
+      $data['encuesta'] = array(
+        'IdEncuesta' => $encuesta->IdEncuesta, 
+        'IdFormulario' => $encuesta->IdFormulario,
+        'Año' => $encuesta->Año,  
+        'Cuatrimestre' => $encuesta->Cuatrimestre,
+        'FechaInicio' => $encuesta->FechaInicio,
+        'FechaFin' => $encuesta->FechaFin
+      );
+      $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
+      $this->load->view('ver_encuesta', $data);
+    }
+    else{
+      show_error('El Identificador de Encuesta no es válido.');
+    }
+  }
+ */
 
   
 }

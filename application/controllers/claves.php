@@ -19,6 +19,17 @@ class Claves extends CI_Controller{
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
   }
+    
+  public function index(){
+    $this->listar();
+  }
+  
+  /*
+   * Muestra el listado de claves.
+   */
+  public function listar($PagInicio=0){
+    
+  }
   
   private function _datosItems($seccion){
     $items = $seccion->listarItems();
@@ -223,7 +234,12 @@ class Claves extends CI_Controller{
    * POST: IdEncuesta, IdFormulario, IdCarrera, IdMateria, Tipo, Cantidad
    */
    public function generar(){
-    //VERIFICAR QUE EL USUARIO TIENE PERMISOS PARA CONTINUAR!!!!
+    //verifico si el usuario tiene permisos para continuar    
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
+      return;
+    }
+    //chequeo parámetros de entrada
     $this->form_validation->set_rules('IdEncuesta','ID Encuesta','is_natural_no_zero|required');
     $this->form_validation->set_rules('IdFormulario','ID Formulario','is_natural_no_zero|required');
     $this->form_validation->set_rules('IdCarrera','ID Carrera','is_natural_no_zero|required');
@@ -231,17 +247,20 @@ class Claves extends CI_Controller{
     $this->form_validation->set_rules('Tipo','Tipo','alpha|exact_length[1]|required');
     $this->form_validation->set_rules('Cantidad','Cantidad','is_natural_no_zero');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
-    if($this->form_validation->run()!=FALSE){
-      $this->load->model('Encuestas');
+    if($this->form_validation->run()){
+      $this->load->model('Encuesta');
+      
+      //VER POR TIPO DE CLAVE!!!!!!!!!!!!
+      
       $cantidad = $this->input->post('Cantidad',TRUE);
       $cnt = 0;
       for ($i=0; $i<$cantidad; $i++){
-        $clave = $this->gc->altaClave( $this->input->post('IdEncuesta',TRUE),
+        $clave = $this->Encuesta->altaClave( $this->input->post('IdEncuesta',TRUE),
                               $this->input->post('IdFormulario',TRUE),
                               $this->input->post('IdCarrera',TRUE),
                               $this->input->post('IdMateria',TRUE),
                               $this->input->post('Tipo',TRUE));
-        //verificar si se crearon!!!!!!!!!
+        //VERIFICAR SI SE CREARON!!!!!!!!!
         $cnt++;
       }
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session

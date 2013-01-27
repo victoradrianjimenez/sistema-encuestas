@@ -7,20 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Lista Materias</title>
-  <style>
-    .buscador{
-      position: relative;
-    }
-    .buscador i{
-      position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
-    }
-    
-    .button-group li a{
-      margin-right: 5px;
-    }
-    
-  </style>
+  <title>Lista Encuestas</title>
 </head>
 <body>
   <!-- Header -->
@@ -54,7 +41,8 @@
                   </a></td>
                   <td><?php echo $fila['FechaInicio']?></td>
                   <td><?php echo $fila['FechaFin']?></td>
-                  <td><a class="Finalizar" href="" value="<?php echo $fila['IdEncuesta'].".".$fila['IdFormulario']?>"><?php echo ($fila['FechaFin']=='')?'Finalizar período':''?></a></td>
+                  <td>
+                  </td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -91,46 +79,15 @@
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
-    <!-- ventana modal para cerrar encuesta -->
-  <div id="modalFinalizar" class="reveal-modal medium">
-    <form action="<?php echo site_url('encuestas/finalizar')?>" method="post">
-      <h3>Finalizar encuesta</h3>
-      <p>¿Desea continuar?</p>
-      <input type="hidden" name="IdEncuesta" value="" />
-      <input type="hidden" name="IdFormulario" value="" />
-      <div class="row">         
-        <div class="ten columns centered">
-          <div class="six mobile-one columns push-one-mobile">
-            <input class="button cancelar" type="button" value="Cancelar"/>
-          </div>
-          <div class="six mobile-one columns pull-one-mobile ">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </div>
-      </div>
-    </form>
-    <a class="close-reveal-modal">&#215;</a>
-  </div>
-  
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  s
+
   <script>
     $('.cancelar').click(function(){
       $('.cancelar').trigger('reveal:close'); //cerrar ventana
     });
-       
-    $('.Finalizar').click(function(){
-      value = $(this).attr('value');
-      datos = value.split(".");
-      $('#modalFinalizar input[name="IdEncuesta"]').val(datos[0]);
-      $('#modalFinalizar input[name="IdFormulario"]').val(datos[1]);
-      $("#modalFinalizar").reveal();
-      return false;
-    });
-    
   </script>
 </body>
 </html>

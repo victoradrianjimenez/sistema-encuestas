@@ -1,17 +1,24 @@
 <h3>Crear nueva Encuesta</h3>
 <form action="<?php echo site_url('encuestas/nueva')?>" method="post">
   <div class="twelve columns">
-    <label>Formulario: </label>
-    <select id="listaFormularios" name="IdFormulario">
-    </select>
+    <label for="buscarFormulario">Formulario: </label>
+    <div class="buscador">
+      <input id="buscarFormulario" type="text" autocomplete="off">
+      <i class="gen-enclosed foundicon-search"></i>
+      <select id="listaFormularios" name="IdFormulario" size="3">
+      </select>
+      <?php echo form_error('IdFormulario')?>
+    </div>
   </div>
   <div class="eight columns">
     <label>Año: </label>
     <input type="number" name="Anio" min="1900" max="2100" step="1" value="<?php echo date('Y')?>"/>
+    <?php echo form_error('Anio')?>
   </div>
   <div class="four columns">
     <label title="Período/Cuatrimestre">Período: </label>
     <input type="number" name="Cuatrimestre" min="1" step="1" value="1" />
+    <?php echo form_error('Cuatrimestre')?>
   </div>  
   <div class="row">         
     <div class="ten columns centered">
@@ -25,23 +32,24 @@
   </div>
 </form>
 <script>
-  $.ajax({
-    type: "POST", 
-    url: "<?php echo site_url('formularios/listarAJAX')?>", 
-    data:{}
-  }).done(function(msg){
-    //si el servidor no envia datos
-    if (msg.length == 0) return;
-    //separo los datos separados en filas
-    var filas = msg.split("\n");
-    $('#listaFormularios').empty();
-    for (var i=0; i<filas.length-1; i++){
-      //separo datos en columnas
-      var columnas = filas[i].split("\t");
-      var id = columnas[0];
-      var datos = columnas[1]+' ('+columnas[2]+')';
-      //agregar fila a la lista desplegable
-      $('#listaFormularios').append('<option value="'+id+'">'+datos+'</option>');
-    }
+  //realizo la busqueda de formularios con AJAX
+  $('#buscarFormulario').keyup(function(){
+    $.ajax({
+      type: "POST", 
+      url: "<?php echo site_url('formularios/buscarAJAX')?>", 
+      data:{ Buscar: $(this).val() }
+    }).done(function(msg){
+      $('#listaFormularios').empty();
+      var filas = msg.split("\n");
+      for (var i=0; i<filas.length; i++){
+        if (filas[i].length<3) continue;
+        //separo datos en columnas
+        var columnas = filas[i].split("\t");
+        var id = columnas[0];
+        var datos = columnas[1]+' ('+columnas[2]+')';
+        //agregar fila a la lista desplegable
+        $('#listaFormularios').append('<option value="'+id+'">'+datos+'</option>');
+      }
+    });
   });
 </script>

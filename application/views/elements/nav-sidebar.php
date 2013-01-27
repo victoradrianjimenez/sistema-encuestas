@@ -11,7 +11,7 @@
       </ul>
     </li>
     <li class="has-flyout">
-      <a href="#">Facultad</a>
+      <a href="#">Gestión Facultad</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
         <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
@@ -21,7 +21,7 @@
       </ul>
     </li>
     <li class="has-flyout">
-      <a href="#">Encuestas</a>
+      <a href="#">Gestión Encuestas</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
         <li><a href="<?php echo site_url("encuestas")?>">Encuestas realizadas</a></li>

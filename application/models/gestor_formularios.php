@@ -25,6 +25,22 @@ class Gestor_formularios extends CI_Model{
     $this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
+     
+  /**
+   * Buscar formularios por el nombre. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param fragmento del nombre del formulario
+   * @return arrayFormularios
+   */
+  public function buscar($nombre){
+    $nombre = $this->db->escape($nombre);
+    $query = $this->db->query("call esp_buscar_formularios($nombre)");
+    $data = $query->result('Formularios');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
   
   /**
    * Obtener el listado de formularios. Devuleve un array de objetos.
