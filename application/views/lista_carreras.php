@@ -8,23 +8,6 @@
 <head>
   <?php include 'elements/head.php'?> 
   <title>Lista Carreras</title>
-  
-  <style>
-    .buscador{
-      position: relative;
-    }
-    .buscador i{
-      position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
-    }
-    i:hover{
-      color:#1E728C;
-    }
-    
-    a.button{
-      width: 100%;
-    }
-    
-  </style>
 </head>
 <body>
   <!-- Header -->
@@ -34,7 +17,6 @@
     </div>
   </div>
   
-  <!-- Main Section -->
   <div class="row">
     <!-- Main Section -->  
     <div id="Main" class="nine columns push-three">
@@ -53,9 +35,9 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("carreras/ver/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
-                  <td><?php echo $fila['Plan']?></td>
-                  <td><?php echo $fila['Departamento']?></td>
+                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
+                  <td class="plan"><?php echo $fila['Plan']?></td>
+                  <td><a href="<?php echo site_url("departamentos/ver/".$fila['Departamento']['IdDepartamento'])?>"><?php echo $fila['Departamento']['Nombre']?></a></td>
                   <td><a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
@@ -99,6 +81,7 @@
   <div id="modalEliminar" class="reveal-modal medium">
     <form action="<?php echo site_url('carreras/eliminar')?>" method="post">
       <h3>Eliminar carrera</h3>
+      <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
       <input type="hidden" name="IdCarrera" value="" />
       <div class="row">         
@@ -128,7 +111,11 @@
     
     $('.eliminar').click(function(){
       IdCarrera = $(this).attr('value');
+      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      Plan = $(this).parentsUntil('tr').parent().find('.plan').text();
       $('#modalEliminar input[name="IdCarrera"]').val(IdCarrera);
+      //pongo el nombre del departamento en el dialogo
+      $("#modalEliminar").find('.nombre').html(Nombre + ' - Plan: '+Plan);
       $("#modalEliminar").reveal();
       return false;
     });

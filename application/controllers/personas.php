@@ -27,12 +27,15 @@ class Personas extends CI_Controller {
       $this->form_validation->set_rules('Contrasena','Contraseña','required|alpha_numeric');
       if($this->form_validation->run()==true){
         //en caso de que los datos sean correctos, realizo login
+        $this->ion_auth->logout();
         if ($this->ion_auth->login($this->input->post('Usuario'), $this->input->post('Contrasena'), (bool) $this->input->post('Recordarme'))){
           //si el usuario ingresó datos de acceso válidos
+          
           $data['usuarioLogin'] = $this->ion_auth->user()->row();
           $this->load->view('index', $data);
         }
         else{
+          echo'no';
           //si no logró validar
           $data['mensajeLogin']="Nombre de usuario y/o contraseña inválidos, por favor vuelva a intentar.";
           $this->load->view('index', $data);
@@ -147,6 +150,7 @@ class Personas extends CI_Controller {
     $this->load->model('Persona');
     $this->load->model('Gestor_personas','gp');
     $personas = $this->gp->buscar($buscar);
+    echo "\n";
     foreach ($personas as $persona) {
       echo  "$persona->IdPersona\t".
             "$persona->Apellido\t".

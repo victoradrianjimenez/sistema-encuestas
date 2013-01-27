@@ -1,4 +1,4 @@
-<form action="<?php echo $link?>" method="post">
+<form action="<?php echo site_url('carreras/asociarMateria')?>" method="post">
   <h3>Asociar materia</h3>
   <h5><?php echo $carrera['Nombre'].' - Plan '.$carrera['Plan']?></h5>
   <input type="hidden" name="IdCarrera" value="<?php echo $carrera['IdCarrera']?>" />
@@ -6,9 +6,10 @@
   <div class="buscador">
     <input id="buscarMateria" type="text" autocomplete="off">
     <i class="gen-enclosed foundicon-search"></i>
+    <select id="listaResultado" name="IdMateria" size="3">
+    </select>
+    <?php echo form_error('IdMateria')?>
   </div>
-  <select id="listaResultado" class="hide" name="IdMateria" size="5">
-  </select>
   <div class="row">         
     <div class="ten columns centered">
       <div class="six mobile-one columns push-one-mobile">
@@ -25,19 +26,13 @@
   $('#buscarMateria').keyup(function(){
     $.ajax({
       type: "POST", 
-      url: "<?php echo site_url('materias/buscar')?>", 
-      data:{ Buscar: $('#buscarMateria').val() }
+      url: "<?php echo site_url('materias/buscarAJAX')?>", 
+      data:{ Buscar: $(this).val() }
     }).done(function(msg){
-      //si el servidor no envia datos
-      if (msg.length == 0){
-        //ocultar listado
-        $('#listaResultado').hide('fast');
-        return;
-      }
-      //separo los datos separados en filas
+      $('#listaResultado').empty();
       var filas = msg.split("\n");
-      $('#listaResultado').empty().show('fast');
       for (var i=0; i<filas.length-1; i++){
+        if (filas[i].length<2) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];

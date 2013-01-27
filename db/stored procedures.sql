@@ -79,7 +79,7 @@ CREATE TABLE `login_attempts` (
     PRIMARY KEY (`id`)
 );
 
-
+DELETE FROM groups WHERE id >= 0;
 
 INSERT INTO groups VALUES
 ('1', 'admin', 'Administradores'),
@@ -90,6 +90,8 @@ INSERT INTO groups VALUES
 ('6', 'docentes', 'Docentes'),
 ('7', 'organizadores', 'Organizadores'),
 ('8', 'alumnos', 'Alumnos');
+
+DELETE FROM users WHERE id >= 0;
 
 INSERT INTO users VALUES
 ('1', 0x7f000001, 'admin', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'admin@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
@@ -192,11 +194,20 @@ INSERT INTO users VALUES
 ('101', 0x7f000001, 'cgoy', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'cgoy@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
 ('102', 0x7f000001, 'rlabastida', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'rlabastida@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL);
 
+INSERT INTO users VALUES
+('500', 0x7f000001, 'decano', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'encuesta@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
+('501', 0x7f000001, 'jefedepartamento', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'encuesta@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
+('502', 0x7f000001, 'director', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'encuesta@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
+('503', 0x7f000001, 'jefecatedra', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'encuesta@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL),
+('504', 0x7f000001, 'docente', '59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4', '9462e8eee0', 'encuesta@herrera.unt.edu.ar', '', NULL, '1268889823', '1268889823', '1', NULL, NULL, NULL, NULL, NULL, NULL);
+
 UPDATE users 
 SET 
     active = 1
 where
     id >= 0;
+
+DELETE FROM users_groups WHERE id >= 0;
 
 INSERT INTO users_groups VALUES
 ('1', '1', '1'),
@@ -299,6 +310,13 @@ INSERT INTO users_groups VALUES
 ('98', '82', '6'),
 ('99', '71', '6'),
 ('100', '72', '6');
+
+INSERT INTO users_groups VALUES
+('101', '500', '2'),
+('102', '501', '2'),
+('103', '502', '2'),
+('104', '503', '2'),
+('105', '504', '2');
 
 update personas 
 set 
@@ -724,6 +742,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_departamento`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_departamento`(
+	pIdJefeDepartamento INT,
     pNombre VARCHAR(60))
 BEGIN
     DECLARE id SMALLINT;
@@ -738,13 +757,16 @@ BEGIN
         IF EXISTS( SELECT Nombre FROM Departamentos WHERE Nombre = pNombre LIMIT 1) THEN
             SET Mensaje = CONCAT('Ya existe un departamento que se llama ',pNombre,'.');
             ROLLBACK;
-        ELSE    
+        ELSEIF pIdJefeDepartamento IS NOT NULL AND NOT EXISTS( SELECT IdPersona FROM Personas WHERE IdPersona = pIdJefeDepartamento LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe el jefe de departamento con ID=',pIdJefeDepartamento,'.');
+            ROLLBACK;
+		ELSE    
             SET id = (  
                 SELECT COALESCE(MAX(IdDepartamento),0)+1 
                 FROM    Departamentos);
             INSERT INTO Departamentos 
                 (IdDepartamento, IdJefeDepartamento, Nombre)
-            VALUES (id, NULL, pNombre);
+            VALUES (id, pIdJefeDepartamento, pNombre);
             IF err THEN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -801,6 +823,7 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_departamento`(
     pIdDepartamento SMALLINT,
+	pIdJefeDepartamento INT,
     pNombre VARCHAR(60))
 BEGIN
     DECLARE Mensaje VARCHAR(100);
@@ -809,7 +832,10 @@ BEGIN
     
     IF COALESCE(pNombre,'')='' THEN
         SET Mensaje = 'El nombre del departamento no puede estar vacío.';
-    ELSE
+	ELSEIF pIdJefeDepartamento IS NOT NULL AND NOT EXISTS( SELECT IdPersona FROM Personas WHERE IdPersona = pIdJefeDepartamento LIMIT 1) THEN
+		SET Mensaje = CONCAT('No existe el jefe de departamento con ID=',pIdJefeDepartamento,'.');
+		ROLLBACK;
+	ELSE
         START TRANSACTION;
         IF NOT EXISTS( SELECT IdDepartamento FROM Departamentos WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
             SET Mensaje = CONCAT('No existe un departamento con ID=',pIdDepartamento,'.');
@@ -819,7 +845,7 @@ BEGIN
             ROLLBACK;
         ELSE    
             UPDATE Departamentos 
-            SET Nombre = pNombre
+            SET Nombre = pNombre, IdJefeDepartamento = pIdJefeDepartamento
             WHERE IdDepartamento = pIdDepartamento;
             IF err THEN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
@@ -909,8 +935,6 @@ BEGIN
         SET Mensaje = 'No se puede eliminar, la carrera tiene preguntas asociadas.';
         ROLLBACK;
     ELSE
-        DELETE FROM Accesos_Carreras
-        WHERE IdCarrera = pIdCarrera;
         DELETE FROM Items_Carreras
         WHERE IdCarrera = pIdCarrera;
         DELETE FROM Carreras
@@ -1161,7 +1185,7 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_persona`(
     pApellido VARCHAR(40),
-    pNombre VARCHAR(40),)
+    pNombre VARCHAR(40))
 BEGIN
     DECLARE id INT;
     DECLARE Mensaje VARCHAR(100);
@@ -2281,4 +2305,22 @@ BEGIN
 	FROM	Materias M INNER JOIN Materias_Carreras MC ON 
 			M.IdMateria = MC.IdMateria
 	WHERE	MC.IdCarrera = pIdCarrera AND M.Nombre like CONCAT('%',pNombre,'%');
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_departamentos`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_departamentos`(
+	pNombre VARCHAR(60))
+BEGIN
+	IF COALESCE(pNombre,'') != '' THEN
+		SELECT	IdDepartamento, IdJefeDepartamento, Nombre
+		FROM	Departamentos
+		WHERE	Nombre like CONCAT('%',pNombre,'%');
+	END IF;
 END $$

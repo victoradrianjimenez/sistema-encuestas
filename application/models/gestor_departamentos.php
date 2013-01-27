@@ -14,12 +14,15 @@ class Gestor_departamentos extends CI_Model{
    * Da de Alta un nuevo departamento. Devuleve el id en caso de éxito o un mensaje en caso de error.
    *
    * @access  public
+   * @param identificador del jefe de departamento
    * @param nombre del departamento
    * @return  string
    */
-  public function alta($Nombre){
+  public function alta($IdJefeDepartamento, $Nombre){
     $Nombre = $this->db->escape($Nombre);
-    $query = $this->db->query("call esp_alta_departamento($Nombre)");
+    $IdJefeDepartamento = $this->db->escape($IdJefeDepartamento);
+    echo $IdJefeDepartamento; 
+    $query = $this->db->query("call esp_alta_departamento($IdJefeDepartamento, $Nombre)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
@@ -51,10 +54,11 @@ class Gestor_departamentos extends CI_Model{
    * @param nombre del departamento
    * @return  string
    */
-  public function modificar($IdDepartamento, $Nombre){
+  public function modificar($IdDepartamento, $IdJefeDepartamento, $Nombre){
     $Nombre = $this->db->escape($Nombre);
+    $IdJefeDepartamento = $this->db->escape($IdJefeDepartamento);
     $IdDepartamento = $this->db->escape($IdDepartamento);
-    $query = $this->db->query("call esp_modificar_departamento($IdDepartamento, $Nombre)");
+    $query = $this->db->query("call esp_modificar_departamento($IdDepartamento, $IdJefeDepartamento, $Nombre)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
@@ -112,5 +116,22 @@ class Gestor_departamentos extends CI_Model{
     return ($data!=FALSE)?$data->Cantidad:0;
   }
 
+
+  /**
+   * Buscar un departamento por su nombre. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param fragmento del nombre del departamento
+   * @return arrayDepartamentos
+   */
+  public function buscar($nombre){
+    $nombre = $this->db->escape($nombre);
+    $query = $this->db->query("call esp_buscar_departamentos($nombre)");
+    $data = $query->result('Departamento');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
 }
 ?>

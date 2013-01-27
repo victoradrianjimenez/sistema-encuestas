@@ -271,12 +271,13 @@ class Materias extends CI_Controller{
   
   
   //funcion para responder solicitudes AJAX
-  public function buscar(){
+  public function buscarAJAX(){
     $buscar = $this->input->post('Buscar');
     //VERIFICAR
     $this->load->model('Materia');
     $this->load->model('Gestor_materias','gm');
     $materias = $this->gm->buscar($buscar);
+    echo "\n";
     foreach ($materias as $materia) {
       echo  "$materia->IdMateria\t".
             "$materia->Nombre\t".

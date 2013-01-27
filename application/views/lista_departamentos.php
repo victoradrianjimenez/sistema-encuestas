@@ -28,12 +28,17 @@
           <?php else:?>
             <table class="twelve">
               <thead>
-                <th>Nombre</th> <th>Acciones</th>
+                <th>Nombre</th>
+                <th>Jefe de Departamento</th>
+                <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("departamentos/ver/".$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
-                  <td><a class="eliminar" href="" value="<?php echo $fila['IdDepartamento']?>">Eliminar</a></td>
+                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
+                  <td><a class="jefeDepartamento" href="<?php echo site_url('personas/ver/'.$fila['JefeDepartamento']['IdPersona'])?>"/><?php echo $fila['JefeDepartamento']['Nombre'].' '.$fila['JefeDepartamento']['Apellido']?></a></td>
+                  <td>
+                    <a class="eliminar" href="" value="<?php echo $fila['IdDepartamento']?>">Eliminar</a>
+                  </td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -65,7 +70,7 @@
     <?php
       //a donde mandar los datos editados para darse de alta
       $link = site_url('departamentos/nuevo');  
-      $departamento = array('IdDepartamento' => 0, 'Nombre' => '');
+      $departamento = array('IdDepartamento'=>0, 'IdJefeDepartamento'=>0, 'Nombre'=>'');
       include 'elements/form-editar-departamento.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
@@ -74,9 +79,10 @@
   <!-- ventana modal para desasociar materias a la carrera -->
   <div id="modalEliminar" class="reveal-modal medium">
     <form action="<?php echo site_url('departamentos/eliminar')?>" method="post">
-      <h3>Eliminar departamento</h3>
-      <p>¿Desea continuar?</p>
       <input type="hidden" name="IdDepartamento" value="" />
+      <h3>Eliminar departamento</h3>
+      <h5 class="nombre"></h5>
+      <p>¿Desea continuar?</p>
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">
@@ -91,7 +97,6 @@
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
-  
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
@@ -104,7 +109,11 @@
 
     $('.eliminar').click(function(){
       IdDepartamento = $(this).attr('value');
+      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      //cargo el id del departamento en el formulario
       $('#modalEliminar input[name="IdDepartamento"]').val(IdDepartamento);
+      //pongo el nombre del departamento en el dialogo
+      $("#modalEliminar").find('.nombre').html(Nombre);
       $("#modalEliminar").reveal();
       return false;
     });

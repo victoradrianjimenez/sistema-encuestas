@@ -27,13 +27,14 @@
       <div class="row">
         <div class="twelve columns">
           <h3><?php echo $departamento['Nombre']?></h3>
-
+          <p>Jefe de Departamento: <?php echo $departamento['JefeDepartamento']['Nombre'].' '.$departamento['JefeDepartamento']['Apellido']?></p>
         </div>
       </div>
       <div class="row">
         <div class="twelve columns">
           <ul class="button-group">
             <li><a class="button" data-reveal-id="modalModificar">Modificar departamento</a></li>
+            <li><a class="button" href="<?php echo site_url('departamentos')?>">Todos los departamentos</a></li>
           </ul>
         </div>
       </div>
