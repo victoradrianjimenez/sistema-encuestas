@@ -45,6 +45,24 @@ class Gestor_personas extends CI_Model{
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
+  
+  /**
+   * Da de Baja una persona. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de la persona
+   * @return string
+   */
+  public function baja($IdPersona){
+    $IdPersona = $this->db->escape($IdPersona);
+    $query = $this->db->query("call esp_baja_persona($IdPersona)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
   /**
    * Obtener el listado de personas. Devuleve un array de objetos.
    *
@@ -63,7 +81,26 @@ class Gestor_personas extends CI_Model{
     return $data;
   }
 
-
+  /**
+   * Modifica una persona. Devuleve 'ok.' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de la persona
+   * @param apellido de la persona
+   * @param nombre de la persona
+   * @return string
+   */
+  public function modificar($IdPersona, $Apellido, $Nombre){
+    $IdPersona = $this->db->escape($IdPersona);
+    $Apellido = $this->db->escape($Apellido);
+    $Nombre = $this->db->escape($Nombre);
+    $query = $this->db->query("call esp_modificar_persona($IdPersona, $Apellido, $Nombre)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
   /**
    * Obtener la cantidad de personas.
    *

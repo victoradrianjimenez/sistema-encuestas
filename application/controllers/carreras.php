@@ -22,7 +22,7 @@ class Carreras extends CI_Controller{
   public function listar($PagInicio=0){
     //verifico si el usuario tiene permisos para continuar    
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //chequeo parámetros de entrada
@@ -78,7 +78,7 @@ class Carreras extends CI_Controller{
   public function ver($IdCarrera=null, $PagInicio=0){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //chequeo parámetros de entrada
@@ -134,7 +134,7 @@ class Carreras extends CI_Controller{
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST
@@ -166,7 +166,7 @@ class Carreras extends CI_Controller{
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST
@@ -199,7 +199,7 @@ class Carreras extends CI_Controller{
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST
@@ -228,7 +228,7 @@ class Carreras extends CI_Controller{
   public function asociarMateria(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST
@@ -260,7 +260,7 @@ class Carreras extends CI_Controller{
   public function desasociarMateria(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST

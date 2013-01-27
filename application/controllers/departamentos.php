@@ -22,10 +22,9 @@ class Departamentos extends CI_Controller{
   public function listar($PagInicio=0){
     //verifico si el usuario tiene permisos para continuar    
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
-    
     //chequeo parámetros de entrada
     $PagInicio = (int)$PagInicio;
     
@@ -80,7 +79,7 @@ class Departamentos extends CI_Controller{
   public function ver($IdDepartamento=null, $PagInicio=0){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //chequeo parámetros de entrada
@@ -132,7 +131,7 @@ class Departamentos extends CI_Controller{
   public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST
@@ -157,13 +156,13 @@ class Departamentos extends CI_Controller{
   }
 
   /*
-   * Recepción del formulario para modificar los datos de una carrera
-   * POST: IdCarrera, IdDepartamento, Nombre, Plan
+   * Recepción del formulario para modificar los datos de un departamento
+   * POST: IdDepartamento, IdJefeDepartamento, Nombre
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST
@@ -171,7 +170,7 @@ class Departamentos extends CI_Controller{
     $this->form_validation->set_rules('IdJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
     $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
-    if($this->form_validation->run()!=FALSE){
+    if($this->form_validation->run()){
       $this->load->model('Gestor_departamentos','gd');
       $IdDepartamento = $this->input->post('IdDepartamento',TRUE);
       $IdJefeDepartamento = $this->input->post('IdJefeDepartamento',TRUE);
@@ -196,7 +195,7 @@ class Departamentos extends CI_Controller{
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene persmisos para ingresar a esta sección.');
+      show_error('No tiene permisos para ingresar a esta sección.');
       return;
     }
     //verifico datos POST

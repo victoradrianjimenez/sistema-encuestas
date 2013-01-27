@@ -2324,3 +2324,46 @@ BEGIN
 		WHERE	Nombre like CONCAT('%',pNombre,'%');
 	END IF;
 END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_persona`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_persona`(
+    pIdPersona INT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT IdDocente FROM Respuestas WHERE IdDocente = pIdPersona LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar el docente porque hay respuestas de alumnos referidas a el.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdDocente FROM Docentes_Materias WHERE IdDocente = pIdPersona LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar porque el docente esta asociado con al menos una materia.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdJefeDepartamento FROM Departamentos WHERE IdJefeDepartamento = pIdPersona LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe un departamento que lo tiene como Jefe de Departamento.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdDirectorCarrera FROM Carreras WHERE IdDirectorCarrera = pIdPersona LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existe una carrera que lo tiene como Director de Carrera.';
+        ROLLBACK;
+    ELSE
+        DELETE FROM Personas
+        WHERE IdPersona = pIdPersona;
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = 'ok';
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+

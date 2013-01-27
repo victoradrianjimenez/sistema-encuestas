@@ -76,7 +76,7 @@
     <a class="close-reveal-modal">&#215;</a>
   </div>
     
-  <!-- ventana modal para desasociar materias a la carrera -->
+  <!-- ventana modal para eliminar materias -->
   <div id="modalEliminar" class="reveal-modal medium">
     <form action="<?php echo site_url('departamentos/eliminar')?>" method="post">
       <input type="hidden" name="IdDepartamento" value="" />

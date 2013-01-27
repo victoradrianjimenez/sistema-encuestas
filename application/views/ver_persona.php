@@ -21,31 +21,18 @@
   <div class="row">    
     <!-- Main -->
     <div id="Main" class="nine columns push-three">
-      <form class="custom" action="<?php echo $link?>" method="post"> 
-        <fieldset>
-          <legend>Persona</legend>
-          <input type="hidden" name="IdPersona" value="<?php echo $persona['IdPersona']?>"/>
-          <div class="twelve columns">
-            <label for="campoNombre">Nombre: </label>
-            <input id="campoNombre" type="text" name="Nombre" value="<?php echo $persona['Nombre']?>"/>
-            <?php echo form_error('Nombre'); ?>
-            
-            <label for="campoApellido">Apellido: </label>
-            <input id="campoApellido" type="text" name="Apellido" required value="<?php echo $persona['Apellido']?>"/>
-            <?php echo form_error('Nombre'); ?>
-          </div>
-          <div class="row">         
-            <div class="six columns centered">
-              <div class="six mobile-one columns push-one-mobile">
-                <button id="botonVolver" class="button">Cancelar</button>
-              </div>
-              <div class="six mobile-one columns pull-one-mobile ">
-                <input class="button" type="submit" name="submit" value="Aceptar" />
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </form>
+      <div class="row">
+        <div class="twelve columns">
+          <h3><?php echo $persona['Nombre'].' '.$persona['Apellido']?></h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="twelve columns">
+          <ul class="button-group">
+            <li><a class="button" data-reveal-id="modalModificar">Modificar persona</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
     
     <!-- Nav Sidebar -->
@@ -60,6 +47,16 @@
   <div class="row">    
     <?php include 'elements/footer.php'?>
   </div>
+    
+  <!-- ventana modal para editar datos de la persona -->
+  <div id="modalModificar" class="reveal-modal medium">
+    <?php
+      //a donde mandar los datos editados para darse de alta
+      $link = site_url('personas/modificar');  
+      include 'elements/form-editar-persona.php'; 
+    ?>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
   
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
@@ -67,14 +64,8 @@
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
   
   <script language="JavaScript">
-    //ocultar mensajes de errores de formulario de CodeIgniter, cuando se presiona una tecla en el input
-    $('input[type="text"], input[type="password"]').keypress(function(){
-      $(this).next('small.error').hide('fast', function(){$(this).remove();});
-    });
-    //funcionalidad del boton volver atras
-    $('#botonVolver').click(function(){
-      window.history.back();
-      return false;
+    $('.cancelar').click(function(){
+      $('.cancelar').trigger('reveal:close'); //cerrar ventana
     });
   </script>
 </body>

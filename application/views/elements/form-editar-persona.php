@@ -8,7 +8,7 @@
       
       <label for="campoApellido">Apellido: </label>
       <input id="campoApellido" type="text" name="Apellido" required value="<?php echo $persona['Apellido']?>"/>
-      <?php echo form_error('Nombre'); ?>
+      <?php echo form_error('Apellido'); ?>
     </div>
     <div class="row">         
       <div class="ten columns centered">

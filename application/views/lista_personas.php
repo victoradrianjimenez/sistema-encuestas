@@ -23,22 +23,24 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h4>Personas</h4>
+          <h4>Docentes y Autoridades</h4>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron carreras.</p>
           <?php else:?>
             <table class="twelve">
               <thead>
+                <th>ID</th>
                 <th>Apellido</th>
                 <th>Nombre</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><?php echo $fila['Apellido']?></td>
-                  <td><?php echo $fila['Nombre']?></td>
+                  <td><?php echo $fila['IdPersona']?></td>
+                  <td><a class="apellido" href="<?php echo site_url("personas/ver/".$fila['IdPersona'])?>"><?php echo $fila['Apellido']?></a></td>
+                  <td class="nombre"><?php echo $fila['Nombre']?></td>
                   <td>
-                    <a href="<?php echo site_url("personas/ver/".$fila['IdPersona'])?>">Ver</a>
+                    <a class="eliminar" href="" value="<?php echo $fila['IdPersona']?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -77,6 +79,27 @@
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
+  <!-- ventana modal para eliminar materias -->
+  <div id="modalEliminar" class="reveal-modal medium">
+    <form action="<?php echo site_url('personas/eliminar')?>" method="post">
+      <input type="hidden" name="IdPersona" value="" />
+      <h3>Eliminar persona</h3>
+      <h5 class="nombre"></h5>
+      <p>¿Desea continuar?</p>
+      <div class="row">         
+        <div class="ten columns centered">
+          <div class="six mobile-one columns push-one-mobile">
+            <input class="button cancelar" type="button" value="Cancelar"/>
+          </div>
+          <div class="six mobile-one columns pull-one-mobile ">
+            <input class="button" type="submit" name="submit" value="Aceptar" />
+          </div>
+        </div>
+      </div>
+    </form>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
+  
   <!-- Included JS Files (Compressed) -->
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
@@ -88,8 +111,13 @@
     });
     
     $('.eliminar').click(function(){
-      IdMateria = $(this).attr('value');
-      $('#modalEliminar input[name="IdMateria"]').val(IdMateria);
+      IdPersona = $(this).attr('value');
+      Apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
+      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      //cargo el id de la persona en el formulario
+      $('#modalEliminar input[name="IdPersona"]').val(IdPersona);
+      //pongo el nombre de la persona en el dialogo
+      $("#modalEliminar").find('.nombre').html(Nombre+' '+Apellido);
       $("#modalEliminar").reveal();
       return false;
     });
