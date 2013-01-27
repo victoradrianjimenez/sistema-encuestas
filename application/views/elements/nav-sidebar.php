@@ -7,7 +7,7 @@
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
         <li><a href="<?php echo site_url("claves/ingresar")?>">Encuestas</a></li>
-        <li><a href="#">Consultar estado</a></li>
+        <li><a href="#"><i>Consultar estado</i></a></li>
       </ul>
     </li>
     <li class="has-flyout">
