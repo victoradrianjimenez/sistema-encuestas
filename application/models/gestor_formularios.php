@@ -9,6 +9,28 @@ class Gestor_formularios extends CI_Model{
     parent::__construct();
   }
   
+    
+  /**
+   * Da de Alta un nuevo formulario. Devuleve el id en caso de éxito o un mensaje en caso de error.
+   *
+   * @access  public
+   * @param nombre con el que se identifica al formulario
+   * @param titulo que se mostrará en el formulario
+   * @param descripcion opcional del formulario
+   * @param cantidad de preguntas que las carreras pueden agregar al formulario
+   * @return  string
+   */
+  public function alta($Nombre, $Titulo, $Descripcion, $PreguntasAdicionales){
+    $Nombre = $this->db->escape($Nombre);
+    $Titulo = $this->db->escape($Titulo);
+    $Descripcion = $this->db->escape($Descripcion);
+    $PreguntasAdicionales = $this->db->escape($PreguntasAdicionales);
+    $query = $this->db->query("call esp_alta_formulario($Nombre, $Titulo, $Descripcion, $PreguntasAdicionales)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
   
   /**
    * Obtener un formulario a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.

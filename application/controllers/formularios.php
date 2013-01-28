@@ -66,6 +66,85 @@ class Formularios extends CI_Controller{
   }
   
   /*
+   * Recepción del formulario para agregar nuevo formulario con sus secciones y preguntas
+   * POST: Nombre
+   */
+  public function nuevo(){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group('admin')){
+      show_error('No tiene permisos para ingresar a esta sección.');
+      return;
+    }
+    //cargo modelos y librerias necesarias
+    $this->load->model('Seccion');
+    $this->load->model('Formulario');
+    $this->load->model('Gestor_formularios','gf');
+    
+    //leo los datos enviados por post, y los almaceno en un array
+    $entradas = $this->input->post(NULL, TRUE);
+    $datosSecciones = array();
+    foreach ($entradas as $key => $x) {
+      if (strpos($key, 'TextoSeccion') !== false) {
+        sscanf($key, "TextoSeccion_%d",$i);
+        $datosSecciones[$i]['Texto'] = $x;
+      }
+      elseif (strpos($key, 'DescripcionSeccion') !== false) {
+        sscanf($key, "DescripcionSeccion_%d", $i);
+        $datosSecciones[$i]['Descripcion'] = $x;
+      }
+      elseif (strpos($key, 'TipoSeccion') !== false) {
+        sscanf($key, "TipoSeccion_%d", $i);
+        $datosSecciones[$i]['Tipo'] = $x;
+      }
+      elseif (strpos($key, 'IdPregunta') !== false) {
+        sscanf($key, "IdPregunta_%d_%d", $i, $j);
+        $datosSecciones[$i]['Preguntas'][$j] = $x;
+      }
+    }
+
+    //CHEQUEAR!!
+    $error = false;
+    $res = $this->gf->alta($this->input->post('Nombre', TRUE), $this->input->post('Titulo', TRUE), $this->input->post('Descripcion', TRUE), $this->input->post('PreguntasAdicionales', TRUE));
+    if (!is_numeric($res)){
+      $error = true;
+    }
+    else{
+      $this->Formulario->IdFormulario = (int)$res;
+      foreach ($datosSecciones as $i => $seccion) {
+        $res = $this->Formulario->altaSeccion(NULL, $seccion['Texto'], $seccion['Descripcion'], $seccion['Tipo']);
+        if (!is_numeric($res)){
+          $error = true;
+          break;
+        }
+        if(!isset($seccion['Preguntas'])){
+          $res = "Las secciones no pueden estar vacías.";
+          $error = true;
+          break;
+        }
+        $this->Seccion->IdSeccion = (int)$res;
+        $this->Seccion->IdFormulario = $this->Formulario->IdFormulario;
+        foreach ($seccion['Preguntas'] as $j => $pregunta) {
+          $res = $this->Seccion->altaItem($pregunta, NULL, $j);
+          if ($res != 'ok'){
+            $error = true;
+            break;
+          }
+        }
+        if ($error) break;
+      }
+    }
+    if($error){
+      $this->gf->baja($this->Formulario->IdFormulario);
+    }
+    echo $error;
+    //cargo vista para mostrar resultado
+    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
+    $data['mensaje'] = (!$error)?"La operación se realizó con éxito. El ID del nuevo formulario es ".$this->Formulario->IdFormulario.".":$res;
+    $data['link'] = site_url("formularios"); //hacia donde redirigirse
+    $this->load->view('resultado_operacion', $data);
+  }
+  
+  /*
    * Recepción del formulario para eliminar un formulario
    * POST: IdFormulario
    */

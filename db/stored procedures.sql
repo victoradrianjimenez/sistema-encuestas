@@ -2463,3 +2463,138 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_formulario`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_formulario`(
+    pNombre VARCHAR(60),
+    pTitulo VARCHAR(200),
+    pDescripcion VARCHAR(200),
+    pPreguntasAdicionales TINYINT)
+BEGIN
+    DECLARE id INT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pNombre,'') = '' THEN
+        SET Mensaje = 'El nombre del formulacio no puede ser nulo';
+    ELSE
+        START TRANSACTION;    
+        SET id = (
+            SELECT COALESCE(MAX(IdFormulario),0)+1 
+            FROM    Formularios);
+        INSERT INTO Formularios 
+            (IdFormulario, Nombre, Titulo, Descripcion, Creacion, PreguntasAdicionales)
+        VALUES (id, pNombre, pTitulo, pDescripcion, NOW(), pPreguntasAdicionales);
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = id;
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_seccion`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_seccion`(
+    pIdFormulario INT,
+	pIdCarrera SMALLINT,
+    pTexto VARCHAR(200),
+    pDescripcion VARCHAR(200),
+    pTipo CHAR(1))
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pTexto,'') = '' THEN
+        SET Mensaje = 'El texto de la sección no puede ser vacío.';
+    ELSEIF NOT pTipo IN ('N', 'D') THEN
+        SET Mensaje = 'El tipo de sección es incorrecto.';
+    ELSE
+        START TRANSACTION;    
+        IF NOT EXISTS(SELECT IdFormulario FROM Formularios WHERE IdFormulario = pIdFormulario LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe un formulario con el ID=',pIdFormulario,'.');
+            ROLLBACK;
+        ELSEIF pIdCarrera IS NOT NULL AND NOT EXISTS(SELECT IdCarrera FROM Carreras WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe la carrera con ID=',pIdCarrera,'.');
+            ROLLBACK;
+        ELSE
+            SET id = (  
+                SELECT COALESCE(MAX(IdSeccion),0)+1 
+                FROM    Secciones
+                WHERE   IdFormulario = pIdFormulario);
+            INSERT INTO Secciones 
+                (IdSeccion, IdFormulario, IdCarrera, Texto, Descripcion, Tipo)
+            VALUES (id, pIdFormulario, pIdCarrera, pTexto, pDescripcion, pTipo);    
+            IF err THEN
+                SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET Mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_item`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_item`(
+    pIdSeccion INT,
+	pIdFormulario INT,
+	pIdPregunta INT,
+	pIdCarrera SMALLINT,
+    pPosicion TINYINT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+	START TRANSACTION;    
+	IF NOT EXISTS(SELECT IdSeccion FROM Secciones WHERE IdSeccion = pIdSeccion AND IdFormulario = pIdFormulario LIMIT 1) THEN
+		SET Mensaje = CONCAT('No existe una sección con ID=',pIdSeccion,'.');
+		ROLLBACK;
+	ELSEIF NOT EXISTS(SELECT IdPregunta FROM Preguntas WHERE IdPregunta = pIdPregunta LIMIT 1) THEN
+		SET Mensaje = CONCAT('No existe la pregunta con ID=',pIdPregunta,'.');
+		ROLLBACK;
+	ELSEIF pIdCarrera IS NOT NULL AND NOT EXISTS(SELECT IdCarrera FROM Carreras WHERE IdCarrera = pIdCarrera LIMIT 1) THEN
+		SET Mensaje = CONCAT('No existe la carrera con ID=',pIdCarrera,'.');
+		ROLLBACK;
+	ELSE
+		INSERT INTO Items
+			(IdSeccion, IdFormulario, IdPregunta, IdCarrera, Posicion, Tamaño)
+		VALUES (pIdSeccion, pIdFormulario, pIdPregunta, pIdCarrera, pPosicion, 0);    
+		IF err THEN
+			SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET Mensaje = 'ok';
+			COMMIT;
+		END IF;
+	END IF;
+    SELECT Mensaje;
+END $$
+
