@@ -21,7 +21,6 @@ class Gestor_departamentos extends CI_Model{
   public function alta($IdJefeDepartamento, $Nombre){
     $Nombre = $this->db->escape($Nombre);
     $IdJefeDepartamento = $this->db->escape($IdJefeDepartamento);
-    echo $IdJefeDepartamento; 
     $query = $this->db->query("call esp_alta_departamento($IdJefeDepartamento, $Nombre)");
     $data = $query->row();
     $query->free_result();

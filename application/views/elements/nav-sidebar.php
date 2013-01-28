@@ -33,8 +33,8 @@
       <a href="#">Formularios</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
-        <li><a href="<?php echo site_url("formularios")?>"><i>Formularios</i></a></li>
-        <li><a href="#"><i>Preguntas</i></a></li>
+        <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
+        <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
       </ul>      
     </li>
     <li class="has-flyout">

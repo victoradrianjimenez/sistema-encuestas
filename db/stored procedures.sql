@@ -2598,3 +2598,139 @@ BEGIN
     SELECT Mensaje;
 END $$
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_preguntas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_preguntas`(
+	pPagInicio INT,
+    pPagLongitud INT)
+BEGIN
+	SET @qry = '
+    SELECT  IdPregunta, IdCarrera, Texto, Descripcion, Creacion, Tipo,
+			Obligatoria, OrdenInverso, LimiteInferior, LimiteSuperior,
+			Paso, Unidad
+    FROM    Preguntas
+    ORDER BY Texto
+	LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_preguntas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_preguntas`()
+BEGIN
+    SELECT COUNT(*) AS Cantidad
+    FROM Preguntas;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_pregunta`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_pregunta`(
+    pIdPregunta INT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT IdPregunta FROM Items WHERE IdPregunta = pIdPregunta LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, la pregunta esta asociada a un formulario.';
+        ROLLBACK;
+    ELSEIF EXISTS(SELECT IdRespuesta FROM Respuestas WHERE IdPregunta = pIdPregunta LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, existen respuestas asociadas a la pregunta.';
+        ROLLBACK;
+    ELSE
+        DELETE FROM Opciones
+        WHERE IdPregunta = pIdPregunta;
+		DELETE FROM Preguntas
+		WHERE IdPregunta = pIdPregunta;
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+			SET Mensaje = 'ok';
+			COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_pregunta`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_pregunta`(
+    pIdCarrera SMALLINT,
+    pTexto VARCHAR(200),
+    pDescripcion VARCHAR(200),
+    pTipo CHAR(1),
+    pObligatoria CHAR(1),
+    pOrdenInverso CHAR(1),
+    pLimiteInferior DECIMAL(7,2),
+    pLimiteSuperior DECIMAL(7,2),
+    pPaso DECIMAL(7,2),
+    pUnidad VARCHAR(10))
+BEGIN
+    DECLARE id INT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pTexto,'') = '' THEN
+        SET Mensaje = 'El texto de la pregunta no puede ser vacío';
+    ELSEIF NOT pTipo IN ('S', 'M', 'N', 'T', 'X') THEN
+        SET Mensaje = 'El tipo de pregunta es incorrecto.';
+    ELSEIF NOT pObligatoria IN ('S', 'N') THEN
+        SET Mensaje = 'El campo obligatoria es incorrecto.';
+    ELSEIF NOT pOrdenInverso IN ('S', 'N') THEN
+        SET Mensaje = 'El campo orden inverso es incorrecto.';
+    ELSE    
+        START TRANSACTION;    
+        SET id = (  
+            SELECT COALESCE(MAX(IdPregunta),0)+1 
+            FROM    Preguntas);
+        INSERT INTO Preguntas 
+            (IdPregunta, IdCarrera, Texto, Descripcion,
+            Creacion, Tipo, Obligatoria, OrdenInverso, 
+            LimiteInferior, LimiteSuperior, Paso, Unidad)
+        VALUES (id, pIdCarrera, pTexto, pDescripcion,
+            NOW(), pTipo, pObligatoria, pOrdenInverso, 
+            pLimiteInferior, pLimiteSuperior, pPaso, pUnidad);
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = id;
+            COMMIT;
+        END IF;
+    END IF;        
+    SELECT Mensaje;
+END $$
+
+
+
