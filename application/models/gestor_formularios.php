@@ -25,7 +25,23 @@ class Gestor_formularios extends CI_Model{
     $this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
-     
+  
+  /**
+   * Da de Baja un formulario. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de formulario
+   * @return string
+   */
+  public function baja($IdFormulario){
+    $IdFormulario = $this->db->escape($IdFormulario);
+    $query = $this->db->query("call esp_baja_formulario($IdFormulario)");
+    $data = $query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
   /**
    * Buscar formularios por el nombre. Devuleve un array de objetos.
    *
@@ -58,6 +74,20 @@ class Gestor_formularios extends CI_Model{
     $query->free_result();
     $this->db->reconnect();
     return $data;
+  }
+  
+  /**
+   * Obtener la cantidad de formularios. 
+   *
+   * @access public
+   * @return int
+   */  
+  public function cantidad(){
+    $query = $this->db->query("call esp_cantidad_formularios()");
+    $data=$query->row();
+    $query->free_result();
+    $this->db->reconnect();
+    return ($data)?$data->Cantidad:0;
   }
   
 }

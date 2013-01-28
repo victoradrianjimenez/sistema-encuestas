@@ -15,7 +15,6 @@ DELETE FROM Alumnos_Materias WHERE IdMateria >= 0;
 DELETE FROM Materias_Carreras WHERE IdMateria >= 0;
 DELETE FROM Materias WHERE IdMateria >= 0;
 DELETE FROM Alumnos WHERE CX != '';
-DELETE FROM Accesos_Carreras WHERE IdCarrera >= 0;
 DELETE FROM Carreras WHERE IdCarrera >= 0;
 DELETE FROM Departamentos WHERE IdDepartamento >= 0;
 DELETE FROM Personas WHERE IdPersona >= 0;

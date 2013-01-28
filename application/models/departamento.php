@@ -47,7 +47,7 @@ class Departamento extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data!=FALSE)?$data->Cantidad:0;
+    return ($data)?$data->Cantidad:0;
   }
 
 }

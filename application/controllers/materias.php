@@ -221,7 +221,7 @@ class Materias extends CI_Controller{
     $this->form_validation->set_rules('OrdenFormulario','Orden de formulario','is_natural|required');
     $this->form_validation->set_rules('Cargo','Cargo','alpha_dash_space|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
-    if($this->form_validation->run()!=FALSE){
+    if($this->form_validation->run()){
       $this->load->model('Materia');
       $this->Materia->IdMateria = $this->input->post('IdMateria',TRUE);
       //creo la asociacion y cargo vista para mostrar resultado
@@ -255,7 +255,7 @@ class Materias extends CI_Controller{
     $this->form_validation->set_rules('IdDocente','ID Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('IdMateria','ID Carrera','is_natural_no_zero|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
-    if($this->form_validation->run()!=FALSE){
+    if($this->form_validation->run()){
       $this->load->model('Materia');
       $this->Materia->IdMateria = $this->input->post('IdMateria',TRUE);
       

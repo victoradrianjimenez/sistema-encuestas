@@ -26,7 +26,7 @@ class Gestor_departamentos extends CI_Model{
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -43,7 +43,7 @@ class Gestor_departamentos extends CI_Model{
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -62,7 +62,7 @@ class Gestor_departamentos extends CI_Model{
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data!=FALSE)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -113,7 +113,7 @@ class Gestor_departamentos extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data!=FALSE)?$data->Cantidad:0;
+    return ($data)?$data->Cantidad:0;
   }
 
 

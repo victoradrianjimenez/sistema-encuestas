@@ -1810,6 +1810,21 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 END $$
 
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_formularios`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_formularios`()
+BEGIN
+    SELECT  COUNT(*) AS Cantidad
+    FROM    Formularios;
+END $$
+
 DELIMITER ;
 
 
@@ -2408,3 +2423,43 @@ BEGIN
 	END IF;
 END $$
 
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_formulario`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_formulario`(
+    pIdFormulario INT)
+BEGIN
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT IdEncuesta FROM Encuestas WHERE IdFormulario = pIdFormulario LIMIT 1) THEN
+        SET Mensaje = 'No se puede eliminar, este formulario se usó en una encuesta.';
+        ROLLBACK;
+    ELSE
+		DELETE FROM Items_Carreras
+		WHERE IdFormulario = pIdFormulario;
+		DELETE FROM Items
+		WHERE IdFormulario = pIdFormulario;
+		DELETE FROM Secciones
+		WHERE IdFormulario = pIdFormulario;
+		DELETE FROM Formularios
+		WHERE IdFormulario = pIdFormulario;
+		IF err THEN
+			SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE
+			SET Mensaje = 'ok';
+			COMMIT;
+		END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
+
+DELIMITER ;

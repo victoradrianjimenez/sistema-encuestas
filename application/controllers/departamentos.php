@@ -201,7 +201,7 @@ class Departamentos extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
-    if($this->form_validation->run()!=FALSE){
+    if($this->form_validation->run()){
       $this->load->model('Gestor_departamentos','gd');
 
       //doy de baja y cargo vista para mostrar resultado
