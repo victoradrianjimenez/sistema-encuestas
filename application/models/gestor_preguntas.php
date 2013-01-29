@@ -60,8 +60,16 @@ class Gestor_preguntas extends CI_Model{
    * @return  string
    */
   public function alta($IdCarrera, $Texto, $Descripcion, $Tipo, $Obligatoria, $OrdenInverso, $LimiteInferior, $LimiteSuperior, $Paso, $Unidad){
-    $Nombre = $this->db->escape($Nombre);
-    $IdJefeDepartamento = $this->db->escape($IdJefeDepartamento);
+    $IdCarrera = $this->db->escape($IdCarrera);
+    $Texto = $this->db->escape($Texto);
+    $Descripcion= $this->db->escape($Descripcion);
+    $Tipo = $this->db->escape($Tipo);
+    $Obligatoria = $this->db->escape($Obligatoria);
+    $OrdenInverso = $this->db->escape($OrdenInverso);
+    $LimiteInferior = $this->db->escape($LimiteInferior);
+    $LimiteSuperior = $this->db->escape($LimiteSuperior);
+    $Paso = $this->db->escape($Paso);
+    $Unidad = $this->db->escape($Unidad);
     $query = $this->db->query("call esp_alta_pregunta($IdCarrera, $Texto, $Descripcion, $Tipo, $Obligatoria, $OrdenInverso, $LimiteInferior, $LimiteSuperior, $Paso, $Unidad)");
     $data = $query->row();
     $query->free_result();

@@ -69,12 +69,12 @@
     <?php include 'elements/footer.php'?>
   </div>
     
-  <!-- ventana modal para eliminar formularios -->
+  <!-- ventana modal para eliminar preguntas -->
   <div id="modalEliminar" class="reveal-modal medium">
-    <form action="<?php echo site_url('formularios/eliminar')?>" method="post">
-      <input type="hidden" name="IdFormulario" value="" />
-      <h3>Eliminar formulario</h3>
-      <h5 class="nombre"></h5>
+    <form action="<?php echo site_url('preguntas/eliminar')?>" method="post">
+      <input type="hidden" name="IdPregunta" value="" />
+      <h3>Eliminar pregunta</h3>
+      <h5 class="texto"></h5>
       <p>¿Desea continuar?</p>
       <div class="row">         
         <div class="ten columns centered">
@@ -101,12 +101,12 @@
     });
 
     $('.eliminar').click(function(){
-      IdFormulario = $(this).attr('value');
-      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
-      //cargo el id del departamento en el formulario
-      $('#modalEliminar input[name="IdFormulario"]').val(IdFormulario);
-      //pongo el nombre del departamento en el dialogo
-      $("#modalEliminar").find('.nombre').html(Nombre);
+      IdPregunta = $(this).attr('value');
+      Texto = $(this).parentsUntil('tr').parent().find('.texto').text();
+      //cargo el id de la pregunta en el formulario
+      $('#modalEliminar input[name="IdPregunta"]').val(IdPregunta);
+      //pongo el texto de la pregunta en el dialogo
+      $("#modalEliminar").find('.texto').html(Texto);
       $("#modalEliminar").reveal();
       return false;
     });

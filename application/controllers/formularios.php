@@ -136,7 +136,6 @@ class Formularios extends CI_Controller{
     if($error){
       $this->gf->baja($this->Formulario->IdFormulario);
     }
-    echo $error;
     //cargo vista para mostrar resultado
     $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
     $data['mensaje'] = (!$error)?"La operación se realizó con éxito. El ID del nuevo formulario es ".$this->Formulario->IdFormulario.".":$res;

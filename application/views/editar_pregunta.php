@@ -16,12 +16,6 @@
     li{
       list-style: none;
     }
-    
-
-    #agregarSeccion{
-      font-size: 32px;
-      float: right;
-    }
 
     .barra-botones > a{
       font-size: 20px;
@@ -29,12 +23,6 @@
     .barra-botones{
       float:right;
     }
-    
-    .Pregunta .barra-botones > a{
-      color:#CCCCCC;
-    }
-    
-    
   </style>
   
 </head>
@@ -49,7 +37,7 @@
   <div class="row">
     <!-- Main Section -->  
     <div id="Main" class="nine columns push-three">
-      <form action="<?php echo site_url('formularios/nuevo')?>" method="post">
+      <form action="<?php echo site_url('preguntas/nuevo')?>" method="post">
         <div class="row">
           <div class="twelve columns">
             <h3>Pregunta</h3>
@@ -68,7 +56,7 @@
             <input type="checkbox" name="Obligatoria" />Obligatoria
             <input type="checkbox" name="OrdenInverso" />Orden Inverso
             <label>Unidad:</label>
-            <input type="text" name="Unidad" required />
+            <input type="text" name="Unidad"/>
           </div>
         </div>
         <div class="row">
