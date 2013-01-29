@@ -2732,5 +2732,43 @@ BEGIN
     SELECT Mensaje;
 END $$
 
+DELIMITER ;
 
+
+DROP PROCEDURE IF EXISTS `esp_alta_opcion`;
+
+
+DELIMITER $$
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_opcion`(
+    pIdPregunta INT,
+    pTexto VARCHAR(40))
+BEGIN
+    DECLARE id SMALLINT;
+    DECLARE Mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pTexto,'') = '' THEN
+        SET Mensaje = 'La etiqueta de la opción no puede ser vacía.';
+    ELSE        
+        START TRANSACTION;
+        SET id = (  
+            SELECT COALESCE(MAX(IdOpcion),0)+1 
+            FROM    Opciones
+            WHERE   IdPregunta = pIdPregunta);
+        INSERT INTO Opciones 
+            (IdOpcion, IdPregunta, Texto)
+        VALUES (id, pIdPregunta, pTexto);
+        IF err THEN
+            SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET Mensaje = id;
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT Mensaje;
+END $$
 

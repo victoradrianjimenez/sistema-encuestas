@@ -23,7 +23,7 @@
         </div>
       <?php endif ?>
       <div class="row">  
-        <a href="<?php echo site_url("personas/resetearContraseña")?>">¿Olvidó la contraseña?</a>
+        <a href="<?php echo site_url("usuarios/recuperarContrasena")?>">¿Olvidó la contraseña?</a>
       </div>
     </fieldset>
   </form>

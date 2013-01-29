@@ -28,7 +28,7 @@ class Claves extends CI_Controller{
    * Muestra el listado de claves.
    */
   public function listar($PagInicio=0){
-    
+    $this->ingresar();
   }
   
   private function _datosItems($seccion){
