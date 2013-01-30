@@ -6,7 +6,7 @@
       <div class="buscador">
         <input id="buscarDepartamento" type="text" autocomplete="off">
         <i class="gen-enclosed foundicon-search"></i>
-        <select id="listaDepartamentos" name="IdDepartamento" size="3">
+        <select id="listaDepartamentos" name="IdDepartamento" size="3" required >
         </select>
         <?php echo form_error('IdDepartamento')?>
       </div>    
@@ -20,6 +20,16 @@
       <label for="campoPlan">Plan: </label>
       <input id="campoPlan" type="number" min="1900" max="2100" name="Plan" value="<?php echo $carrera['Plan']?>" required />
       <?php echo form_error('Plan'); ?>
+    </div>
+    <div class="twelve columns">
+      <label for="buscarPersona">Director de carrera: </label>
+      <div class="buscador">
+        <input id="buscarPersona" type="text" autocomplete="off">
+        <i class="gen-enclosed foundicon-search"></i>
+        <select id="listaPersonas" name="IdDirectorCarrera" size="3">
+        </select>
+        <?php echo form_error('IdDirectorCarrera')?>
+      </div>
     </div>
     <div class="row">         
       <div class="ten columns centered">
@@ -50,6 +60,27 @@
         var datos = columnas[1]; //Nombre
         //agregar fila a la lista desplegable
         $('#listaDepartamentos').append('<option value="'+id+'">'+datos+'</option>');
+      }
+    });
+  });
+
+  //realizo la busqueda de personas con AJAX
+  $('#buscarPersona').keyup(function(){
+    $.ajax({
+      type: "POST", 
+      url: "<?php echo site_url('personas/buscarAJAX')?>", 
+      data:{ Buscar: $(this).val() }
+    }).done(function(msg){
+      $('#listaPersonas').empty();
+      var filas = msg.split("\n");
+      for (var i=0; i<filas.length; i++){
+        if (filas[i].length<2) continue;
+        //separo datos en columnas
+        var columnas = filas[i].split("\t");
+        var id = columnas[0];
+        var datos = columnas[1] + ' ' + columnas[2] +' ('+columnas[0]+')';
+        //agregar fila a la lista desplegable
+        $('#listaPersonas').append('<option value="'+id+'">'+datos+'</option>');
       }
     });
   });

@@ -32,6 +32,8 @@ class Carreras extends CI_Controller{
     $this->load->library('pagination');
     $this->load->model('Carrera');
     $this->load->model('Departamento');
+    $this->load->model('Persona');
+    $this->load->model('Gestor_personas','gp');
     $this->load->model('Gestor_carreras','gc');
     $this->load->model('Gestor_departamentos','gd');
     
@@ -56,6 +58,19 @@ class Carreras extends CI_Controller{
           'IdDepartamento' => null,
           'Nombre' => ''
          );
+      }
+      $director = $this->gp->dame($carrera->IdDirectorCarrera);
+      if ($director){
+        $tabla[$i]['Director'] = array(
+          'Nombre' => $director->Nombre,
+          'Apellido' => $director->Apellido
+        );
+      }
+      else{
+        $tabla[$i]['Director'] = array(
+          'Nombre' => '',
+          'Apellido' => ''
+        );
       }
     }
     //genero la lista de links de paginación
@@ -89,6 +104,8 @@ class Carreras extends CI_Controller{
     $this->load->library('pagination');
     $this->load->model('Materia');
     $this->load->model('Carrera');
+    $this->load->model('Persona');
+    $this->load->model('Gestor_personas','gp');
     $this->load->model('Gestor_materias','gm');
     $this->load->model('Gestor_carreras','gc');
     $carrera = $this->gc->dame($IdCarrera);
@@ -97,8 +114,22 @@ class Carreras extends CI_Controller{
         'IdCarrera' => $carrera->IdCarrera,
         'IdDepartamento' => $carrera->IdDepartamento,
         'Nombre' => $carrera->Nombre,
-        'Plan' => $carrera->Plan
+        'Plan' => $carrera->Plan,
       );
+      $director = $this->gp->dame($carrera->IdDirectorCarrera);
+      if ($director){
+        $data['carrera']['Director'] = array(
+          'Nombre' => $director->Nombre,
+          'Apellido' => $director->Apellido
+        );
+      }
+      else{
+        $data['carrera']['Director'] = array(
+          'Nombre' => '',
+          'Apellido' => ''
+        );
+        
+      }      
       //obtengo lista de materias
       $materias = $carrera->listarMaterias($PagInicio, self::per_page);
       $tabla = array();
@@ -139,15 +170,16 @@ class Carreras extends CI_Controller{
     }
     //verifico datos POST
     $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero');
+    $this->form_validation->set_rules('IdDirectorCarrera','ID Director de Carrera','is_natural_no_zero');
     $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space|required');
     $this->form_validation->set_rules('Plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
     if($this->form_validation->run()){
       $this->load->model('Gestor_carreras','gc');
+      $IdDirectorCarrera = $this->input->post('IdDirectorCarrera',TRUE);
       
       //agrego carrera y cargo vista para mostrar resultado
-      $IdDepartamento = $this->input->post('IdDepartamento',TRUE);
-      $res = $this->gc->alta(($IdDepartamento=='')?NULL:$IdDepartamento, $this->input->post('Nombre',TRUE), $this->input->post('Plan',TRUE));
+      $res = $this->gc->alta($this->input->post('IdDepartamento',TRUE), ($IdDirectorCarrera=='')?NULL:$IdDirectorCarrera, $this->input->post('Nombre',TRUE), $this->input->post('Plan',TRUE));
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
       $data['link'] = site_url("carreras"); //hacia donde redirigirse
@@ -170,17 +202,18 @@ class Carreras extends CI_Controller{
       return;
     }
     //verifico datos POST
-    $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero');
+    $this->form_validation->set_rules('IdDepartamento','ID Departamento','is_natural_no_zero|required');
+    $this->form_validation->set_rules('IdDirectorCarrera','ID Director de Carrera','is_natural_no_zero');
     $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space|required');
     $this->form_validation->set_rules('Plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
     if($this->form_validation->run()){
       $this->load->model('Gestor_carreras','gc');
       $IdCarrera = $this->input->post('IdCarrera',TRUE);
+      $IdDirectorCarrera = $this->input->post('IdDirectorCarrera',TRUE);
       
       //modifico carrera y cargo vista para mostrar resultado
-      $IdDepartamento = $this->input->post('IdDepartamento',TRUE);
-      $res = $this->gc->modificar($IdCarrera, ($IdDepartamento=='')?NULL:$IdDepartamento, $this->input->post('Nombre',TRUE),$this->input->post('Plan',TRUE));
+      $res = $this->gc->modificar($IdCarrera, $this->input->post('IdDepartamento',TRUE), ($IdDirectorCarrera=='')?NULL:$IdDirectorCarrera, $this->input->post('Nombre',TRUE),$this->input->post('Plan',TRUE));
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
       $data['link'] = site_url("carreras/ver/$IdCarrera"); //hacia donde redirigirse

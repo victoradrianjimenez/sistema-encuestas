@@ -30,6 +30,7 @@
               <thead>
                 <th>Nombre</th>
                 <th>Plan</th>
+                <th>Director</th>
                 <th>Departamento</th>
                 <th>Acciones</th>
               </thead>
@@ -37,6 +38,7 @@
                 <tr>
                   <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
                   <td class="plan"><?php echo $fila['Plan']?></td>
+                  <td class="director"><?php echo $fila['Director']['Nombre'].' '.$fila['Director']['Apellido']?></td>
                   <td><a href="<?php echo site_url("departamentos/ver/".$fila['Departamento']['IdDepartamento'])?>"><?php echo $fila['Departamento']['Nombre']?></a></td>
                   <td><a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a></td>
                 </tr>

@@ -27,6 +27,7 @@
       <div class="row">
         <div class="twelve columns">
           <h3><?php echo $carrera['Nombre']?> - Plan <?php echo $carrera['Plan'] ?></h3>
+          <h5>Director de carrera: <?php echo $carrera['Director']['Nombre'].' '.$carrera['Director']['Apellido']?></h5>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron materias.</p>
           <?php else:?>

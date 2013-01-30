@@ -513,7 +513,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_departamento`(
     pPagLongitud INT)
 BEGIN
     SET @qry = '
-    SELECT  IdDepartamento, IdCarrera, Nombre, Plan
+    SELECT  IdDepartamento, IdCarrera, IdDirectorCarrera, Nombre, Plan
     FROM    Carreras
     WHERE   IdDepartamento = ?
     ORDER BY Nombre, Plan DESC
@@ -728,7 +728,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_carrera`(
     pIdCarrera SMALLINT)
 BEGIN
-    SELECT IdCarrera, IdDepartamento, Nombre, Plan
+    SELECT IdCarrera, IdDepartamento, IdDirectorCarrera, Nombre, Plan
     FROM Carreras
     WHERE IdCarrera = pIdCarrera;
 END $$
@@ -869,6 +869,7 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_carrera`(
     pIdDepartamento SMALLINT,
+	pIdDirectorCarrera INT,
     pNombre VARCHAR(60),
     pPlan SMALLINT)
 BEGIN
@@ -886,6 +887,9 @@ BEGIN
         IF NOT EXISTS(SELECT IdDepartamento FROM Departamentos WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
             SET Mensaje = CONCAT('No existe un departamento con ID=', pIdDepartamento,'.');
             ROLLBACK;
+        ELSEIF pIdDirectorCarrera IS NOT NULL AND NOT EXISTS(SELECT IdPersona FROM Personas WHERE IdPersona = pIdDirectorCarrera LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe una persona con ID=', pIdDirectorCarrera,'.');
+            ROLLBACK;
         ELSEIF EXISTS(  SELECT Nombre FROM Carreras 
                         WHERE Nombre = pNombre AND Plan=pPlan LIMIT 1) THEN
             SET Mensaje = CONCAT('Ya existe una carrera del plan ', pPlan,' que se llama ', pNombre, '.');
@@ -895,8 +899,8 @@ BEGIN
                 SELECT COALESCE(MAX(IdCarrera),0)+1 
                 FROM    Carreras);
             INSERT INTO Carreras 
-                (IdCarrera, IdDepartamento, Nombre, Plan)
-            VALUES (id, pIdDepartamento, pNombre, pPlan);
+                (IdCarrera, IdDepartamento, IdDirectorCarrera, Nombre, Plan)
+            VALUES (id, pIdDepartamento, pIdDirectorCarrera, pNombre, pPlan);
             IF err THEN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -961,10 +965,10 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_carrera`(
     pIdCarrera SMALLINT,
     pIdDepartamento SMALLINT,
+	pIdDirectorCarrera INT,
     pNombre VARCHAR(60),
     pPlan SMALLINT)
 BEGIN
-    DECLARE id SMALLINT;
     DECLARE Mensaje VARCHAR(120);
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
@@ -981,9 +985,12 @@ BEGIN
         ELSEIF NOT EXISTS( SELECT IdDepartamento FROM Departamentos WHERE IdDepartamento = pIdDepartamento LIMIT 1) THEN
             SET Mensaje = CONCAT('No existe un departamento con ID=',pIdDepartamento,'.');
             ROLLBACK;
+        ELSEIF pIdDirectorCarrera IS NOT NULL AND NOT EXISTS( SELECT IdPersona FROM Personas WHERE IdPersona = pIdDirectorCarrera LIMIT 1) THEN
+            SET Mensaje = CONCAT('No existe una persona con ID=',pIdDirectorCarrera,'.');
+            ROLLBACK;
         ELSE    
             UPDATE Carreras 
-            SET IdDepartamento=pIdDepartamento, Nombre = pNombre, Plan = pPlan
+            SET IdDepartamento=pIdDepartamento, IdDirectorCarrera=pIdDirectorCarrera, Nombre = pNombre, Plan = pPlan
             WHERE IdCarrera = pIdCarrera;
             IF err THEN
                 SET Mensaje = 'Error inesperado al intentar acceder a la base de datos.';
@@ -1010,7 +1017,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras`(
     pPagLongitud INT)
 BEGIN
     SET @qry = '
-    SELECT  IdDepartamento, IdCarrera, Nombre, Plan
+    SELECT  IdCarrera, IdDepartamento, IdDirectorCarrera, Nombre, Plan
     FROM    Carreras
     ORDER BY Nombre, Plan DESC
     LIMIT ?,?';
@@ -1243,7 +1250,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_carreras`(
 	pNombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pNombre,'') != '' THEN
-		SELECT	IdCarrera, IdDepartamento, Nombre, Plan 
+		SELECT	IdCarrera, IdDepartamento, IdDirectorCarrera, Nombre, Plan 
 		FROM	Carreras
 		WHERE	Nombre like CONCAT('%',pNombre,'%');
 	END IF;
@@ -1841,8 +1848,8 @@ BEGIN
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;   
 	START TRANSACTION;
-	IF NOT EXISTS(SELECT IdEncuesta FROM Encuestas WHERE IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario LIMIT 1) THEN
-		SET Mensaje = CONCAT('No se encontró la encuesta con ID dado.');
+	IF NOT EXISTS(SELECT IdEncuesta FROM Encuestas WHERE IdEncuesta = pIdEncuesta AND IdFormulario = pIdFormulario AND FechaFin IS NULL LIMIT 1) THEN
+		SET Mensaje = CONCAT('No se encontró la encuesta con ID dado, o la misma ya esta finalizada.');
 		ROLLBACK;
 	ELSE
 		UPDATE	Encuestas

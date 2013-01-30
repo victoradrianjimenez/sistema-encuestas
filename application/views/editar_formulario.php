@@ -162,7 +162,7 @@
   
   <!-- ventana modal para agregar una pregunta -->
   <div id="modalAgregarPregunta" class="reveal-modal medium">
-    <h3>Agregar sección</h3>
+    <h3>Agregar pregunta</h3>
     <label>Buscar pregunta:
       <div class="buscador">
         <input id="buscarPregunta" type="text" autocomplete="off">

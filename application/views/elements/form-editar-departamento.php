@@ -32,7 +32,7 @@
   $('#buscarPersona').keyup(function(){
     $.ajax({
       type: "POST", 
-      url: "<?php echo site_url('personas/buscar')?>", 
+      url: "<?php echo site_url('personas/buscarAJAX')?>", 
       data:{ Buscar: $(this).val() }
     }).done(function(msg){
       $('#listaPersonas').empty();
