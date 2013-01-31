@@ -151,7 +151,7 @@ class Claves extends CI_Controller{
         foreach ($docentes as $j => $docente) {
           //guardo los datos de la subsección
           $datos_subsecciones[$j] = array(
-            'IdDocente' => $docente->IdPersona,
+            'IdDocente' => $docente->id,
             'Nombre' => $docente->Nombre,
             'Apellido' => $docente->Apellido,
             'Items' => $this->_datosItems($seccion)

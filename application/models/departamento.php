@@ -5,9 +5,9 @@
  */
 class Departamento extends CI_Model{
   
-  var $IdDepartamento;
-  var $IdJefeDepartamento;
-  var $Nombre;
+  var $idDepartamento;
+  var $idJefeDepartamento;
+  var $nombre;
   
   
   function __construct(){
@@ -47,7 +47,7 @@ class Departamento extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
 
 }

@@ -4,12 +4,12 @@
  * 
  */
 class Encuesta extends CI_Model{
-	var $IdEncuesta;
-  var $IdFormulario;
-  var $Año;
-  var $Cuatrimestre;
-  var $FechaInicio;
-  var $FechaFin;
+	var $idEncuesta;
+  var $idFormulario;
+  var $año;
+  var $cuatrimestre;
+  var $fechaInicio;
+  var $fechaFin;
   
   function __construct(){
     parent::__construct();
@@ -147,7 +147,7 @@ class Encuesta extends CI_Model{
    * @access public
    * @param identificador de la materia
    * @param identificador de la carrera
-   * @return arrayPersonas
+   * @return array
    */
   public function listarDocentes($IdMateria, $IdCarrera){
     $IdMateria = $this->db->escape($IdMateria);
@@ -155,7 +155,7 @@ class Encuesta extends CI_Model{
     $IdEncuesta = $this->db->escape($this->IdEncuesta);
     $IdFormulario = $this->db->escape($this->IdFormulario);
     $query = $this->db->query("call esp_listar_docentes_encuesta($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
-    $data = $query->result('Persona');
+    $data = $query->result('Usuario');
     $query->free_result();
     $this->db->reconnect();
     return $data;

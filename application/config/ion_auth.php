@@ -21,8 +21,8 @@ $config['use_mongodb'] = FALSE;
 | $ mongorestore sql/mongo
 |
 */
-$config['collections']['users']          = 'users';
-$config['collections']['groups']         = 'groups';
+$config['collections']['users']          = 'Usuarios';
+$config['collections']['groups']         = 'Grupos';
 $config['collections']['login_attempts'] = 'login_attempts';
 
 /*
@@ -31,9 +31,9 @@ $config['collections']['login_attempts'] = 'login_attempts';
 | -------------------------------------------------------------------------
 | Database table names.
 */
-$config['tables']['users']           = 'users';
-$config['tables']['groups']          = 'groups';
-$config['tables']['users_groups']    = 'users_groups';
+$config['tables']['users']           = 'Usuarios';
+$config['tables']['groups']          = 'Grupos';
+$config['tables']['users_groups']    = 'Usuarios_Grupos';
 $config['tables']['login_attempts']  = 'login_attempts';
 
 /*
@@ -42,8 +42,8 @@ $config['tables']['login_attempts']  = 'login_attempts';
  | Joins from users.id
  | Joins from groups.id
  */
-$config['join']['users']  = 'user_id';
-$config['join']['groups'] = 'group_id';
+$config['join']['users']  = 'id_usuario';
+$config['join']['groups'] = 'id_grupo';
 
 /*
  | -------------------------------------------------------------------------
@@ -81,11 +81,11 @@ $config['max_rounds']     = 9;
  | The controller should check this function and act
  | appropriately. If this variable set to 0, there is no maximum.
  */
-$config['site_title']           = "encuestas"; 		// Site Title, example.com
+$config['site_title']           = "Sistema Encuestas";        // Site Title, example.com
 $config['admin_email']          = "encuestas@herrera.edu.ar"; // Admin Email, admin@example.com
 $config['default_group']        = 'alumnos'; 			// Default group, use name
 $config['admin_group']          = 'admin';        // Default administrators group, use name
-$config['identity']             = 'username';        // A database column which is used to login with
+$config['identity']             = 'username';     // A database column which is used to login with
 $config['min_password_length']  = 8;              // Minimum Required Length of Password
 $config['max_password_length']  = 20;             // Maximum Allowed Length of Password
 $config['email_activation']     = FALSE;          // Email Activation for registration

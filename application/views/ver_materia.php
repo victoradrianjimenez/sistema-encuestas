@@ -36,22 +36,24 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $materia['Nombre'].' ('.$materia['Codigo'].')'?></h3>
+          <h3><?php echo $materia['nombre'].' ('.$materia['codigo'].')'?></h3>
           <?php if(count($tabla)== 0):?>
             <p>No se encontraron materias.</p>
           <?php else:?>
             <table class="twelve">
               <thead>
                 <th>Apellido</th>
-                <th>Docente</th>
+                <th>Nombre</th>
+                <th>Cargo</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td class="nombre"><?php echo $fila['Apellido']?></td>
-                  <td class="apellido"><?php echo $fila['Nombre']?></td>
+                  <td class="nombre"><?php echo $fila['apellido']?></td>
+                  <td class="apellido"><?php echo $fila['nombre']?></td>
+                  <td class="cargo"><?php echo $fila['cargo']?></td>
                   <td>
-                    <a class="Quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $fila['IdPersona']?>">Quitar</a>
+                    <a class="quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $fila['id']?>">quitar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -63,8 +65,8 @@
       <div class="row">
         <div class="twelve columns">
           <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalModificar">Modificar materia</a></li>
-            <li><a class="button" data-reveal-id="modalAsociar">Asociar docente</a></li>
+            <li><a class="button" data-reveal-id="modalModificar">Modificar materia...</a></li>
+            <li><a class="button" data-reveal-id="modalAsociar">Asociar docente...</a></li>
           </ul>
         </div>
       </div>
@@ -86,6 +88,7 @@
   <div id="modalModificar" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
+      $titulo = 'Editar materia';
       $link = site_url('materias/modificar');  
       include 'elements/form-editar-materia.php'; 
     ?>
@@ -103,13 +106,13 @@
   </div>
   
   <!-- ventana modal para desasociar materias a la carrera -->
-  <div id="modalDesasociar" class="reveal-modal medium">
+  <div id="modalDesasociar" class="reveal-modal small">
     <form action="<?php echo site_url('materias/desasociarDocente')?>" method="post">
-      <h3>Desasociar docente de <?php echo $materia['Nombre']?></h3>
+      <h3>Desasociar docente de <?php echo $materia['nombre']?></h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="IdMateria" value="<?php echo $materia['IdMateria']?>" />
-      <input type="hidden" name="IdDocente" value="" />
+      <input type="hidden" name="idMateria" value="<?php echo $materia['idMateria']?>" />
+      <input type="hidden" name="idDocente" value="" />
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">
@@ -131,21 +134,20 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
     
-    $('.Quitar').click(function(){
-      IdDocente = $(this).attr('value');
-      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
-      Apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
+    $('.quitar').click(function(){
+      idDocente = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
       //cargo el id del docente en el formulario      
-      $('#modalDesasociar input[name="IdDocente"]').val(IdDocente);
+      $('#modalDesasociar input[name="idDocente"]').val(idDocente);
       //pongo el nombre del docente en el dialogo
-      $("#modalDesasociar").find('.nombre').html(Nombre+' '+Apellido);
+      $("#modalDesasociar").find('.nombre').html(nombre+' '+apellido);
       $("#modalDesasociar").reveal();
       return false;
     });
-    
   </script>
 </body>
 </html>

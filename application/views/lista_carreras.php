@@ -36,11 +36,11 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$fila['IdCarrera'])?>"><?php echo $fila['Nombre']?></a></td>
-                  <td class="plan"><?php echo $fila['Plan']?></td>
-                  <td class="director"><?php echo $fila['Director']['Nombre'].' '.$fila['Director']['Apellido']?></td>
-                  <td><a href="<?php echo site_url("departamentos/ver/".$fila['Departamento']['IdDepartamento'])?>"><?php echo $fila['Departamento']['Nombre']?></a></td>
-                  <td><a class="eliminar" href="" value="<?php echo $fila['IdCarrera']?>">Eliminar</a></td>
+                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$fila['idCarrera'])?>"><?php echo $fila['nombre']?></a></td>
+                  <td class="plan"><?php echo $fila['plan']?></td>
+                  <td class="director"><?php echo $fila['director']['nombre'].' '.$fila['director']['apellido']?></td>
+                  <td><a href="<?php echo site_url("departamentos/ver/".$fila['departamento']['idDepartamento'])?>"><?php echo $fila['departamento']['nombre']?></a></td>
+                  <td><a class="eliminar" href="" value="<?php echo $fila['idCarrera']?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -49,8 +49,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="three mobile-one columns">
-          <a class="button" data-reveal-id="modalNueva">Nueva Carrera</a>
+        <div class="six mobile-two columns pull-one-mobile">
+          <a class="button" data-reveal-id="modalNueva">Agregar carrera...</a>
         </div>       
       </div>
     </div>
@@ -72,8 +72,9 @@
   <div id="modalNueva" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
-      $link = site_url('carreras/nueva');  
-      $carrera = array('IdCarrera' => 0, 'IdDepartamento' => 0, 'Nombre' => '', 'Plan' => date('Y'));
+      $link = site_url('carreras/nueva');
+      $titulo = 'Crear nueva carrera';  
+      $carrera = array('idCarrera'=>'', 'idDepartamento'=>'', 'idDirectorCarrera'=>'', 'nombre' => '', 'plan' => date('Y'));
       include 'elements/form-editar-carrera.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
@@ -85,7 +86,7 @@
       <h3>Eliminar carrera</h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="IdCarrera" value="" />
+      <input type="hidden" name="idCarrera" value="" />
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">
@@ -108,19 +109,22 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
     
     $('.eliminar').click(function(){
-      IdCarrera = $(this).attr('value');
-      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
-      Plan = $(this).parentsUntil('tr').parent().find('.plan').text();
-      $('#modalEliminar input[name="IdCarrera"]').val(IdCarrera);
+      idCarrera = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      plan = $(this).parentsUntil('tr').parent().find('.plan').text();
+      $('#modalEliminar input[name="idCarrera"]').val(idCarrera);
       //pongo el nombre del departamento en el dialogo
-      $("#modalEliminar").find('.nombre').html(Nombre + ' - Plan: '+Plan);
+      $("#modalEliminar").find('.nombre').html(nombre + ' - Plan: '+plan);
       $("#modalEliminar").reveal();
       return false;
     });
+    
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

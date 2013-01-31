@@ -41,10 +41,10 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("materias/ver/".$fila['IdMateria'])?>"><?php echo $fila['Nombre']?></a></td>
-                  <td><?php echo $fila['Codigo']?></td>
-                  <td><?php echo $fila['Alumnos']?></td>
-                  <td><a class="eliminar" href="" value="<?php echo $fila['IdMateria']?>">Eliminar</a></td>
+                  <td><a href="<?php echo site_url("materias/ver/".$fila['idMateria'])?>"><?php echo $fila['nombre']?></a></td>
+                  <td><?php echo $fila['codigo']?></td>
+                  <td><?php echo $fila['alumnos']?></td>
+                  <td><a class="eliminar" href="" value="<?php echo $fila['idMateria']?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -53,8 +53,8 @@
         </div>
       </div>
       <div class="row">
-        <div class="three mobile-one columns">
-          <a class="button" data-reveal-id="modalNueva">Nueva Materia</a>
+        <div class="six mobile-two columns pull-one-mobile">
+          <a class="button" data-reveal-id="modalNueva">Agregar materia...</a>
         </div>       
       </div>
     </div>
@@ -76,19 +76,21 @@
   <div id="modalNueva" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
+      $titulo = 'Crear nueva materia';
       $link = site_url('materias/nueva');  
-      $materia = array('IdMateria' => 0, 'Nombre' => '', 'Codigo' => '');
+      $materia = array('idMateria' => 0, 'nombre' => '', 'codigo' => '');
       include 'elements/form-editar-materia.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
   <!-- ventana modal para desasociar materias a la carrera -->
-  <div id="modalEliminar" class="reveal-modal medium">
+  <div id="modalEliminar" class="reveal-modal small">
     <form action="<?php echo site_url('materias/eliminar')?>" method="post">
       <h3>Eliminar materia</h3>
+      <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="IdMateria" value="" />
+      <input type="hidden" name="idMateria" value="" />
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">
@@ -110,15 +112,22 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
     
     $('.eliminar').click(function(){
-      IdMateria = $(this).attr('value');
-      $('#modalEliminar input[name="IdMateria"]').val(IdMateria);
+      idMateria = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      //cargo el id de la materia en el formulario
+      $('#modalEliminar input[name="idMateria"]').val(idMateria);
+      //pongo el nombre de la materia en el dialogo
+      $("#modalEliminar").find('.nombre').html(nombre);
       $("#modalEliminar").reveal();
       return false;
     });
+    
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

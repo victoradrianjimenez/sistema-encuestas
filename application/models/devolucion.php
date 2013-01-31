@@ -4,17 +4,17 @@
  * 
  */
 class Devolucion extends CI_Model{
-	var $IdDevolucion;
-  var $IdMateria;
-  var $IdCarrera;
-  var $IdEncuesta;
-  var $IdFormulario;
-  var $Fecha;
-  var $Fortalezas;
-  var $Debilidades;
-  var $Alumnos;
-  var $Docentes;
-  var $Mejoras;
+	var $idDevolucion;
+  var $idMateria;
+  var $idCarrera;
+  var $idEncuesta;
+  var $idFormulario;
+  var $fecha;
+  var $fortalezas;
+  var $debilidades;
+  var $alumnos;
+  var $docentes;
+  var $mejoras;
   
   function __construct(){
     parent::__construct();

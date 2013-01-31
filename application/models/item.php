@@ -4,8 +4,7 @@
  * 
  */
 class Item extends Pregunta{
-  var $Posicion;
-  var $Tamaño;
+  var $posicion;
   
 	function __construct(){
 		parent::__construct();

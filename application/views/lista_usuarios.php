@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Lista Personas</title>
+  <title>Lista Usuarios</title>
 </head>
 <body>
   <!-- Header -->
@@ -29,18 +29,16 @@
           <?php else:?>
             <table class="twelve">
               <thead>
-                <th>ID</th>
                 <th>Apellido</th>
                 <th>Nombre</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><?php echo $fila['IdPersona']?></td>
-                  <td><a class="apellido" href="<?php echo site_url("personas/ver/".$fila['IdPersona'])?>"><?php echo $fila['Apellido']?></a></td>
-                  <td class="nombre"><?php echo $fila['Nombre']?></td>
+                  <td><a class="apellido" href="<?php echo site_url("usuarios/ver/".$fila['id'])?>"><?php echo $fila['apellido']?></a></td>
+                  <td class="nombre"><?php echo $fila['nombre']?></td>
                   <td>
-                    <a class="eliminar" href="" value="<?php echo $fila['IdPersona']?>">Eliminar</a>
+                    <a class="eliminar" href="" value="<?php echo $fila['id']?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -51,7 +49,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" data-reveal-id="modalNueva">Nueva Persona</a>
+          <a class="button" data-reveal-id="modalNueva">Nuevo usuario...</a>
         </div>          
       </div>
     </div>
@@ -68,22 +66,23 @@
     <?php include 'elements/footer.php'?>
   </div>
   
-  <!-- ventana modal para agregar una persona -->
+  <!-- ventana modal para agregar una usuario -->
   <div id="modalNueva" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
-      $link = site_url('personas/nueva');  
-      $persona = array('IdPersona'=>0, 'Nombre'=>'', 'Apellido'=>'');
-      include 'elements/form-editar-persona.php'; 
+      $link = site_url('usuarios/nueva');
+      $titulo = 'Crear nuevo usuario';    
+      $usuario = array('id'=>'', 'nombre'=>'', 'apellido'=>'','username'=>'','email'=>'');
+      include 'elements/form-editar-usuario.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
   <!-- ventana modal para eliminar materias -->
-  <div id="modalEliminar" class="reveal-modal medium">
-    <form action="<?php echo site_url('personas/eliminar')?>" method="post">
-      <input type="hidden" name="IdPersona" value="" />
-      <h3>Eliminar persona</h3>
+  <div id="modalEliminar" class="reveal-modal small">
+    <form action="<?php echo site_url('usuarios/eliminar')?>" method="post">
+      <input type="hidden" name="id" value="" />
+      <h3>Eliminar usuario</h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
       <div class="row">         
@@ -107,17 +106,17 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
     
     $('.eliminar').click(function(){
-      IdPersona = $(this).attr('value');
-      Apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
-      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
-      //cargo el id de la persona en el formulario
-      $('#modalEliminar input[name="IdPersona"]').val(IdPersona);
-      //pongo el nombre de la persona en el dialogo
-      $("#modalEliminar").find('.nombre').html(Nombre+' '+Apellido);
+      id = $(this).attr('value');
+      apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      //cargo el id de la usuario en el formulario
+      $('#modalEliminar input[name="id"]').val(id);
+      //pongo el nombre de la usuario en el dialogo
+      $("#modalEliminar").find('.nombre').html(nombre+' '+apellido);
       $("#modalEliminar").reveal();
       return false;
     });

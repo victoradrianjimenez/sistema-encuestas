@@ -1,30 +1,23 @@
 <form action="<?php echo $link?>" method="post">
   <h3>Asociar docente</h3>
-  <h5><?php echo $materia['Nombre'].' - Código '.$materia['Codigo']?></h5>
-  <input type="hidden" name="IdMateria" value="<?php echo $materia['IdMateria']?>" />
-  <label for="buscarPersona">Buscar persona: </label>
+  <h5><?php echo $materia['nombre'].' - Código '.$materia['codigo']?></h5>
+  <input type="hidden" name="idMateria" value="<?php echo $materia['idMateria']?>" />
+  <label for="buscarUsuario">Buscar usuario: </label>
   <div class="buscador">
-    <input id="buscarPersona" type="text" autocomplete="off">
+    <input id="buscarUsuario" type="text" autocomplete="off">
     <i class="gen-enclosed foundicon-search"></i>
+    <select id="listaResultado" name="idDocente" size="3">
+    </select>
+    <?php echo form_error('idDocente')?>
   </div>
-  <select id="listaResultado" name="IdDocente" size="3">
-  </select>
-  <?php echo form_error('IdDocente')?>
-  
-  <label for="campoTipoAcceso">Tipo de acceso:</label>
-  <select id="campoTipoAcceso" name="TipoAcceso">
-    <option value="D">Docente</option>
-    <option value="J">Jefe de cátedra</option>
-  </select>
-  <?php echo form_error('TipoAcceso')?>
-  
+
   <label for="campoOrdenFormulario">Orden en el que aparece en el formulario:</label>
-  <input id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="OrdenFormulario" />
-  <?php echo form_error('OrdenFormulario')?>
+  <input id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="ordenFormulario" value="1" />
+  <?php echo form_error('ordenFormulario')?>
   
   <label for="campoCargo">Cargo:</label>
-  <input id="campoCargo" type="text" name="Cargo" />
-  <?php echo form_error('Cargo')?>
+  <input id="campoCargo" type="text" name="cargo" />
+  <?php echo form_error('cargo')?>
   <div class="row">         
     <div class="ten columns centered">
       <div class="six mobile-one columns push-one-mobile">
@@ -38,11 +31,11 @@
 </form>
 <script>
   //realizo la busqueda de materias con AJAX
-  $('#buscarPersona').keyup(function(){
+  $('#buscarUsuario').keyup(function(){
     $.ajax({
       type: "POST", 
-      url: "<?php echo site_url('personas/buscarAJAX')?>", 
-      data:{ Buscar: $('#buscarPersona').val() }
+      url: "<?php echo site_url('usuarios/buscarAJAX')?>", 
+      data:{ buscar: $('#buscarUsuario').val() }
     }).done(function(msg){
       $('#listaResultado').empty();
       //separo los datos separados en filas
@@ -57,5 +50,14 @@
         $('#listaResultado').append('<option value="'+id+'">'+datos+'</option>');
       }
     });
+  });
+  $('#listaResultado').change(function(){
+    $(this).next('small.error').hide('fast');
+  });
+  $('input[type="text"]').keyup(function(){
+    $(this).next('small.error').hide('fast');
+  });
+  $('input[type="number"]').change(function(){
+    $(this).next('small.error').hide('fast');
   });
 </script>

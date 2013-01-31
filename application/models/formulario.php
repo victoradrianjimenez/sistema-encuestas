@@ -4,12 +4,12 @@
  * 
  */
 class Formulario extends CI_Model{
-  var $IdFormulario;
-  var $Nombre;
-  var $Titulo;
-  var $Descripcion;
-  var $Creacion;
-  var $PreguntasAdicionales;
+  var $idFormulario;
+  var $nombre;
+  var $titulo;
+  var $descripcion;
+  var $creacion;
+  var $preguntasAdicionales;
   
   function __construct(){
     parent::__construct();

@@ -4,8 +4,8 @@
  * 
  */
 class Alumno extends CI_Model{
-  var $CX;
-  var $Nombre;
+  var $cx;
+  var $nombre;
   
 	function __construct(){
 		parent::__construct();

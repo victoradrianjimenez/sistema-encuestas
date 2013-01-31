@@ -18,14 +18,14 @@ class Gestor_departamentos extends CI_Model{
    * @param nombre del departamento
    * @return  string
    */
-  public function alta($IdJefeDepartamento, $Nombre){
-    $Nombre = $this->db->escape($Nombre);
-    $IdJefeDepartamento = $this->db->escape($IdJefeDepartamento);
-    $query = $this->db->query("call esp_alta_departamento($IdJefeDepartamento, $Nombre)");
+  public function alta($idJefeDepartamento, $nombre){
+    $nombre = $this->db->escape($nombre);
+    $idJefeDepartamento = $this->db->escape($idJefeDepartamento);
+    $query = $this->db->query("call esp_alta_departamento($idJefeDepartamento, $nombre)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -36,13 +36,13 @@ class Gestor_departamentos extends CI_Model{
    * @param identificador de departamento
    * @return string
    */
-  public function baja($IdDepartamento){
-    $IdDepartamento = $this->db->escape($IdDepartamento);
-    $query = $this->db->query("call esp_baja_departamento($IdDepartamento)");
+  public function baja($idDepartamento){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $query = $this->db->query("call esp_baja_departamento($idDepartamento)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -53,15 +53,15 @@ class Gestor_departamentos extends CI_Model{
    * @param nombre del departamento
    * @return  string
    */
-  public function modificar($IdDepartamento, $IdJefeDepartamento, $Nombre){
-    $Nombre = $this->db->escape($Nombre);
-    $IdJefeDepartamento = $this->db->escape($IdJefeDepartamento);
-    $IdDepartamento = $this->db->escape($IdDepartamento);
-    $query = $this->db->query("call esp_modificar_departamento($IdDepartamento, $IdJefeDepartamento, $Nombre)");
+  public function modificar($idDepartamento, $idJefeDepartamento, $nombre){
+    $nombre = $this->db->escape($nombre);
+    $idJefeDepartamento = $this->db->escape($idJefeDepartamento);
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $query = $this->db->query("call esp_modificar_departamento($idDepartamento, $idJefeDepartamento, $nombre)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -112,7 +112,7 @@ class Gestor_departamentos extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
 
 

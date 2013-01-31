@@ -56,7 +56,7 @@ class Gestor_materias extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
   
   
@@ -66,7 +66,7 @@ class Gestor_materias extends CI_Model{
    *
    * @access public
    * @param fragmento del nombre de la materia
-   * @return arrayPersonas
+   * @return array
    */
   public function buscar($nombre){
     $nombre = $this->db->escape($nombre);
@@ -87,15 +87,15 @@ class Gestor_materias extends CI_Model{
    * @param nuevo codigo de la materia
    * @return string
    */
-  public function modificar($IdMateria, $Nombre, $Codigo){
-    $IdMateria = $this->db->escape($IdMateria);
-    $Nombre = $this->db->escape($Nombre);
-    $Codigo = $this->db->escape($Codigo);
-    $query = $this->db->query("call esp_modificar_materia($IdMateria, $Nombre, $Codigo)");
+  public function modificar($idMateria, $nombre, $codigo){
+    $idMateria = $this->db->escape($idMateria);
+    $nombre = $this->db->escape($nombre);
+    $codigo = $this->db->escape($codigo);
+    $query = $this->db->query("call esp_modificar_materia($idMateria, $nombre, $codigo)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -107,14 +107,14 @@ class Gestor_materias extends CI_Model{
    * @param código de la materia
    * @return  string
    */
-  public function alta($Nombre, $Codigo){
-    $Nombre = $this->db->escape($Nombre);
-    $Codigo = $this->db->escape($Codigo);
-    $query = $this->db->query("call esp_alta_materia($Nombre, $Codigo)");
+  public function alta($nombre, $codigo){
+    $nombre = $this->db->escape($nombre);
+    $codigo = $this->db->escape($codigo);
+    $query = $this->db->query("call esp_alta_materia($nombre, $codigo)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -125,13 +125,13 @@ class Gestor_materias extends CI_Model{
    * @param identificador de la materia
    * @return string
    */
-  public function baja($IdMateria){
-    $IdMateria = $this->db->escape($IdMateria);
-    $query = $this->db->query("call esp_baja_materia($IdMateria)");
+  public function baja($idMateria){
+    $idMateria = $this->db->escape($idMateria);
+    $query = $this->db->query("call esp_baja_materia($idMateria)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   

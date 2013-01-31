@@ -4,16 +4,16 @@
  * 
  */
 class Respuesta extends CI_Model{
-	var $IdRespuesta;
-  var $IdPregunta;
-  var $IdClave;
-  var $IdMateria;
-  var $IdCarrera;
-  var $IdEncuesta;
-  var $IdFormulario;
-  var $IdDocente;
-  var $Opcion;
-  var $Texto;
+	var $idRespuesta;
+  var $idPregunta;
+  var $idClave;
+  var $idMateria;
+  var $idCarrera;
+  var $idEncuesta;
+  var $idFormulario;
+  var $idDocente;
+  var $opcion;
+  var $texto;
   
   function __construct(){
     parent::__construct();

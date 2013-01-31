@@ -4,12 +4,12 @@
  * 
  */
 class Seccion extends CI_Model{
-  var $IdSeccion;
-  var $IdFormulario;
-  var $IdCarrera;
-  var $Texto;
-  var $Descripcion;
-  var $Tipo;
+  var $idSeccion;
+  var $idFormulario;
+  var $idCarrera;
+  var $texto;
+  var $descripcion;
+  var $tipo;
   
   function __construct(){
     parent::__construct();

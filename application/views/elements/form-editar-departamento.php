@@ -1,18 +1,20 @@
-<h3>Editar departamento</h3>
+<h3><?php echo $titulo?></h3>
 <form action="<?php echo $link?>" method="post">
-  <input type="hidden" name="IdDepartamento" value="<?php echo $departamento['IdDepartamento']?>" required /> 
+  <input type="hidden" name="idDepartamento" value="<?php echo $departamento['idDepartamento']?>" required /> 
   <div class="twelve columns">
-    <label for="campoNombre">Nombre: </label>
-    <input type="text" id="campoNombre" name="Nombre" value="<?php echo $departamento['Nombre']?>" required />
-    <?php echo form_error('Nombre')?>
+    <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
+    <input type="text" id="campoNombre" name="nombre" value="<?php echo $departamento['nombre']?>" required />
+    <?php echo form_error('nombre')?>
     
-    <label for="buscarPersona">Jefe de Departamento: </label>
+    <label for="buscarUsuario">Jefe de Departamento: </label>
     <div class="buscador">
-      <input id="buscarPersona" type="text" autocomplete="off">
+      <input id="buscarUsuario" type="text" autocomplete="off">
       <i class="gen-enclosed foundicon-search"></i>
-      <select id="listaPersonas" name="IdJefeDepartamento" size="3">
+      <select id="listausuarios" name="idJefeDepartamento" size="3" required>
+        <option value="<?php echo $departamento['idJefeDepartamento']?>" selected>(Jefe de departamento actual)</option>
+        <option value="">(Nunguno)</option>
       </select>
-      <?php echo form_error('IdJefeDepartamento')?>
+      <?php echo form_error('idJefeDepartamento')?>
     </div>
     
     <div class="row">         
@@ -28,24 +30,41 @@
   </div>
 </form>
 <script>
-  //realizo la busqueda de personas con AJAX
-  $('#buscarPersona').keyup(function(){
+  //realizo la busqueda de usuarios con AJAX
+  $('#buscarUsuario').keyup(function(){
     $.ajax({
       type: "POST", 
-      url: "<?php echo site_url('personas/buscarAJAX')?>", 
-      data:{ Buscar: $(this).val() }
+      url: "<?php echo site_url('usuarios/buscarAJAX')?>", 
+      data:{ buscar: $(this).val() }
     }).done(function(msg){
-      $('#listaPersonas').empty();
+      $('#listausuarios').empty();
       var filas = msg.split("\n");
+      var cnt = 0;
       for (var i=0; i<filas.length; i++){
-        if (filas[i].length<2) continue;
+        if (filas[i].length<6) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];
         var datos = columnas[1] + ' ' + columnas[2] +' ('+columnas[0]+')';
         //agregar fila a la lista desplegable
-        $('#listaPersonas').append('<option value="'+id+'">'+datos+'</option>');
+        $('#listausuarios').append('<option value="'+id+'">'+datos+'</option>');
+        cnt++;
       }
+      if(cnt==0){
+        $('#listausuarios').append('<option value="' + <?php echo $departamento['idJefeDepartamento']?> + '" selected>(Jefe de departamento actual)</option>');
+        $('#listausuarios').append('<option value="">(Nunguno)</option>');
+      }
+      $('#listausuarios').children().first().attr('selected','');
     });
+  });
+  $('#listausuarios').change(function(){
+    textoOpcion = $(this).children('option[selected]').text();
+    $('#buscarUsuario').val(textoOpcion);
+    $(this).next('small.error').hide('fast');
+  });
+  
+  //ocultar mensaje de error al escribir
+  $('#campoNombre').keyup(function(){
+    $(this).next('small.error').hide('fast');
   });
 </script>

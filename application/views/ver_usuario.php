@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Ver Persona</title>
+  <title>Ver usuario</title>
 </head>
 <body>
   <!-- Header -->
@@ -23,13 +23,17 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $persona['Nombre'].' '.$persona['Apellido']?></h3>
+          <h3><?php echo $usuario['nombre'].' '.$usuario['apellido']?></h3>
+          <h5>Email: <?php echo $usuario['email']?></h5>
+          <h5>Último acceso: <?php echo $usuario['last_login']?></h5>
+          <h5>Estado: <?php echo ($usuario['active'])?'Activo':'Inactivo'?></h5>
         </div>
       </div>
       <div class="row">
         <div class="twelve columns">
           <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalModificar">Modificar persona</a></li>
+            <li><a class="button" data-reveal-id="modalModificar">Modificar usuario...</a></li>
+            <li><a class="button" data-reveal-id="modalActivar">Activar/Desactivar cuenta</a></li>
           </ul>
         </div>
       </div>
@@ -48,13 +52,35 @@
     <?php include 'elements/footer.php'?>
   </div>
     
-  <!-- ventana modal para editar datos de la persona -->
+  <!-- ventana modal para editar datos del usuario -->
   <div id="modalModificar" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
-      $link = site_url('personas/modificar');  
-      include 'elements/form-editar-persona.php'; 
+      $link = site_url('usuarios/modificar');
+      $titulo = 'Editar usuario';
+      include 'elements/form-editar-usuario.php'; 
     ?>
+    <a class="close-reveal-modal">&#215;</a>
+  </div>
+
+  <!-- ventana modal para activar/desactivar una cuenta de usuario -->
+  <div id="modalActivar" class="reveal-modal small">
+    <form action="<?php echo site_url(($usuario['active'])?'usuarios/desactivar':'usuarios/activar')?>" method="post">
+      <h3><?php echo ($usuario['active'])?'Desactivar cuenta de usuario':'Activar cuenta de usuario'?></h3>
+      <h5 class="nombre"></h5>
+      <p>¿Desea continuar?</p>
+      <input type="hidden" name="id" value="<?php echo $usuario['id']?>" />
+      <div class="row">
+        <div class="ten columns centered">
+          <div class="six mobile-one columns push-one-mobile">
+            <input class="button cancelar" type="button" value="Cancelar"/>
+          </div>
+          <div class="six mobile-one columns pull-one-mobile ">
+            <input class="button" type="submit" name="submit" value="Aceptar" />
+          </div>
+        </div>
+      </div>
+    </form>
     <a class="close-reveal-modal">&#215;</a>
   </div>
   
@@ -65,7 +91,7 @@
   
   <script language="JavaScript">
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
   </script>
 </body>

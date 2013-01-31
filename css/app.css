@@ -75,7 +75,9 @@ form.custom div.custom.dropdown ul{
 button.button, input[type="button"].button, input[type="submit"].button{
   width: 100%;
 }
-
+span.opcional{
+  color: #C60F13;
+}
 
 
 /* ubicacion del icono del imput para buscar */
@@ -90,6 +92,10 @@ button.button, input[type="button"].button, input[type="submit"].button{
 footer{
   border-top: 3px solid #2BA6CB;
 }
+
+
+
+
 
 /* -----------------------------------------
    Page Name 1

@@ -4,12 +4,12 @@
  * 
  */
 class Carrera extends CI_Model{
-  var $IdCarrera;
-  var $IdDepartamento;
-  var $IdDirectorCarrera;
-  var $IdFormulario;
-  var $Nombre;
-  var $Plan;
+  var $idCarrera;
+  var $idDepartamento;
+  var $idDirectorCarrera;
+  var $idFormulario;
+  var $nombre;
+  var $plan;
   
   function __construct(){
     parent::__construct();
@@ -23,7 +23,7 @@ class Carrera extends CI_Model{
    * @return  arrayMaterias
    */  
   public function buscarMaterias($nombre){
-    $idCarrera = $this->db->escape($this->IdCarrera);
+    $idCarrera = $this->db->escape($this->idCarrera);
     $nombre = $this->db->escape($nombre);
     $query = $this->db->query("call esp_buscar_materias_carrera($idCarrera, $nombre)");
     $data = $query->result('Materia');
@@ -42,7 +42,7 @@ class Carrera extends CI_Model{
    * @return  array
    */  
   public function listarMaterias($pagNumero, $pagLongitud){
-    $idCarrera = $this->db->escape($this->IdCarrera);
+    $idCarrera = $this->db->escape($this->idCarrera);
     $pagNumero = $this->db->escape($pagNumero);
     $pagLongitud = $this->db->escape($pagLongitud);
     $query = $this->db->query("call esp_listar_materias_carrera($idCarrera, $pagNumero, $pagLongitud)");
@@ -60,12 +60,12 @@ class Carrera extends CI_Model{
    * @return int
    */ 
   public function cantidadMaterias(){
-    $idCarrera = $this->db->escape($this->IdCarrera);
+    $idCarrera = $this->db->escape($this->idCarrera);
     $query = $this->db->query("call esp_cantidad_materias_carrera($idCarrera)");
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
   
   
@@ -76,14 +76,14 @@ class Carrera extends CI_Model{
    * @param identificador de materia
    * @return string
    */
-  public function asociarMateria($IdMateria){
-    $IdCarrera = $this->db->escape($this->IdCarrera);
-    $IdMateria = $this->db->escape($IdMateria);
-    $query = $this->db->query("call esp_asociar_materia_carrera($IdMateria, $IdCarrera)");
+  public function asociarMateria($idMateria){
+    $idCarrera = $this->db->escape($this->idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $query = $this->db->query("call esp_asociar_materia_carrera($idMateria, $idCarrera)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -94,14 +94,14 @@ class Carrera extends CI_Model{
    * @param identificador de materia
    * @return string
    */
-  public function desasociarMateria($IdMateria){
-    $IdCarrera = $this->db->escape($this->IdCarrera);
-    $IdMateria = $this->db->escape($IdMateria);
-    $query = $this->db->query("call esp_desasociar_materia_carrera($IdMateria, $IdCarrera)");
+  public function desasociarMateria($idMateria){
+    $idCarrera = $this->db->escape($this->idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $query = $this->db->query("call esp_desasociar_materia_carrera($idMateria, $idCarrera)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
 }

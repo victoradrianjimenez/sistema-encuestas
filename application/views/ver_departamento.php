@@ -26,14 +26,14 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $departamento['Nombre']?></h3>
-          <p>Jefe de Departamento: <?php echo $departamento['JefeDepartamento']['Nombre'].' '.$departamento['JefeDepartamento']['Apellido']?></p>
+          <h3><?php echo $departamento['nombre']?></h3>
+          <p>Jefe de Departamento: <?php echo $departamento['jefeDepartamento']['nombre'].' '.$departamento['jefeDepartamento']['apellido']?></p>
         </div>
       </div>
       <div class="row">
         <div class="twelve columns">
           <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalModificar">Modificar departamento</a></li>
+            <li><a class="button" data-reveal-id="modalModificar">Modificar departamento...</a></li>
             <li><a class="button" href="<?php echo site_url('departamentos')?>">Todos los departamentos</a></li>
           </ul>
         </div>
@@ -55,8 +55,8 @@
   <!-- ventana modal para editar datos de la carrera -->
   <div id="modalModificar" class="reveal-modal medium">
     <?php
-      //a donde mandar los datos editados para darse de alta
-      $link = site_url('departamentos/modificar');  
+      $titulo = 'Editar departamento';
+      $link = site_url('departamentos/modificar'); //a donde mandar los datos editados para darse de alta  
       include 'elements/form-editar-departamento.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
@@ -69,7 +69,7 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
   </script>
 </body>

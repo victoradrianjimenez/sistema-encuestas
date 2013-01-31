@@ -197,7 +197,7 @@ class Encuestas extends CI_Controller{
     $this->load->model('Pregunta');
     $this->load->model('Item');
     $this->load->model('Seccion');
-    $this->load->model('Persona');
+    $this->load->model('Usuario');
     $this->load->model('Materia');
     $this->load->model('Carrera');
     $this->load->model('Formulario');
@@ -222,17 +222,17 @@ class Encuestas extends CI_Controller{
       if ($seccion->Tipo == 'D'){
         foreach ($docentes as $j => $docente) {
           $datos_subsecciones[$j] = array(
-            'IdPersona' => $docente->IdPersona,
+            'IdUsuario' => $docente->id,
             'Apellido' => $docente->Apellido,
             'Nombre' => $docente->Nombre,
-            'Preguntas' => $this->_dameDatosSeccion($seccion, $docente->IdPersona, $encuesta, $materia, $carrera)
+            'Preguntas' => $this->_dameDatosSeccion($seccion, $docente->IdUsuario, $encuesta, $materia, $carrera)
           );
         }
       }
       //si la sección es referida a la materia (sección comun)
       else{
         $datos_subsecciones[0] =  array(
-          'IdPersona' => 0,
+          'IdUsuario' => 0,
           'Apellido' => '',
           'Nombre' => '',
           'Preguntas' => $this->_dameDatosSeccion($seccion, 0, $encuesta, $materia, $carrera)

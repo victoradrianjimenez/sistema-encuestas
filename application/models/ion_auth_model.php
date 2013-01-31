@@ -791,7 +791,7 @@ class Ion_auth_model extends CI_Model
 		}
 
 		// IP Address
-		$ip_address = $this->_prepare_ip($this->input->ip_address());
+		$ip_address = '0x0';//$this->_prepare_ip($this->input->ip_address());
 		$salt       = $this->store_salt ? $this->salt() : FALSE;
 		$password   = $this->hash_password($password, $salt);
 

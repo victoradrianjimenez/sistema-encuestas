@@ -3,7 +3,7 @@
 /**
  * 
  */
-class Personas extends CI_Controller {
+class Usuarios extends CI_Controller {
 	
 	const per_page = 10; //cuantos items se mostraran por pagina en un listado
   
@@ -74,22 +74,22 @@ class Personas extends CI_Controller {
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
-    $this->load->model('Persona');
-    $this->load->model('Gestor_personas','gp');
+    $this->load->model('Usuario');
+    $this->load->model('Gestor_Usuarios','gp');
 
     //obtengo lista de departamentos
-    $personas = $this->gp->listar($PagInicio, self::per_page);
+    $Usuarios = $this->gp->listar($PagInicio, self::per_page);
     $tabla = array();
-    foreach ($personas as $i => $persona) {
+    foreach ($Usuarios as $i => $Usuario) {
       $tabla[$i]=array(
-        'IdPersona' => $persona->IdPersona,
-        'Apellido' => $persona->Apellido,
-        'Nombre' => $persona->Nombre,
+        'IdUsuario' => $Usuario->IdUsuario,
+        'Apellido' => $Usuario->Apellido,
+        'Nombre' => $Usuario->Nombre,
        );
     }
        
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("personas/listar");
+    $config['base_url'] = site_url("Usuarios/listar");
     $config['total_rows'] = $this->gp->cantidad();
     $config['per_page'] = self::per_page;
     $config['uri_segment'] = 3;
@@ -99,13 +99,13 @@ class Personas extends CI_Controller {
     $data['tabla'] = &$tabla; //array de datos de los Departamentos
     $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-    $this->load->view('lista_personas', $data);
+    $this->load->view('lista_Usuarios', $data);
   }
   
   /*
-   * Ver y editar datos relacionados a una persona
+   * Ver y editar datos relacionados a una Usuario
    */
-  public function ver($IdPersona=null, $PagInicio=0){
+  public function ver($IdUsuario=null, $PagInicio=0){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->in_group('admin')){
       show_error('No tiene permisos para ingresar a esta sección.');
@@ -113,62 +113,34 @@ class Personas extends CI_Controller {
     }
     //chequeo parámetros de entrada
     $PagInicio = (int)$PagInicio;
-    $IdPersona = (int)$IdPersona;
+    $IdUsuario = (int)$IdUsuario;
     
     //cargo modelos, librerias, etc.
-    $this->load->model('Persona');
-    $this->load->model('Gestor_personas','gp');
+    $this->load->model('Usuario');
+    $this->load->model('Gestor_Usuarios','gp');
     
     //obtengo datos del departamento
-    $persona = $this->gp->dame($IdPersona);
-    if ($persona){
-      $data['persona'] = array(
-        'IdPersona' => $persona->IdPersona,
-        'Apellido' => $persona->Apellido,
-        'Nombre' => $persona->Nombre
+    $Usuario = $this->gp->dame($IdUsuario);
+    if ($Usuario){
+      $data['Usuario'] = array(
+        'IdUsuario' => $Usuario->IdUsuario,
+        'Apellido' => $Usuario->Apellido,
+        'Nombre' => $Usuario->Nombre
       );
       //envio datos a la vista
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-      $this->load->view('ver_persona', $data);
+      $this->load->view('ver_Usuario', $data);
     }
     else{
       show_error('El Identificador de Docente/Autoridad no es válido.');
     }
   }
   
-  /*
-   * Recepción del formulario para agregar nuevo departamento
-   * POST: Apellido, Nombre
-   */
-  public function nueva(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
-    //verifico datos POST
-    $this->form_validation->set_rules('Apellido','Apellido','alpha_dash_space|required');
-    $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space');
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
-    if($this->form_validation->run()){
-      $this->load->model('Gestor_personas','gp');
 
-      //agrego departamento y cargo vista para mostrar resultado
-      $res = $this->gp->alta($this->input->post('Apellido',TRUE), $this->input->post('Nombre',TRUE));
-      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-      $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID del nuevo departamento es $res.":$res;
-      $data['link'] = site_url("personas"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $data);
-    }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->listar();
-    }
-  }
 
   /*
-   * Recepción del formulario para modificar los datos de una persona
-   * POST: Persona, Apellido, Nombre
+   * Recepción del formulario para modificar los datos de una Usuario
+   * POST: Usuario, Apellido, Nombre
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
@@ -177,31 +149,36 @@ class Personas extends CI_Controller {
       return;
     }
     //verifico datos POST
-    $this->form_validation->set_rules('IdPersona','ID Persona','is_natural_no_zero|required');
+    $this->form_validation->set_rules('id','Usuario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|required');
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space');
+    $this->form_validation->set_rules('username','Nombre de usuario','alpha_dash_space|required');
+    $this->form_validation->set_rules('email','Apellido','alpha_dash_space|required');
     $this->form_validation->set_rules('Apellido','Apellido','alpha_dash_space|required');
-    $this->form_validation->set_rules('Nombre','Nombre','alpha_dash_space');
+    $this->form_validation->set_rules('Apellido','Apellido','alpha_dash_space|required');
+    
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
     if($this->form_validation->run()){
-      $this->load->model('Gestor_personas','gp');
-      $IdPersona = $this->input->post('IdPersona',TRUE);
+      $this->load->model('Gestor_Usuarios','gp');
+      $IdUsuario = $this->input->post('IdUsuario',TRUE);
       $Nombre = $this->input->post('Nombre',TRUE);
       
       //modifico departamento y cargo vista para mostrar resultado
-      $res = $this->gp->modificar($IdPersona, $this->input->post('Apellido',TRUE), ($Nombre=='')?NULL:$Nombre);
+      $res = $this->gp->modificar($IdUsuario, $this->input->post('Apellido',TRUE), ($Nombre=='')?NULL:$Nombre);
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("personas/ver/$IdPersona"); //hacia donde redirigirse
+      $data['link'] = site_url("Usuarios/ver/$IdUsuario"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina del departamento
-      $this->ver($this->input->post('IdPersona',TRUE));
+      $this->ver($this->input->post('IdUsuario',TRUE));
     }
   }
 
   /*
-   * Recepción del formulario para eliminar una persona
-   * POST: IdPersona
+   * Recepción del formulario para eliminar una Usuario
+   * POST: IdUsuario
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
@@ -210,15 +187,15 @@ class Personas extends CI_Controller {
       return;
     }
     //verifico datos POST
-    $this->form_validation->set_rules('IdPersona','ID Persona','is_natural_no_zero|required');
+    $this->form_validation->set_rules('IdUsuario','ID Usuario','is_natural_no_zero|required');
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
     if($this->form_validation->run()){
-      $this->load->model('Gestor_personas','gp');
+      $this->load->model('Gestor_Usuarios','gp');
       //doy de baja y cargo vista para mostrar resultado
-      $res = $this->gp->baja($this->input->post('IdPersona',TRUE));
+      $res = $this->gp->baja($this->input->post('IdUsuario',TRUE));
       $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
       $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("personas"); //link para boton aceptar/continuar
+      $data['link'] = site_url("Usuarios"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $data);
     }
     else{
@@ -231,14 +208,14 @@ class Personas extends CI_Controller {
   public function buscarAJAX(){
     $buscar = $this->input->post('Buscar');
     //VERIFICAR
-    $this->load->model('Persona');
-    $this->load->model('Gestor_personas','gp');
-    $personas = $this->gp->buscar($buscar);
+    $this->load->model('Usuario');
+    $this->load->model('Gestor_Usuarios','gp');
+    $Usuarios = $this->gp->buscar($buscar);
     echo "\n";
-    foreach ($personas as $persona) {
-      echo  "$persona->IdPersona\t".
-            "$persona->Apellido\t".
-            "$persona->Nombre\t\n";
+    foreach ($Usuarios as $Usuario) {
+      echo  "$Usuario->IdUsuario\t".
+            "$Usuario->Apellido\t".
+            "$Usuario->Nombre\t\n";
     }
   }
   

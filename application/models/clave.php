@@ -4,15 +4,15 @@
  * 
  */
 class Clave extends CI_Model{
-	var $IdClave;
-  var $IdMateria;
-  var $IdCarrera;
-  var $IdEncuesta;
-  var $IdFormulario;
-  var $Clave;
-  var $Tipo;
-  var $Generada;
-  var $Utilizada;
+	var $idClave;
+  var $idMateria;
+  var $idCarrera;
+  var $idEncuesta;
+  var $idFormulario;
+  var $clave;
+  var $tipo;
+  var $generada;
+  var $utilizada;
   
   function __construct(){
     parent::__construct();

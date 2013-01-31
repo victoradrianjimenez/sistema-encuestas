@@ -79,7 +79,7 @@
                       </div>
                     </div>
                     <div class="three columns">
-                      <img src="'.site_url("pcharts/graficoPregunta/1/1/".$pregunta['IdPregunta'].'/'.$subseccion['IdPersona'].'/5/5').'" width="400" height="160" />
+                      <img src="'.site_url("pcharts/graficoPregunta/1/1/".$pregunta['IdPregunta'].'/'.$subseccion['Idusuario'].'/5/5').'" width="400" height="160" />
                     </div>';
                   }
                 }

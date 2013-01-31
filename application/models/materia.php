@@ -4,10 +4,10 @@
  * 
  */
 class Materia extends CI_Model{
-  var $IdMateria;
-  var $Nombre;
-  var $Codigo;
-  var $Alumnos;
+  var $idMateria;
+  var $nombre;
+  var $codigo;
+  var $alumnos;
   
   function __construct(){
     parent::__construct();
@@ -21,9 +21,9 @@ class Materia extends CI_Model{
    * @return  array
    */  
   public function listarDocentes(){
-    $IdMateria = $this->db->escape($this->IdMateria);
-    $query = $this->db->query("call esp_listar_docentes_materia($IdMateria)");
-    $data = $query->result('Persona');
+    $idMateria = $this->db->escape($this->idMateria);
+    $query = $this->db->query("call esp_listar_docentes_materia($idMateria)");
+    $data = $query->result_array();
     $query->free_result();
     $this->db->reconnect();
     return $data;
@@ -37,12 +37,12 @@ class Materia extends CI_Model{
    * @return int
    */ 
   public function cantidadDocentes(){
-    $IdMateria = $this->db->escape($this->IdMateria);
-    $query = $this->db->query("call esp_cantidad_docentes_materia($IdMateria)");
+    $idMateria = $this->db->escape($this->idMateria);
+    $query = $this->db->query("call esp_cantidad_docentes_materia($idMateria)");
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
   
   
@@ -50,20 +50,19 @@ class Materia extends CI_Model{
    * Asocia un docente a la materia. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
    *
    * @access public
-   * @param identificador de persona
+   * @param identificador de usuario
    * @return string
    */
-  public function asociarDocente($IdPersona, $TipoAcceso, $OrdenFormulario, $Cargo){
-    $IdMateria = $this->db->escape($this->IdMateria);
-    $IdPersona = $this->db->escape($IdPersona);
-    $TipoAcceso = $this->db->escape($TipoAcceso);
-    $OrdenFormulario = $this->db->escape($OrdenFormulario);
-    $Cargo = $this->db->escape($Cargo);
-    $query = $this->db->query("call esp_asociar_docente_materia($IdPersona, $IdMateria, $TipoAcceso, $OrdenFormulario, $Cargo)");
+  public function asociarDocente($id, $ordenFormulario, $cargo){
+    $idMateria = $this->db->escape($this->idMateria);
+    $id = $this->db->escape($id);
+    $ordenFormulario = $this->db->escape($ordenFormulario);
+    $cargo = $this->db->escape($cargo);
+    $query = $this->db->query("call esp_asociar_docente_materia($id, $idMateria, $ordenFormulario, $cargo)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -71,17 +70,17 @@ class Materia extends CI_Model{
    * Elimina la asociación de un docente con la materia. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
    *
    * @access public
-   * @param identificador de persona
+   * @param identificador de usuario
    * @return string
    */
-  public function desasociarDocente($IdPersona){
-    $IdMateria = $this->db->escape($this->IdMateria);
-    $IdPersona = $this->db->escape($IdPersona);
-    $query = $this->db->query("call esp_desasociar_docente_materia($IdPersona, $IdMateria)");
+  public function desasociarDocente($id){
+    $idMateria = $this->db->escape($this->idMateria);
+    $id = $this->db->escape($id);
+    $query = $this->db->query("call esp_desasociar_docente_materia($id, $idMateria)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
 }

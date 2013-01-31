@@ -15,21 +15,21 @@ class Gestor_carreras extends CI_Model{
    *
    * @access  public
    * @param identificador del departamento al que pertenece la carrera
-   * @param identificador de persona correspondiente al director de carrera
+   * @param identificador de usuario correspondiente al director de carrera
    * @param nombre de la carrera
    * @param plan de la carrera (año)
    * @return  string
    */
-  public function alta($IdDepartamento, $IdDirectorCarrera, $Nombre, $Plan){
-    $IdDepartamento = $this->db->escape($IdDepartamento);
-    $IdDirectorCarrera = $this->db->escape($IdDirectorCarrera);
-    $Nombre = $this->db->escape($Nombre);
-    $Plan = $this->db->escape($Plan);
-    $query = $this->db->query("call esp_alta_carrera($IdDepartamento, $IdDirectorCarrera, $Nombre, $Plan)");
+  public function alta($idDepartamento, $idDirectorCarrera, $nombre, $plan){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
+    $nombre = $this->db->escape($nombre);
+    $plan = $this->db->escape($plan);
+    $query = $this->db->query("call esp_alta_carrera($idDepartamento, $idDirectorCarrera, $nombre, $plan)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 
 
@@ -40,13 +40,13 @@ class Gestor_carreras extends CI_Model{
    * @param identificador de la carrera
    * @return string
    */
-  public function baja($IdCarrera){
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $query = $this->db->query("call esp_baja_carrera($IdCarrera)");
+  public function baja($idCarrera){
+    $idCarrera = $this->db->escape($idCarrera);
+    $query = $this->db->query("call esp_baja_carrera($idCarrera)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -56,22 +56,22 @@ class Gestor_carreras extends CI_Model{
    * @access public
    * @param identificador del departamento al que pertenece la carrera
    * @param identificador de la carrera a modificar
-   * @param identificador de persona correspondiente al director de carrera
+   * @param identificador de usuario correspondiente al director de carrera
    * @param nuevo nombre de la carrera
    * @param plan de la carrera (año)
    * @return string
    */
-  public function modificar($IdCarrera, $IdDepartamento, $IdDirectorCarrera, $Nombre, $Plan){
-    $IdDepartamento = $this->db->escape($IdDepartamento);
-    $IdDirectorCarrera = $this->db->escape($IdDirectorCarrera);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $Nombre = $this->db->escape($Nombre);
-    $Plan = $this->db->escape($Plan);
-    $query = $this->db->query("call esp_modificar_carrera($IdCarrera, $IdDepartamento, $IdDirectorCarrera, $Nombre, $Plan)");
+  public function modificar($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
+    $idCarrera = $this->db->escape($idCarrera);
+    $nombre = $this->db->escape($nombre);
+    $plan = $this->db->escape($plan);
+    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -122,7 +122,7 @@ class Gestor_carreras extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
   
       
@@ -131,7 +131,7 @@ class Gestor_carreras extends CI_Model{
    *
    * @access public
    * @param fragmento del nombre de la carrera
-   * @return arrayPersonas
+   * @return array
    */
   public function buscar($nombre){
     $nombre = $this->db->escape($nombre);

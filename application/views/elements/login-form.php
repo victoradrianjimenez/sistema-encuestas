@@ -1,5 +1,5 @@
 <?php if(!(isset($usuarioLogin) && is_object($usuarioLogin))): ?>
-  <form id="login" action="<?php echo site_url("personas/login")?>" method="post"> 
+  <form id="login" action="<?php echo site_url("usuarios/login")?>" method="post"> 
     <fieldset>
       <legend>Iniciar sesión</legend>
       <div class="row">
@@ -29,9 +29,18 @@
   </form>
 <?php else: ?>
   <div id="datosUsuario">
-    <form id="logout" action="<?php echo site_url("personas/logout")?>" method="post"> 
-      <h6><?php echo $usuarioLogin->username?></h6>
-      <input type="submit" name="submit" value="Cerrar sesión" class="small button" />
+    <form id="logout" action="<?php echo site_url("usuarios/logout")?>" method="post">
+      <div class="row">
+        <div class="twelve mobile-two columns pull-two-mobile"> 
+          <h6><?php echo $usuarioLogin->username?></h6>
+          <input type="submit" name="submit" value="Cerrar sesión" class="small button" />
+        </div>  
+      </div>
+      <div class="row">  
+        <div class="twelve mobile-two columns pull-two-mobile">
+          <a href="<?php echo site_url("usuarios/modificar")?>">Editar</a>
+        </div>
+      </div>
     </form>      
   </div>
 <?php endif ?>

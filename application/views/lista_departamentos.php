@@ -34,10 +34,10 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$fila['IdDepartamento'])?>"/><?php echo $fila['Nombre']?></a></td>
-                  <td><a class="jefeDepartamento" href="<?php echo site_url('personas/ver/'.$fila['JefeDepartamento']['IdPersona'])?>"/><?php echo $fila['JefeDepartamento']['Nombre'].' '.$fila['JefeDepartamento']['Apellido']?></a></td>
+                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$fila['idDepartamento'])?>"/><?php echo $fila['nombre']?></a></td>
+                  <td><a class="jefeDepartamento" href="<?php echo site_url('usuarios/ver/'.$fila['jefeDepartamento']['id'])?>"/><?php echo $fila['jefeDepartamento']['nombre'].' '.$fila['jefeDepartamento']['apellido']?></a></td>
                   <td>
-                    <a class="eliminar" href="" value="<?php echo $fila['IdDepartamento']?>">Eliminar</a>
+                    <a class="eliminar" href="" value="<?php echo $fila['idDepartamento']?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -48,7 +48,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" data-reveal-id="modalNuevo">Nuevo Departamento</a>
+          <a class="button" data-reveal-id="modalNuevo">Agregar departamento...</a>
         </div>          
       </div>
     </div>
@@ -68,18 +68,18 @@
   <!-- ventana modal para editar datos del departamento -->
   <div id="modalNuevo" class="reveal-modal medium">
     <?php
-      //a donde mandar los datos editados para darse de alta
-      $link = site_url('departamentos/nuevo');  
-      $departamento = array('IdDepartamento'=>0, 'IdJefeDepartamento'=>0, 'Nombre'=>'');
-      include 'elements/form-editar-departamento.php'; 
+      $titulo = 'Crear nuevo departamento';
+      $link = site_url('departamentos/nuevo'); //a donde mandar los datos editados para darse de alta  
+      $departamento = array('idDepartamento'=>'', 'idJefeDepartamento'=>'', 'nombre'=>'');
+      include_once 'elements/form-editar-departamento.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
     
   <!-- ventana modal para eliminar materias -->
-  <div id="modalEliminar" class="reveal-modal medium">
+  <div id="modalEliminar" class="reveal-modal small">
     <form action="<?php echo site_url('departamentos/eliminar')?>" method="post">
-      <input type="hidden" name="IdDepartamento" value="" />
+      <input type="hidden" name="idDepartamento" value="" />
       <h3>Eliminar departamento</h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
@@ -104,19 +104,22 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
 
     $('.eliminar').click(function(){
-      IdDepartamento = $(this).attr('value');
-      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      idDepartamento = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
       //cargo el id del departamento en el formulario
-      $('#modalEliminar input[name="IdDepartamento"]').val(IdDepartamento);
+      $('#modalEliminar input[name="idDepartamento"]').val(idDepartamento);
       //pongo el nombre del departamento en el dialogo
-      $("#modalEliminar").find('.nombre').html(Nombre);
+      $("#modalEliminar").find('.nombre').html(nombre);
       $("#modalEliminar").reveal();
       return false;
     });
+
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

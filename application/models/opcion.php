@@ -4,9 +4,9 @@
  * 
  */
 class Opcion extends CI_Model{
-	var $IdOpcion;
-  var $IdPregunta;
-  var $Texto;
+	var $idOpcion;
+  var $idPregunta;
+  var $texto;
   
   function __construct(){
     parent::__construct();

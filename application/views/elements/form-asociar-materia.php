@@ -1,14 +1,14 @@
 <form action="<?php echo site_url('carreras/asociarMateria')?>" method="post">
   <h3>Asociar materia</h3>
-  <h5><?php echo $carrera['Nombre'].' - Plan '.$carrera['Plan']?></h5>
-  <input type="hidden" name="IdCarrera" value="<?php echo $carrera['IdCarrera']?>" />
+  <h5><?php echo $carrera['nombre'].' - Plan '.$carrera['plan']?></h5>
+  <input type="hidden" name="idCarrera" value="<?php echo $carrera['idCarrera']?>" />
   <label for="buscarMateria">Buscar materia: </label>
   <div class="buscador">
     <input id="buscarMateria" type="text" autocomplete="off">
     <i class="gen-enclosed foundicon-search"></i>
-    <select id="listaResultado" name="IdMateria" size="3">
+    <select id="listaResultado" name="idMateria" size="3">
     </select>
-    <?php echo form_error('IdMateria')?>
+    <?php echo form_error('idMateria')?>
   </div>
   <div class="row">         
     <div class="ten columns centered">
@@ -27,12 +27,12 @@
     $.ajax({
       type: "POST", 
       url: "<?php echo site_url('materias/buscarAJAX')?>", 
-      data:{ Buscar: $(this).val() }
+      data:{ buscar: $(this).val() }
     }).done(function(msg){
       $('#listaResultado').empty();
       var filas = msg.split("\n");
       for (var i=0; i<filas.length-1; i++){
-        if (filas[i].length<2) continue;
+        if (filas[i].length<6) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];

@@ -17,7 +17,7 @@
         <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
         <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
         <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        <li><a href="<?php echo site_url("personas")?>">Docentes y Autoridades</a></li>
+        <li><a href="<?php echo site_url("usuarios")?>">Docentes y Autoridades</a></li>
       </ul>
     </li>
     <li class="has-flyout">
@@ -47,6 +47,7 @@
         <li><a href="#"><i>Materias</i></a></li>
       </ul>
     </li>
+    <li><a href="<?php echo site_url("usuarios/modificar")?>">Datos de usuario</a></li>
     <li><a href="#">Enlaces</a></li>
     <li><a href="#">Contacto</a></li>
   </ul>

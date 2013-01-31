@@ -4,18 +4,18 @@
  * 
  */
 class Pregunta extends CI_Model{
-  var $IdPregunta;
-  var $IdCarrera;
-  var $Texto;
-  var $Descripcion;
-  var $Creacion;
-  var $Tipo;
-  var $Obligatoria;
-  var $OrdenInverso;
-  var $LimiteInferior;
-  var $LimiteSuperior;
-  var $Paso;
-  var $Unidad;
+  var $idPregunta;
+  var $idCarrera;
+  var $texto;
+  var $descripcion;
+  var $creacion;
+  var $tipo;
+  var $obligatoria;
+  var $ordenInverso;
+  var $limiteInferior;
+  var $limiteSuperior;
+  var $paso;
+  var $unidad;
   
   function __construct(){
     parent::__construct();
