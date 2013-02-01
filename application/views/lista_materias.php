@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-02-01 3:55 p.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -8,11 +10,6 @@
 <head>
   <?php include 'elements/head.php'?> 
   <title>Lista Materias</title>
-  <style>
-    .button-group li a{
-      margin-right: 5px;
-    }
-  </style>
 </head>
 <body>
   <!-- Header -->
@@ -29,7 +26,7 @@
       <div class="row">
         <div class="twelve columns">
           <h3>Materias</h3>
-          <?php if(count($tabla)== 0):?>
+          <?php if(count($lista)== 0):?>
             <p>No se encontraron materias.</p>
           <?php else:?>
             <table class="twelve">
@@ -39,12 +36,12 @@
                 <th>Alumnos</th>
                 <th>Acciones</th>
               </thead>
-              <?php foreach($tabla as $fila): ?>  
+              <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("materias/ver/".$fila['idMateria'])?>"><?php echo $fila['nombre']?></a></td>
-                  <td><?php echo $fila['codigo']?></td>
-                  <td><?php echo $fila['alumnos']?></td>
-                  <td><a class="eliminar" href="" value="<?php echo $fila['idMateria']?>">Eliminar</a></td>
+                  <td><a href="<?php echo site_url("materias/ver/".$item->idMateria)?>"><?php echo $item->nombre?></a></td>
+                  <td><?php echo $item->codigo?></td>
+                  <td><?php echo $item->alumnos?></td>
+                  <td><a class="eliminar" href="" value="<?php echo $item->idMateria?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -54,7 +51,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" data-reveal-id="modalNueva">Agregar materia...</a>
+          <a class="button" data-reveal-id="modalAgregar">Agregar materia...</a>
         </div>       
       </div>
     </div>
@@ -73,12 +70,11 @@
   
   
   <!-- ventana modal para agregar una materia -->
-  <div id="modalNueva" class="reveal-modal medium">
+  <div id="modalAgregar" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
       $titulo = 'Crear nueva materia';
       $link = site_url('materias/nueva');  
-      $materia = array('idMateria' => 0, 'nombre' => '', 'codigo' => '');
       include 'elements/form-editar-materia.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>

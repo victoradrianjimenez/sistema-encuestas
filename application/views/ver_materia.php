@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-02-01 4:08 p.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -7,20 +9,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Lista Materias</title>
-  <style>
-    .buscador{
-      position: relative;
-    }
-    .buscador i{
-      position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
-    }
-    
-    .button-group li a{
-      margin-right: 5px;
-    }
-    
-  </style>
+  <title>Ver materia</title>
 </head>
 <body>
   <!-- Header -->
@@ -36,9 +25,9 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $materia['nombre'].' ('.$materia['codigo'].')'?></h3>
-          <?php if(count($tabla)== 0):?>
-            <p>No se encontraron materias.</p>
+          <h3><?php echo $materia->nombre.' ('.$materia->codigo.')'?></h3>
+          <?php if(count($lista)== 0):?>
+            <p>No se encontraron docentes.</p>
           <?php else:?>
             <table class="twelve">
               <thead>
@@ -47,13 +36,13 @@
                 <th>Cargo</th>
                 <th>Acciones</th>
               </thead>
-              <?php foreach($tabla as $fila): ?>  
+              <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td class="nombre"><?php echo $fila['apellido']?></td>
-                  <td class="apellido"><?php echo $fila['nombre']?></td>
-                  <td class="cargo"><?php echo $fila['cargo']?></td>
+                  <td class="nombre"><?php echo $item['apellido']?></td>
+                  <td class="apellido"><?php echo $item['nombre']?></td>
+                  <td class="cargo"><?php echo $item['cargo']?></td>
                   <td>
-                    <a class="quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $fila['id']?>">quitar</a>
+                    <a class="quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $item['id']?>">Quitar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -106,12 +95,12 @@
   </div>
   
   <!-- ventana modal para desasociar materias a la carrera -->
-  <div id="modalDesasociar" class="reveal-modal small">
+  <div id="modalDesasociar" class="reveal-modal medium">
     <form action="<?php echo site_url('materias/desasociarDocente')?>" method="post">
-      <h3>Desasociar docente de <?php echo $materia['nombre']?></h3>
+      <h3>Desasociar docente de <?php echo $materia->nombre?></h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="idMateria" value="<?php echo $materia['idMateria']?>" />
+      <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
       <input type="hidden" name="idDocente" value="" />
       <div class="row">         
         <div class="ten columns centered">

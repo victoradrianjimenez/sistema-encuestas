@@ -1,4 +1,4 @@
-<!-- Última revisión: 2012-02-01 2:20 a.m. -->
+<!-- Última revisión: 2012-02-01 2:20 p.m. -->
 
 <!DOCTYPE html>
 

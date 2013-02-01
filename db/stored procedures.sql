@@ -1108,7 +1108,8 @@ DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_materia`(
     pnombre VARCHAR(60),
-    pcodigo CHAR(5))
+    pcodigo CHAR(5),
+	palumnos SMALLINT UNSIGNED)
 BEGIN
     DECLARE nid SMALLINT UNSIGNED;
     DECLARE mensaje VARCHAR(100);
@@ -1130,7 +1131,7 @@ BEGIN
                 FROM    Materias );
             INSERT INTO Materias 
                 (idMateria, nombre, codigo, alumnos)
-            VALUES (nid, pnombre, pcodigo, 0);
+            VALUES (nid, pnombre, pcodigo, palumnos);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -1156,7 +1157,8 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_materia`(
 	pidMateria SMALLINT UNSIGNED,
     pnombre VARCHAR(60),
-    pcodigo CHAR(5))
+    pcodigo CHAR(5),
+	palumnos SMALLINT UNSIGNED)
 BEGIN
     DECLARE mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
@@ -1176,7 +1178,7 @@ BEGIN
             ROLLBACK;
         ELSE
             UPDATE Materias 
-			SET nombre = pnombre, codigo = pcodigo
+			SET nombre = pnombre, codigo = pcodigo, alumnos = palumnos
 			WHERE idMateria = pidMateria;
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
@@ -2479,30 +2481,6 @@ BEGIN
 		COMMIT;
 	END IF;
     SELECT mensaje;
-END $$
-
-DELIMITER;
-
-
-DROP PROCEDURE IF EXISTS `esp_listar_materias_usuario`;
-
-
-DELIMITER $$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_usuario`(
-    pPagInicio INT UNSIGNED,
-    pPagLongitud INT UNSIGNED)
-BEGIN
-    SET @qry = '
-    SELECT  idMateria, nombre, codigo, alumnos
-    FROM    Materias
-    ORDER BY nombre
-    LIMIT ?,?';
-    PREPARE stmt FROM  @qry;
-    SET @a = pPagInicio;
-    SET @b = pPagLongitud;
-    EXECUTE stmt USING @a, @b;
-    DEALLOCATE PREPARE stmt;
 END $$
 
 DELIMITER ;

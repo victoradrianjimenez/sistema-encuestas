@@ -28,7 +28,7 @@ class Carreras extends CI_Controller{
   
   /*
    * Muestra el listado de carreras.
-   * Última revisión: 2012-02-01 2:12 a.m.
+   * Última revisión: 2012-02-01 2:12 p.m.
    */
   public function listar($pagInicio=0){
     //chequeo parámetros de entrada
@@ -75,7 +75,7 @@ class Carreras extends CI_Controller{
 
   /*
    * Ver y editar datos relacionados a una carrera
-   * Última revisión: 2012-02-01 2:47 a.m.
+   * Última revisión: 2012-02-01 2:47 p.m.
    */
   public function ver($idCarrera=null, $pagInicio=0){
     //chequeo parámetros de entrada
@@ -123,7 +123,7 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para agregar nueva carrera
    * POST: idDepartamento, nombre, plan
-   * Última revisión: 2012-02-01 3:16 a.m.
+   * Última revisión: 2012-02-01 3:16 p.m.
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
@@ -155,7 +155,7 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para modificar los datos de una carrera
    * POST: idCarrera, idDepartamento, nombre, plan
-   * Última revisión: 2012-02-01 3:17 a.m.
+   * Última revisión: 2012-02-01 3:17 p.m.
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
@@ -188,7 +188,7 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para eliminar una carrera
    * POST: idCarrera
-   * Última revisión: 2012-02-01 3:19 a.m.
+   * Última revisión: 2012-02-01 3:19 p.m.
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
@@ -216,7 +216,7 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para crear una asociacion entre una materia y una carrera
    * POST: idMateria, idCarrera
-   * Última revisión: 2012-02-01 3:20 a.m.
+   * Última revisión: 2012-02-01 3:20 p.m.
    */
   public function asociarMateria(){
     //verifico si el usuario tiene permisos para continuar
@@ -247,7 +247,7 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para eliminar una asociacion entre una materia y una carrera
    * POST: idMateria, idCarrera
-   * Última revisión: 2012-02-01 3:20 a.m.
+   * Última revisión: 2012-02-01 3:20 p.m.
    */
   public function desasociarMateria(){
     //verifico si el usuario tiene permisos para continuar
