@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-01-31 10:23 a.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -23,7 +25,7 @@
       <div class="row">
         <div class="twelve columns">
           <h3>Departamentos</h3>
-          <?php if(count($tabla)== 0):?>
+          <?php if(count($lista)== 0):?>
             <p>No se encontraron departamentos.</p>
           <?php else:?>
             <table class="twelve">
@@ -32,13 +34,11 @@
                 <th>Jefe de Departamento</th>
                 <th>Acciones</th>
               </thead>
-              <?php foreach($tabla as $fila): ?>  
+              <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$fila['idDepartamento'])?>"/><?php echo $fila['nombre']?></a></td>
-                  <td><a class="jefeDepartamento" href="<?php echo site_url('usuarios/ver/'.$fila['jefeDepartamento']['id'])?>"/><?php echo $fila['jefeDepartamento']['nombre'].' '.$fila['jefeDepartamento']['apellido']?></a></td>
-                  <td>
-                    <a class="eliminar" href="" value="<?php echo $fila['idDepartamento']?>">Eliminar</a>
-                  </td>
+                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$item['departamento']->idDepartamento)?>"/><?php echo $item['departamento']->nombre?></a></td>
+                  <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
+                  <td><a class="eliminar" href="" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -48,8 +48,8 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" data-reveal-id="modalNuevo">Agregar departamento...</a>
-        </div>          
+          <a class="button" data-reveal-id="modalAgregar">Agregar departamento...</a>
+        </div>
       </div>
     </div>
 
@@ -64,20 +64,20 @@
   <div class="row">    
     <?php include 'elements/footer.php'?>
   </div>
-
-  <!-- ventana modal para editar datos del departamento -->
-  <div id="modalNuevo" class="reveal-modal medium">
+  
+  <!-- ventana modal para agregar un departamento -->
+  <div id="modalAgregar" class="reveal-modal medium">
     <?php
+      //a donde mandar los datos editados para darse de alta
+      $link = site_url('departamentos/nuevo');
       $titulo = 'Crear nuevo departamento';
-      $link = site_url('departamentos/nuevo'); //a donde mandar los datos editados para darse de alta  
-      $departamento = array('idDepartamento'=>'', 'idJefeDepartamento'=>'', 'nombre'=>'');
-      include_once 'elements/form-editar-departamento.php'; 
+      include 'elements/form-editar-departamento.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
-    
+  
   <!-- ventana modal para eliminar materias -->
-  <div id="modalEliminar" class="reveal-modal small">
+  <div id="modalEliminar" class="reveal-modal medium">
     <form action="<?php echo site_url('departamentos/eliminar')?>" method="post">
       <input type="hidden" name="idDepartamento" value="" />
       <h3>Eliminar departamento</h3>
@@ -117,7 +117,7 @@
       $("#modalEliminar").reveal();
       return false;
     });
-
+    
     //abrir automaticamente la ventana modal que contenga entradas con errores
     $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>

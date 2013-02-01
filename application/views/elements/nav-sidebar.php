@@ -38,13 +38,13 @@
       </ul>      
     </li>
     <li class="has-flyout">
-      <a href="#">Resultados</a>
+      <a href="#">Informes Encuestas</a>
       <a href="#" class="flyout-toggle"><span> </span></a>
       <ul class="flyout">
         <li><a href="#"><i>Facultad</i></a></li>
         <li><a href="#"><i>Departamentos</i></a></li>
         <li><a href="#"><i>Carreras</i></a></li>
-        <li><a href="#"><i>Materias</i></a></li>
+        <li><a href="<?php echo site_url('encuestas/informeMateria')?>"><i>Materias</i></a></li>
       </ul>
     </li>
     <li><a href="<?php echo site_url("usuarios/modificar")?>">Datos de usuario</a></li>

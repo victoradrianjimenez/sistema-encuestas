@@ -5,20 +5,20 @@
     <div class="buscador">
       <input id="buscarFormulario" type="text" autocomplete="off">
       <i class="gen-enclosed foundicon-search"></i>
-      <select id="listaFormularios" name="IdFormulario" size="3">
+      <select id="listaFormularios" name="idFormulario" size="3">
       </select>
-      <?php echo form_error('IdFormulario')?>
+      <?php echo form_error('idFormulario')?>
     </div>
   </div>
   <div class="eight columns">
     <label>Año: </label>
-    <input type="number" name="Anio" min="1900" max="2100" step="1" value="<?php echo date('Y')?>"/>
-    <?php echo form_error('Anio')?>
+    <input type="number" name="anio" min="1900" max="2100" step="1" value="<?php echo date('Y')?>"/>
+    <?php echo form_error('anio')?>
   </div>
   <div class="four columns">
     <label title="Período/Cuatrimestre">Período: </label>
-    <input type="number" name="Cuatrimestre" min="1" step="1" value="1" />
-    <?php echo form_error('Cuatrimestre')?>
+    <input type="number" name="cuatrimestre" min="1" step="1" value="1" />
+    <?php echo form_error('cuatrimestre')?>
   </div>  
   <div class="row">         
     <div class="ten columns centered">
@@ -37,12 +37,12 @@
     $.ajax({
       type: "POST", 
       url: "<?php echo site_url('formularios/buscarAJAX')?>", 
-      data:{ Buscar: $(this).val() }
+      data:{ buscar: $(this).val() }
     }).done(function(msg){
       $('#listaFormularios').empty();
       var filas = msg.split("\n");
       for (var i=0; i<filas.length; i++){
-        if (filas[i].length<3) continue;
+        if (filas[i].length<5) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];

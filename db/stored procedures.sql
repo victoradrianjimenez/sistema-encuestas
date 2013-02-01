@@ -167,7 +167,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_usuario`(
     pid INT UNSIGNED)
 BEGIN
-    SELECT id, apellido, nombre
+    SELECT id, username, NULL as 'password', email, last_login, active, nombre, apellido
     FROM Usuarios
     WHERE id = pid;
 END $$
@@ -908,7 +908,7 @@ BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
 		SELECT	id, apellido, nombre
 		FROM	Usuarios
-		WHERE	apellido like CONCAT('%',pnombre,'%') OR nombre like CONCAT('%',pnombre,'%');
+		WHERE	CONCAT(apellido,' ',nombre,' ',apellido) like CONCAT('%',pnombre,'%');
 	END IF;
 END $$
 
@@ -2479,4 +2479,118 @@ BEGIN
 		COMMIT;
 	END IF;
     SELECT mensaje;
-END
+END $$
+
+DELIMITER;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_materias_usuario`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_usuario`(
+    pPagInicio INT UNSIGNED,
+    pPagLongitud INT UNSIGNED)
+BEGIN
+    SET @qry = '
+    SELECT  idMateria, nombre, codigo, alumnos
+    FROM    Materias
+    ORDER BY nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_materias_usuario`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_usuario`(
+	pid INT UNSIGNED)
+BEGIN
+    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
+    FROM    Materias M 
+			INNER JOIN Docentes_Materias DM ON M.idMateria = DM.idMateria
+	WHERE	DM.idDocente = pid
+    ORDER BY M.nombre;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_materias_director`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_director`(
+	pidDirectorCarrera INT UNSIGNED)
+BEGIN
+    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
+    FROM    Materias M 
+			INNER JOIN Materias_Carreras MC ON MC.idMateria = MC.idMateria
+			INNER JOIN Carreras C ON C.idCarrera = MC.idCarrera
+	WHERE	C.idDirectorCarrera = pidDirectorCarrera
+    ORDER BY M.nombre;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_carreras_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_materia`(
+	pidMateria SMALLINT UNSIGNED)
+BEGIN
+    SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
+    FROM    Carreras C
+			INNER JOIN Materias_Carreras MC ON MC.idCarrera = C.idCarrera
+	WHERE	MC.idMateria = pidMateria
+    ORDER BY C.nombre, C.plan DESC;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_carreras_usuario`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_usuario`(
+	pid INT UNSIGNED)
+BEGIN
+    SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
+    FROM    Carreras C 
+			LEFT JOIN Departamentos D ON D.idDepartamento = C.idDepartamento
+	WHERE	C.idDirectorCarrera = pid OR D.idJefeDepartamento = pid
+    ORDER BY C.nombre;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_buscar_encuestas`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_encuestas`(
+	paño SMALLINT UNSIGNED)
+BEGIN
+    SELECT  idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin
+    FROM    Encuestas
+	WHERE	año = paño
+    ORDER BY cuatrimestre DESC, fechaInicio DESC, fechaFin DESC;
+END $$

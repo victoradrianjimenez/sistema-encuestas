@@ -1,7 +1,9 @@
+<!-- Última revisión: 2012-02-01 2:56 a.m. -->
+
 <form action="<?php echo site_url('carreras/asociarMateria')?>" method="post">
   <h3>Asociar materia</h3>
-  <h5><?php echo $carrera['nombre'].' - Plan '.$carrera['plan']?></h5>
-  <input type="hidden" name="idCarrera" value="<?php echo $carrera['idCarrera']?>" />
+  <h5><?php echo $carrera->nombre.' - Plan '.$carrera->plan?></h5>
+  <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
   <label for="buscarMateria">Buscar materia: </label>
   <div class="buscador">
     <input id="buscarMateria" type="text" autocomplete="off">
@@ -32,7 +34,7 @@
       $('#listaResultado').empty();
       var filas = msg.split("\n");
       for (var i=0; i<filas.length-1; i++){
-        if (filas[i].length<6) continue;
+        if (filas[i].length<5) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];

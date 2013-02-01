@@ -30,6 +30,23 @@ class Materia extends CI_Model{
   }
   
   
+  
+  /**
+   * Obtener el listado de carreras a la que pertenece la materia. Devuleve un array de objetos.
+   *
+   * @access  public
+   * @return  array
+   */  
+  public function listarCarreras(){
+    $idMateria = $this->db->escape($this->idMateria);
+    $query = $this->db->query("call esp_listar_carreras_materia($idMateria)");
+    $data = $query->result('Carrera');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }
+  
+  
   /**
    * Obtener la cantidad de docentes relacionados a la materia.
    *

@@ -36,11 +36,11 @@
               </thead>
               <?php foreach($tabla as $fila): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("encuestas/ver/".$fila['IdEncuesta'].'/'.$fila['IdFormulario'])?>">
-                    <?php echo $fila['Año'].' / '.$fila['Cuatrimestre']?>
+                  <td><a href="<?php echo site_url("encuestas/ver/".$fila['idEncuesta'].'/'.$fila['idFormulario'])?>">
+                    <?php echo $fila['año'].' / '.$fila['cuatrimestre']?>
                   </a></td>
-                  <td><?php echo $fila['FechaInicio']?></td>
-                  <td><?php echo $fila['FechaFin']?></td>
+                  <td><?php echo $fila['fechaInicio']?></td>
+                  <td><?php echo $fila['fechaFin']?></td>
                   <td>
                   </td>
                 </tr>
@@ -51,7 +51,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="three mobile-one columns">
+        <div class="six mobile-two columns pull-one-mobile">
           <a class="button" data-reveal-id="modalNueva">Nueva Encuesta</a>
         </div>       
       </div>
@@ -86,8 +86,11 @@
 
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
+    
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

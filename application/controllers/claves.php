@@ -2,15 +2,6 @@
 
 /**
  * 
- * 
- * 
- * 
- * _datosItems($seccion)
- * responder()
- * encuesta()
- * ingresar()
- * generar()
- * 
  */
  
 class Claves extends CI_Controller{

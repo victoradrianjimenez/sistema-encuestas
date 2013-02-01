@@ -11,10 +11,15 @@ class Departamentos extends CI_Controller{
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
-    //datos de session para enviarse a las vistas
-    $this->data['usuarioLogin'] = $this->ion_auth->user()->row(); 
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); 
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    if ($this->ion_auth->logged_in()){
+      //datos de session para enviarse a las vistas
+      $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    }
+    else{
+      redirect('/');
+    }   
   }
   
   public function index(){
@@ -23,99 +28,67 @@ class Departamentos extends CI_Controller{
 
   /*
    * Muestra el listado de departamentos.
+   * Última revisión: 2012-01-31 10:23 a.m.
    */
   public function listar($pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar    
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
+    $this->load->model('Usuario');
     $this->load->model('Departamento');
+    $this->load->model('Gestor_usuarios','gu');
     $this->load->model('Gestor_departamentos','gd');
 
     //obtengo lista de departamentos
     $departamentos = $this->gd->listar($pagInicio, self::per_page);
-    $tabla = array(); //datos para mandar a la vista
+    $lista = array(); //datos para mandar a la vista
     foreach ($departamentos as $i => $departamento) {
-      $tabla[$i]['idDepartamento'] = $departamento->idDepartamento;
-      $tabla[$i]['nombre'] = $departamento->nombre;
-      //agrego datos del jefe de departamento (si existe)
-      if ($departamento->idJefeDepartamento){
-        $jefe = $this->ion_auth->user($departamento->idJefeDepartamento)->row();
-        $tabla[$i]['jefeDepartamento'] = array(
-          'id' => $jefe->id,
-          'apellido' => $jefe->apellido,
-          'nombre' => $jefe->nombre
-        );
-      }
-      else {
-        $tabla[$i]['jefeDepartamento'] = array(
-          'id' => null,
-          'apellido' => '',
-          'nombre' => ''
-        );
-      }
+      $jefe = $this->gu->dame($departamento->idJefeDepartamento);
+      $lista[$i] = array(
+        'departamento' => $departamento,
+        'jefeDepartamento' => ($jefe)?$jefe:$this->Usuario
+      );
     }
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("departamentos/listar");
-    $config['total_rows'] = $this->gd->cantidad();
-    $config['per_page'] = self::per_page;
-    $config['uri_segment'] = 3;
-    $this->pagination->initialize($config);
+    $this->pagination->initialize(array(
+      'base_url' => site_url("departamentos/listar"),
+      'total_rows' => $this->gd->cantidad(),
+      'per_page' => self::per_page,
+      'uri_segment' => 3
+    ));
     
     //envio datos a la vista
-    $this->data['tabla'] = &$tabla; //array de datos de los Departamentos
+    $this->data['lista'] = &$lista; //array de datos de los Departamentos
+    $this->data['departamento'] = &$this->Departamento; //datos por defecto de un nuevo departamento
+    $this->data['jefeDepartamento'] = &$this->Usuario; //datos por defecto de un nuevo departamento
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $this->load->view('lista_departamentos', $this->data);
   }
 
   /*
    * Ver y editar datos relacionados a un departamento
+   * Última revisión: 2012-02-01 12:10 p.m.
    */
   public function ver($idDepartamento=null, $pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idDepartamento = (int)$idDepartamento;
     
     //cargo modelos, librerias, etc.
+    $this->load->model('Usuario');
     $this->load->model('Departamento');
+    $this->load->model('Gestor_usuarios','gu');
     $this->load->model('Gestor_departamentos','gd');
     
     //obtengo datos del departamento
     $departamento = $this->gd->dame($idDepartamento);
     if ($departamento){
-      $this->data['departamento'] = array(
-        'idDepartamento' => $departamento->idDepartamento,
-        'idJefeDepartamento' => $departamento->idJefeDepartamento,
-        'nombre' => $departamento->nombre
-      );
-      //agrego datos del jefe de departamento (si existe)
-      if ($departamento->idJefeDepartamento){
-        $jefe = $this->ion_auth->user($departamento->idJefeDepartamento)->row();
-        $this->data['departamento']['jefeDepartamento'] = array(
-          'id' => $jefe->id,
-          'apellido' => $jefe->apellido,
-          'nombre' => $jefe->nombre
-        );
-      }
-      else {
-        $this->data['departamento']['jefeDepartamento'] = array(
-          'id' => '',
-          'apellido' => '',
-          'nombre' => ''
-        );
-      }
+      $jefe = $this->gu->dame($departamento->idJefeDepartamento);
       //envio datos a la vista
+      $this->data['departamento'] = &$departamento;
+      $this->data['jefeDepartamento'] = ($jefe)?$jefe:$this->Usuario;
       $this->load->view('ver_departamento', $this->data);
     }
     else{
@@ -126,16 +99,17 @@ class Departamentos extends CI_Controller{
   /*
    * Recepción del formulario para agregar nuevo departamento
    * POST: nombre
+   * Última revisión: 2012-02-01 1:40 p.m.
    */
   public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|required');      
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');      
     if($this->form_validation->run()){
       $this->load->model('Gestor_departamentos','gd');
       
@@ -147,25 +121,26 @@ class Departamentos extends CI_Controller{
       $this->load->view('resultado_operacion', $this->data);
     }
     else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicions
       $this->listar();
     }
   }
 
   /*
    * Recepción del formulario para modificar los datos de un departamento
-   * POST: IdDepartamento, IdJefeDepartamento, Nombre
+   * POST: idDepartamento, idJefeDepartamento, nombre
+   * Última revisión: 2012-02-01 2:00 p.m.
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|required');      
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');      
     if($this->form_validation->run()){
       $this->load->model('Gestor_departamentos','gd');
       $idDepartamento = $this->input->post('idDepartamento',TRUE);
@@ -186,11 +161,12 @@ class Departamentos extends CI_Controller{
   /*
    * Recepción del formulario para eliminar un departamento
    * POST: idDepartamento
+   * Última revisión: 2012-02-01 2:02 p.m.
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -212,20 +188,23 @@ class Departamentos extends CI_Controller{
   
   /*
    * Funcion para responder solicitudes AJAX
-   * POST: idDepartamento
+   * POST: buscar
+   * Última revisión: 2012-02-01 2:00 p.m.
    */
   public function buscarAjax(){
-    $buscar = $this->input->post('buscar');
-    $this->load->model('Departamento');
-    $this->load->model('Gestor_departamentos','gd');
-    $departamentos = $this->gd->buscar($buscar);
-    echo "\n";
-    foreach ($departamentos as $departamento) {
-      echo  "$departamento->idDepartamento\t".
-            "$departamento->nombre\t\n";
+    $this->form_validation->set_rules('buscar','Buscar','required');
+    if($this->form_validation->run()){
+      $buscar = $this->input->post('buscar', TRUE);
+      $this->load->model('Departamento');
+      $this->load->model('Gestor_departamentos','gd');
+      $departamentos = $this->gd->buscar($buscar);
+      echo "\n";
+      foreach ($departamentos as $departamento) {
+        echo  "$departamento->idDepartamento\t".
+              "$departamento->nombre\t\n";
+      }
     }
   }
-  
 }
 
 ?>

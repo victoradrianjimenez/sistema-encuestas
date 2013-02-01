@@ -144,7 +144,7 @@ class Usuarios extends CI_Controller{
         'nombre' => $this->input->post('nombre',TRUE)
       );
       $res = $this->ion_auth->register($username, $password, $email, $additional_data, $grupos);
-      $this->data['mensaje'] = ($res)?"La operación se realizó con éxito. El ID del nuevo departamento es $res.":'Se produjo un error al registrar usuario.';
+      $this->data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID del nuevo departamento es $res.":'Se produjo un error al registrar usuario.';
       $this->data['link'] = site_url("usuarios/listar"); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $this->data);
     }
@@ -444,8 +444,8 @@ class Usuarios extends CI_Controller{
     echo "\n";
     foreach ($usuarios as $usuario) {
       echo  "$usuario->id\t".
-            "$usuario->apellido\t".
-            "$usuario->nombre\t\n";
+            "$usuario->nombre\t".
+            "$usuario->apellido\t\n";
     }
   }
   

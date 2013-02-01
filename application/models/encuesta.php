@@ -31,7 +31,7 @@ class Encuesta extends CI_Model{
     $this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
-  
+
 
   /**
    * Obtener el listado de claves de acceso de la encuesta para una materia y carrera dada. Devuleve un array de objetos.
@@ -43,14 +43,14 @@ class Encuesta extends CI_Model{
    * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listarClavesMateria($IdMateria, $IdCarrera, $pagNumero, $pagLongitud){
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $IdMateria = $this->db->escape($IdMateria);
-    $IdCarrera = $this->db->escape($IdCarrera);
+  public function listarClavesMateria($idMateria, $idCarrera, $pagNumero, $pagLongitud){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
     $pagNumero = $this->db->escape($pagNumero);
     $pagLongitud = $this->db->escape($pagLongitud);
-    $query = $this->db->query("call esp_listar_claves_encuesta_materia($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario, $pagNumero, $pagLongitud)");
+    $query = $this->db->query("call esp_listar_claves_encuesta_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario, $pagNumero, $pagLongitud)");
     $data = $query->result('Clave');
     $query->free_result();
     $this->db->reconnect();
@@ -64,13 +64,13 @@ class Encuesta extends CI_Model{
    * @return string
    */
   public function finalizar(){
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_finalizar_encuesta($IdEncuesta, $IdFormulario)");
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_finalizar_encuesta($idEncuesta, $idFormulario)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   /**
@@ -81,12 +81,12 @@ class Encuesta extends CI_Model{
    * @param idenificador de carrera
    * @return array
    */  
-  public function cantidadClavesMateria($IdMateria, $IdCarrera){
-    $IdMateria = $this->db->escape($IdMateria);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_cantidad_claves_materia($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+  public function cantidadClavesMateria($idMateria, $idCarrera){
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_cantidad_claves_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row_array();
     $query->free_result();
     $this->db->reconnect();
@@ -102,14 +102,14 @@ class Encuesta extends CI_Model{
    * @param idenificador de carrera
    * @return array
    */  
-  public function respuestasPreguntaMateria($IdPregunta, $IdDocente, $IdMateria, $IdCarrera){
-    $IdPregunta = $this->db->escape($IdPregunta);
-    $IdDocente = $this->db->escape($IdDocente);
-    $IdMateria = $this->db->escape($IdMateria);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_respuestas_pregunta_materia($IdPregunta, $IdDocente, $IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+  public function respuestasPreguntaMateria($idPregunta, $idDocente, $idMateria, $idCarrera){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idDocente = $this->db->escape($idDocente);
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_respuestas_pregunta_materia($idPregunta, $idDocente, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
     $this->db->reconnect();
@@ -126,13 +126,13 @@ class Encuesta extends CI_Model{
    * @param idenificador de carrera
    * @return array
    */  
-  public function textosPreguntaMateria($IdPregunta, $IdMateria, $IdCarrera){
-    $IdPregunta = $this->db->escape($IdPregunta);
-    $IdMateria = $this->db->escape($IdMateria);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_textos_pregunta_materia($IdPregunta, $IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+  public function textosPreguntaMateria($idPregunta, $idMateria, $idCarrera){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_textos_pregunta_materia($idPregunta, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
     $this->db->reconnect();
@@ -149,12 +149,12 @@ class Encuesta extends CI_Model{
    * @param identificador de la carrera
    * @return array
    */
-  public function listarDocentes($IdMateria, $IdCarrera){
-    $IdMateria = $this->db->escape($IdMateria);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_listar_docentes_encuesta($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario)");
+  public function listarDocentes($idMateria, $idCarrera){
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_listar_docentes_encuesta($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Usuario');
     $query->free_result();
     $this->db->reconnect();
@@ -171,17 +171,17 @@ class Encuesta extends CI_Model{
    * @param tipo de clave a generar
    * @return  string
    */
-  public function altaClave($IdMateria, $IdCarrera, $Tipo){
-    $IdMateria = $this->db->escape($IdMateria);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $Tipo = $this->db->escape($Tipo);
-    $IdEncuesta = $this->db->escape($this->IdEncuesta);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $query = $this->db->query("call esp_alta_clave($IdMateria, $IdCarrera, $IdEncuesta, $IdFormulario, $Tipo)");
+  public function altaClave($idMateria, $idCarrera, $tipo){
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $tipo = $this->db->escape($tipo);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_alta_clave($idMateria, $idCarrera, $idEncuesta, $idFormulario, $tipo)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   

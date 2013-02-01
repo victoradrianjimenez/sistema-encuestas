@@ -93,6 +93,9 @@
     $('.cancelar').click(function(){
       $(this).trigger('reveal:close'); //cerrar ventana
     });
+
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

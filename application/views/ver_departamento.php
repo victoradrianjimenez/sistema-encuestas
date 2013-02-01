@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-01-31 11:23 a.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -7,10 +9,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Ver carrera</title>
-  <style>
-    .button-group li a { margin-right: 5px; }
-  </style>
+  <title>Ver departamento</title>
 </head>
 <body>
   <!-- Header -->
@@ -26,8 +25,8 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $departamento['nombre']?></h3>
-          <p>Jefe de Departamento: <?php echo $departamento['jefeDepartamento']['nombre'].' '.$departamento['jefeDepartamento']['apellido']?></p>
+          <h3><?php echo $departamento->nombre?></h3>
+          <p>Jefe de Departamento: <?php echo $jefeDepartamento->nombre.' '.$jefeDepartamento->apellido?></p>
         </div>
       </div>
       <div class="row">
@@ -71,6 +70,9 @@
     $('.cancelar').click(function(){
       $(this).trigger('reveal:close'); //cerrar ventana
     });
+    
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

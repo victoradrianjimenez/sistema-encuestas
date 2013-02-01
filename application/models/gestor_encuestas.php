@@ -37,15 +37,15 @@ class Gestor_encuestas extends CI_Model{
    * @param cuatrimestre o periodo al que se refiere la encuesta
    * @return  string
    */
-  public function alta($IdFormulario, $Año, $Cuatrimestre){
-    $IdFormulario = $this->db->escape($IdFormulario);
-    $Año = $this->db->escape($Año);
-    $Cuatrimestre = $this->db->escape($Cuatrimestre);
-    $query = $this->db->query("call esp_alta_encuesta($IdFormulario, $Año, $Cuatrimestre)");
+  public function alta($idFormulario, $año, $cuatrimestre){
+    $idFormulario = $this->db->escape($idFormulario);
+    $año = $this->db->escape($año);
+    $cuatrimestre = $this->db->escape($cuatrimestre);
+    $query = $this->db->query("call esp_alta_encuesta($idFormulario, $año, $cuatrimestre)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 
 
@@ -79,9 +79,24 @@ class Gestor_encuestas extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
   
+  /**
+   * Buscar encuestas por año. Devuleve un array de objetos en caso de éxito, o FALSE en caso de error.
+   *
+   * @access public
+   * @param año correspondiente a la encuesta
+   * @return object
+   */
+  public function buscar($año){
+    $año = $this->db->escape($año);
+    $query = $this->db->query("call esp_buscar_encuestas($año)");
+    $data = $query->result('Encuesta');
+    $query->free_result();
+    $this->db->reconnect();
+    return $data;
+  }  
       
 }
 ?>

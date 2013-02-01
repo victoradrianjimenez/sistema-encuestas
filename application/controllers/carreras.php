@@ -11,11 +11,15 @@ class Carreras extends CI_Controller{
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
-    //datos de session para enviarse a las vistas
-    $this->data['usuarioLogin'] = $this->ion_auth->user()->row(); 
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); 
-    
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    if ($this->ion_auth->logged_in()){
+      //datos de session para enviarse a las vistas
+      $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    }
+    else{
+      redirect('/');
+    }
   }
   
   public function index(){
@@ -24,148 +28,90 @@ class Carreras extends CI_Controller{
   
   /*
    * Muestra el listado de carreras.
+   * Última revisión: 2012-02-01 2:12 a.m.
    */
   public function listar($pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar    
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
+    $this->load->model('Usuario');
     $this->load->model('Carrera');
     $this->load->model('Departamento');
     $this->load->model('Gestor_carreras','gc');
+    $this->load->model('Gestor_usuarios','gu');
     $this->load->model('Gestor_departamentos','gd');
     
     //obtengo lista de carreras
     $carreras = $this->gc->listar($pagInicio, self::per_page);
-    $tabla = array();
+    $lista = array();
     foreach ($carreras as $i => $carrera) {
-      $tabla[$i] = array(
-        'idCarrera' => $carrera->idCarrera,
-        'idCarrera' => $carrera->idCarrera,
-        'nombre' => $carrera->nombre,
-        'plan' => $carrera->plan 
-      );
       $departamento = $this->gd->dame($carrera->idDepartamento);
-      if ($departamento){
-        $tabla[$i]['departamento'] = array(
-          'idDepartamento' => $departamento->idDepartamento,
-          'nombre' => ($departamento)?$departamento->nombre:''
-        );
-      }
-      else{
-        $tabla[$i]['departamento'] = array(
-          'idDepartamento' => null,
-          'nombre' => ''
-        );
-      }
-      if ($carrera->idDirectorCarrera){
-        $director = $this->ion_auth->user($carrera->idDirectorCarrera)->row();
-        $tabla[$i]['director'] = array(
-          'nombre' => $director->nombre,
-          'apellido' => $director->apellido
-        );
-      }
-      else{
-        $tabla[$i]['director'] = array(
-          'nombre' => '',
-          'apellido' => ''
-        );
-      }
+      $director = $this->gu->dame($carrera->idDirectorCarrera);
+      $lista[$i] = array(
+        'carrera' => $carrera,
+        'departamento' => ($departamento)?$departamento:$this->Departamento,
+        'director' => ($director)?$director:$this->Usuario
+      );      
     }
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("carreras/listar");
-    $config['total_rows'] = $this->gc->cantidad();
-    $config['per_page'] = self::per_page;
-    $config['uri_segment'] = 3;
-    $this->pagination->initialize($config);
+    $this->pagination->initialize(array(
+      'base_url' => site_url("carreras/listar"),
+      'total_rows' => $this->gc->cantidad(),
+      'per_page' => self::per_page,
+      'uri_segment' => 3
+    ));
     
     //envio datos a la vista
-    $this->data['tabla'] = &$tabla; //array de datos de las Carreras
-    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $this->Carrera->plan = date('Y');
+    $this->data['lista'] = &$lista; //array de datos de las Carreras
+    $this->data['carrera'] = &$this->Carrera; //datos por defecto de una nueva carrera
+    $this->data['departamento'] = &$this->Departamento;
+    $this->data['director'] = &$this->Usuario;
+    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación    
     $this->load->view('lista_carreras', $this->data);
   }
 
   /*
    * Ver y editar datos relacionados a una carrera
+   * Última revisión: 2012-02-01 2:47 a.m.
    */
   public function ver($idCarrera=null, $pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idCarrera = (int)$idCarrera;
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
+    $this->load->model('Usuario');
     $this->load->model('Materia');
     $this->load->model('Carrera');
     $this->load->model('Departamento');
     $this->load->model('Gestor_materias','gm');
     $this->load->model('Gestor_carreras','gc');
+    $this->load->model('Gestor_usuarios','gu');
     $this->load->model('Gestor_departamentos','gd');    
     $carrera = $this->gc->dame($idCarrera);
     if ($carrera){
-      $this->data['carrera'] = array(
-        'idCarrera' => $carrera->idCarrera,
-        'idDepartamento' => $carrera->idDepartamento,
-        'idDirectorCarrera' => $carrera->idDirectorCarrera,
-        'nombre' => $carrera->nombre,
-        'plan' => $carrera->plan,
-      );
-      $departamento = $this->gd->dame($carrera->idDepartamento);
-      if ($departamento){
-        $this->data['carrera']['departamento'] = array(
-          'idDepartamento' => $departamento->idDepartamento,
-          'nombre' => ($departamento)?$departamento->nombre:''
-        );
-      }
-      else{
-        $this->data['carrera']['departamento'] = array(
-          'idDepartamento' => null,
-          'nombre' => ''
-        );
-      }
-      if ($carrera->idDirectorCarrera){
-        $director = $this->ion_auth->user($carrera->idDirectorCarrera)->row();
-        $this->data['carrera']['director'] = array(
-          'nombre' => $director->nombre,
-          'apellido' => $director->apellido
-        );
-      }
-      else{
-        $this->data['carrera']['director'] = array(
-          'nombre' => '',
-          'apellido' => ''
-        );
-      }      
       //obtengo lista de materias
-      $materias = $carrera->listarMaterias($pagInicio, self::per_page);
-      $tabla = array();
-      foreach ($materias as $i => $materia) {
-        $tabla[$i]=array(
-          'idMateria' => $materia->idMateria,
-          'nombre' => $materia->nombre,
-          'codigo' => $materia->codigo,
-         );
-      }
+      $lista = $carrera->listarMaterias($pagInicio, self::per_page);
+      
       //genero la lista de links de paginación
-      $config['base_url'] = site_url("carreras/ver/$idCarrera");
-      $config['total_rows'] = $carrera->cantidadMaterias();
-      $config['per_page'] = self::per_page;
-      $config['uri_segment'] = 4;
-      $this->pagination->initialize($config);
+      $this->pagination->initialize(array(
+        'base_url' => site_url("carreras/ver/$idCarrera"),
+        'total_rows' => $carrera->cantidadMaterias(),
+        'per_page' => self::per_page,
+        'uri_segment' => 4
+      ));
       
       //envio datos a la vista
-      $this->data['tabla'] = &$tabla; //array de datos de los Departamentos
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      $director = $this->gu->dame($carrera->idDirectorCarrera);
+      $this->data['carrera'] = $carrera;
+      $this->data['departamento'] = ($departamento)?$departamento:$this->Departamento;
+      $this->data['director'] = ($director)?$director:$this->Usuario;
+      $this->data['lista'] = &$lista; //array de datos de las materias de la carrera
       $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
       $this->load->view('ver_carrera', $this->data);
     }
@@ -177,17 +123,18 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para agregar nueva carrera
    * POST: idDepartamento, nombre, plan
+   * Última revisión: 2012-02-01 3:16 a.m.
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idDirectorCarrera','Director de Carrera','is_natural_no_zero');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|required');
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
     $this->form_validation->set_rules('plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');      
     if($this->form_validation->run()){
       $this->load->model('Gestor_carreras','gc');
@@ -208,17 +155,18 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para modificar los datos de una carrera
    * POST: idCarrera, idDepartamento, nombre, plan
+   * Última revisión: 2012-02-01 3:17 a.m.
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idDirectorCarrera','Director de Carrera','is_natural_no_zero');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|required');
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
     $this->form_validation->set_rules('plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');      
     if($this->form_validation->run()){
       $this->load->model('Gestor_carreras','gc');
@@ -240,11 +188,12 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para eliminar una carrera
    * POST: idCarrera
+   * Última revisión: 2012-02-01 3:19 a.m.
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -267,11 +216,12 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para crear una asociacion entre una materia y una carrera
    * POST: idMateria, idCarrera
+   * Última revisión: 2012-02-01 3:20 a.m.
    */
   public function asociarMateria(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -297,11 +247,12 @@ class Carreras extends CI_Controller{
   /*
    * Recepción del formulario para eliminar una asociacion entre una materia y una carrera
    * POST: idMateria, idCarrera
+   * Última revisión: 2012-02-01 3:20 a.m.
    */
   public function desasociarMateria(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -327,69 +278,67 @@ class Carreras extends CI_Controller{
   /*
    * Método para responder solicitudes AJAX
    * POST: buscar
+   * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function buscarAJAX(){
-    $buscar = $this->input->post('buscar');
-    $this->load->model('Carrera');
-    $this->load->model('Gestor_carreras','gc');
-    $carreras = $this->gc->buscar($buscar);
-    echo "\n";
-    foreach ($carreras as $carrera) {
-      echo  "$carrera->idCarrera\t".
-            "$carrera->nombre\t".
-            "$carrera->plan\t\n";
+    $this->form_validation->set_rules('buscar','Buscar','required');
+    if($this->form_validation->run()){
+      $buscar = $this->input->post('buscar');
+      $this->load->model('Carrera');
+      $this->load->model('Gestor_carreras','gc');
+      $carreras = $this->gc->buscar($buscar);
+      echo "\n";
+      foreach ($carreras as $carrera) {
+        echo  "$carrera->idCarrera\t".
+              "$carrera->nombre\t".
+              "$carrera->plan\t\n";
+      }
     }
   }
   
   /*
    * Método para responder solicitudes AJAX
    * POST: idCarrera, buscar
+   * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function buscarMateriasAJAX(){
-    $idCarrera = $this->input->post('idCarrera');
-    $buscar = $this->input->post('buscar');
-    $this->load->model('Materia');
-    $this->load->model('Carrera');
-    $this->Carrera->IdCarrera = $idCarrera; 
-    $materias = $this->Carrera->buscarMaterias($buscar);
-    echo "\n";
-    foreach ($materias as $materia) {
-      echo  "$materia->idMateria\t".
-            "$materia->nombre\t".
-            "$materia->codigo\t\n";
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    $this->form_validation->set_rules('buscar','Buscar','required');
+    if($this->form_validation->run()){
+      $idCarrera = $this->input->post('idCarrera',TRUE);
+      $buscar = $this->input->post('buscar',TRUE);
+      $this->load->model('Materia');
+      $this->load->model('Carrera');
+      $this->Carrera->IdCarrera = $idCarrera; 
+      $materias = $this->Carrera->buscarMaterias($buscar);
+      echo "\n";
+      foreach ($materias as $materia) {
+        echo  "$materia->idMateria\t".
+              "$materia->nombre\t".
+              "$materia->codigo\t\n";
+      }
     }
   }
 
   /*
    * Método para responder solicitudes AJAX
-   */
-  public function listarAJAX(){
-    $this->load->model('Carrera');
-    $this->load->model('Gestor_carreras','gc');
-    $carreras = $this->gc->listar(0,1000);
-    echo "\n";
-    foreach ($carreras as $carrera) {
-      echo  "$carrera->idCarrera\t".
-            "$carrera->nombre\t".
-            "$carrera->plan\t\n";
-    }
-  }
-  /*
-   * Método para responder solicitudes AJAX
    * POST: idCarrera
+   * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function listarMateriasAJAX(){
-    $idCarrera = $this->input->post('idCarrera');
-    //VERIFICAR
-    $this->load->model('Materia');
-    $this->load->model('Carrera');
-    $this->Carrera->idCarrera = $idCarrera;
-    $materias = $this->Carrera->listarMaterias(0,1000);
-    echo "\n";
-    foreach ($materias as $materia) {
-      echo  "$materia->idMateria\t".
-            "$materia->nombre\t".
-            "$materia->codigo\t\n";
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    if($this->form_validation->run()){
+      $idCarrera = $this->input->post('idCarrera');
+      $this->load->model('Materia');
+      $this->load->model('Carrera');
+      $this->Carrera->idCarrera = $idCarrera;
+      $materias = $this->Carrera->listarMaterias(0,1000);
+      echo "\n";
+      foreach ($materias as $materia) {
+        echo  "$materia->idMateria\t".
+              "$materia->nombre\t".
+              "$materia->codigo\t\n";
+      }
     }
   }
 }

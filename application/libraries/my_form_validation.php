@@ -7,7 +7,11 @@ class MY_Form_Validation extends CI_Form_Validation {
   }
 
   function alpha_dash_space($str){
-    return ( ! preg_match("/^([-a-z0-9_ÁÉÍÓÚÑáéíóúñ ])+$/i", $str)) ? FALSE : TRUE;
+    if (! preg_match("/^([-a-z0-9_ÁÉÍÓÚÑáéíóúñ ])+$/i", $str)){
+      $this->set_message('alpha_dash_space', 'El campo %s debe contener sólo letras, números y guiones.');
+      return FALSE;
+    }
+    return TRUE;
   }
 }
 ?> 

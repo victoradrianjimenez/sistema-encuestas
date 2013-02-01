@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-02-01 2:20 a.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -23,7 +25,7 @@
       <div class="row">
         <div class="twelve columns">
           <h3>Carreras</h3>
-          <?php if(count($tabla)== 0):?>
+          <?php if(count($lista)== 0):?>
             <p>No se encontraron carreras.</p>
           <?php else:?>
             <table class="twelve">
@@ -34,13 +36,13 @@
                 <th>Departamento</th>
                 <th>Acciones</th>
               </thead>
-              <?php foreach($tabla as $fila): ?>  
+              <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$fila['idCarrera'])?>"><?php echo $fila['nombre']?></a></td>
-                  <td class="plan"><?php echo $fila['plan']?></td>
-                  <td class="director"><?php echo $fila['director']['nombre'].' '.$fila['director']['apellido']?></td>
-                  <td><a href="<?php echo site_url("departamentos/ver/".$fila['departamento']['idDepartamento'])?>"><?php echo $fila['departamento']['nombre']?></a></td>
-                  <td><a class="eliminar" href="" value="<?php echo $fila['idCarrera']?>">Eliminar</a></td>
+                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$item['carrera']->idCarrera)?>"><?php echo $item['carrera']->nombre?></a></td>
+                  <td class="plan"><?php echo $item['carrera']->plan?></td>
+                  <td class="director"><?php echo $item['director']->nombre.' '.$item['director']->apellido?></td>
+                  <td class="departamento"><?php echo $item['departamento']->nombre?></td>
+                  <td><a class="eliminar" href="" value="<?php echo $item['carrera']->idCarrera?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -50,7 +52,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" data-reveal-id="modalNueva">Agregar carrera...</a>
+          <a class="button" data-reveal-id="modalAgregar">Agregar carrera...</a>
         </div>       
       </div>
     </div>
@@ -69,18 +71,17 @@
   
 
   <!-- ventana modal para agregar una carrera -->
-  <div id="modalNueva" class="reveal-modal medium">
+  <div id="modalAgregar" class="reveal-modal medium">
     <?php
       //a donde mandar los datos editados para darse de alta
       $link = site_url('carreras/nueva');
-      $titulo = 'Crear nueva carrera';  
-      $carrera = array('idCarrera'=>'', 'idDepartamento'=>'', 'idDirectorCarrera'=>'', 'nombre' => '', 'plan' => date('Y'));
+      $titulo = 'Crear nueva carrera';
       include 'elements/form-editar-carrera.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
     
-  <!-- ventana modal para desasociar materias a la carrera -->
+  <!-- ventana modal para eliminar una carrera -->
   <div id="modalEliminar" class="reveal-modal medium">
     <form action="<?php echo site_url('carreras/eliminar')?>" method="post">
       <h3>Eliminar carrera</h3>

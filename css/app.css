@@ -93,7 +93,8 @@ footer{
   border-top: 3px solid #2BA6CB;
 }
 
-
+/*************** Otros ******************/
+.button-group li a { margin-right: 5px; }
 
 
 

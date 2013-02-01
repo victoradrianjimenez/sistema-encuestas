@@ -27,9 +27,9 @@
       <div class="row">
         <div class="twelve columns">
           <h3>Encuesta</h3>
-          <h5>Período: <?php echo $encuesta['Año'].' ('.$encuesta['Cuatrimestre'].')'?></h5>
-          <h5>Fecha de inicio de la toma de encuestas: <?php echo $encuesta['FechaInicio']?></h5>
-          <h5>Fecha de cierre de las encuestas: <?php echo $encuesta['FechaFin']?></h5>
+          <h5>Período: <?php echo $encuesta['año'].' ('.$encuesta['cuatrimestre'].')'?></h5>
+          <h5>Fecha de inicio de la toma de encuestas: <?php echo $encuesta['fechaInicio']?></h5>
+          <h5>Fecha de cierre de las encuestas: <?php echo $encuesta['fechaFin']?></h5>
         </div>
       </div>
       <div class="row">
@@ -72,36 +72,15 @@
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
-  
-  <!-- ventana modal para desasociar materias a la carrera -->
-  <div id="modalDesasociar" class="reveal-modal medium">
-    <form action="<?php echo site_url('carreras/desasociarMateria')?>" method="post">
-      <h3>Desasociar materia</h3>
-      <p>¿Desea continuar?</p>
-      <input type="hidden" name="IdCarrera" value="<?php echo "0]"?>" />
-      <input type="hidden" name="IdMateria" value="" />
-      <div class="row">         
-        <div class="ten columns centered">
-          <div class="six mobile-one columns push-one-mobile">
-            <input class="button cancelar" type="button" value="Cancelar"/>
-          </div>
-          <div class="six mobile-one columns pull-one-mobile ">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </div>
-      </div>
-    </form>
-    <a class="close-reveal-modal">&#215;</a>
-  </div>
 
   <!-- ventana modal para desasociar materias a la carrera -->
   <div id="modalFinalizar" class="reveal-modal medium">
     <form action="<?php echo site_url('encuestas/finalizar')?>" method="post">
       <h3>Finalizar período de encuesta</h3>
-      <h5><?php echo $encuesta['Año'].' ('.$encuesta['Cuatrimestre'].')'?></h5>
+      <h5><?php echo $encuesta['año'].' ('.$encuesta['cuatrimestre'].')'?></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="IdEncuesta" value="<?php echo $encuesta['IdEncuesta']?>" />
-      <input type="hidden" name="IdFormulario" value="<?php echo $encuesta['IdFormulario']?>" />
+      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta['idEncuesta']?>" />
+      <input type="hidden" name="idFormulario" value="<?php echo $encuesta['idFormulario']?>" />
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">
@@ -123,16 +102,11 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
     
-    $('.Quitar').click(function(){
-      IdMateria = $(this).attr('value');
-      $('#modalDesasociar input[name="IdMateria"]').val(IdMateria);
-      $("#modalDesasociar").reveal();
-      return false;
-    });
-    
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>

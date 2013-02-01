@@ -277,6 +277,20 @@ class Materias extends CI_Controller{
   }
   
   //funcion para responder solicitudes AJAX
+  public function listarCarrerasAJAX(){
+    $this->load->model('Carrera');
+    $this->load->model('Materia');
+    $this->Materia->idMateria = $this->input->post('idMateria');
+    $carreras = $this->Materia->listarCarreras();
+    echo "\n";
+    foreach ($carreras as $carrera) {
+      echo  "$carrera->idCarrera\t".
+            "$carrera->nombre\t".
+            "$carrera->plan\t\n";
+    }
+  }
+  
+  //funcion para responder solicitudes AJAX
   public function cantidadAlumnosAJAX(){
     $idMateria = $this->input->post('idMateria');
     $this->load->model('Materia');

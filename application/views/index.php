@@ -39,5 +39,7 @@
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+  
+  
 </body>
 </html>

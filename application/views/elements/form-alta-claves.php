@@ -1,40 +1,40 @@
 <form action="<?php echo site_url('claves/generar')?>" method="post">
   <h3>Generar claves de acceso</h3>
-  <h5><?php echo $encuesta['Año'].' ('.$encuesta['Cuatrimestre'].')'?></h5>
+  <h5><?php echo $encuesta['año'].' ('.$encuesta['cuatrimestre'].')'?></h5>
   
-  <input type="hidden" name="IdEncuesta" value="<?php echo $encuesta['IdEncuesta']?>" />
-  <input type="hidden" name="IdFormulario" value="<?php echo $encuesta['IdFormulario']?>" />
+  <input type="hidden" name="idEncuesta" value="<?php echo $encuesta['idEncuesta']?>" />
+  <input type="hidden" name="idFormulario" value="<?php echo $encuesta['idFormulario']?>" />
   
   <label for="buscarCarrera">Carrera: </label>
   <div class="buscador">
     <input id="buscarCarrera" type="text" autocomplete="off">
     <i class="gen-enclosed foundicon-search"></i>
   </div>
-  <select id="listaCarreras" name="IdCarrera" size="2">
+  <select id="listaCarreras" name="idCarrera" size="2">
   </select>
-  <?php echo form_error('IdCarrera')?>
+  <?php echo form_error('idCarrera')?>
   
   <label for="buscarMateria">Materia: </label>
   <div class="buscador">
     <input id="buscarMateria" type="text" autocomplete="off">
     <i class="gen-enclosed foundicon-search"></i>
   </div>
-  <select id="listaMaterias" name="IdMateria" size="2">
+  <select id="listaMaterias" name="idMateria" size="2">
   </select>
-  <?php echo form_error('IdMateria')?>
+  <?php echo form_error('idMateria')?>
   
   <label for="tipoAcceso">Tipo de clave: </label>
-  <select id="tipoAcceso" name="Tipo">
+  <select id="tipoAcceso" name="tipo">
     <option value="E">Encuesta anónima</option>
     <option value="O">Encuesta obligatorias(usando CX)</option>
     <option value="R">Registrar alumno</option>
   </select>
-  <?php echo form_error('Tipo')?>
+  <?php echo form_error('tipo')?>
   
   <div>
     <label for="cantidad">Cantidad de claves a generar:</label>
-    <input id="cantidad" type="number" name="Cantidad" value="1"/>
-    <?php echo form_error('Cantidad')?>
+    <input id="cantidad" type="number" name="cantidad" value="1"/>
+    <?php echo form_error('cantidad')?>
   </div>
   <span id="mensajeCantidad" class="hide" >Se generarán tantas claves como alumnos haya registrados. <a href="">(Ver)</a></span>
 
@@ -55,12 +55,12 @@
     $.ajax({
       type: "POST", 
       url: "<?php echo site_url('carreras/buscarAJAX')?>", 
-      data:{ Buscar: $('#buscarCarrera').val() }
+      data:{ buscar: $(this).val() }
     }).done(function(msg){
       $('#listaCarreras').empty();
       var filas = msg.split("\n");
       for (var i=0; i<filas.length-1; i++){
-        if (filas[i].length<3) continue;
+        if (filas[i].length<5) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];
@@ -73,20 +73,20 @@
   
    //realizo la busqueda de materias con AJAX
   $('#buscarMateria').keyup(function(){
-    var IdCarrera = $('#listaCarreras').val();
-    if (IdCarrera == '') return;
+    var idCarrera = $('#listaCarreras').val();
+    if (idCarrera == '') return;
     $.ajax({
       type: "POST", 
       url: "<?php echo site_url('carreras/buscarMateriasAJAX')?>", 
       data:{ 
-        IdCarrera: IdCarrera,
-        Buscar: $(this).val() 
+        idCarrera: idCarrera,
+        buscar: $(this).val() 
       }
     }).done(function(msg){
       $('#listaMaterias').empty();
       var filas = msg.split("\n");
       for (var i=0; i<filas.length-1; i++){
-        if (filas[i].length<3) continue;
+        if (filas[i].length<5) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];
@@ -97,15 +97,15 @@
     });
   });
   $('#listaMaterias').change(function(){
-    var IdCarrera = $('#listaCarreras').val();
-    var IdMateria = $(this).val();
-    var Tipo = $('#tipoAcceso').val();
-    if (IdCarrera == '' || IdMateria == '') return;
-    if (Tipo == 'E' || Tipo == 'R'){
+    var idCarrera = $('#listaCarreras').val();
+    var idMateria = $(this).val();
+    var tipo = $('#tipoAcceso').val();
+    if (idCarrera == '' || idMateria == '') return;
+    if (tipo == 'E' || tipo == 'R'){
       $.ajax({
         type: "POST", 
         url: "<?php echo site_url('materias/cantidadAlumnosAJAX')?>", 
-        data:{IdMateria: IdMateria}
+        data:{idMateria: idMateria}
       }).done(function(msg){
         $('#cantidad').attr('value',Number(msg));
       });
@@ -114,8 +114,8 @@
   });
   
   $('#tipoAcceso').change(function(){
-    var Tipo = $('#tipoAcceso').val();
-    if (Tipo == 'E' || Tipo == 'R'){
+    var tipo = $('#tipoAcceso').val();
+    if (tipo == 'E' || tipo == 'R'){
       $('#mensajeCantidad').hide();
       $('#cantidad').parent().show();
     }

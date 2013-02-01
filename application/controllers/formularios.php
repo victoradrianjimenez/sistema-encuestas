@@ -174,15 +174,15 @@ class Formularios extends CI_Controller{
 
   //funcion para responder solicitudes AJAX
   public function buscarAJAX(){
-    $buscar = $this->input->post('Buscar');
+    $buscar = $this->input->post('buscar');
     $this->load->model('Formulario');
     $this->load->model('Gestor_formularios','gf');
     $formularios = $this->gf->buscar($buscar);
     echo "\n";
     foreach ($formularios as $formulario) {
-      echo  "$formulario->IdFormulario\t".
-            "$formulario->Nombre\t".
-            "$formulario->Creacion\t\n";
+      echo  "$formulario->idFormulario\t".
+            "$formulario->nombre\t".
+            "$formulario->creacion\t\n";
     }
   }
   
@@ -194,9 +194,9 @@ class Formularios extends CI_Controller{
     $formularios = $this->gf->listar(0,1000);
     echo "\n";
     foreach ($formularios as $formulario) {
-      echo  "$formulario->IdFormulario\t".
-            "$formulario->Nombre\t".
-            "$formulario->Creacion\t\n";
+      echo  "$formulario->idFormulario\t".
+            "$formulario->nombre\t".
+            "$formulario->creacion\t\n";
     }
   }
 }

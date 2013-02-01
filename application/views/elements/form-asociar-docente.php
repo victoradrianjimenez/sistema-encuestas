@@ -41,7 +41,7 @@
       //separo los datos separados en filas
       var filas = msg.split("\n");
       for (var i=0; i<filas.length-1; i++){
-        if (filas[i].length<2) continue;
+        if (filas[i].length<5) continue;
         //separo datos en columnas
         var columnas = filas[i].split("\t");
         var id = columnas[0];

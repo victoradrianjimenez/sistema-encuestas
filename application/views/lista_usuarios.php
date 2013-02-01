@@ -72,7 +72,7 @@
       //a donde mandar los datos editados para darse de alta
       $link = site_url('usuarios/nueva');
       $titulo = 'Crear nuevo usuario';    
-      $usuario = array('id'=>'', 'nombre'=>'', 'apellido'=>'','username'=>'','email'=>'');
+      $usuario = array('id'=>'', 'nombre'=>'', 'apellido'=>'','username'=>'','email'=>'', 'grupos'=>array());
       include 'elements/form-editar-usuario.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
@@ -120,6 +120,9 @@
       $("#modalEliminar").reveal();
       return false;
     });
+    
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
   </script>
 </body>
 </html>
