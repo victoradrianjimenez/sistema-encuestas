@@ -22,8 +22,8 @@ class Seccion extends CI_Model{
    * @return arrayItems
    */
   public function listarItems(){
-    $idFormulario = $this->db->escape($this->IdFormulario);
-    $idSeccion = $this->db->escape($this->IdSeccion);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idSeccion = $this->db->escape($this->idSeccion);
     $query = $this->db->query("call esp_listar_items_seccion($idSeccion, $idFormulario)");
     $data = $query->result('Item');
     $query->free_result();
@@ -41,17 +41,17 @@ class Seccion extends CI_Model{
    * @param cantidad de preguntas que las carreras pueden agregar al formulario
    * @return  string
    */
-  public function altaItem($IdPregunta, $IdCarrera, $Posicion){
-    $IdPregunta = $this->db->escape($IdPregunta);
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $Posicion = $this->db->escape($Posicion);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $IdSeccion = $this->db->escape($this->IdSeccion);
-    $query = $this->db->query("call esp_alta_item($IdSeccion, $IdFormulario, $IdPregunta, $IdCarrera, $Posicion)");
+  public function altaItem($idPregunta, $idCarrera, $posicion){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idCarrera = $this->db->escape($idCarrera);
+    $posicion = $this->db->escape($posicion);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idSeccion = $this->db->escape($this->idSeccion);
+    $query = $this->db->query("call esp_alta_item($idSeccion, $idFormulario, $idPregunta, $idCarrera, $posicion)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 }
 

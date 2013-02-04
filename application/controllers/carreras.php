@@ -13,13 +13,7 @@ class Carreras extends CI_Controller{
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
-    if ($this->ion_auth->logged_in()){
-      //datos de session para enviarse a las vistas
-      $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-    }
-    else{
-      redirect('/');
-    }
+    $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
   public function index(){
@@ -31,6 +25,7 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 2:12 p.m.
    */
   public function listar($pagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -78,6 +73,7 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 2:47 p.m.
    */
   public function ver($idCarrera=null, $pagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idCarrera = (int)$idCarrera;
@@ -281,6 +277,7 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function buscarAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar');
@@ -302,6 +299,7 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function buscarMateriasAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
@@ -326,6 +324,7 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function listarMateriasAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     if($this->form_validation->run()){
       $idCarrera = $this->input->post('idCarrera');

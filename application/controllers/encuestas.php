@@ -167,20 +167,31 @@ class Encuestas extends CI_Controller{
 
 
   public function informeMateria(){
-    
-        //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
 
     
-    
     $this->load->model('Materia');
-    $this->load->model('Gestor_usuarios', 'gu');
-    $this->data['materias'] = $this->gu->listarMaterias($this->data['usuarioLogin']->id);
+    $this->load->model('Gestor_materias', 'gm');
     
-    echo 'sfdf';
+    if ($this->ion_auth->in_group(array('admin','decanos'))){
+      $this->data['materias'] = $this->gm->listar(0, 1000);
+      echo 'sfdf';
+    }
+    elseif (!$this->ion_auth->in_group('jefes_departamentos')){
+      $this->data['materias'] = $this->gm->listarMateriasJefeDepartamento($this->data['usuarioLogin']->id);
+    }
+    elseif (!$this->ion_auth->in_group('directores')){
+      $this->data['materias'] = $this->gm->listarMateriasDirector($this->data['usuarioLogin']->id);
+    }
+    elseif (!$this->ion_auth->in_group(array('jefes_catedras','docente'))){
+      $this->data['materias'] = $this->gm->listarMateriasDocente($this->data['usuarioLogin']->id);
+      
+    }
+    
+    
+    
+    
+    
     
     $this->load->view('solicitud_informe_materia', $this->data);
     

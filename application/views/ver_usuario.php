@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-02-01 6:02 p.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -23,10 +25,10 @@
     <div id="Main" class="nine columns push-three">
       <div class="row">
         <div class="twelve columns">
-          <h3><?php echo $usuario['nombre'].' '.$usuario['apellido']?></h3>
-          <h5>Email: <?php echo $usuario['email']?></h5>
-          <h5>Último acceso: <?php echo $usuario['last_login']?></h5>
-          <h5>Estado: <?php echo ($usuario['active'])?'Activo':'Inactivo'?></h5>
+          <h3><?php echo $usuario->nombre.' '.$usuario->apellido?></h3>
+          <h5>Email: <?php echo $usuario->email?></h5>
+          <h5>Último acceso: <?php echo date('d/m/Y g:i:s a', $usuario->last_login)?></h5>
+          <h5>Estado: <?php echo ($usuario->active)?'Activo':'Inactivo'?></h5>
         </div>
       </div>
       <div class="row">
@@ -65,11 +67,11 @@
 
   <!-- ventana modal para activar/desactivar una cuenta de usuario -->
   <div id="modalActivar" class="reveal-modal small">
-    <form action="<?php echo site_url(($usuario['active'])?'usuarios/desactivar':'usuarios/activar')?>" method="post">
-      <h3><?php echo ($usuario['active'])?'Desactivar cuenta de usuario':'Activar cuenta de usuario'?></h3>
+    <form action="<?php echo site_url(($usuario->active)?'usuarios/desactivar':'usuarios/activar')?>" method="post">
+      <h3><?php echo ($usuario->active)?'Desactivar cuenta de usuario':'Activar cuenta de usuario'?></h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="id" value="<?php echo $usuario['id']?>" />
+      <input type="hidden" name="id" value="<?php echo $usuario->id?>" />
       <div class="row">
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">

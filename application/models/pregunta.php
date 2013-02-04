@@ -28,14 +28,14 @@ class Pregunta extends CI_Model{
    * @param texto o etiqueta de la opcion
    * @return  string
    */
-  public function altaOpcion($Texto){
-    $Texto = $this->db->escape($Texto);
-    $IdPregunta = $this->db->escape($this->IdPregunta);
-    $query = $this->db->query("call esp_alta_opcion($IdPregunta, $Texto)");
+  public function altaOpcion($texto){
+    $texto = $this->db->escape($texto);
+    $idPregunta = $this->db->escape($this->idPregunta);
+    $query = $this->db->query("call esp_alta_opcion($idPregunta, $texto)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   /**
@@ -45,7 +45,7 @@ class Pregunta extends CI_Model{
    * @return array
    */
   public function listarOpciones(){
-    $idPregunta = $this->db->escape($this->IdPregunta);
+    $idPregunta = $this->db->escape($this->idPregunta);
     $query = $this->db->query("call esp_listar_opciones($idPregunta)");
     $data = $query->result('Opcion');
     $query->free_result();

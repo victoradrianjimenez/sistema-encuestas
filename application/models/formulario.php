@@ -24,7 +24,7 @@ class Formulario extends CI_Model{
    * @return arraySecciones
    */
   public function listarSeccionesCarrera($idCarrera){
-    $idFormulario = $this->db->escape($this->IdFormulario);
+    $idFormulario = $this->db->escape($this->idFormulario);
     $idCarrera = $this->db->escape($idCarrera);
     $query = $this->db->query("call esp_listar_secciones_carrera($idFormulario, $idCarrera)");
     $data = $query->result('Seccion');
@@ -43,17 +43,17 @@ class Formulario extends CI_Model{
    * @param tipo de seccion, puede ser normal o referida a docentes
    * @return  string
    */
-  public function altaSeccion($IdCarrera, $Texto, $Descripcion, $Tipo){
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $Texto = $this->db->escape($Texto);
-    $Descripcion = $this->db->escape($Descripcion);
-    $IdFormulario = $this->db->escape($this->IdFormulario);
-    $Tipo = $this->db->escape($Tipo);
-    $query = $this->db->query("call esp_alta_seccion($IdFormulario, $IdCarrera, $Texto, $Descripcion, $Tipo)");
+  public function altaSeccion($idCarrera, $texto, $descripcion, $tipo){
+    $idCarrera = $this->db->escape($idCarrera);
+    $texto = $this->db->escape($texto);
+    $descripcion = $this->db->escape($descripcion);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $tipo = $this->db->escape($tipo);
+    $query = $this->db->query("call esp_alta_seccion($idFormulario, $idCarrera, $texto, $descripcion, $tipo)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
 }

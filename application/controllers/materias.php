@@ -13,13 +13,7 @@ class Materias extends CI_Controller{
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
-    if ($this->ion_auth->logged_in()){
-      //datos de session para enviarse a las vistas
-      $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-    }
-    else{
-      redirect('/');
-    }
+    $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
   public function index(){
@@ -31,6 +25,7 @@ class Materias extends CI_Controller{
    * Última revisión: 2012-02-01 3:35 p.m.
    */
   public function listar($pagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -64,6 +59,7 @@ class Materias extends CI_Controller{
    * Última revisión: 2012-02-01 3:39 p.m.
    */
   public function ver($idMateria=null, $pagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idMateria = (int)$idMateria;
@@ -146,7 +142,7 @@ class Materias extends CI_Controller{
       //doy de baja y cargo vista para mostrar resultado
       $res = $this->gm->baja($this->input->post('idMateria',TRUE));
       $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $this->data['link'] = site_url("materias"); //link para boton aceptar/continuar
+      $this->data['link'] = site_url("materias/listar"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $this->data);
     }
     else{
@@ -254,6 +250,7 @@ class Materias extends CI_Controller{
    * Última revisión: 2012-02-01 3:48 p.m.
    */
   public function buscarAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar');
@@ -275,6 +272,7 @@ class Materias extends CI_Controller{
    * Última revisión: 2012-02-01 3:51 p.m.
    */
   public function listarCarrerasAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
     if($this->form_validation->run()){
       $this->load->model('Carrera');

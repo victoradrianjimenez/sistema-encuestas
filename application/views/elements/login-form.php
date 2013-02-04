@@ -1,12 +1,16 @@
+<!-- Última revisión: 2012-02-01 6:18 p.m. -->
+
 <?php if(!(isset($usuarioLogin) && is_object($usuarioLogin))): ?>
   <form id="login" action="<?php echo site_url("usuarios/login")?>" method="post"> 
     <fieldset>
       <legend>Iniciar sesión</legend>
       <div class="row">
         <label for="loginUsuario">Usuario</label>
-        <input id="loginUsuario" type="text" name="Usuario" required />
+        <input id="loginUsuario" type="text" name="usuario" required />
+        <?php echo form_error('usuario')?>
         <label for="loginContraseña">Contraseña</label>
-        <input id="loginContraseña" type="password" name="Contrasena" required />
+        <input id="loginContraseña" type="password" name="contrasena" required />
+        <?php echo form_error('contrasena')?>
       </div>
       <div class="row">
         <input type="checkbox" name="Recordarme" />Recordarme              

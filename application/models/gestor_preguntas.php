@@ -40,7 +40,7 @@ class Gestor_preguntas extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
 
     
@@ -59,22 +59,22 @@ class Gestor_preguntas extends CI_Model{
    * @param unidad en que se mide la respuesta a la pregunta
    * @return  string
    */
-  public function alta($IdCarrera, $Texto, $Descripcion, $Tipo, $Obligatoria, $OrdenInverso, $LimiteInferior, $LimiteSuperior, $Paso, $Unidad){
-    $IdCarrera = $this->db->escape($IdCarrera);
-    $Texto = $this->db->escape($Texto);
-    $Descripcion= $this->db->escape($Descripcion);
-    $Tipo = $this->db->escape($Tipo);
-    $Obligatoria = $this->db->escape($Obligatoria);
-    $OrdenInverso = $this->db->escape($OrdenInverso);
-    $LimiteInferior = $this->db->escape($LimiteInferior);
-    $LimiteSuperior = $this->db->escape($LimiteSuperior);
-    $Paso = $this->db->escape($Paso);
-    $Unidad = $this->db->escape($Unidad);
-    $query = $this->db->query("call esp_alta_pregunta($IdCarrera, $Texto, $Descripcion, $Tipo, $Obligatoria, $OrdenInverso, $LimiteInferior, $LimiteSuperior, $Paso, $Unidad)");
+  public function alta($idCarrera, $texto, $descripcion, $tipo, $obligatoria, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad){
+    $idCarrera = $this->db->escape($idCarrera);
+    $texto = $this->db->escape($texto);
+    $descripcion= $this->db->escape($descripcion);
+    $tipo = $this->db->escape($tipo);
+    $obligatoria = $this->db->escape($obligatoria);
+    $ordenInverso = $this->db->escape($ordenInverso);
+    $limiteInferior = $this->db->escape($limiteInferior);
+    $limiteSuperior = $this->db->escape($limiteSuperior);
+    $paso = $this->db->escape($paso);
+    $unidad = $this->db->escape($unidad);
+    $query = $this->db->query("call esp_alta_pregunta($idCarrera, $texto, $descripcion, $tipo, $obligatoria, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
@@ -85,13 +85,13 @@ class Gestor_preguntas extends CI_Model{
    * @param identificador de pregunta
    * @return string
    */
-  public function baja($IdPregunta){
-    $IdPregunta = $this->db->escape($IdPregunta);
-    $query = $this->db->query("call esp_baja_pregunta($IdPregunta)");
+  public function baja($idPregunta){
+    $idPregunta = $this->db->escape($idPregunta);
+    $query = $this->db->query("call esp_baja_pregunta($idPregunta)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   

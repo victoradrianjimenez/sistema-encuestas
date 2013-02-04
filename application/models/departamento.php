@@ -19,15 +19,11 @@ class Departamento extends CI_Model{
    * Obtener el listado de carreras del departamento. Devuleve un array de objetos.
    *
    * @access  public
-   * @param posicion del primer item de la lista a mostrar
-   * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listarCarreras($pagNumero, $pagLongitud){
+  public function listarCarreras(){
     $idDepartamento = $this->db->escape($this->IdDepartamento);
-    $pagNumero = $this->db->escape($pagNumero);
-    $pagLongitud = $this->db->escape($pagLongitud);
-    $query = $this->db->query("call esp_listar_carreras_departamento($idDepartamento, $pagNumero, $pagLongitud)");
+    $query = $this->db->query("call esp_listar_carreras_departamento($idDepartamento)");
     $data = $query->result('Carrera');
     $query->free_result();
     $this->db->reconnect();

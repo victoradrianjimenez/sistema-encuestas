@@ -23,7 +23,7 @@ class Materia extends CI_Model{
   public function listarDocentes(){
     $idMateria = $this->db->escape($this->idMateria);
     $query = $this->db->query("call esp_listar_docentes_materia($idMateria)");
-    $data = $query->result_array();
+    $data = $query->result('Usuario');
     $query->free_result();
     $this->db->reconnect();
     return $data;
@@ -99,6 +99,14 @@ class Materia extends CI_Model{
     $this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
+  
+  
+  
+  
+   
+  
+  
+  
   
 }
 

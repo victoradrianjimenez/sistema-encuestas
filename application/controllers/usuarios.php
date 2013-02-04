@@ -8,14 +8,12 @@ class Usuarios extends CI_Controller{
   var $data=array(); //datos para mandar a las vistas
   const per_page = 10; //cuantos items se mostraran por pagina en un listado
   
-  function __construct(){
+  function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
-    $this->load->helper('url');
-    //datos de session para enviarse a las vistas
-    $this->data['usuarioLogin'] = $this->ion_auth->user()->row(); 
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); 
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
   public function index(){
@@ -24,13 +22,10 @@ class Usuarios extends CI_Controller{
   
   /*
    * Muestra el listado de usuarios.
+   * Última revisión: 2012-02-01 3:35 p.m.
    */
   public function listar($pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar    
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -41,67 +36,51 @@ class Usuarios extends CI_Controller{
 
     //obtengo lista de usuarios
     $usuarios = $this->gu->listar($pagInicio, self::per_page);
-    $tabla = array(); //datos para mandar a la vista
+    $lista = array(); //datos para mandar a la vista
     foreach ($usuarios as $i => $usuario) {
-      $tabla[$i]['id'] = $usuario->id;
-      $tabla[$i]['apellido'] = $usuario->apellido;
-      $tabla[$i]['nombre'] = $usuario->nombre;
-      $tabla[$i]['email'] = $usuario->email;
-      $tabla[$i]['active'] = $usuario->active;
+      $lista[$i] = array(
+        'usuario' => $usuario,
+        'grupos' => $this->ion_auth->get_users_groups($usuario->id)->result()
+      );
     }
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("usuarios/listar");
-    $config['total_rows'] = $this->gu->cantidad();
-    $config['per_page'] = self::per_page;
-    $config['uri_segment'] = 3;
-    $this->pagination->initialize($config);
+    $this->pagination->initialize(array(
+      'base_url' => site_url("usuarios/listar"),
+      'total_rows' => $this->gu->cantidad(),
+      'per_page' => self::per_page,
+      'uri_segment' => 3
+    ));
     
     //envio datos a la vista
-    $this->data['tabla'] = &$tabla; //array de datos de los Departamentos
+    $this->data['lista'] = &$lista; //array de datos de los Usuarios
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $this->data['grupos'] = $this->ion_auth->groups()->result_array();
+    $this->data['usuario'] = &$this->Usuario; //datos por defecto de un nuevo usuario
+    $this->data['usuario_grupos'] = array(); //datos por defecto de un nuevo usuario
+    $this->data['grupos'] = $this->ion_auth->groups()->result();
     $this->load->view('lista_usuarios', $this->data);
   }
   
   /*
    * Ver y editar datos relacionados a una Usuario
+   * Última revisión: 2012-02-01 5:47 p.m.
    */
   public function ver($id=null, $pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $id = (int)$id;
     
     //cargo modelos, librerias, etc.
     $this->load->model('Usuario');
-    $this->load->model('Gestor_Usuarios','gp');
+    $this->load->model('Gestor_Usuarios','gu');
     
-    //obtengo datos del departamento 
-    if ($id){
-      $usuario =  $this->ion_auth->user($id)->row();
-      if ($usuario){
-        $this->data['usuario'] = array(
-          'id' => $usuario->id,
-          'apellido' => $usuario->apellido,
-          'nombre' => $usuario->nombre,
-          'username' => $usuario->username,
-          'email' => $usuario->email,
-          'active' => $usuario->active,
-          'last_login' => date('d/m/Y G:i:s', $usuario->last_login),
-          'grupos' => $this->ion_auth->get_users_groups($id)->result_array()
-        );
-        //envio datos a la vista
-        
-        $this->data['grupos'] = $this->ion_auth->groups()->result_array();
-        $this->load->view('ver_usuario', $this->data);
-      }
-      else{
-        show_error('El Identificador de usuario no es válido.');
-      }
+    //obtengo datos del usuario 
+    $usuario =  $this->gu->dame($id);
+    if ($usuario){
+      $this->data['usuario'] = $usuario;
+      $this->data['usuario_grupos'] = $this->ion_auth->get_users_groups($id)->result();        
+      $this->data['grupos'] = $this->ion_auth->groups()->result();
+      $this->load->view('ver_usuario', $this->data);
     }
     else{
       show_error('El Identificador de usuario no es válido.');
@@ -111,11 +90,12 @@ class Usuarios extends CI_Controller{
   /*
    * Recepción del formulario para agregar nuevo departamento
    * POST: apellido, nombre, username, password, email
+   * Última revisión: 2012-02-01 6:08 p.m.
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //leo los grupos a los que pertenece el nuevo usuario
@@ -129,10 +109,10 @@ class Usuarios extends CI_Controller{
       }
     }
     //verifico datos POST
-    $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|required');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space');
-    $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_numeric');
-    $this->form_validation->set_rules('email','Apellido','required|valid_email');
+    $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
+    $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
+    $this->form_validation->set_rules('email','E-mail','required|valid_email');
     $this->form_validation->set_rules('password', 'Contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     $this->form_validation->set_rules('password2','Confirmar contraseña','required');    
     if($this->form_validation->run()){      
@@ -157,11 +137,12 @@ class Usuarios extends CI_Controller{
   /*
    * Recepción del formulario para modificar los datos de una Usuario
    * POST: id, apellido, nombre, username, password, email
+   * Última revisión: 2012-02-01 6:10 p.m.
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //leo los grupos a los que pertenece el nuevo usuario
@@ -176,10 +157,10 @@ class Usuarios extends CI_Controller{
     }
     //verifico datos POST
     $this->form_validation->set_rules('id','Identificador','is_natural_no_zero|required');
-    $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|required');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space');
-    $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_numeric');
-    $this->form_validation->set_rules('email','Apellido','required|valid_email');
+    $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
+    $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
+    $this->form_validation->set_rules('email','E-mail','required|valid_email');
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     if($this->form_validation->run()){
       $id = $this->input->post('id',TRUE);
@@ -212,55 +193,75 @@ class Usuarios extends CI_Controller{
   }
 
   /*
-   * Recibir formulario de inicio de sesión.
+   * Recepción del formulario para eliminar un usuario
+   * POST: idMateria
+   * Última revisión: 2012-02-01 3:44 p.m.
    */
-  function login(){
-    //si no recibimos ningún valor proveniente del formulario (el usuario no ingresó sus datos)
-    if($this->input->post('Usuario')==FALSE){
-      //pantalla del formulario de ingreso (pantalla de inicio)
-      $data['usuarioLogin'] = $this->ion_auth->user()->row();
-      $this->load->view('index', $data); 
+  public function eliminar(){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
+      return;
+    }
+    //verifico datos POST
+    $this->form_validation->set_rules('id','Usuario','is_natural_no_zero|required');
+    if($this->form_validation->run()){
+      $this->load->model('Gestor_usuarios','gu');
+      //doy de baja y cargo vista para mostrar resultado
+      $res = $this->gu->baja($this->input->post('id',TRUE));
+      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+      $this->data['link'] = site_url("usuarios/listar"); //link para boton aceptar/continuar
+      $this->load->view('resultado_operacion', $this->data);
     }
     else{
-      //verifico si los datos son correctos
-      $this->form_validation->set_rules('Usuario','Nombre de usuario','required|alpha_numeric');      
-      $this->form_validation->set_rules('Contrasena','Contraseña','required|alpha_numeric');
-      if($this->form_validation->run()){
-        //en caso de que los datos sean correctos, realizo login
-        if ($this->ion_auth->login($this->input->post('Usuario'), $this->input->post('Contrasena'), (bool) $this->input->post('Recordarme'))){
-          //si el usuario ingresó datos de acceso válidos
-          $data['usuarioLogin'] = $this->ion_auth->user()->row();
-          $this->load->view('index', $data);
-        }
-        else{
-          //si no logró validar
-          $data['mensajeLogin']="Nombre de usuario y/o contraseña inválidos, por favor vuelva a intentar.";
-          $this->load->view('index', $data);
-        }
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
+      $this->listar();
+    }
+  }
+
+  /*
+   * Recibir formulario de inicio de sesión.
+   * Última revisión: 2012-02-01 6:18 p.m.
+   */
+  function login(){
+    //verifico si los datos son correctos
+    $this->form_validation->set_rules('usuario','Nombre de usuario','required|alpha_dash_space|max_length[100]');      
+    $this->form_validation->set_rules('contrasena','Contraseña','min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']');
+    if($this->form_validation->run()){      
+      //en caso de que los datos sean correctos, realizo login
+      if ($this->ion_auth->login($this->input->post('usuario'), $this->input->post('contrasena'), (bool) $this->input->post('recordarme'))){
+        //si el usuario ingresó datos de acceso válidos
+        $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+        $this->load->view('index', $this->data);
       }
       else{
-        //en caso de que los datos sean incorrectos
-        $data['mensajeLogin']="Nombre de usuario y/o contraseña inválidos, por favor vuelva a intentar.";
-        $this->load->view('index', $data);
+        //si no logró validar
+        $this->data['mensajeLogin']="Nombre de usuario y/o contraseña incorrectos, por favor vuelva a intentar.";
+        $this->load->view('index', $this->data);
       }
+    }
+    else{
+      //en caso de que los datos sean incorrectos
+      $this->load->view('index', $this->data);
     }
   }
 
   /*
    * Cerrar sesión.
+   * Última revisión: 2012-02-01 6:39 p.m.
    */
   function logout(){
     $logout = $this->ion_auth->logout();
-    $this->load->view('index');
+    $this->data['usuarioLogin'] = NULL;
+    $this->load->view('index', $this->data);
   }
 
   /*
-   * Cambiar contraseña
+   * Cambiar contraseña una vez logueado
+   * Última revisión: 2012-02-01 7:50 p.m.
    */
   function cambiarContrasena(){
-    if (!$this->ion_auth->logged_in()){
-      redirect('/', 'refresh');
-    }
+    if (!$this->ion_auth->logged_in()){redirect('/', 'refresh');}
     $this->form_validation->set_rules('Contrasena', 'Contraseña anterior:', 'required');
     $this->form_validation->set_rules('NuevaContrasena', 'Nueva contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[NuevaContrasena2]');
     $this->form_validation->set_rules('NuevaContrasena2', 'Confirmar contraseña', 'required');
@@ -290,104 +291,98 @@ class Usuarios extends CI_Controller{
 
   /*
    * Formulario para iniciar el proceso de cambiar contraseña. 
+   * Última revisión: 2012-02-01 6:59 p.m.
    */
   function recuperarContrasena(){
     $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required');
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
     if ($this->form_validation->run()){
       //obtener la identity para el email
       $config_tables = $this->config->item('tables', 'ion_auth');
       $identity = $this->db->where('email', $this->input->post('email'))->limit('1')->get($config_tables['users'])->row();
       if ($identity){
-        //enviar un email con un codigo de activación 
+        //enviar un email con un codigo de activación
         $forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
         if ($forgotten){
-            $data['mensaje'] = 'Se envió un correo elecrónico con un código de activación para continuar con el proceso.';
-            $data['link'] = site_url(''); //pagina principal
+          $this->data['mensaje'] = 'Se envió un correo elecrónico con un código de activación para continuar con el proceso.';
+          $this->data['link'] = site_url(''); //pagina principal
         }
         else{
-          $data['mensaje'] = 'Ha ocurrido un problema al enviar el código de activación. Por favor intente nuevamente.';
-          $data['link'] = site_url('usuarios/recuperarContrasena');          
+          $this->data['mensaje'] = 'Ha ocurrido un problema al enviar el código de activación. Por favor intente nuevamente.';
+          $this->data['link'] = site_url('usuarios/recuperarContrasena');          
         }
       }
       else{
-        $data['mensaje'] = 'No existe un usuario registrado con el email ingresado.';
-        $data['link'] = site_url('usuarios/recuperarContrasena');
+        $this->data['mensaje'] = 'No existe un usuario registrado con el email ingresado.';
+        $this->data['link'] = site_url('usuarios/recuperarContrasena');
       }
-      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-      $this->load->view('resultado_operacion', $data);      
+      $this->load->view('resultado_operacion', $this->data);      
     }
     else{
-      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-      $data['email'] = $this->input->post('email');
-      $this->load->view('recuperar_contrasena',$data);
+      $this->load->view('recuperar_contrasena',$this->data);
     }
   }
 
   /*
-   * Resetear la contraseña. Es el paso final, donde el usuari recibe el email y confirma que quiere resetear la ontraseña.
+   * Resetear la contraseña. Es el paso final, donde el usuario recibe el email y confirma que quiere resetear la ontraseña.
+   * Última revisión: 2012-02-01 7:59 p.m.
    */
   public function resetearContrasena($code = NULL){
-    if (!$code){
-      show_404();
-      return;
-    }
+    if (!$code){show_404(); return;}
     //verificar si el codigo es correcto. Devuelve un objeto, o falso en caso de error
     $user = $this->ion_auth->forgotten_password_check($code);
     //si codigo es correcto
     if ($user){
-      $this->form_validation->set_rules('NuevaContrasena', 'Nueva contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[NuevaContrasena]');
-      $this->form_validation->set_rules('ConfirmarContrasena', 'Confirmar contraseña', 'required');
+      $this->form_validation->set_rules('nuevaContrasena', 'Nueva contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[confirmarContrasena]');
+      $this->form_validation->set_rules('confirmarContrasena', 'Confirmar contraseña', 'required');
       if ($this->form_validation->run()){
         //verifico que la solicitud es valida, comprobando el id de ususario y el codigo aleatorio temporal
         if ($this->_valid_csrf_nonce() === FALSE || $user->id != $this->input->post('user_id')){
           //algo sospechoso pasa. Borro el codigo y muestro mensaje
           $this->ion_auth->clear_forgotten_password_code($code);
-          $data['mensaje'] = 'Este formulario no pasó nuestras verificaciones de seguridad. Por favor intente nuevamente.';
-          $data['link'] = site_url('usuarios/recuperarContrasena');
+          $this->data['mensaje'] = 'Este formulario no pasó nuestras verificaciones de seguridad. Por favor intente nuevamente.';
+          $this->data['link'] = site_url('usuarios/recuperarContrasena');
         }
         else{
           //si todo sale bien, cambio la contraseña
           $identity = $user->{$this->config->item('identity', 'ion_auth')};
-          $change = $this->ion_auth->reset_password($identity, $this->input->post('NuevaContrasena'));
+          $change = $this->ion_auth->reset_password($identity, $this->input->post('nuevaContrasena'));
           if ($change){
-            $data['mensaje'] = 'La operación se realizó con éxito.';
-            $data['link'] = site_url(''); //pagina principal
+            $this->data['mensaje'] = 'La operación se realizó con éxito.';
+            $this->data['link'] = site_url(''); //pagina principal
           }
           else{
-            $data['mensaje'] = 'Ocurrió un error al intentar cambiar la contraseña.';
-            $data['link'] = site_url(''); //pagina principal
+            $this->data['mensaje'] = 'Ocurrió un error al intentar cambiar la contraseña.';
+            $this->data['link'] = site_url(''); //pagina principal
           }
         }
-        $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-        $this->load->view('resultado_operacion', $data);
+        $this->load->view('resultado_operacion', $this->data);
       }
       else{
         //mostrar el formulario de cambio de contraseña
-        $data['csrf'] = $this->_get_csrf_nonce();
-        $data['code'] = $code;
-        $data['user_id'] = $user->id;
-        $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-        $this->load->view('cambiar_contrasena',$data);
+        $this->data['csrf'] = $this->_get_csrf_nonce();
+        $this->data['code'] = $code;
+        $this->data['user_id'] = $user->id;
+        echo 'dfdf';
+        $this->load->view('cambiar_contrasena',$this->data);
       }
     }
     else{
       //si el codigo es inválido, enviar a la pagina para empezar el proceso de nuevo
-      $data['mensaje'] = 'El código para resetear la contraseña es inválido.';
-      $data['link'] = site_url('usuarios/recuperarContrasena'); //pagina principal
-      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-      $this->load->view('resultado_operacion', $data);     
+      $this->data['mensaje'] = 'El código para resetear la contraseña es inválido.';
+      $this->data['link'] = site_url('usuarios/recuperarContrasena'); //pagina principal
+      $this->load->view('resultado_operacion', $this->data);     
     }
   }
 
   /*
    * Recepción del formulario para activar una cuenta de usuario
    * POST: id
+   * Última revisión: 2012-02-02 2:31 a.m.
    */
   public function activar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -409,11 +404,12 @@ class Usuarios extends CI_Controller{
   /*
    * Recepción del formulario para desactivar una cuenta de usuario
    * POST: id
+   * Última revisión: 2012-02-02 2:31 a.m.
    */
   function desactivar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -421,8 +417,13 @@ class Usuarios extends CI_Controller{
     if($this->form_validation->run()){
       $id = $this->input->post('id', TRUE);
       //activo la cuenta y muestro el resultado
-      $res = $this->ion_auth->update($id, array('active'=>0));
-      $this->data['mensaje'] = ($res)?'La operación se realizó con éxito.':'No se pudo activar la cuenta de usuario.';
+      if(!$this->ion_auth->is_admin($id)){
+        $res = $this->ion_auth->update($id, array('active'=>0));
+        $this->data['mensaje'] = ($res)?'La operación se realizó con éxito.':'No se pudo activar la cuenta de usuario.';
+      }
+      else{
+        $this->data['mensaje'] = 'No se puede desactivar una cuenta perteneciente al grupo de Administradores.';
+      }
       $this->data['link'] = site_url("usuarios/ver/$id"); //link para boton aceptar/continuar
       $this->load->view('resultado_operacion', $this->data);
     }
@@ -434,8 +435,10 @@ class Usuarios extends CI_Controller{
 
   /*
    * Función para responder solicitudes AJAX
+   * Última revisión: 2012-02-02 2:35 a.m.
    */
   public function buscarAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
     $buscar = $this->input->post('buscar');
     //VERIFICAR
     $this->load->model('Usuario');
@@ -451,6 +454,7 @@ class Usuarios extends CI_Controller{
   
   /*
    * Generar clave aleatoria
+   * Última revisión: 2012-02-02 2:35 a.m.
    */
   function _get_csrf_nonce(){
     $this->load->helper('string');
@@ -463,14 +467,13 @@ class Usuarios extends CI_Controller{
 
   /*
    * Verificar clave aleatoria
+   * Última revisión: 2012-02-02 2:35 a.m.
    */
   function _valid_csrf_nonce(){
     if ($this->input->post($this->session->flashdata('csrfkey')) !== FALSE &&
         $this->input->post($this->session->flashdata('csrfkey')) == $this->session->flashdata('csrfvalue')){
       return TRUE;
     }
-    else{
-      return FALSE;
-    }
+    return FALSE;
   }
 }

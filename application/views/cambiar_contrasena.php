@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-02-01 7:45 p.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -20,20 +22,28 @@
   <div class="row">
     <!-- Main Section -->  
     <div id="Main" class="nine columns push-three">
-      <div class="row">
-        <div class="twelve columns">
-          <h3>Cambiar la contraseña</h3>
-          <form action="<?php echo site_url('usuarios/resetearContrasena/'.$code)?>" method="post">
-            <label>Nueva contraseña:</label>
-            <input type="password" name="NuevaContrasena" required />
-            <label>Confirmar contraseña:</label>
-            <input type="password" name="ConfirmarContrasena" required />
+      <form action="<?php echo site_url('usuarios/resetearContrasena/'.$code)?>" method="post">
+        <div class="row">
+          <div class="twelve columns">
+            <h3>Cambiar la contraseña</h3>      
+            <label for="campoContraseña">Nueva contraseña: <span class="opcional">*</span></label>
+            <input id="campoContraseña" type="password" name="nuevaContrasena" value="<?php echo set_value('nuevaContrasena', '')?>" required />
+            <?php echo form_error('nuevaContrasena')?>
+            
+            <label for="campoContraseña2">Confirmar contraseña: <span class="opcional">*</span></label>
+            <input id="campoContraseña2" type="password" name="confirmarContrasena" required />
+            <?php echo form_error('confirmarContrasena')?>
+            
             <input type="hidden" name="user_id" value="<?php echo $user_id?>" />
             <input type="hidden" <?php echo 'name="'.$csrf[0].'" value="'.$csrf[1].'"'?> />
+          </div>
+        </div>    
+        <div class="row">              
+          <div class="three mobile-two columns centered pull-one-mobile">
             <input type="submit" class="button" name="submit" value="Aceptar" />
-          </form>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
 
     <!-- Nav Sidebar -->
@@ -52,5 +62,12 @@
   <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
   <!-- Initialize JS Plugins -->
   <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+  
+  <script>
+    //ocultar mensaje de error al escribir
+    $('input[type="password"]').keyup(function(){
+      $(this).next('small.error').hide('fast');
+    });
+  </script>
 </body>
 </html>

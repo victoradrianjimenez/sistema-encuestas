@@ -1,3 +1,83 @@
+DROP PROCEDURE IF EXISTS `esp_registrar_clave`;
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_registrar_clave`(
+    pidClave INT UNSIGNED,
+    pidMateria SMALLINT UNSIGNED,
+    pidCarrera SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+    DECLARE mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;
+    UPDATE  Claves
+    SET     utilizada = NOW()
+    WHERE   idClave = pidClave AND
+            idMateria = pidMateria AND
+            idCarrera = pidCarrera AND
+            idEncuesta = pidEncuesta AND
+            idFormulario = pidFormulario AND            
+            utilizada IS NULL;
+    IF err THEN
+        SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+        ROLLBACK;
+    ELSE
+        SET mensaje = 'ok';
+        COMMIT;
+    END IF;
+    SELECT mensaje;    
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_alta_respuesta`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_respuesta`(
+    pidPregunta INT UNSIGNED,
+    pidClave INT UNSIGNED,
+    pidMateria SMALLINT UNSIGNED,
+    pidCarrera SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED,
+    pidDocente INT UNSIGNED,
+    popcion TINYINT UNSIGNED,
+    ptexto TEXT)
+BEGIN
+    DECLARE id INT UNSIGNED;
+    DECLARE mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;    
+    SET id = (  
+        SELECT COALESCE(MAX(idRespuesta),0)+1 
+        FROM    Respuestas
+        WHERE   idPregunta = pidPregunta AND
+                idClave = pidClave AND 
+                idMateria = pidMateria AND 
+                idCarrera = pidCarrera AND 
+                idEncuesta = pidEncuesta AND                 
+                idFormulario = pidFormulario);
+    INSERT INTO Respuestas 
+        (idRespuesta, idPregunta, idClave, idMateria, idCarrera, idEncuesta, 
+        idFormulario, idDocente, opcion, texto)
+    VALUES (id, pidPregunta, pidClave, pidMateria, pidCarrera, pidEncuesta, 
+        pidFormulario, pidDocente, popcion, ptexto); 
+    IF err THEN
+        SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+        ROLLBACK;
+    ELSE 
+        SET mensaje = id;
+        COMMIT;
+    END IF;
+    SELECT mensaje;
+END $$
 
 DELIMITER ;
 
@@ -24,22 +104,12 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_carrera`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_carrera`(
-	pidCarrera SMALLINT UNSIGNED,
-    pPagInicio INT UNSIGNED,
-    pPagLongitud INT UNSIGNED)
+	pidCarrera SMALLINT UNSIGNED)
 BEGIN
-    SET @qry = '
     SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
     FROM    Materias M INNER JOIN Materias_Carreras MC ON M.idMateria = MC.idMateria
-	WHERE	MC.idCarrera = ?
-    ORDER BY M.nombre
-    LIMIT ?,?';
-    PREPARE stmt FROM  @qry;
-	SET @c = pidCarrera;
-    SET @a = pPagInicio;
-    SET @b = pPagLongitud;
-    EXECUTE stmt USING @c, @a, @b;
-    DEALLOCATE PREPARE stmt;
+	WHERE	MC.idCarrera = pidCarrera
+    ORDER BY M.nombre;
 END $$
 
 DELIMITER ;
@@ -182,22 +252,12 @@ DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_departamento`(
-    pidDepartamento SMALLINT UNSIGNED,
-    pPagInicio INT UNSIGNED,
-    pPagLongitud INT UNSIGNED)
+    pidDepartamento SMALLINT UNSIGNED)
 BEGIN
-    SET @qry = '
     SELECT  idDepartamento, idCarrera, idDirectorCarrera, nombre, plan
     FROM    Carreras
-    WHERE   idDepartamento = ?
-    ORDER BY nombre, plan DESC
-    LIMIT ?,?';
-    PREPARE stmt FROM  @qry;
-    SET @c = pidDepartamento;
-    SET @a = pPagInicio;
-    SET @b = pPagLongitud;
-    EXECUTE stmt USING @c, @a, @b;
-    DEALLOCATE PREPARE stmt;
+    WHERE   idDepartamento = pidDepartamento
+    ORDER BY nombre, plan DESC;
 END $$
 
 DELIMITER ;
@@ -247,7 +307,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_clave`(
     pclave CHAR(16))
 BEGIN
     -- busca una clave en las encuestas que no finalizaron
-    SELECT  idClave, idMateria, idClave, C.idEncuesta, C.idFormulario,
+    SELECT  idClave, idMateria, idCarrera, C.idEncuesta, C.idFormulario,
             clave, tipo, generada, utilizada
     FROM    claves C INNER JOIN Encuestas E ON C.idEncuesta = E.idEncuesta AND C.idFormulario = E.idFormulario
     WHERE   clave = pclave AND fechaFin IS NOT NULL
@@ -346,8 +406,7 @@ BEGIN
     -- las columnas posicion y tamaño los toma de items_secciones, pero si son nulos, los toma de items
     SELECT  P.idPregunta, P.idCarrera, P.texto, P.descripcion, P.creacion, P.tipo, 
             obligatoria, ordenInverso, limiteInferior, limiteSuperior, paso, unidad,
-            COALESCE(IC.posicion, I.posicion) AS posicion, 
-            COALESCE(IC.Tamaño, I.Tamaño) AS Tamaño
+            COALESCE(IC.posicion, I.posicion) AS posicion
     FROM    Items I INNER JOIN Preguntas P ON I.idPregunta = P.idPregunta 
             LEFT JOIN Items_Carreras IC ON I.idSeccion = IC.idSeccion AND 
                 I.idFormulario = IC.idFormulario AND I.idPregunta = IC.idPregunta AND
@@ -2051,6 +2110,8 @@ BEGIN
         SET mensaje = 'No se puede eliminar, existe una carrera que lo tiene como Director de Carrera.';
         ROLLBACK;
     ELSE
+        DELETE FROM Usuarios_Grupos
+        WHERE id_usuario = pid;
         DELETE FROM Usuarios
         WHERE id = pid;
         IF err THEN
@@ -2486,12 +2547,26 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_materias_usuario`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_materias_docente`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_usuario`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_docente`(
 	pid INT UNSIGNED)
 BEGIN
     SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
@@ -2510,51 +2585,68 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_director`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_director`(
-	pidDirectorCarrera INT UNSIGNED)
+	pid INT UNSIGNED)
 BEGIN
-    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
+    SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos
     FROM    Materias M 
 			INNER JOIN Materias_Carreras MC ON MC.idMateria = MC.idMateria
 			INNER JOIN Carreras C ON C.idCarrera = MC.idCarrera
-	WHERE	C.idDirectorCarrera = pidDirectorCarrera
+	WHERE	C.idDirectorCarrera = pid
     ORDER BY M.nombre;
 END $$
 
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_carreras_materia`;
+DROP PROCEDURE IF EXISTS `esp_listar_materias_jefe_departamento`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_materia`(
-	pidMateria SMALLINT UNSIGNED)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_jefe_departamento`(
+	pid INT UNSIGNED)
 BEGIN
-    SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
-    FROM    Carreras C
-			INNER JOIN Materias_Carreras MC ON MC.idCarrera = C.idCarrera
-	WHERE	MC.idMateria = pidMateria
-    ORDER BY C.nombre, C.plan DESC;
+    SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos
+    FROM    Materias M 
+			INNER JOIN Materias_Carreras MC ON MC.idMateria = MC.idMateria
+			INNER JOIN Carreras C ON C.idCarrera = MC.idCarrera
+			INNER JOIN Departamentos D ON D.idDepartamento = C.idDepartamento
+	WHERE	D.idJefeDepartamento = pid
+    ORDER BY M.nombre;
 END $$
 
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_carreras_usuario`;
+DROP PROCEDURE IF EXISTS `esp_listar_carreras_docente`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_usuario`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_docente`(
 	pid INT UNSIGNED)
 BEGIN
-    SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
+    SELECT  DISTINCT C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
     FROM    Carreras C 
-			LEFT JOIN Departamentos D ON D.idDepartamento = C.idDepartamento
-	WHERE	C.idDirectorCarrera = pid OR D.idJefeDepartamento = pid
+			INNER JOIN Materias_Carreras MC ON MC.idCarrera = C.idCarrera
+			INNER JOIN Docentes_Materias DM ON MC.idMateria = DM.idMateria
+	WHERE	DM.idDocente = pid
     ORDER BY C.nombre;
 END $$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 DELIMITER ;
 

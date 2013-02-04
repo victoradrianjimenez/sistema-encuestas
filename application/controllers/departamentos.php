@@ -13,13 +13,7 @@ class Departamentos extends CI_Controller{
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
-    if ($this->ion_auth->logged_in()){
-      //datos de session para enviarse a las vistas
-      $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-    }
-    else{
-      redirect('/');
-    }   
+    $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
   public function index(){
@@ -31,6 +25,7 @@ class Departamentos extends CI_Controller{
    * Última revisión: 2012-01-31 10:23 a.m.
    */
   public function listar($pagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -72,6 +67,7 @@ class Departamentos extends CI_Controller{
    * Última revisión: 2012-02-01 12:10 p.m.
    */
   public function ver($idDepartamento=null, $pagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idDepartamento = (int)$idDepartamento;
@@ -192,6 +188,7 @@ class Departamentos extends CI_Controller{
    * Última revisión: 2012-02-01 2:00 p.m.
    */
   public function buscarAjax(){
+    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar', TRUE);
