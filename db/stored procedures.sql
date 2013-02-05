@@ -1,4 +1,62 @@
+
+DROP PROCEDURE IF EXISTS `esp_alta_devolucion`;
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_devolucion`(
+    pidMateria SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED,
+    pfortalezas TEXT,
+    pdebilidades TEXT,
+    palumnos TEXT,
+    pdocentes TEXT,
+    pmejoras TEXT)
+BEGIN
+    DECLARE id INT UNSIGNED;
+    DECLARE mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    IF COALESCE(pfortalezas,'') = '' AND COALESCE(pdebilidades,'') = '' AND
+       COALESCE(pdebilidades,'') = '' AND COALESCE(palumnos,'') = '' AND
+       COALESCE(pdocentes,'') = '' AND COALESCE(pmejoras,'') = '' THEN
+        SET Mensaje = 'Debe escribir en al menos un campo.';
+    ELSE
+        START TRANSACTION;
+        IF NOT EXISTS(  SELECT  idEncuesta FROM Encuestas 
+                        WHERE   idEncuesta = pidEncuesta AND idFormulario = pidFormulario LIMIT 1) THEN
+            SET Mensaje = 'No se encontró la Encuesta correspondiente.';
+            ROLLBACK;
+        ELSE
+            SET id = (  
+                SELECT COALESCE(MAX(idDevolucion),0)+1 
+                FROM    Devoluciones
+                WHERE   idMateria = pidMateria AND
+                        idEncuesta = pidEncuesta AND
+                        idFormulario = pidFormulario);
+            INSERT INTO Devoluciones
+                (idDevolucion, idMateria, idEncuesta, idFormulario, fecha, 
+                fortalezas, debilidades, alumnos, docentes, mejoras)
+            VALUES (id, pidMateria, pidEncuesta, pidFormulario, NOW(), 
+                pfortalezas, pdebilidades, palumnos, pdocentes, pmejoras);
+            IF err THEN
+                SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+                ROLLBACK;
+            ELSE 
+                SET mensaje = id;
+                COMMIT;
+            END IF;
+        END IF;
+    END IF;
+    SELECT mensaje;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_registrar_clave`;
+
 
 DELIMITER $$
 
@@ -361,7 +419,7 @@ BEGIN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
             ELSE 
-                SET mensaje = UPPER(clave);
+                SET mensaje = nid;
                 COMMIT;
             END IF;            
         END IF;
@@ -2328,8 +2386,8 @@ BEGIN
 		ROLLBACK;
 	ELSE
 		INSERT INTO Items
-			(idSeccion, idFormulario, idPregunta, idCarrera, posicion, Tamaño)
-		VALUES (pidSeccion, pidFormulario, pidPregunta, pidCarrera, pposicion, 0);    
+			(idSeccion, idFormulario, idPregunta, idCarrera, posicion)
+		VALUES (pidSeccion, pidFormulario, pidPregunta, pidCarrera, pposicion);
 		IF err THEN
 			SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
 			ROLLBACK;

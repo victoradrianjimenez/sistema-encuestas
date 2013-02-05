@@ -5,167 +5,159 @@
  */
 class Preguntas extends CI_Controller {
   
+  var $data=array(); //datos para mandar a las vistas
   const per_page = 10; //cuantos items se mostraran por pagina en un listado
-	
-	function __construct() {
-	  parent::__construct();
+  
+  function __construct() {
+    parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
-	}
+    //doy formato al mensaje de error de validación de formulario
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+  }
   
   public function index(){
     $this->listar();
   }
   
-  
   /*
    * Muestra el listado de preguntas.
+   * Última revisión: 2012-02-04 12:18 p.m.
    */
   public function listar($PagInicio=0){
-    //verifico si el usuario tiene permisos para continuar    
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $PagInicio = (int)$PagInicio;
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Pregunta');
+    $this->load->model('Carrera');
     $this->load->model('Gestor_preguntas','gp');
+    $this->load->model('Gestor_carreras','gc');
     
-    //obtengo lista de departamentos
+    //obtengo lista de preguntas
     $preguntas = $this->gp->listar($PagInicio, self::per_page);
-    $tabla = array(); //datos para mandar a la vista
+    $lista = array(); //datos para mandar a la vista
     foreach ($preguntas as $i => $pregunta) {
-      $tabla[$i] = array(
-        'IdPregunta' => $pregunta->IdPregunta,
-        'Texto' => $pregunta->Texto,
-        'Creacion' => $pregunta->Creacion,
-        'Tipo' => $pregunta->Tipo,
-        'Obligatoria' => $pregunta->Obligatoria
+      $carrera = ($pregunta->idCarrera!='')?$this->gc->dame($pregunta->idCarrera):FALSE;
+      $lista[$i] = array(
+        'pregunta' => $pregunta,
+        'carrera' => ($carrera)?$carrera:$this->Carrera
       );
     }
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("preguntas/listar");
-    $config['total_rows'] = $this->gp->cantidad();
-    $config['per_page'] = self::per_page;
-    $config['uri_segment'] = 3;
-    $this->pagination->initialize($config);
-    
+    $this->pagination->initialize(array(
+      'base_url' => site_url("preguntas/listar"),
+      'total_rows' => $this->gp->cantidad(),
+      'per_page' => self::per_page,
+      'uri_segment' => 3
+    ));
     //envio datos a la vista
-    $data['tabla'] = &$tabla; //array de datos de las preguntas
-    $data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-    $this->load->view('lista_preguntas', $data);
+    $this->data['lista'] = &$lista; //array de datos de los Departamentos
+    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $this->load->view('lista_preguntas', $this->data);
   }
 
-  /*
-   * Muestra el formulario de edicion de la pregunta
-   */
-  public function editar(){
-    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-    $this->load->view('editar_pregunta', $data);
-  }
-  
   /*
    * Recepción del formulario para agregar nueva pregunta
-   * POST: Texto, Descripcion, Tipo, Obligatoria, OrdenInverso, Unidad, LimiteInferior, LimiteSuperior, TextoOpcion_###
+   * POST: texto, descripcion, tipo, obligatoria, ordenInverso, unidad, limiteInferior, limiteSuperior, textoOpcion_###
+   * Última revisión: 2012-02-04 12:26 p.m.
    */
   public function nuevo(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
-    //cargo modelos y librerias necesarias
-    $this->load->model('Opcion');
-    $this->load->model('Pregunta');
-    $this->load->model('Gestor_preguntas','gp');
-    
-    //leo los datos enviados por post, y los almaceno en un array
-    $entradas = $this->input->post(NULL, TRUE);
-    $datosOpciones = array();
-    foreach ($entradas as $key => $x) {
-      if (strpos($key, 'TextoOpcion') !== false) {
-        sscanf($key, "TextoOpcion_%d",$i);
-        $datosOpciones[$i] = $x;
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if ($this->input->post('submit')){
+      //cargo modelos y librerias necesarias
+      $this->load->model('Opcion');
+      $this->load->model('Pregunta');
+      $this->load->model('Gestor_preguntas','gp');
+      //verifico si el usuario tiene permisos para continuar
+      if (!$this->ion_auth->is_admin()){
+        show_error('No tiene permisos para realizar esta operación.');
+        return;
       }
-    }
-
-    //CHEQUEAR!!
-    $error = false;
-    
-    $this->Pregunta->Texto = $this->input->post('Texto', TRUE);
-    $tmp =  $this->input->post('Descripcion', TRUE);
-    $this->Pregunta->Descripcion = ($tmp)?$tmp:NULL;
-    $this->Pregunta->Tipo = $this->input->post('Tipo', TRUE);
-    $tmp = $this->input->post('Obligatoria', TRUE);
-    $this->Pregunta->Obligatoria = ((bool)$tmp)?'S':'N';
-    $tmp = $this->input->post('OrdenInverso', TRUE);
-    $this->Pregunta->OrdenInverso = ((bool)$tmp)?'S':'N';
-    $tmp = $this->input->post('Unidad', TRUE);
-    $this->Pregunta->Unidad = ($tmp)?$tmp:NULL;
-    if ($this->Pregunta->Tipo == 'N'){
-      $this->Pregunta->LimiteInferior = $this->input->post('LimiteInferior', TRUE);
-      $this->Pregunta->LimiteSuperior = $this->input->post('LimiteSuperior', TRUE);
-      $this->Pregunta->Paso = $this->input->post('Paso', TRUE);
-    }
-    else {
-      $this->Pregunta->LimiteInferior = NULL;
-      $this->Pregunta->LimiteSuperior = NULL;
-      $this->Pregunta->Paso = NULL;
-    }
-    $res = $this->gp->alta(NULL, $this->Pregunta->Texto, $this->Pregunta->Descripcion, 
-                          $this->Pregunta->Tipo, $this->Pregunta->Obligatoria, 
-                          $this->Pregunta->OrdenInverso, $this->Pregunta->LimiteInferior,
-                          $this->Pregunta->LimiteSuperior, $this->Pregunta->Paso,
-                          $this->Pregunta->Unidad);
-    if (!is_numeric($res)){
-      $error = true;
-    }
-    else{
-      $this->Pregunta->IdPregunta = (int)$res;
-      foreach ($datosOpciones as $i => $opcion) {
-        $res = $this->Pregunta->altaOpcion($opcion);
-        if (!is_numeric($res)){
-          $error = true;
-          break;
+      $error = false;
+      //leo los datos enviados por post, y los almaceno en un array
+      $entradas = $this->input->post(NULL, TRUE);
+      $datosOpciones = array();
+      foreach ($entradas as $key => $x) {
+        if (strpos($key, 'textoOpcion') !== false) {
+          sscanf($key, "textoOpcion_%d",$i);
+          $datosOpciones[$i] = $x;
         }
       }
+      //CHEQUEAR!!
+      $this->Pregunta->texto = $this->input->post('texto', TRUE);
+      $tmp =  $this->input->post('descripcion', TRUE);
+      $this->Pregunta->descripcion = ($tmp)?$tmp:NULL;
+      $this->Pregunta->tipo = $this->input->post('tipo', TRUE);
+      $tmp = $this->input->post('obligatoria', TRUE);
+      $this->Pregunta->obligatoria = ((bool)$tmp)?'S':'N';
+      $tmp = $this->input->post('ordenInverso', TRUE);
+      $this->Pregunta->ordenInverso = ((bool)$tmp)?'S':'N';
+      $tmp = $this->input->post('unidad', TRUE);
+      $this->Pregunta->unidad = ($tmp)?$tmp:NULL;
+      if ($this->Pregunta->tipo == 'N'){
+        $this->Pregunta->limiteInferior = $this->input->post('limiteInferior', TRUE);
+        $this->Pregunta->limiteSuperior = $this->input->post('limiteSuperior', TRUE);
+        $this->Pregunta->paso = $this->input->post('paso', TRUE);
+      }
+      else {
+        $this->Pregunta->limiteInferior = NULL;
+        $this->Pregunta->limiteSuperior = NULL;
+        $this->Pregunta->paso = NULL;
+      }
+      $res = $this->gp->alta(NULL, $this->Pregunta->texto, $this->Pregunta->descripcion, $this->Pregunta->tipo, $this->Pregunta->obligatoria, 
+                            $this->Pregunta->ordenInverso, $this->Pregunta->limiteInferior, $this->Pregunta->limiteSuperior, $this->Pregunta->paso, $this->Pregunta->unidad);
+      if (is_numeric($res)){
+        $this->Pregunta->idPregunta = (int)$res;
+        foreach ($datosOpciones as $i => $opcion) {
+          $res = $this->Pregunta->altaOpcion($opcion);
+          if (!is_numeric($res)){
+            $error = true;
+            break;
+          }
+        }
+      }
+      else{
+        $error = true;
+      }
+      if($error){
+        //borro la pregunta con las opciones dadas de alta hasta que se produjo el error
+        $this->gp->baja($this->Pregunta->idPregunta);
+      }
+      //cargo vista para mostrar resultado
+      $this->data['mensaje'] = (!$error)?"La operación se realizó con éxito. El ID del nuevo formulario es ".$this->Pregunta->idPregunta.".":$res;
+      $this->data['link'] = site_url("preguntas/listar"); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $this->data);
     }
-    if($error){
-      $this->gp->baja($this->Pregunta->IdPregunta);
+    else {
+      //muestro el formulario para crear pregunta
+      $this->load->view('editar_pregunta', $this->data);
     }
-    //cargo vista para mostrar resultado
-    $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-    $data['mensaje'] = (!$error)?"La operación se realizó con éxito. El ID del nuevo formulario es ".$this->Pregunta->IdPregunta.".":$res;
-    $data['link'] = site_url("preguntas"); //hacia donde redirigirse
-    $this->load->view('resultado_operacion', $data);
   }
   
   /*
    * Recepción del formulario para eliminar una pregunta
-   * POST: IdPregunta
+   * POST: idPregunta
+   * Última revisión: 2012-02-04 04:03 p.m.
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
-    $this->form_validation->set_rules('IdPregunta','ID Pregunta','is_natural_no_zero|required');
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error
+    $this->form_validation->set_rules('idPregunta','Pregunta','is_natural_no_zero|required');
     if($this->form_validation->run()){
       $this->load->model('Gestor_preguntas','gp');
 
       //doy de baja y cargo vista para mostrar resultado
-      $res = $this->gp->baja($this->input->post('IdPregunta',TRUE));
-      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-      $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("preguntas"); //link para boton aceptar/continuar
-      $this->load->view('resultado_operacion', $data);
+      $res = $this->gp->baja($this->input->post('idPregunta',TRUE));
+      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+      $this->data['link'] = site_url("preguntas/listar"); //link para boton aceptar/continuar
+      $this->load->view('resultado_operacion', $this->data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
@@ -173,21 +165,25 @@ class Preguntas extends CI_Controller {
     }
   }
   
-  
-  //funcion para responder solicitudes AJAX
+  /*
+   * Funcion para responder solicitudes AJAX
+   * POST: buscar
+   * Última revisión: 2012-02-04 04:05 p.m.
+   */
   public function buscarAjax(){
-    $buscar = $this->input->post('Buscar');
+    if (!$this->ion_auth->logged_in()){return;}
+    $buscar = $this->input->post('buscar');
     $this->load->model('Pregunta');
     $this->load->model('Gestor_preguntas','gp');
     $preguntas = $this->gp->buscar($buscar);
     echo "\n";
     foreach ($preguntas as $pregunta) {
-      echo  "$pregunta->IdPregunta\t".
-            "$pregunta->IdCarrera\t".
-            "$pregunta->Texto\t".
-            "$pregunta->Creacion\t".
-            "$pregunta->Tipo\t".
-            "$pregunta->Obligatoria\t\n";
+      echo  "$pregunta->idPregunta\t".
+            "$pregunta->idCarrera\t".
+            "$pregunta->texto\t".
+            "$pregunta->creacion\t".
+            "$pregunta->tipo\t".
+            "$pregunta->obligatoria\t\n";
     }
   }
   

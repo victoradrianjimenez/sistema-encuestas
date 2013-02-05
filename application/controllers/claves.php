@@ -215,42 +215,40 @@ class Claves extends CI_Controller{
   
   /*
    * Generar claves de acceso
-   * POST: IdEncuesta, IdFormulario, IdCarrera, IdMateria, Tipo, Cantidad
+   * POST: idEncuesta, idFormulario, idCarrera, idMateria, tipo, cantidad
+   * Última revisión: 2012-02-04 04:21 p.m.
    */
    public function generar(){
-    //verifico si el usuario tiene permisos para continuar    
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //chequeo parámetros de entrada
-    $this->form_validation->set_rules('IdEncuesta','ID Encuesta','is_natural_no_zero|required');
-    $this->form_validation->set_rules('IdFormulario','ID Formulario','is_natural_no_zero|required');
-    $this->form_validation->set_rules('IdCarrera','ID Carrera','is_natural_no_zero|required');
-    $this->form_validation->set_rules('IdMateria','ID Materia','is_natural_no_zero|required');
-    $this->form_validation->set_rules('Tipo','Tipo','alpha|exact_length[1]|required');
-    $this->form_validation->set_rules('Cantidad','Cantidad','is_natural_no_zero');
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); //doy formato al mensaje de error      
+    $this->form_validation->set_rules('idEncuesta','Encuesta','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
+    $this->form_validation->set_rules('tipo','Tipo','alpha|exact_length[1]|required');
+    $this->form_validation->set_rules('cantidad','Cantidad','is_natural_no_zero');      
     if($this->form_validation->run()){
       $this->load->model('Encuesta');
       
+      $tipo = $this->input->post('tipo',TRUE);
+      
       //VER POR TIPO DE CLAVE!!!!!!!!!!!!
       
-      $cantidad = $this->input->post('Cantidad',TRUE);
+      $cantidad = $this->input->post('cantidad',TRUE);
       $cnt = 0;
       for ($i=0; $i<$cantidad; $i++){
-        $clave = $this->Encuesta->altaClave( $this->input->post('IdEncuesta',TRUE),
-                              $this->input->post('IdFormulario',TRUE),
-                              $this->input->post('IdCarrera',TRUE),
-                              $this->input->post('IdMateria',TRUE),
-                              $this->input->post('Tipo',TRUE));
-        //VERIFICAR SI SE CREARON!!!!!!!!!
-        $cnt++;
+        $clave = $this->Encuesta->altaClave( $this->input->post('idEncuesta',TRUE), $this->input->post('idFormulario',TRUE), $this->input->post('idCarrera',TRUE), $this->input->post('idMateria',TRUE), $tipo);
+        if (is_numeric($clave)){
+          $cnt++;
+        }
       }
-      $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de session
-      $data['mensaje'] = ($cnt>0)?"La operación se realizó con éxito. Se generaron $cnt claves.":'No se generaron claves.';
-      $data['link'] = site_url("claves"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $data);
+      $this->data['mensaje'] = ($cnt>0)?"La operación se realizó con éxito. Se generaron $cnt claves.":'No se generaron claves.';
+      $this->data['link'] = site_url("claves"); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $this->data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion

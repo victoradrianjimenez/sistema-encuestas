@@ -1123,5 +1123,19 @@ ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefUsuarios782
 
 
 
+INSERT INTO Grupos VALUES
+('1', 'admin', 'Administradores'),
+('2', 'decanos', 'Decanos'),
+('3', 'jefes_departamentos', 'Jefes de departamentos'),
+('4', 'directores', 'Directores de carrera'),
+('5', 'jefes_catedras', 'Jefes de cátedra'),
+('6', 'docentes', 'Docentes'),
+('7', 'organizadores', 'Organizadores'),
+('8', 'alumnos', 'Alumnos');
 
+INSERT INTO `Usuarios` (`id`,`ip_address`,`username`,`password`,`salt`,`email`,`activation_code`,`forgotten_password_code`,`forgotten_password_time`,`remember_code`,`created_on`,`last_login`,`active`,`nombre`,`apellido`) VALUES 
+ (1,0x7F000001,'admin','59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4','9462e8eee0','victoradrianjimenez@gmail.com','','b30b117fb39e7037795729d0c623b98262697e80',1359506278,NULL,1,1359522422,1,'Adrian','Jimenez');
+
+INSERT INTO `Usuarios_Grupos` (`id`,`id_usuario`,`id_grupo`) VALUES 
+ (1,1,1);
 

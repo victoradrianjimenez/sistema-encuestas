@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-01-31 10:23 a.m. -->
+
 <!DOCTYPE html>
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
@@ -23,7 +25,7 @@
       <div class="row">
         <div class="twelve columns">
           <h3>Formularios</h3>
-          <?php if(count($tabla)== 0):?>
+          <?php if(count($lista)== 0):?>
             <p>No se encontraron formularios.</p>
           <?php else:?>
             <table class="twelve">
@@ -33,13 +35,13 @@
                 <th>Creacion</th>
                 <th>Acciones</th>
               </thead>
-              <?php foreach($tabla as $fila): ?>  
+              <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url('formularios/ver/'.$fila['IdFormulario'])?>"/><?php echo $fila['Nombre']?></a></td>
-                  <td class="titulo"><?php echo $fila['Titulo']?></td>
-                  <td class="creacion"><?php echo $fila['Creacion']?></td>
+                  <td><a class="nombre" href="<?php echo site_url('formularios/ver/'.$item->idFormulario)?>"/><?php echo $item->nombre?></a></td>
+                  <td class="titulo"><?php echo $item->titulo?></td>
+                  <td class="creacion"><?php echo $item->creacion?></td>
                   <td>
-                    <a class="eliminar" href="" value="<?php echo $fila['IdFormulario']?>">Eliminar</a>
+                    <a class="eliminar" href="" value="<?php echo $item->idFormulario?>">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -50,7 +52,7 @@
       </div>
       <div class="row">
         <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url('formularios/editar')?>">Nuevo Formulario</a>
+          <a class="button" href="<?php echo site_url('formularios/editar')?>">Agregar formulario</a>
         </div>          
       </div>
     </div>
@@ -70,7 +72,7 @@
   <!-- ventana modal para eliminar formularios -->
   <div id="modalEliminar" class="reveal-modal medium">
     <form action="<?php echo site_url('formularios/eliminar')?>" method="post">
-      <input type="hidden" name="IdFormulario" value="" />
+      <input type="hidden" name="idFormulario" value="" />
       <h3>Eliminar formulario</h3>
       <h5 class="nombre"></h5>
       <p>¿Desea continuar?</p>
@@ -95,16 +97,16 @@
   
   <script>
     $('.cancelar').click(function(){
-      $('.cancelar').trigger('reveal:close'); //cerrar ventana
+      $(this).trigger('reveal:close'); //cerrar ventana
     });
 
     $('.eliminar').click(function(){
-      IdFormulario = $(this).attr('value');
-      Nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      idFormulario = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
       //cargo el id del departamento en el formulario
-      $('#modalEliminar input[name="IdFormulario"]').val(IdFormulario);
+      $('#modalEliminar input[name="idFormulario"]').val(idFormulario);
       //pongo el nombre del departamento en el dialogo
-      $("#modalEliminar").find('.nombre').html(Nombre);
+      $("#modalEliminar").find('.nombre').html(nombre);
       $("#modalEliminar").reveal();
       return false;
     });

@@ -20,16 +20,16 @@ class Gestor_formularios extends CI_Model{
    * @param cantidad de preguntas que las carreras pueden agregar al formulario
    * @return  string
    */
-  public function alta($Nombre, $Titulo, $Descripcion, $PreguntasAdicionales){
-    $Nombre = $this->db->escape($Nombre);
-    $Titulo = $this->db->escape($Titulo);
-    $Descripcion = $this->db->escape($Descripcion);
-    $PreguntasAdicionales = $this->db->escape($PreguntasAdicionales);
-    $query = $this->db->query("call esp_alta_formulario($Nombre, $Titulo, $Descripcion, $PreguntasAdicionales)");
+  public function alta($nombre, $titulo, $descripcion, $preguntasAdicionales){
+    $nombre = $this->db->escape($nombre);
+    $titulo = $this->db->escape($titulo);
+    $descripcion = $this->db->escape($descripcion);
+    $preguntasAdicionales = $this->db->escape($preguntasAdicionales);
+    $query = $this->db->query("call esp_alta_formulario($nombre, $titulo, $descripcion, $preguntasAdicionales)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   /**
@@ -55,13 +55,13 @@ class Gestor_formularios extends CI_Model{
    * @param identificador de formulario
    * @return string
    */
-  public function baja($IdFormulario){
-    $IdFormulario = $this->db->escape($IdFormulario);
-    $query = $this->db->query("call esp_baja_formulario($IdFormulario)");
+  public function baja($idFormulario){
+    $idFormulario = $this->db->escape($idFormulario);
+    $query = $this->db->query("call esp_baja_formulario($idFormulario)");
     $data = $query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Mensaje:'No se pudo conectar con la base de datos.';
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   /**
@@ -109,7 +109,7 @@ class Gestor_formularios extends CI_Model{
     $data=$query->row();
     $query->free_result();
     $this->db->reconnect();
-    return ($data)?$data->Cantidad:0;
+    return ($data)?$data->cantidad:0;
   }
   
 }
