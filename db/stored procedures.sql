@@ -1,5 +1,43 @@
+DROP PROCEDURE IF EXISTS `esp_listar_devoluciones`;
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_devoluciones`(
+    pPagInicio INT UNSIGNED,
+    pPagLongitud INT UNSIGNED)
+BEGIN
+    SET @qry = '
+    SELECT  idDevolucion, idMateria, idEncuesta, idFormulario, fecha,
+			fortalezas, debilidades, alumnos, docentes, mejoras
+    FROM Devoluciones
+    ORDER BY fecha DESC
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_devoluciones`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_devoluciones`()
+BEGIN
+    SELECT  COUNT(*) AS cantidad
+    FROM    Devoluciones;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_alta_devolucion`;
+
 
 DELIMITER $$
 

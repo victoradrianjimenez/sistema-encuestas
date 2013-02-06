@@ -26,7 +26,7 @@
       <ul class="flyout">
         <li><a href="<?php echo site_url("encuestas")?>">Encuestas realizadas</a></li>
         <li><a href="#"><i>Claves de acceso</i></a></li>
-        <li><a href="#"><i>Devoluciones</i></a></li>
+        <li><a href="<?php echo site_url("devoluciones")?>">Devoluciones</a></li>
       </ul>
     </li>
     <li class="has-flyout">
