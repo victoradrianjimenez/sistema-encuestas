@@ -23,7 +23,7 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_dame_encuesta($idEncuesta, $idFormulario)");
     $data = $query->result('Encuesta');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
@@ -44,7 +44,7 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_alta_encuesta($idFormulario, $año, $cuatrimestre)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 
@@ -63,7 +63,7 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_listar_encuestas($pagNumero, $pagLongitud)");
     $data = $query->result('Encuesta');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -78,7 +78,7 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_cantidad_encuestas()");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -94,7 +94,7 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_buscar_encuestas($año)");
     $data = $query->result('Encuesta');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }  
       

@@ -41,7 +41,7 @@ class Clave extends CI_Model{
     $query = $this->db->query("call esp_alta_respuesta($idPregunta, $idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario, $idDocente, $opcion, $texto)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -60,7 +60,7 @@ class Clave extends CI_Model{
     $query = $this->db->query("call esp_registrar_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   

@@ -24,7 +24,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_alta_departamento($idJefeDepartamento, $nombre)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -41,7 +41,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_baja_departamento($idDepartamento)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -60,7 +60,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_modificar_departamento($idDepartamento, $idJefeDepartamento, $nombre)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -77,7 +77,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_dame_departamento($idDepartamento)");
     $data = $query->result('Departamento');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
 
@@ -96,7 +96,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_listar_departamentos($pagInicio, $pagLongitud)");
     $data = $query->result('Departamento');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
 
@@ -111,7 +111,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_cantidad_departamentos()");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
 
@@ -128,7 +128,7 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_buscar_departamentos($nombre)");
     $data = $query->result('Departamento');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   

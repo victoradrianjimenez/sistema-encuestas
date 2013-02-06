@@ -25,7 +25,7 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_listar_docentes_materia($idMateria)");
     $data = $query->result('Usuario');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -42,7 +42,7 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_listar_carreras_materia($idMateria)");
     $data = $query->result('Carrera');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -58,7 +58,7 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_cantidad_docentes_materia($idMateria)");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -78,7 +78,7 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_asociar_docente_materia($id, $idMateria, $ordenFormulario, $cargo)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -96,7 +96,7 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_desasociar_docente_materia($id, $idMateria)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   

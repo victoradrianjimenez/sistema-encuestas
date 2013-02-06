@@ -24,7 +24,7 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_listar_preguntas($pagInicio, $pagLongitud)");
     $data = $query->result('Pregunta');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
 
@@ -39,7 +39,7 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_cantidad_preguntas()");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
 
@@ -73,7 +73,7 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_alta_pregunta($idCarrera, $texto, $descripcion, $tipo, $obligatoria, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -90,7 +90,7 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_baja_pregunta($idPregunta)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -107,7 +107,7 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_buscar_preguntas($texto)");
     $data = $query->result('Pregunta');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
 

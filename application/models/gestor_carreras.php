@@ -28,7 +28,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_alta_carrera($idDepartamento, $idDirectorCarrera, $nombre, $plan)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 
@@ -45,7 +45,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_baja_carrera($idCarrera)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -70,7 +70,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -87,7 +87,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_dame_carrera($idCarrera)");
     $data = $query->result('Carrera');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
@@ -106,7 +106,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_listar_carreras($pagNumero, $pagLongitud)");
     $data = $query->result('Carrera');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -121,7 +121,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_cantidad_carreras()");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -138,7 +138,7 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_buscar_carreras($nombre)");
     $data = $query->result('Carrera');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   

@@ -117,6 +117,12 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		{
 			mysqli_free_result($this->result_id);
 			$this->result_id = FALSE;
+      //las lineas siguientes son para multi query
+      do {
+        if ($r = mysqli_store_result($this->conn_id)){
+          mysqli_free_result($r);
+        }
+      }while (mysqli_next_result($this->conn_id));
 		}
 	}
 

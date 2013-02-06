@@ -21,7 +21,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_dame_materia($idMateria)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
@@ -40,7 +40,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias($pagNumero, $pagLongitud)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -55,7 +55,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_cantidad_materias()");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -73,7 +73,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_buscar_materias($nombre)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -95,7 +95,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_modificar_materia($idMateria, $nombre, $codigo, $alumnos)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -115,7 +115,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_alta_materia($nombre, $codigo, $alumnos)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -132,7 +132,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_baja_materia($idMateria)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -149,7 +149,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_docente($id)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -166,7 +166,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_director($id)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -183,7 +183,7 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_jefe_departamento($id)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
 

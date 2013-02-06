@@ -34,7 +34,7 @@ class Pregunta extends CI_Model{
     $query = $this->db->query("call esp_alta_opcion($idPregunta, $texto)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -49,7 +49,7 @@ class Pregunta extends CI_Model{
     $query = $this->db->query("call esp_listar_opciones($idPregunta)");
     $data = $query->result('Opcion');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   

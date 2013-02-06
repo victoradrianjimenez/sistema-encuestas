@@ -28,7 +28,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_buscar_clave($clave)");
     $data = $query->result('Clave');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
 
@@ -53,7 +53,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_listar_claves_encuesta_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario, $pagNumero, $pagLongitud)");
     $data = $query->result('Clave');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -69,7 +69,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_finalizar_encuesta($idEncuesta, $idFormulario)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -89,7 +89,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_cantidad_claves_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row_array();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data; //devuelve dos elementos: Generadas y Utilizadas
   }
   
@@ -112,7 +112,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_pregunta_materia($idPregunta, $idDocente, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data; //Opcion, Cantidad (ultima fila = cantidad total)
   }
   
@@ -135,7 +135,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_textos_pregunta_materia($idPregunta, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -157,7 +157,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_listar_docentes_encuesta($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Usuario');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -180,7 +180,7 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_alta_clave($idMateria, $idCarrera, $idEncuesta, $idFormulario, $tipo)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   

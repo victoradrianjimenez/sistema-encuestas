@@ -28,7 +28,7 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_buscar_materias_carrera($idCarrera, $nombre)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -44,7 +44,7 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_carrera($idCarrera)");
     $data = $query->result('Materia');
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return $data;
   }
   
@@ -60,7 +60,7 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_cantidad_materias_carrera($idCarrera)");
     $data=$query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -78,7 +78,7 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_asociar_materia_carrera($idMateria, $idCarrera)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -96,7 +96,7 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_desasociar_materia_carrera($idMateria, $idCarrera)");
     $data = $query->row();
     $query->free_result();
-    $this->db->reconnect();
+    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
