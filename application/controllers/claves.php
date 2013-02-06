@@ -197,7 +197,7 @@ class Claves extends CI_Controller{
       }
       //establezco que la clave ya fue utilizada
       if (!$error){
-        $res = $clave->registrar();
+        $res = $clave->marcarUtilizada();
         $error = ($res!='ok')?TRUE:FALSE;
       }
     }

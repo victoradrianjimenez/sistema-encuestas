@@ -231,7 +231,9 @@ CREATE TABLE Docentes_Materias(
 
     idMateria          SMALLINT UNSIGNED  NOT NULL,
 
-    ordenFormulario    TINYINT UNSIGNED  NOT NULL,
+    tipoAcceso         CHAR(1) DEFAULT 'D' NOT NULL,
+	
+	ordenFormulario    TINYINT UNSIGNED  NOT NULL,
 
     cargo              VARCHAR(40),
 
@@ -1128,10 +1130,9 @@ INSERT INTO Grupos VALUES
 ('2', 'decanos', 'Decanos'),
 ('3', 'jefes_departamentos', 'Jefes de departamentos'),
 ('4', 'directores', 'Directores de carrera'),
-('5', 'jefes_catedras', 'Jefes de cátedra'),
-('6', 'docentes', 'Docentes'),
-('7', 'organizadores', 'Organizadores'),
-('8', 'alumnos', 'Alumnos');
+('5', 'docentes', 'Docentes'),
+('6', 'organizadores', 'Organizadores'),
+('7', 'alumnos', 'Alumnos');
 
 INSERT INTO `Usuarios` (`id`,`ip_address`,`username`,`password`,`salt`,`email`,`activation_code`,`forgotten_password_code`,`forgotten_password_time`,`remember_code`,`created_on`,`last_login`,`active`,`nombre`,`apellido`) VALUES 
  (1,0x7F000001,'admin','59beecdf7fc966e2f17fd8f65a4a9aeb09d4a3d4','9462e8eee0','victoradrianjimenez@gmail.com','','b30b117fb39e7037795729d0c623b98262697e80',1359506278,NULL,1,1359522422,1,'Adrian','Jimenez');

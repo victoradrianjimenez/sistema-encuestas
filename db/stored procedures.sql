@@ -1135,7 +1135,7 @@ DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
 	pidMateria SMALLINT UNSIGNED)
 BEGIN
-    SELECT  U.id, U.nombre, U.apellido, U.active, U.last_login, DM.ordenFormulario, DM.cargo
+    SELECT  U.id, U.nombre, U.apellido, U.active, U.last_login, DM.tipoAcceso, DM.ordenFormulario, DM.cargo
     FROM    Usuarios U INNER JOIN Docentes_Materias DM ON U.id = DM.idDocente
 	WHERE	DM.idMateria = pidMateria
     ORDER BY DM.ordenFormulario, U.apellido, U.nombre;

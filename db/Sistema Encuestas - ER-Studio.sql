@@ -111,7 +111,7 @@ CREATE TABLE Devoluciones(
 
 CREATE TABLE Docentes_Materias(
     idDocente          INT UNSIGNED   NOT NULL,
-    idMateria          SMALLINT UNSIGNED  NOT NULL,
+    idMateria          SMALLINT UNSIGNED  NOT NULL,		tipoAcceso         CHAR(1) DEFAULT 'D' NOT NULL,
     ordenFormulario    TINYINT UNSIGNED  NOT NULL,
     cargo              VARCHAR(40),
     PRIMARY KEY (idDocente, idMateria)

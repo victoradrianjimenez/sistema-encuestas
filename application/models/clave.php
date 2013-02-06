@@ -51,7 +51,7 @@ class Clave extends CI_Model{
    * @access public
    * @return string
    */
-  public function registrar(){
+  public function marcarUtilizada(){
     $idClave = $this->db->escape($this->idClave);
     $idMateria = $this->db->escape($this->idMateria);
     $idCarrera = $this->db->escape($this->idCarrera);
