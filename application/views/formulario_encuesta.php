@@ -1,6 +1,5 @@
-<!-- Última revisión: 2012-02-03 4:33 p.m. -->
-
 <!DOCTYPE html>
+<!-- Última revisión: 2012-02-03 4:33 p.m. -->
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->

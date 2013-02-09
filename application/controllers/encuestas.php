@@ -11,10 +11,9 @@ class Encuestas extends CI_Controller{
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
-    //datos de session para enviarse a las vistas
-    $this->data['usuarioLogin'] = $this->ion_auth->user()->row(); 
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>'); 
+    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
   public function index(){
@@ -23,13 +22,10 @@ class Encuestas extends CI_Controller{
   
   /*
    * Muestra el listado de encuestas.
+   * Última revisión: 2012-02-06 11:07 p.m.
    */
   public function listar($pagInicio=0){
-    //verifico si el usuario tiene permisos para continuar    
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
-      return;
-    }
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -39,38 +35,30 @@ class Encuestas extends CI_Controller{
     $this->load->model('Gestor_encuestas','ge');
     
     //obtengo lista de encuestas
-    $encuestas = $this->ge->listar($pagInicio, self::per_page);
-    $tabla = array();
-    foreach ($encuestas as $i => $encuesta) {
-      $tabla[$i]=array(
-        'idEncuesta' => $encuesta->idEncuesta,
-        'idFormulario' => $encuesta->idFormulario,
-        'año' => $encuesta->año,
-        'cuatrimestre' => $encuesta->cuatrimestre,
-        'fechaInicio' => $encuesta->fechaInicio,
-        'fechaFin' => $encuesta->fechaFin
-       );
-    }
+    $lista = $this->ge->listar($pagInicio, self::per_page);
+    
     //genero la lista de links de paginación
-    $config['base_url'] = site_url("encuestas/listar");
-    $config['total_rows'] = $this->ge->cantidad();
-    $config['per_page'] = self::per_page;
-    $config['uri_segment'] = 3;
-    $this->pagination->initialize($config);
+    $this->pagination->initialize(array(
+      'base_url' => site_url("encuestas/listar"),
+      'total_rows' => $this->ge->cantidad(),
+      'per_page' => self::per_page,
+      'uri_segment' => 3
+    ));
     
     //envio datos a la vista
-    $this->data['tabla'] = &$tabla; //array de datos de los Departamentos
+    $this->data['lista'] = &$lista; //array de datos de las encuestas
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $this->load->view('lista_encuestas', $this->data);
   }
   
   /*
    * Ver y editar datos relacionados a una encuesta
+   * Última revisión: 2012-02-06 11:45 p.m.
    */
   public function ver($idEncuesta=null, $idFormulario=null, $pagInicio=0){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //chequeo parámetros de entrada
@@ -85,16 +73,8 @@ class Encuestas extends CI_Controller{
     $this->load->model('Gestor_encuestas','ge');
     
     //obtengo datos de la encuesta
-    $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-    if ($encuesta){
-      $this->data['encuesta'] = array(
-        'idEncuesta' => $encuesta->idEncuesta,
-        'idFormulario' => $encuesta->idFormulario,
-        'año' => $encuesta->año,
-        'cuatrimestre' => $encuesta->cuatrimestre,
-        'fechaInicio' => $encuesta->fechaInicio,
-        'fechaFin' => $encuesta->fechaFin
-      );
+    $this->data['encuesta'] = $this->ge->dame($idEncuesta, $idFormulario);
+    if ($this->data['encuesta']){
       $this->load->view('ver_encuesta', $this->data);
     }
     else{
@@ -104,12 +84,13 @@ class Encuestas extends CI_Controller{
 
   /*
    * Recepción del formulario para agregar nueva encuesta
-   * POST: idFormulario, Anio, Cuatrimestre
+   * POST: idFormulario, anio, cuatrimestre
+   * Última revisión: 2012-02-06 11:37 p.m.
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -121,9 +102,9 @@ class Encuestas extends CI_Controller{
       
       //agrego encuesta y cargo vista para mostrar resultado
       $res = $this->ge->alta($this->input->post('idFormulario',TRUE), $this->input->post('anio',TRUE), $this->input->post('cuatrimestre',TRUE));
-      $data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
-      $data['link'] = site_url("encuestas/listar"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $data);
+      $this->data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
+      $this->data['link'] = site_url("encuestas/listar"); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $this->data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
@@ -133,12 +114,13 @@ class Encuestas extends CI_Controller{
 
   /*
    * Recepción del formulario para finalizar una Encuesta
-   * POST: IdEncuesta, idFormulario
+   * POST: idEncuesta, idFormulario
+   * Última revisión: 2012-02-06 11:38 p.m.
    */
   public function finalizar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group('admin')){
-      show_error('No tiene permisos para ingresar a esta sección.');
+    if (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
@@ -151,9 +133,9 @@ class Encuestas extends CI_Controller{
       
       //finalizo la encuesta y cargo vista para mostrar resultado
       $res = $this->Encuesta->finalizar();
-      $data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $data['link'] = site_url("encuestas/listar"); //link para boton aceptar/continuar
-      $this->load->view('resultado_operacion', $data);
+      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
+      $this->data['link'] = site_url("encuestas/listar"); //link para boton aceptar/continuar
+      $this->load->view('resultado_operacion', $this->data);
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
@@ -230,16 +212,20 @@ class Encuestas extends CI_Controller{
             break;
         }
         $datos_items[$k] = array(
-          'idPregunta' => $item->idPregunta,
-          'texto' => $item->texto,
-          'tipo' => $item->tipo,
+          'item' => $item,
           'respuestas' => $datos_respuestas
         );
       }
       return $datos_items;
   }
 
-  public function _generarInformeMateria($idMateria, $idCarrera, $idEncuesta, $idFormulario){
+  public function generarInformeMateria(){
+    
+    $idMateria = $this->input->post('idMateria');
+    $idCarrera = $this->input->post('idCarrera');
+    $tmp = $this->input->post('encuesta');
+    
+    sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario);
     
     $this->load->model('Opcion');
     $this->load->model('Pregunta');
@@ -262,47 +248,35 @@ class Encuestas extends CI_Controller{
     
     $docentes = $encuesta->listarDocentes($idMateria, $idCarrera);
     $secciones = $formulario->listarSeccionesCarrera($idCarrera);
-    
     $datos_secciones = array(); 
     foreach ($secciones as $i => $seccion) {
       $datos_subsecciones = array();
       //si la sección es referida a docentes
-      if ($seccion->iipo == 'D'){
+      if ($seccion->tipo == 'D'){
         foreach ($docentes as $j => $docente) {
           $datos_subsecciones[$j] = array(
-            'id' => $docente->id,
-            'apellido' => $docente->apellido,
-            'nombre' => $docente->nombre,
+            'docente' => $docente,
             'preguntas' => $this->_dameDatosSeccion($seccion, $docente->id, $encuesta, $materia, $carrera)
           );
         }
       }
       //si la sección es referida a la materia (sección comun)
       else{
+        $this->Usuario->id = 0;
         $datos_subsecciones[0] =  array(
-          'id' => 0,
-          'apellido' => '',
-          'nombre' => '',
+          'docente' => $this->Usuario,
           'preguntas' => $this->_dameDatosSeccion($seccion, 0, $encuesta, $materia, $carrera)
         );
       }
       $datos_secciones[$i] = array(
-        'texto' => $seccion->texto,
+        'seccion' => $seccion,
         'subsecciones' => $datos_subsecciones
       );
     }
-    $datos['encuesta'] = array(
-      'año' => $encuesta->año,
-      'cuatrimestre' => $encuesta->cuatrimestre,
-      'fechaInicio' => $encuesta->fechaInicio,
-      'fechaFin' => $encuesta->fechaFin);
-    $datos['formulario'] = array(
-      'titulo' => $formulario->titulo,
-      'descripcion' => $formulario->descripcion);
-    $datos['carrera'] = array(
-      'nombre' => $carrera->nombre);
-    $datos['materia'] = array(
-      'nombre' => $materia->nombre);
+    $datos['encuesta'] = $encuesta;
+    $datos['formulario'] = $formulario;
+    $datos['carrera'] = $carrera;
+    $datos['materia'] = $materia;
     $datos['claves'] = $encuesta->cantidadClavesMateria($idMateria, $idCarrera);
     $datos['secciones'] = $datos_secciones;
     $this->load->view('informe_materia', $datos);
@@ -423,6 +397,10 @@ class Encuestas extends CI_Controller{
   }
  */
 
+ 
+ public function tmp(){
+   $this->load->view('tmp');
+ }
   
 }
 

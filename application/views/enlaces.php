@@ -18,8 +18,14 @@
   </div>
 
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div>  
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <h3>Enlaces</h3>
       <div class="twelve columns">
         <ul>
@@ -38,12 +44,6 @@
         </ul>
       </div>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
   <!-- Footer -->    

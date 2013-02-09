@@ -19,9 +19,14 @@
   
   <!-- Main Section -->
   <div class="row">    
+    <!-- Nav Sidebar -->
+    <div class="three columns>
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div>
+    
     <!-- Main Feed -->
-    <!-- This has been source ordered to come first in the markup (and on small devices) but to be to the right of the nav on larger screens -->
-    <div class="nine columns push-three">
+    <div class="nine columns">
       <form action="<?php echo site_url('devoluciones/nueva')?>" method="post">
         <fieldset>
           <legend>Evaluación de la cátedra sobre los resultados de las encuestas</legend>
@@ -53,13 +58,6 @@
           </div>
         </fieldset>
       </form>
-    </div>
-    
-    <!-- Nav Sidebar -->
-    <!-- This is source ordered to be pulled to the left on larger screens -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
     </div>
   </div>
 

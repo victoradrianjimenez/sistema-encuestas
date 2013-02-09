@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Listar Departamentos</title>
+  <title>Informe Materia</title>
   
   <style>
     #header h1, #header h2, #header h3, #header h4, #header h5{
@@ -23,65 +23,64 @@
 </head>
 <body>
   <div id="header" class="row">
-    <h2><?php echo $formulario['titulo']?></h2>
-    <h4><?php echo $formulario['descripcion']?></h4>
-    <h4><?php echo $carrera['nombre']?></h4>
-    <h4>Asignatura: <?php echo $materia['nombre']?></h4>
+    <h2><?php echo $formulario->titulo?></h2>
+    <h4><?php echo $formulario->descripcion?></h4>
+    <h4><?php echo $carrera->nombre?></h4>
+    <h4>Asignatura: <?php echo $materia->nombre?></h4>
   </div>
   <div class="row">
     <h5 class="separador">Estadísticas Generales</h5>
     <div class="six columns">
       <?php
-        echo '<p>Año: '.$encuesta['año'].'</p>';
-        echo '<p>Cuatrimestre/periodo: '.$encuesta['cuatrimestre'].'</p>';
-        echo '<p>Fecha de Inicio de las encuestas: '.$encuesta['fechaInicio'].'</p>';
-        echo '<p>Fecha de Fin de las encuestas: '.$encuesta['fechaFin'].'</p>';
+        echo '<p>Año: '.$encuesta->año.'</p>';
+        echo '<p>Cuatrimestre/periodo: '.$encuesta->cuatrimestre.'</p>';
+        echo '<p>Fecha de Inicio de las encuestas: '.$encuesta->fechaInicio.'</p>';
+        echo '<p>Fecha de Fin de las encuestas: '.$encuesta->fechaFin.'</p>';
       ?>
     </div>
     <div class="six columns">
       <?php
-        echo '<p>Claves generadas: '.$claves['Generadas'].'</p>';
-        echo '<p>Claves utilizadas: '.$claves['Utilizadas'].'</p>';
-        echo '<p>Primer acceso: '.$claves['PrimerAcceso'].'</p>';
-        echo '<p>Último acceso: '.$claves['UltimoAcceso'].'</p>';
+        echo '<p>Claves generadas: '.$claves['generadas'].'</p>';
+        echo '<p>Claves utilizadas: '.$claves['utilizadas'].'</p>';
+        echo '<p>Primer acceso: '.$claves['primerAcceso'].'</p>';
+        echo '<p>Último acceso: '.$claves['ultimoAcceso'].'</p>';
       ?>
     </div>
   </div>
   <div class="row">
     <?php foreach ($secciones as $i => $seccion):?>
 
-      <h5 class="separador"><?php echo $seccion['Texto']?></h5>
+      <h5 class="separador"><?php echo $seccion['seccion']->texto?></h5>
       <div class="row">
         <?php
           //por cada subseccion o docente
-          foreach ($seccion['Subsecciones'] as $j => $subseccion){
+          foreach ($seccion['subsecciones'] as $j => $subseccion){
             echo '
               <div class="row ">
                 <div class="twelve columns">
-                <h2>'.$subseccion['Nombre'].' '.$subseccion['Apellido'].'</h2>';
+                <h2>'.$subseccion['docente']->nombre.' '.$subseccion['docente']->apellido.'</h2>';
                 
                 //por cada pregunta perteneciente a la seccion
-                foreach ($subseccion['Preguntas'] as $pregunta){
-                  
-                  switch($pregunta['Tipo']){
+                foreach ($subseccion['preguntas'] as $pregunta){
+                  switch($pregunta['item']->tipo){
                   case 'S':case 'N': //selección simple
                     echo '
                     <div class="nine columns">
-                      <p>'.$pregunta['Texto'].'</p>
+                      <p>'.$pregunta['item']->texto.'</p>
                       <div class="row">';
-                        foreach ($pregunta['Respuestas'] as $k => $respuesta){   
+                        foreach ($pregunta['respuestas'] as $k => $respuesta){   
                           echo '<div class="three mobile-one columns end">'.
-                                  (($respuesta['Texto']!='')?$respuesta['Texto']:'No Contesta').
-                                  ': <b>'.$respuesta['Cantidad'].'</b>'.
+                                  (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
+                                  ': <b>'.$respuesta['cantidad'].'</b>'.
                                 '</div>';
                         }
                       echo '
                       </div>
                     </div>
                     <div class="three columns">
-                      <img src="'.site_url("pcharts/graficoPregunta/1/1/".$pregunta['IdPregunta'].'/'.$subseccion['Idusuario'].'/5/5').'" width="400" height="160" />
+                      <img src="'.site_url("pcharts/graficoPregunta/".$encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$subseccion['docente']->id.'/5/5').'" width="400" height="160" />
                     </div>';
-                  }
+                  }//switch
                 }
             echo '
               </div></div>' ;
@@ -89,9 +88,7 @@
 
         ?> 
       </div>   
-    <?php endforeach //secciones?>
-    <h5 class="separador"></h5>
-    
+    <?php endforeach //secciones?>s
   </div>
   <!-- Footer -->    
   <div class="row">    

@@ -2,9 +2,9 @@
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 7]>    <!--><html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<!--[if gt IE 8]> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
   <title>Listar Departamentos</title>
@@ -18,16 +18,16 @@
   </div>
 
   <div class="row">
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
-
-    </div>
-
     <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
+    <div class="three columns">
       <!-- Panel de navegación -->
       <?php include 'elements/nav-sidebar.php'?>
-    </div>    
+    </div>  
+    
+    <!-- Main Section -->  
+    <div id="Main" class="nine columns">
+
+    </div>
   </div>
 
   <!-- Footer -->    

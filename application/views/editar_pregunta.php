@@ -1,6 +1,5 @@
-<!-- Última revisión: 2012-02-04 9:07 p.m. -->
-
 <!DOCTYPE html>
+<!-- Última revisión: 2012-02-04 9:07 p.m. -->
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -38,8 +37,14 @@
   </div>
 
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div> 
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <form action="<?php echo site_url('preguntas/nuevo')?>" method="post">
         <div class="row">
           <div class="twelve columns">
@@ -89,12 +94,6 @@
         </div>
       </form>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
   <!-- Footer -->    

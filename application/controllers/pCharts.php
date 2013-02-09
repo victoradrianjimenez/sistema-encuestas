@@ -37,20 +37,20 @@ class pCharts extends CI_Controller{
 
   }
 
-  public function graficoPregunta($IdEncuesta, $IdFormulario, $IdPregunta, $IdDocente, $IdMateria, $IdCarrera){
+  public function graficoPregunta($idEncuesta, $idFormulario, $idPregunta, $idDocente, $idMateria, $idCarrera){
     // Standard inclusions   
     $this->load->model('Encuesta');
     $this->load->library('pChart/pData');
     $this->load->library('pChart/pChart', array(500,160));
     
-    $this->Encuesta->IdEncuesta = $IdEncuesta;
-    $this->Encuesta->IdFormulario = $IdFormulario;
-    $datos_respuestas = $this->Encuesta->respuestasPreguntaMateria($IdPregunta, $IdDocente, $IdMateria, $IdCarrera);
-    //$datos = array(1,1,1,3);
-    //$etiquetas = array(1,2,3,4);
+    $this->Encuesta->idEncuesta = $idEncuesta;
+    $this->Encuesta->idFormulario = $idFormulario;
+    $datos_respuestas = $this->Encuesta->respuestasPreguntaMateria($idPregunta, $idDocente, $idMateria, $idCarrera);
+    $datos = array(1,1,1,3);
+    $etiquetas = array(1,2,3,4);
     foreach ($datos_respuestas as $i => $val) {
-      $datos[$i] = $val['Cantidad'];
-      $etiquetas[$i] = ($val['Texto']!='')?$val['Texto']:'NC';
+      $datos[$i] = $val['cantidad'];
+      $etiquetas[$i] = ($val['texto']!='')?$val['texto']:'NC';
     }
    
     // Dataset definition 

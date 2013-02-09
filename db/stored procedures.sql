@@ -946,7 +946,7 @@ BEGIN
 			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
 	WHERE   R.idPregunta = pidPregunta AND R.idMateria = pidMateria AND 
 			R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND
-			R.idFormulario = pidFormulario AND COALESCE(R.idDocente,0) = pidDocente
+			R.idFormulario = pidFormulario AND COALESCE(R.idDocente,0) = COALESCE(pidDocente,0)
 	GROUP BY R.opcion
 	ORDER BY R.opcion;
 END $$
@@ -1005,7 +1005,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_materia`(
     pidFormulario INT UNSIGNED)
 BEGIN
     SELECT  Count(idClave) AS generadas, Count(utilizada) AS utilizadas, 
-			MIN(utilizada) AS PrimerAcceso, MAX(utilizada) AS UltimoAcceso
+			MIN(utilizada) AS primerAcceso, MAX(utilizada) AS ultimoAcceso
     FROM    claves
     WHERE   idMateria = pidMateria AND idCarrera = pidCarrera AND 
             idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
@@ -1081,7 +1081,8 @@ BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
 		SELECT	idCarrera, idDepartamento, idDirectorCarrera, nombre, plan 
 		FROM	Carreras
-		WHERE	nombre like CONCAT('%',pnombre,'%');
+		WHERE	nombre like CONCAT('%',pnombre,'%')
+		ORDER BY nombre, plan DESC;
 	END IF;
 END $$
 
@@ -2132,7 +2133,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_encuesta`(
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED)
 BEGIN
-	SELECT DISTINCT P.id, P.IdUsuario, P.apellido, P.nombre
+	SELECT DISTINCT P.id, P.apellido, P.nombre
 	FROM 	Respuestas R 
 			INNER JOIN Usuarios P ON P.id = R.idDocente
 			LEFT JOIN Docentes_Materias DM ON DM.idDocente = R.idDocente AND DM.idMateria = R.idMateria

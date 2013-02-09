@@ -307,7 +307,7 @@ class Carreras extends CI_Controller{
       $buscar = $this->input->post('buscar',TRUE);
       $this->load->model('Materia');
       $this->load->model('Carrera');
-      $this->Carrera->IdCarrera = $idCarrera; 
+      $this->Carrera->idCarrera = $idCarrera; 
       $materias = $this->Carrera->buscarMaterias($buscar);
       echo "\n";
       foreach ($materias as $materia) {

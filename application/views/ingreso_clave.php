@@ -1,6 +1,5 @@
-<!-- Última revisión: 2012-02-03 4:35 p.m. -->
-
 <!DOCTYPE html>
+<!-- Última revisión: 2012-02-03 4:35 p.m. -->
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -27,8 +26,14 @@
   </div>
   
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div>
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <div class="row">
         <!-- Main Section -->
         <div class="eight columns centered">  
@@ -39,8 +44,10 @@
                 <input class="<?php echo ($mensaje!='')?'error':''?>" name="clave" type="text" id="clave" maxlength="16" placeholder="Ingrese su clave de acceso" value="<?php echo $clave?>"/>
                 <small class="<?php echo ($mensaje!='')?'error':'hide'?>"><?php echo $mensaje?></small>           
               </div>
-              <div class="four mobile-two columns centered pull-one-mobile pull-four">
-                <input class="button" name="submit" type="submit" id="aceptar" value="Aceptar" />
+              <div class="row">
+                <div class="four mobile-two columns centered">
+                  <input class="button" name="submit" type="submit" id="aceptar" value="Aceptar" />
+                </div>
               </div>
             </fieldset>
           </form>
@@ -57,12 +64,6 @@
         </div>   
       </div>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
   <!-- Footer -->    

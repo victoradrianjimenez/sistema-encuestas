@@ -1,6 +1,6 @@
 /* Requires: normalize.css */
 /* Global Reset & Standards ---------------------- */
-*, *:before, *:after { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+*, *:before, *:after { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; *behavior: url(/encuestas/js/boxsizing.htc);}
 
 html { font-size: 62.5%; }
 

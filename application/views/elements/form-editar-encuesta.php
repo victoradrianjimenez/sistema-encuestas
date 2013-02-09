@@ -1,3 +1,5 @@
+<!-- Última revisión: 2012-02-05 11:35 p.m. -->
+
 <h3>Crear nueva Encuesta</h3>
 <form action="<?php echo site_url('encuestas/nueva')?>" method="post">
   <div class="twelve columns">

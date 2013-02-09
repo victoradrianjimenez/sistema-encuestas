@@ -22,8 +22,14 @@
   
   <!-- Main Section -->
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div>  
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <div class="row">
         <div class="twelve columns">
           <h3>Encuesta <?php echo $encuesta['Año'].' / '.$encuesta['Cuatrimestre']?></h3>
@@ -53,12 +59,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
   <!-- Footer -->    

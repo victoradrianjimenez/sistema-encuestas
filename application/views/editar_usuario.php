@@ -35,8 +35,14 @@
   </div>
 
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div>   
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <form action="<?php echo site_url('preguntas/nuevo')?>" method="post">
         <div class="row">
           <div class="twelve columns">
@@ -88,12 +94,6 @@
         </div>
       </form>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
   <!-- Footer -->    

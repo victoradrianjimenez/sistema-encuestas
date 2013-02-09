@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Última revisión: 2012-02-05 11:47 p.m. -->
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -7,10 +8,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Ver materia</title>
-  <style>
-    .button-group li a { margin-right: 5px; }
-  </style>
+  <title>Ver encuesta</title>
 </head>
 <body>
   <!-- Header -->
@@ -22,14 +20,20 @@
   
   <!-- Main Section -->
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div> 
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <div class="row">
         <div class="twelve columns">
           <h3>Encuesta</h3>
-          <h5>Período: <?php echo $encuesta['año'].' ('.$encuesta['cuatrimestre'].')'?></h5>
-          <h5>Fecha de inicio de la toma de encuestas: <?php echo $encuesta['fechaInicio']?></h5>
-          <h5>Fecha de cierre de las encuestas: <?php echo $encuesta['fechaFin']?></h5>
+          <h5>Período: <?php echo $encuesta->año.' ('.$encuesta->cuatrimestre.')'?></h5>
+          <h5>Fecha de inicio de la toma de encuestas: <?php echo $encuesta->fechaInicio?></h5>
+          <h5>Fecha de cierre de las encuestas: <?php echo $encuesta->fechaFin?></h5>
         </div>
       </div>
       <div class="row">
@@ -42,12 +46,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
   <!-- Footer -->    
@@ -58,17 +56,7 @@
   <!-- ventana modal para generar claves de acceso -->
   <div id="modalGenerarClaves" class="reveal-modal medium">
     <?php  
-      include 'elements/form-alta-claves.php'; 
-    ?>
-    <a class="close-reveal-modal">&#215;</a>
-  </div>
-    
-  <!-- ventana modal para asociar materias a la carrera -->
-  <div id="modalAsociar" class="reveal-modal medium">
-    <?php
-      //a donde mandar los datos editados para darse de alta
-      //$link = site_url('carreras/asociarMateria');  
-      //include 'elements/form-asociar-materia.php'; 
+      //include 'elements/form-alta-claves.php'; 
     ?>
     <a class="close-reveal-modal">&#215;</a>
   </div>
@@ -77,10 +65,10 @@
   <div id="modalFinalizar" class="reveal-modal medium">
     <form action="<?php echo site_url('encuestas/finalizar')?>" method="post">
       <h3>Finalizar período de encuesta</h3>
-      <h5><?php echo $encuesta['año'].' ('.$encuesta['cuatrimestre'].')'?></h5>
+      <h5><?php echo $encuesta->año.' ('.$encuesta->cuatrimestre.')'?></h5>
       <p>¿Desea continuar?</p>
-      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta['idEncuesta']?>" />
-      <input type="hidden" name="idFormulario" value="<?php echo $encuesta['idFormulario']?>" />
+      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
       <div class="row">         
         <div class="ten columns centered">
           <div class="six mobile-one columns push-one-mobile">

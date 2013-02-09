@@ -4,7 +4,7 @@
  * 
  */
 class Usuario extends CI_Model{
-  var $id;
+  var $id = null;
   var $username;
   var $password;
   var $email;

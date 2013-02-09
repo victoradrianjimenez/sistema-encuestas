@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Última revisión: 2012-02-05 11:27 a.m. -->
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -19,12 +20,18 @@
   
   <!-- Main Section -->
   <div class="row">
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div> 
+    
     <!-- Main Section -->  
-    <div id="Main" class="nine columns push-three">
+    <div id="Main" class="nine columns">
       <div class="row">
         <div class="twelve columns">
           <h3>Encuestas</h3>
-          <?php if(count($tabla)== 0):?>
+          <?php if(count($lista)== 0):?>
             <p>No se encontraron encuestas.</p>
           <?php else:?>
             <table class="twelve">
@@ -34,13 +41,13 @@
                 <th>Fecha cierre</th>
                 <th>Acciones</th>
               </thead>
-              <?php foreach($tabla as $fila): ?>  
+              <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("encuestas/ver/".$fila['idEncuesta'].'/'.$fila['idFormulario'])?>">
-                    <?php echo $fila['año'].' / '.$fila['cuatrimestre']?>
+                  <td><a href="<?php echo site_url("encuestas/ver/".$item->idEncuesta.'/'.$item->idFormulario)?>">
+                    <?php echo $item->año.' / '.$item->cuatrimestre?>
                   </a></td>
-                  <td><?php echo $fila['fechaInicio']?></td>
-                  <td><?php echo $fila['fechaFin']?></td>
+                  <td><?php echo $item->fechaInicio?></td>
+                  <td><?php echo $item->fechaFin?></td>
                   <td>
                   </td>
                 </tr>
@@ -56,15 +63,9 @@
         </div>       
       </div>
     </div>
-
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>    
   </div>
 
-  <!-- Footer -->    
+  <!-- Footer -->
   <div class="row">    
     <?php include 'elements/footer.php'?>
   </div>

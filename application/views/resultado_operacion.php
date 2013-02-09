@@ -19,8 +19,14 @@
   
   <!-- Main Section -->
   <div class="row">    
+    <!-- Nav Sidebar -->
+    <div class="three columns">
+      <!-- Panel de navegación -->
+      <?php include 'elements/nav-sidebar.php'?>
+    </div>
+    
     <!-- Main -->
-    <div  id="Main" class="nine columns push-three">
+    <div  id="Main" class="nine columns">
       <div class="twelve columns">
         <h4>Resultado de la operación:</h4>
         <p><?php echo $mensaje ?></p>
@@ -31,12 +37,6 @@
       <div class="ten mobile-two columns pull-one-mobile">
         <a class="button" href="<?php echo $link ?>">Aceptar</a>
       </div>
-    </div>
-    
-    <!-- Nav Sidebar -->
-    <div class="three columns pull-nine">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
     </div>
   </div>
 
