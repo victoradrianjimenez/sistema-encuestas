@@ -130,6 +130,24 @@ class Encuesta extends CI_Model{
   }
   
   /**
+   * Obtiene las respuestas a una pregunta para una encuesta. Devuelve un array.
+   *
+   * @access public
+   * @param identificador de la pregunta
+   * @return array
+   */  
+  public function respuestasPreguntaFacultad($idPregunta){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_respuestas_pregunta_facultad($idPregunta, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
+  /**
    * Obtiene las respuestas a una pregunta para un departamento y encuesta. Devuelve un array.
    *
    * @access public

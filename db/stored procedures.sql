@@ -1045,6 +1045,28 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_facultad`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_facultad`(
+    pidPregunta INT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+	SELECT	R.idDocente, R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
+	FROM 	Respuestas R 
+			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
+			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+	WHERE   R.idPregunta = pidPregunta AND R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+	GROUP BY R.opcion
+	ORDER BY R.opcion;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_dame_encuesta`;
 
 

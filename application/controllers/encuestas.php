@@ -385,6 +385,63 @@ class Encuestas extends CI_Controller{
     }
   }
 
+  /*
+   * Solicitar y mostrar un informe por facultad
+   * Última revisión: 2012-02-10 1:42 p.m.
+   */
+  public function informeFacultad(){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //verifico datos POST
+    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
+    $tmp = $this->input->post('encuesta');
+    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+      //cargo librerias y modelos
+      $this->load->model('Opcion');
+      $this->load->model('Pregunta');
+      $this->load->model('Item');
+      $this->load->model('Seccion');
+      $this->load->model('Formulario');
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_formularios','gf');
+      $this->load->model('Gestor_encuestas','ge');
+  
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $formulario = $this->gf->dame($idFormulario);
+      $secciones = $formulario->listarSecciones();
+      
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $items = $seccion->listarItems();
+        $datos_items = array();
+        foreach ($items as $k => $item) {
+          switch ($item->tipo) {
+          case 'S': case 'M': case 'N':
+            $datos_respuestas = $encuesta->respuestasPreguntaFacultad($item->idPregunta);
+            break;
+          default:
+            $datos_respuestas = null;
+            break;
+          }
+          $datos_items[$k] = array(
+            'item' => $item,
+            'respuestas' => $datos_respuestas
+          );
+        }
+        $datos_secciones[$i] = array(
+          'seccion' => $seccion,
+          'items' => $datos_items
+        );
+      }
+      $datos['encuesta'] = &$encuesta;
+      $datos['formulario'] = &$formulario;
+      $datos['secciones'] = &$datos_secciones;
+      $this->load->view('informe_facultad', $datos);
+    }
+    else{
+      $this->load->view('solicitud_informe_facultad', $this->data);
+    }
+  }
+
   //funcion para responder solicitudes AJAX
   public function listarClavesAJAX(){
     $idMateria = $this->input->post('idMateria');

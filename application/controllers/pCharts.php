@@ -34,6 +34,42 @@ class pCharts extends CI_Controller{
     $this->pchart->Stroke();
   }
 
+  public function graficoPreguntaFacultad($idEncuesta, $idFormulario, $idPregunta){
+    // Standard inclusions   
+    $this->load->model('Encuesta');
+    $this->load->library('pChart/pData');
+    $this->load->library('pChart/pChart', array(500,160));
+    
+    $this->Encuesta->idEncuesta = $idEncuesta;
+    $this->Encuesta->idFormulario = $idFormulario;
+    $datos_respuestas = $this->Encuesta->respuestasPreguntaFacultad($idPregunta);
+    $datos = array(1,1,1,3);
+    $etiquetas = array(1,2,3,4);
+    foreach ($datos_respuestas as $i => $val) {
+      $datos[$i] = $val['cantidad'];
+      $etiquetas[$i] = ($val['texto']!='')?$val['texto']:'NC';
+    }
+   
+    // Dataset definition 
+    $this->pdata->AddPoint($datos,"Serie1");
+    $this->pdata->AddPoint($etiquetas,"AbsciseLabels");
+    $this->pdata->AddAllSeries();
+    $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
+    
+     // Inicializar gráfico
+    $this->pchart->setFontProperties("fonts/tahoma.ttf",14);
+    $this->pchart->setGraphArea(36,8,464,140);
+    $this->pchart->drawGraphArea(255,255,254,TRUE);
+    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,2,TRUE);  
+    $this->pchart->drawGrid(4,TRUE,230,230,230,50);
+     
+    // Dibujar el grafico de barras    
+    $this->pdata->RemoveSerie("AbsciseLabels");
+    $this->pchart->setColorPalette(0,0,150,110);
+    $this->pchart->drawStackedBarGraph($this->pdata->GetData(),$this->pdata->GetDataDescription(),100);
+    $this->pchart->Stroke();
+  }
+
   public function graficoPreguntaDepartamento($idEncuesta, $idFormulario, $idPregunta, $idDepartamento){
     // Standard inclusions   
     $this->load->model('Encuesta');

@@ -26,11 +26,18 @@
     
     <!-- Main Section -->  
     <div id="Main" class="nine columns">
-      <h3>Solicitar informe por carrera</h3>
-      <form action="<?php echo site_url('encuestas/informeCarrera')?>" method="post">
+      <h3>Solicitar informe por facultad</h3>
+      <form action="<?php echo site_url('encuestas/informeFacultad')?>" method="post">
         <div class="row">
           <div class="twelve columns">
-
+            <label for="buscarEncuesta">Año: </label>
+            <div class="buscador">
+              <input id="buscarEncuesta" type="text" autocomplete="off">
+              <i class="gen-enclosed foundicon-search"></i>
+              <select id="listaEncuestas" name="encuesta" size="2" required>
+              </select>
+              <?php echo form_error('encuesta')?>
+            </div>
           </div>
         </div>
         <div class="row">         
@@ -54,29 +61,6 @@
   
   <script>
     //realizo la busquedas por AJAX
-    $('#buscarCarrera').keyup(function(){
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('carreras/buscarAJAX')?>", 
-        data: { buscar: $(this).val() }
-      }).done(function(msg){
-        $('#listaCarreras').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0];
-          var datos = columnas[1]+" / "+columnas[2];
-          //agregar fila a la lista desplegable
-          $('#listaCarreras').append('<option value="'+id+'">'+datos+'</option>');
-        }
-        $('#listaCarreras').children().first().attr('selected','');
-        $('#buscarCarrera').next('i').removeClass('active');
-      });
-    });
-
     $('#buscarEncuesta').keyup(function(){
       val = $(this).val();
       if (isNaN(val) || val<1900 || val>2100) return;
@@ -103,12 +87,6 @@
     });
 
     //actualizar input al seleccionar item de la lista desplegable
-    $('#listaCarreras').click(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarCarrera').val(texto);
-      $(this).next('small.error').hide('fast');
-    });
-    
     $('#listaEncuestas').click(function(){
       texto = $(this).children('option[selected]').text();
       $('#buscarEncuesta').val(texto);
