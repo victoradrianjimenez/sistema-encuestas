@@ -19,7 +19,20 @@ class Formulario extends CI_Model{
    * Obtener el listado de secciones que conforman el formulario. Devuleve un array de objetos.
    *
    * @access public
-   * @param identificador del formulario
+   * @return arraySecciones
+   */
+  public function listarSecciones(){
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_listar_secciones($idFormulario)");
+    $data = $query->result('Seccion');
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  /**
+   * Obtener el listado de secciones que conforman el formulario, incluyendo las secciones de una carrera. Devuleve un array de objetos.
+   *
+   * @access public
    * @param identidicador de la carrera
    * @return arraySecciones
    */

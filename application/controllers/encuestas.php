@@ -143,73 +143,21 @@ class Encuestas extends CI_Controller{
     }
   }
 
-
-
-
-
-
-  public function informeMateria(){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
-
-    
-    $this->load->model('Materia');
-    $this->load->model('Gestor_materias', 'gm');
-    
-    if ($this->ion_auth->in_group(array('admin','decanos'))){
-      $this->data['materias'] = $this->gm->listar(0, 1000);
-      echo 'sfdf';
-    }
-    elseif (!$this->ion_auth->in_group('jefes_departamentos')){
-      $this->data['materias'] = $this->gm->listarMateriasJefeDepartamento($this->data['usuarioLogin']->id);
-    }
-    elseif (!$this->ion_auth->in_group('directores')){
-      $this->data['materias'] = $this->gm->listarMateriasDirector($this->data['usuarioLogin']->id);
-    }
-    elseif (!$this->ion_auth->in_group(array('jefes_catedras','docente'))){
-      $this->data['materias'] = $this->gm->listarMateriasDocente($this->data['usuarioLogin']->id);
-      
-    }
-    
-    
-    
-    
-    
-    
-    $this->load->view('solicitud_informe_materia', $this->data);
-    
-    
-    
-   // _generarInformeMateria();
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  private function _dameDatosSeccion($seccion, $idDocente, $encuesta, $materia, $carrera){
-      $items = $seccion->listarItems();
+  /*
+   * Obtener datos de una seccion para mostrar en el informe por materia
+   * Última revisión: 2012-02-09 7:32 p.m.
+   */
+  private function _dameDatosSeccionMateria($seccion, $encuesta, $idDocente, $idMateria, $idCarrera){
+      $items = $seccion->listarItemsCarrera();
       $datos_items = array();
       foreach ($items as $k => $item) {
         switch ($item->tipo) {
-          case 'S': case 'M': case 'N':
-            $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $materia->idMateria, $carrera->idCarrera);
-            break;
-          case 'T': case 'X':
-            $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $materia->idMateria, $carrera->idCarrera);
-          default:
-            break;
+        case 'S': case 'M': case 'N':
+          $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
+          break;
+        case 'T': case 'X':
+          $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idMateria, $idCarrera);
+          break;
         }
         $datos_items[$k] = array(
           'item' => $item,
@@ -218,71 +166,225 @@ class Encuestas extends CI_Controller{
       }
       return $datos_items;
   }
-
-  public function generarInformeMateria(){
-    
-    $idMateria = $this->input->post('idMateria');
-    $idCarrera = $this->input->post('idCarrera');
+  
+  /*
+   * Solicitar y mostrar un informe por materia
+   * Última revisión: 2012-02-09 7:39 p.m.
+   */
+  public function informeMateria(){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //verifico datos POST
+    $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
+    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
     $tmp = $this->input->post('encuesta');
-    
-    sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario);
-    
-    $this->load->model('Opcion');
-    $this->load->model('Pregunta');
-    $this->load->model('Item');
-    $this->load->model('Seccion');
-    $this->load->model('Usuario');
-    $this->load->model('Materia');
-    $this->load->model('Carrera');
-    $this->load->model('Formulario');
-    $this->load->model('Encuesta');
-    $this->load->model('Gestor_formularios','gf');
-    $this->load->model('Gestor_materias','gm');
-    $this->load->model('Gestor_carreras','gc');
-    $this->load->model('Gestor_encuestas','ge');
-
-    $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-    $formulario = $this->gf->dame($idFormulario);
-    $carrera = $this->gc->dame($idCarrera);
-    $materia = $this->gm->dame($idMateria);
-    
-    $docentes = $encuesta->listarDocentes($idMateria, $idCarrera);
-    $secciones = $formulario->listarSeccionesCarrera($idCarrera);
-    $datos_secciones = array(); 
-    foreach ($secciones as $i => $seccion) {
-      $datos_subsecciones = array();
-      //si la sección es referida a docentes
-      if ($seccion->tipo == 'D'){
-        foreach ($docentes as $j => $docente) {
-          $datos_subsecciones[$j] = array(
-            'docente' => $docente,
-            'preguntas' => $this->_dameDatosSeccion($seccion, $docente->id, $encuesta, $materia, $carrera)
+    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+      $idMateria = $this->input->post('idMateria');
+      $idCarrera = $this->input->post('idCarrera');
+      //cargo librerias y modelos
+      $this->load->model('Opcion');
+      $this->load->model('Pregunta');
+      $this->load->model('Item');
+      $this->load->model('Seccion');
+      $this->load->model('Usuario');
+      $this->load->model('Materia');
+      $this->load->model('Carrera');
+      $this->load->model('Departamento');
+      $this->load->model('Formulario');
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_formularios','gf');
+      $this->load->model('Gestor_materias','gm');
+      $this->load->model('Gestor_carreras','gc');
+      $this->load->model('Gestor_encuestas','ge');
+      $this->load->model('Gestor_departamentos','gd');
+  
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $formulario = $this->gf->dame($idFormulario);
+      $carrera = $this->gc->dame($idCarrera);
+      $materia = $this->gm->dame($idMateria);
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      $docentes = $encuesta->listarDocentes($idMateria, $idCarrera);
+      $secciones = $formulario->listarSeccionesCarrera($idCarrera);
+      
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $datos_subsecciones = array();
+        switch ($seccion->tipo){
+        //si la sección es referida a docentes
+        case 'D':
+          foreach ($docentes as $j => $docente) {
+            $datos_subsecciones[$j] = array(
+              'docente' => $docente,
+              'preguntas' => $this->_dameDatosSeccionMateria($seccion, $encuesta, $docente->id, $materia->idMateria, $carrera->idCarrera)
+            );
+          }
+          break;
+        //si la sección es referida a la materia (sección comun)
+        case 'N':
+          $this->Usuario->id = 0;
+          $datos_subsecciones[0] =  array(
+            'docente' => $this->Usuario,
+            'preguntas' => $this->_dameDatosSeccionMateria($seccion, $encuesta, 0, $materia->idMateria, $carrera->idCarrera)
           );
+          break;
         }
-      }
-      //si la sección es referida a la materia (sección comun)
-      else{
-        $this->Usuario->id = 0;
-        $datos_subsecciones[0] =  array(
-          'docente' => $this->Usuario,
-          'preguntas' => $this->_dameDatosSeccion($seccion, 0, $encuesta, $materia, $carrera)
+        $datos_secciones[$i] = array(
+          'seccion' => $seccion,
+          'subsecciones' => $datos_subsecciones
         );
       }
-      $datos_secciones[$i] = array(
-        'seccion' => $seccion,
-        'subsecciones' => $datos_subsecciones
-      );
+      $datos['encuesta'] = &$encuesta;
+      $datos['formulario'] = &$formulario;
+      $datos['carrera'] = &$carrera;
+      $datos['departamento'] = &$departamento;
+      $datos['materia'] = &$materia;
+      $datos['claves'] = $encuesta->cantidadClavesMateria($idMateria, $idCarrera);
+      $datos['secciones'] = &$datos_secciones;
+      $this->load->view('informe_materia', $datos);
     }
-    $datos['encuesta'] = $encuesta;
-    $datos['formulario'] = $formulario;
-    $datos['carrera'] = $carrera;
-    $datos['materia'] = $materia;
-    $datos['claves'] = $encuesta->cantidadClavesMateria($idMateria, $idCarrera);
-    $datos['secciones'] = $datos_secciones;
-    $this->load->view('informe_materia', $datos);
+    else{
+      $this->load->view('solicitud_informe_materia', $this->data);
+    }
   }
 
+  /*
+   * Obtener datos de una seccion para mostrar en el informe por carrera
+   * Última revisión: 2012-02-09 8:15 p.m.
+   */
+  private function _dameDatosSeccionCarrera($seccion, $encuesta, $idCarrera){
+      
+  }
+
+  /*
+   * Solicitar y mostrar un informe por carrera
+   * Última revisión: 2012-02-09 8:17 p.m.
+   */
+  public function informeCarrera(){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //verifico datos POST
+    $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
+    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
+    $tmp = $this->input->post('encuesta');
+    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+      $idCarrera = $this->input->post('idCarrera');
+      //cargo librerias y modelos
+      $this->load->model('Opcion');
+      $this->load->model('Pregunta');
+      $this->load->model('Item');
+      $this->load->model('Seccion');
+      $this->load->model('Carrera');
+      $this->load->model('Formulario');
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_formularios','gf');
+      $this->load->model('Gestor_carreras','gc');
+      $this->load->model('Gestor_encuestas','ge');
   
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $formulario = $this->gf->dame($idFormulario);
+      $carrera = $this->gc->dame($idCarrera);
+      $secciones = $formulario->listarSeccionesCarrera($idCarrera);
+      
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $items = $seccion->listarItemsCarrera();
+        $datos_items = array();
+        foreach ($items as $k => $item) {
+          switch ($item->tipo) {
+          case 'S': case 'M': case 'N':
+            $datos_respuestas = $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera);
+            break;
+          default:
+            $datos_respuestas = null;
+            break;
+          }
+          $datos_items[$k] = array(
+            'item' => $item,
+            'respuestas' => $datos_respuestas
+          );
+        }
+        $datos_secciones[$i] = array(
+          'seccion' => $seccion,
+          'subsecciones' => $datos_items
+        );
+      }
+      $datos['encuesta'] = $encuesta;
+      $datos['formulario'] = $formulario;
+      $datos['carrera'] = $carrera;
+      $datos['claves'] = $encuesta->cantidadClavesCarrera($idCarrera);
+      $datos['secciones'] = $datos_secciones;
+      $this->load->view('informe_carrera', $datos);
+    }
+    else{
+      $this->load->view('solicitud_informe_carrera', $this->data);
+    }
+  }
+
+  /*
+   * Solicitar y mostrar un informe por departamento
+   * Última revisión: 2012-02-09 8:17 p.m.
+   */
+  public function informeDepartamento(){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //verifico datos POST
+    $this->form_validation->set_rules('idDepartamento','Departamento','required|is_natural_no_zero');
+    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
+    $tmp = $this->input->post('encuesta');
+    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+      $idDepartamento = $this->input->post('idDepartamento');
+      
+      //cargo librerias y modelos
+      $this->load->model('Opcion');
+      $this->load->model('Pregunta');
+      $this->load->model('Item');
+      $this->load->model('Seccion');
+      $this->load->model('Departamento');
+      $this->load->model('Formulario');
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_formularios','gf');
+      $this->load->model('Gestor_departamentos','gd');
+      $this->load->model('Gestor_encuestas','ge');
+  
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $formulario = $this->gf->dame($idFormulario);
+      $departamento= $this->gd->dame($idDepartamento);
+      
+      $secciones = $formulario->listarSecciones();
+      
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $items = $seccion->listarItems();
+        $datos_items = array();
+        foreach ($items as $k => $item) {
+          switch ($item->tipo) {
+          case 'S': case 'M': case 'N':
+            $datos_respuestas = $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento);
+            break;
+          default:
+            $datos_respuestas = null;
+            break;
+          }
+          $datos_items[$k] = array(
+            'item' => $item,
+            'respuestas' => $datos_respuestas
+          );
+        }
+        $datos_secciones[$i] = array(
+          'seccion' => $seccion,
+          'items' => $datos_items
+        );
+      }
+      $datos['encuesta'] = &$encuesta;
+      $datos['formulario'] = &$formulario;
+      $datos['departamento'] = &$departamento;
+      $datos['claves'] = $encuesta->cantidadClavesDepartamento($idDepartamento);
+      $datos['secciones'] = &$datos_secciones;
+      $this->load->view('informe_departamento', $datos);
+    }
+    else{
+      $this->load->view('solicitud_informe_departamento', $this->data);
+    }
+  }
+
   //funcion para responder solicitudes AJAX
   public function listarClavesAJAX(){
     $idMateria = $this->input->post('idMateria');

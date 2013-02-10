@@ -16,7 +16,7 @@ class Seccion extends CI_Model{
   }
   
   /**
-   * Obtener el listado de items que pertenecen al formulario (y una carrera). Devuleve un array de objetos.
+   * Obtener el listado de items que pertenecen al formulario (las que son comunes a todas las carreras). Devuleve un array de objetos.
    *
    * @access public
    * @return arrayItems
@@ -30,7 +30,23 @@ class Seccion extends CI_Model{
     //$this->db->reconnect();
     return $data;
   }
-   
+  
+  /**
+   * Obtener el listado de items que pertenecen al formulario (las comunes y las de una carrera). Devuleve un array de objetos.
+   *
+   * @access public
+   * @return arrayItems
+   */
+  public function listarItemsCarrera(){
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idSeccion = $this->db->escape($this->idSeccion);
+    $query = $this->db->query("call esp_listar_items_seccion_carrera($idSeccion, $idFormulario)");
+    $data = $query->result('Item');
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
   /**
    * Da de Alta un nuevo item. Devuleve el id en caso de éxito o un mensaje en caso de error.
    *

@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
 <head>
   <?php include 'elements/head.php'?> 
-  <title>Generar Informe por Materia</title>
+  <title>Generar Informe por Carrera</title>
 </head>
 <body>
   <!-- Header -->
@@ -26,8 +26,8 @@
     
     <!-- Main Section -->  
     <div id="Main" class="nine columns">
-      <h3>Solicitar informe por asignatura</h3>
-      <form action="<?php echo site_url('encuestas/informeMateria')?>" method="post">
+      <h3>Solicitar informe por carrera</h3>
+      <form action="<?php echo site_url('encuestas/informeCarrera')?>" method="post">
         <div class="row">
           <div class="twelve columns">
             <label for="buscarCarrera">Carrera: </label>
@@ -37,15 +37,6 @@
               <select id="listaCarreras" name="idCarrera" size="3" required>
               </select>
               <?php echo form_error('idCarrera')?>
-            </div>
-
-            <label for="buscarMateria">Materia: </label>
-            <div class="buscador">
-              <input id="buscarMateria" type="text" autocomplete="off">
-              <i class="gen-enclosed foundicon-search"></i>
-              <select id="listaMaterias" name="idMateria" size="3" required>
-              </select>
-              <?php echo form_error('idMateria')?>
             </div>
 
             <label for="buscarEncuesta">Año: </label>
@@ -60,9 +51,6 @@
           <div class="twelve columns">
             <div class="row">    
               <input type="checkbox" name="indicesSecciones" />Incluir promedio de índices de secciones
-            </div>
-            <div class="row">    
-              <input type="checkbox" name="indicesDocentes" />Incluir promedio de índices para cada docente
             </div>
             <div class="row">    
               <input type="checkbox" name="indicesGeneral" />Incluir indice general
@@ -112,33 +100,7 @@
         $('#buscarCarrera').next('i').removeClass('active');
       });
     });
-    
-    $('#buscarMateria').keyup(function(){
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('carreras/buscarMateriasAJAX')?>", 
-        data: { 
-          idCarrera: $('#listaCarreras').val(),
-          buscar: $(this).val() 
-        }
-      }).done(function(msg){
-        $('#listaMaterias').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0];
-          var datos = columnas[1]+" / "+columnas[2];
-          //agregar fila a la lista desplegable
-          $('#listaMaterias').append('<option value="'+id+'">'+datos+'</option>');
-        }
-        $('#listaMaterias').children().first().attr('selected','');
-        $('#buscarMateria').next('i').removeClass('active');
-      });
-    });
-      
+
     $('#buscarEncuesta').keyup(function(){
       val = $(this).val();
       if (isNaN(val) || val<1900 || val>2100) return;
@@ -165,15 +127,9 @@
     });
 
     //actualizar input al seleccionar item de la lista desplegable
-    $('#listaCarreras').change(function(){
+    $('#listaCarreras').click(function(){
       texto = $(this).children('option[selected]').text();
       $('#buscarCarrera').val(texto);
-      $(this).next('small.error').hide('fast');
-    });
-    
-    $('#listaMaterias').change(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarMaterias').val(texto);
       $(this).next('small.error').hide('fast');
     });
     
@@ -182,7 +138,7 @@
       $('#buscarEncuesta').val(texto);
       $(this).next('small.error').hide('fast');
     });
-    
+
     //ocultar mensaje de error al escribir
     $('input[type="text"]').keyup(function(){
       $(this).next('small.error').hide('fast');

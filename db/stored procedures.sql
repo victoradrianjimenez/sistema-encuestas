@@ -487,12 +487,30 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_items_seccion`;
+DROP PROCEDURE IF EXISTS `esp_listar_secciones`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_items_seccion`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_secciones`(
+    pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT  idSeccion, idFormulario, idCarrera, texto, descripcion, tipo
+    FROM    Secciones
+    WHERE   idFormulario = pidFormulario AND (idCarrera IS NULL)
+    ORDER BY idSeccion;
+    -- se ordena por ID, es decir por orden de creacion
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_items_seccion_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_items_seccion_carrera`(
     pidSeccion INT UNSIGNED,
     pidFormulario INT UNSIGNED)
 BEGIN
@@ -510,6 +528,30 @@ BEGIN
     WHERE   I.idSeccion = pidSeccion AND I.idFormulario = pidFormulario AND (I.idCarrera IS NULL OR I.idCarrera = pidCarrera)
     ORDER BY posicion;
     COMMIT;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_items_seccion`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_items_seccion`(
+    pidSeccion INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+    -- las columnas posicion y tamaño los toma de items_secciones, pero si son nulos, los toma de items
+    SELECT  P.idPregunta, P.idCarrera, P.texto, P.descripcion, P.creacion, P.tipo, 
+            obligatoria, ordenInverso, limiteInferior, limiteSuperior, paso, unidad,
+            COALESCE(IC.posicion, I.posicion) AS posicion
+    FROM    Items I INNER JOIN Preguntas P ON I.idPregunta = P.idPregunta 
+            LEFT JOIN Items_Carreras IC ON I.idSeccion = IC.idSeccion AND 
+                I.idFormulario = IC.idFormulario AND I.idPregunta = IC.idPregunta AND
+                I.idCarrera = IC.idCarrera
+    WHERE   I.idSeccion = pidSeccion AND I.idFormulario = pidFormulario AND I.idCarrera IS NULL
+    ORDER BY posicion;
 END $$
 
 DELIMITER ;
@@ -954,6 +996,55 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_carrera`(
+    pidPregunta INT UNSIGNED,
+    pidCarrera SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+	SELECT	R.idDocente, R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
+	FROM 	Respuestas R 
+			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
+			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+	WHERE   R.idPregunta = pidPregunta AND R.idCarrera = pidCarrera AND 
+			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+	GROUP BY R.opcion
+	ORDER BY R.opcion;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_departamento`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_departamento`(
+    pidPregunta INT UNSIGNED,
+    pidDepartamento SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+	SELECT	R.idDocente, R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
+	FROM 	Respuestas R 
+			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
+			INNER JOIN Carreras C ON C.idCarrera = R.idCarrera
+			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+	WHERE   R.idPregunta = pidPregunta AND C.idDepartamento = pidDepartamento AND 
+			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+	GROUP BY R.opcion
+	ORDER BY R.opcion;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_dame_encuesta`;
 
 
@@ -993,6 +1084,44 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_cantidad_claves_carrera`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_carrera`(
+    pidCarrera SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT  Count(idClave) AS generadas, Count(utilizada) AS utilizadas, 
+			MIN(utilizada) AS primerAcceso, MAX(utilizada) AS ultimoAcceso
+    FROM    Claves
+    WHERE   idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_claves_departamento`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_departamento`(
+    pidDepartamento SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT  Count(idClave) AS generadas, Count(utilizada) AS utilizadas, 
+			MIN(utilizada) AS primerAcceso, MAX(utilizada) AS ultimoAcceso
+    FROM    Claves C INNER JOIN Carreras CA ON CA.idCarrera = C.idCarrera
+    WHERE   CA.idDepartamento = pidDepartamento AND idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_cantidad_claves_materia`;
 
 
@@ -1006,7 +1135,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_materia`(
 BEGIN
     SELECT  Count(idClave) AS generadas, Count(utilizada) AS utilizadas, 
 			MIN(utilizada) AS primerAcceso, MAX(utilizada) AS ultimoAcceso
-    FROM    claves
+    FROM    Claves
     WHERE   idMateria = pidMateria AND idCarrera = pidCarrera AND 
             idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
 END $$

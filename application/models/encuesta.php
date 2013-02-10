@@ -94,10 +94,87 @@ class Encuesta extends CI_Model{
   }
   
   /**
-   * Obtiene las respuestas a una pregunta para una materia, carrera y encuesta. Devuelve un array, y la ultima fila contiene el total de respuestas.
+   * Obtiene cuantas claves se generaron y cuantas se usaron de una encuesta para una carrera.
+   *
+   * @access public
+   * @param idenificador de carrera
+   * @return array
+   */  
+  public function cantidadClavesCarrera($idCarrera){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_cantidad_claves_carrera($idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->row_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data; //devuelve dos elementos: Generadas y Utilizadas
+  }
+  
+  /**
+   * Obtiene cuantas claves se generaron y cuantas se usaron de una encuesta para un departamento.
+   *
+   * @access public
+   * @param idenificador de departamento
+   * @return array
+   */  
+  public function cantidadClavesDepartamento($idDepartamento){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_cantidad_claves_departamento($idDepartamento, $idEncuesta, $idFormulario)");
+    $data=$query->row_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data; //devuelve dos elementos: Generadas y Utilizadas
+  }
+  
+  /**
+   * Obtiene las respuestas a una pregunta para un departamento y encuesta. Devuelve un array.
    *
    * @access public
    * @param identificador de la pregunta
+   * @param idenificador de departamento
+   * @return array
+   */  
+  public function respuestasPreguntaDepartamento($idPregunta, $idDepartamento){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_respuestas_pregunta_departamento($idPregunta, $idDepartamento, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
+  /**
+   * Obtiene las respuestas a una pregunta para una carrera y encuesta. Devuelve un array.
+   *
+   * @access public
+   * @param identificador de la pregunta
+   * @param idenificador de carrera
+   * @return array
+   */  
+  public function respuestasPreguntaCarrera($idPregunta, $idCarrera){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_respuestas_pregunta_carrera($idPregunta, $idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
+  /**
+   * Obtiene las respuestas a una pregunta para una materia, carrera y encuesta. Devuelve un array.
+   *
+   * @access public
+   * @param identificador de la pregunta
+   * @param identificador de docente. En caso de no referirse a un docente, este parámetro debe ser 0 o null.
    * @param identificador de materia
    * @param idenificador de carrera
    * @return array
@@ -113,7 +190,7 @@ class Encuesta extends CI_Model{
     $data=$query->result_array();
     $query->free_result();
     //$this->db->reconnect();
-    return $data; //Opcion, Cantidad (ultima fila = cantidad total)
+    return $data;
   }
   
   

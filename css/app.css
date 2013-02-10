@@ -86,6 +86,9 @@ span.opcional{
 .buscador i{
   position: absolute; right: 0; top:0; margin:5px; font-size: 20px; color: #F2F2F2;
 }
+.buscador i.active{
+  color: #E6E6E6;
+}
 
 /*************** Footer ******************/
 footer{
