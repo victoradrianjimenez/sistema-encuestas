@@ -65,7 +65,7 @@
               <input type="checkbox" name="indicesDocentes" />Incluir promedio de índices para cada docente
             </div>
             <div class="row">    
-              <input type="checkbox" name="indicesGeneral" />Incluir indice general
+              <input type="checkbox" name="indiceGlobal" />Incluir indice general
             </div>
           </div>
         </div>

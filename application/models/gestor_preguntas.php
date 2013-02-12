@@ -9,6 +9,23 @@ class Gestor_preguntas extends CI_Model{
 		parent::__construct();
 	}
 
+  
+  /**
+   * Obtener una pregunta a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
+   *
+   * @access public
+   * @param identificador de pregunta
+   * @return object
+   */
+  public function dame($idPregunta){
+    $idPregunta = $this->db->escape($idPregunta);
+    $query = $this->db->query("call esp_dame_pregunta($idPregunta)");
+    $data = $query->result('Pregunta');
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data != FALSE)?$data[0]:FALSE;
+  }
+
 
   /**
    * Obtener el listado de preguntas. Devuleve un array de objetos.

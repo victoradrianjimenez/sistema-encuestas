@@ -12,6 +12,7 @@
   <style>
     #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
+    ul.respuestas{list-style-position:inside;}
   </style>
 </head>
 <body>
@@ -41,53 +42,80 @@
       ?>
     </div>
   </div>
-  <div class="row">
-    <?php foreach ($secciones as $i => $seccion):?>
-      <h5 class="separador"><?php echo $seccion['seccion']->texto?></h5>
-      <div class="twelve columns">
-        <div class="row">
-          <?php
-          //por cada subseccion y por cada docente
-          foreach ($seccion['subsecciones'] as $j => $subseccion){
-            echo '
-            <div class="row">
-              <div class="twelve columns">
-              <h3>'.$subseccion['docente']->nombre.' '.$subseccion['docente']->apellido.'</h3>';
-              //por cada pregunta perteneciente a la seccion
-              foreach ($subseccion['preguntas'] as $pregunta){
-                switch($pregunta['item']->tipo){
-                //preguntas con opciones
-                case 'S':case 'N': 
-                  echo '
-                  <div class="nine columns">
-                    <p>'.$pregunta['item']->texto.'</p>
-                    <div class="row">';
-                      foreach ($pregunta['respuestas'] as $k => $respuesta){   
-                        echo '
-                        <div class="three mobile-one columns end">'.
-                          (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
-                          ': <b>'.$respuesta['cantidad'].'</b>
-                        </div>';
-                      }
+  
+  <?php 
+  foreach ($secciones as $i => $seccion){
+    //por cada subseccion y por cada docente
+    if (count($seccion['subsecciones']) > 0){
+      echo '
+      <div class="row">
+        <h5 class="separador">'.$seccion['seccion']->texto.'</h5>
+        <div class="twelve columns">
+          <div class="row">';
+            foreach ($seccion['subsecciones'] as $j => $subseccion){
+              echo '
+              <div class="row">
+                <div class="twelve columns">
+                <h3>'.$subseccion['docente']->nombre.' '.$subseccion['docente']->apellido.'</h3>';
+                //por cada pregunta perteneciente a la seccion
+                foreach ($subseccion['preguntas'] as $pregunta){
+                  switch($pregunta['item']->tipo){
+                  //preguntas con opciones
+                  case 'S':case 'N': 
                     echo '
+                    <div class="nine columns">
+                      <p>'.$pregunta['item']->texto.'</p>
+                      <div class="row">';
+                        foreach ($pregunta['respuestas'] as $k => $respuesta){   
+                          echo '
+                          <div class="three mobile-one columns end">'.
+                            (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
+                            ': <b>'.$respuesta['cantidad'].'</b>
+                          </div>';
+                        }
+                      echo '
+                      </div>
                     </div>
-                  </div>
-                  <div class="three columns">
-                    <img src="'.site_url("pcharts/graficoPreguntaMateria/".
-                      $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$subseccion['docente']->id.'/'.$materia->idMateria.'/'.$carrera->idCarrera).
-                      '" width="400" height="160" />
-                  </div>';
-                  break;
-                }//switch
-              }//foreach
-            echo '
-            </div></div>' ;
-          }//foreach 
-          ?>
+                    <div class="three columns">
+                      <img src="'.site_url("pcharts/graficoPreguntaMateria/".
+                        $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$subseccion['docente']->id.'/'.$materia->idMateria.'/'.$carrera->idCarrera).
+                        '" width="400" height="160" />
+                    </div>';
+                    break;
+                  case 'T': case 'X':
+                    echo '
+                    <div class="twelve columns">
+                      <p>'.$pregunta['item']->texto.'</p>
+                      <ul class="respuestas">';
+                        foreach ($pregunta['respuestas'] as $k => $respuesta){   
+                          echo '<li>'.$respuesta['texto'].'</li>';
+                        }
+                      echo '
+                      </ul>
+                    </div>';
+                    break;
+                  }//switch
+                }//foreach preguntas
+                echo '
+                <div class="twelve columns">';
+                  if($subseccion['indice']) echo '<h4>Índice para el docente: '.$subseccion['indice'].'</h4>';
+                echo '
+                </div>
+              </div>
+            </div>';
+          }//foreach subsecciones
+          if($seccion['indice']) echo '<h4>Índice de la Sección: '.$seccion['indice'].'</h4>'; 
+        echo '
         </div>
-      </div>   
-    <?php endforeach //secciones?>
+      </div>
+    </div>';
+    }//if
+  }//foreach secciones
+  ?>
+  <div class="row">
+    <?php if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.$indice?>
   </div>
+  
   <!-- Footer -->    
   <div class="row">    
     <?php include 'elements/footer2.php'?>

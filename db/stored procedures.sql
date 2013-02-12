@@ -341,6 +341,22 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_dame_docente_materia`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_docente_materia`(
+    pid INT UNSIGNED,
+	pidMateria SMALLINT UNSIGNED)
+BEGIN
+    SELECT tipoAcceso, ordenFormulario, cargo
+    FROM Docentes_Materias
+    WHERE idDocente = pid AND idMateria = pidMateria;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
 
@@ -388,6 +404,25 @@ BEGIN
     SELECT idDepartamento, idJefeDepartamento, nombre
     FROM Departamentos
     WHERE idDepartamento = pidDepartamento;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_pregunta`;
+
+
+DELIMITER $$
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_pregunta`(
+    pidPregunta INT UNSIGNED)
+BEGIN
+    SELECT	idPregunta, idCarrera, texto, descripcion, creacion, tipo,
+			obligatoria, ordenInverso, limiteInferior, limiteSuperior,
+			paso, unidad
+    FROM Preguntas
+    WHERE idPregunta = pidPregunta;
 END $$
 
 DELIMITER ;
@@ -1863,10 +1898,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global`(
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED,
-	OUT Indice FLOAT)
+	OUT indice FLOAT)
 BEGIN
 	-- calculo el indice con las sumas realizadas
-	SET Indice = (
+	SET indice = (
 	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
 	FROM(
 		-- realizo las sumatorias necesarias
@@ -1910,10 +1945,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion`(
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED,
 	pidSeccion INT UNSIGNED,
-	OUT Indice FLOAT)
+	OUT indice FLOAT)
 BEGIN
 	-- calculo el indice con las sumas realizadas
-	SET Indice = (
+	SET indice = (
 	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
 	FROM(
 		-- realizo las sumatorias necesarias
@@ -1959,10 +1994,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente`(
 	pidFormulario INT UNSIGNED,
 	pidSeccion INT UNSIGNED,
 	pidDocente INT UNSIGNED,
-	OUT Indice FLOAT)
+	OUT indice FLOAT)
 BEGIN
 	-- calculo el indice con las sumas realizadas
-	SET Indice = (
+	SET indice = (
 	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
 	FROM(
 		-- realizo las sumatorias necesarias
@@ -2009,11 +2044,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente_clave`(
 	pidSeccion INT UNSIGNED,
 	pidDocente INT UNSIGNED)
 BEGIN
-	DECLARE Indice FLOAT;
+	DECLARE indice FLOAT;
 	CALL esp_indice_docente(pidClave, pidMateria, pidCarrera, 
 							pidEncuesta, pidFormulario, pidSeccion,
-							pidDocente, Indice);
-	SELECT ROUND(Indice,2) AS Indice;
+							pidDocente, indice);
+	SELECT ROUND(indice,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2057,7 +2092,7 @@ BEGIN
 	UNTIL done END REPEAT;
 	CLOSE cur;
 	-- devolver el indice promedio
-	SELECT ROUND(s/n,2) AS Indice;
+	SELECT ROUND(s/n,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2097,7 +2132,7 @@ BEGIN
 	UNTIL done END REPEAT;
 	CLOSE cur;
 	-- devolver el indice promedio
-	SELECT ROUND(s/n,2) AS Indice;
+	SELECT ROUND(s/n,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2137,7 +2172,7 @@ BEGIN
 	UNTIL done END REPEAT;
 	CLOSE cur;
 	-- devolver el indice promedio
-	SELECT ROUND(s/n,2) AS Indice;
+	SELECT ROUND(s/n,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2155,10 +2190,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_clave`(
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED)
 BEGIN
-	DECLARE Indice FLOAT;
+	DECLARE indice FLOAT;
 	CALL esp_indice_global(	pidClave, pidMateria, pidCarrera, 
-							pidEncuesta, pidFormulario, Indice);
-	SELECT ROUND(Indice,2) AS Indice;
+							pidEncuesta, pidFormulario, indice);
+	SELECT ROUND(indice,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2201,7 +2236,7 @@ BEGIN
 	UNTIL done END REPEAT;
 	CLOSE cur;
 	-- devolver el indice promedio
-	SELECT ROUND(s/n,2) AS Indice;
+	SELECT ROUND(s/n,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2220,11 +2255,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_clave`(
 	pidFormulario INT UNSIGNED,
 	pidSeccion INT UNSIGNED)
 BEGIN
-	DECLARE Indice FLOAT;
+	DECLARE indice FLOAT;
 	CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, 
 							pidEncuesta, pidFormulario, pidSeccion,
-							Indice);
-	SELECT ROUND(Indice,2) AS Indice;
+							indice);
+	SELECT ROUND(indice,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2267,7 +2302,7 @@ BEGIN
 	UNTIL done END REPEAT;
 	CLOSE cur;
 	-- devolver el indice promedio
-	SELECT ROUND(s/n,2) AS Indice;
+	SELECT ROUND(s/n,2) AS indice;
 END $$
 
 DELIMITER ;

@@ -280,6 +280,190 @@ class Encuesta extends CI_Model{
   }
   
   
+  
+  
+  
+  
+  
+  
+  
+  /**
+   * Obtiene el indice de una seccion de docentes para una encuesta de un alumno.
+   *
+   * @access public
+   * @param idenificador de clave de acceso
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @param identificador de seccion
+   * @param identificador de docente
+   * @return array
+   */  
+  public function indiceDocenteClave($idClave, $idMateria, $idCarrera, $idSeccion, $idDocente){
+    $idClave = $this->db->escape($idClave);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idDocente = $this->db->escape($idDocente);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_docente_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion, $idDocente)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  /**
+   * Obtiene el indice de una seccion de docentes para una encuesta.
+   *
+   * @access public
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @param identificador de seccion
+   * @param identificador de docente
+   * @return array
+   */  
+  public function indiceDocenteMateria($idMateria, $idCarrera, $idSeccion, $idDocente){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idDocente = $this->db->escape($idDocente);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_docente_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion, $idDocente)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  /**
+   * Obtiene el indice de una seccion para una encuesta de un alumno.
+   *
+   * @access public
+   * @param idenificador de clave de acceso
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @param identificador de seccion
+   * @return array
+   */  
+  public function indiceSeccionClave($idClave, $idMateria, $idCarrera, $idSeccion){
+    $idClave = $this->db->escape($idClave);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_seccion_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+
+  /**
+   * Obtiene el indice de una seccion para una encuesta de un alumno.
+   *
+   * @access public
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @param identificador de seccion
+   * @return array
+   */  
+  public function indiceSeccionMateria($idMateria, $idCarrera, $idSeccion){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_seccion_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  /**
+   * Obtiene el indice de una seccion de docentes para una encuesta.
+   *
+   * @access public
+   * @param identificador de carrera
+   * @param identificador de seccion
+   * @return array
+   */  
+  public function indiceSeccionCarrera($idCarrera, $idSeccion){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_seccion_carrera($idCarrera, $idEncuesta, $idFormulario, $idSeccion)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  /**
+   * Obtiene el indice global para una encuesta de un alumno.
+   *
+   * @access public
+   * @param idenificador de clave de acceso
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @return array
+   */  
+  public function indiceGlobalClave($idClave, $idMateria, $idCarrera){
+    $idClave = $this->db->escape($idClave);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_global_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  /**
+   * Obtiene el indice global de una materia para una encuesta.
+   *
+   * @access public
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @return array
+   */  
+  public function indiceGlobalMateria($idMateria, $idCarrera){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_global_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  /**
+   * Obtiene el indice global de una carrera
+   *
+   * @access public
+   * @param identificador de carrera
+   * @return array
+   */  
+  public function indiceGlobalCarrera($idCarrera){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_global_carrera($idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->indice:0;
+  }
+  
+  
 }
 
 ?>

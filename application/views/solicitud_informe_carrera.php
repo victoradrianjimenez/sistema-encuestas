@@ -53,7 +53,7 @@
               <input type="checkbox" name="indicesSecciones" />Incluir promedio de índices de secciones
             </div>
             <div class="row">    
-              <input type="checkbox" name="indicesGeneral" />Incluir indice general
+              <input type="checkbox" name="indiceGlobal" />Incluir indice general
             </div>
           </div>
         </div>

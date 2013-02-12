@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Última revisión: 2012-02-12 12:35 a.m. -->
 
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -11,13 +12,15 @@
   <style>
     #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
+    ul.respuestas{list-style-position:inside;}
   </style>
 </head>
 <body>
   <div id="header" class="row">
     <h2><?php echo $formulario->titulo?></h2>
     <h4><?php echo $formulario->descripcion?></h4>
-    <h4><?php echo $carrera->nombre?></h4>
+    <h4><?php echo $departamento->nombre?></h4>
+    <h5><?php echo $carrera->nombre?></h5>
   </div>
   <div class="row">
     <h5 class="separador">Estadísticas Generales</h5>
@@ -38,46 +41,50 @@
       ?>
     </div>
   </div>
-  <div class="row">
-    <?php foreach ($secciones as $i => $seccion):?>
-      <h5 class="separador"><?php echo $seccion['seccion']->texto?></h5>
-      <div class="row">
-        <div class="twelve columns">
-          <?php
-          //por cada subseccion o docente
+  
+  <?php 
+  foreach ($secciones as $i => $seccion){
+    echo '
+    <div class="row">
+      <h5 class="separador">'.$seccion['seccion']->texto.'</h5>
+      <div class="twelve columns">
+        <div class="row">';
           foreach ($seccion['subsecciones'] as $j => $pregunta){
-            echo '
-            <div class="row ">
-              <div class="twelve columns">';
-                switch($pregunta['item']->tipo){
-                //preguntas con opciones
-                case 'S':case 'N':
-                  echo '
-                  <div class="nine columns">
-                    <p>'.$pregunta['item']->texto.'</p>
-                    <div class="row">';
-                      foreach ($pregunta['respuestas'] as $k => $respuesta){   
-                        echo '
-                        <div class="three mobile-one columns end">'.
-                          (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
-                          ': <b>'.$respuesta['cantidad'].'</b>
-                        </div>';
-                      }
+            switch($pregunta['item']->tipo){
+            //preguntas con opciones
+            case 'S':case 'N':
+              echo '
+              <div class="nine columns">
+                <p>'.$pregunta['item']->texto.'</p>
+                <div class="row">';
+                  foreach ($pregunta['respuestas'] as $k => $respuesta){   
                     echo '
-                    </div>
-                  </div>
-                  <div class="three columns">
-                    <img src="'.site_url("pcharts/graficoPreguntaCarrera/".$encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$carrera->idCarrera).'" width="400" height="160" />
-                  </div>';
-                  break;
-                }//switch
-            echo '
-            </div></div>' ;
-          }
-          ?>
+                    <div class="three mobile-one columns end">'.
+                      (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
+                      ': <b>'.$respuesta['cantidad'].'</b>
+                    </div>';
+                  }
+                echo '
+                </div>
+              </div>
+              <div class="three columns">
+                <img src="'.site_url("pcharts/graficoPreguntaCarrera/".
+                $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$carrera->idCarrera).
+                '" width="400" height="160" />
+              </div>';
+              break;
+            }//switch
+          }//foreach preguntas
+          echo '
         </div>
-      </div>   
-    <?php endforeach //secciones?>
+      </div>';
+      if($seccion['indice']) echo '<h4>Índice de la Sección: '.$seccion['indice'].'</h4>'; 
+      echo '
+    </div>';
+  }//foreach secciones
+  ?>
+  <div class="row">
+    <?php if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.$indice?>
   </div>
   <!-- Footer -->
   <div class="row">

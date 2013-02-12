@@ -43,11 +43,11 @@
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td class="nombre"><?php echo $item['apellido']?></td>
-                  <td class="apellido"><?php echo $item['nombre']?></td>
-                  <td class="cargo"><?php echo $item['cargo']?></td>
+                  <td class="nombre"><?php echo $item->apellido?></td>
+                  <td class="apellido"><?php echo $item->nombre?></td>
+                  <td class="cargo"><?php //echo $item['cargo']?></td>
                   <td>
-                    <a class="quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $item['id']?>">Quitar</a>
+                    <a class="quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $item->id?>">Quitar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
