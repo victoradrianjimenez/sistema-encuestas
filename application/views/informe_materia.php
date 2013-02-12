@@ -52,7 +52,7 @@
         <h5 class="separador">'.$seccion['seccion']->texto.'</h5>
         <div class="twelve columns">
           <div class="row">';
-            foreach ($seccion['subsecciones'] as $j => $subseccion){
+            foreach ($seccion['subsecciones'] as $subseccion){
               echo '
               <div class="row">
                 <div class="twelve columns">

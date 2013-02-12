@@ -50,10 +50,10 @@
           </div>
           <div class="twelve columns">
             <div class="row">    
-              <input type="checkbox" name="indicesSecciones" />Incluir promedio de índices de secciones
+              <input type="checkbox" name="indicesSecciones" checked/>Incluir promedio de índices de secciones
             </div>
             <div class="row">    
-              <input type="checkbox" name="indiceGlobal" />Incluir indice general
+              <input type="checkbox" name="indiceGlobal" checked/>Incluir indice general
             </div>
           </div>
         </div>

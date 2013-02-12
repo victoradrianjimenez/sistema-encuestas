@@ -316,19 +316,19 @@ class Encuestas extends CI_Controller{
       $datos_secciones = array();
       foreach ($secciones as $i => $seccion) {
         $datos_secciones[$i]['seccion'] = $seccion;
-        $datos_secciones[$i]['subsecciones'] = array();
+        $datos_secciones[$i]['items'] = array();
         $datos_secciones[$i]['indice'] = ($indicesSecciones)?$encuesta->indiceSeccionCarrera($idCarrera, $seccion->idSeccion):null;        
         $items = $seccion->listarItemsCarrera();
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case 'S': case 'M': case 'N':
-            $datos_secciones[$i]['subsecciones'][$k] = array(
+            $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera)
             );
             break;
           default:
-            $datos_secciones[$i]['subsecciones'][$k] = array(
+            $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => null
             );
@@ -358,13 +358,17 @@ class Encuestas extends CI_Controller{
    * Última revisión: 2012-02-09 8:17 p.m.
    */
   public function informeDepartamento(){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
+      show_error('No tiene permisos para realizar esta operación.');
+      return;
+    }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','required|is_natural_no_zero');
     $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
     $tmp = $this->input->post('encuesta');
     if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
-      $idDepartamento = $this->input->post('idDepartamento');
+      $idDepartamento = (int)$this->input->post('idDepartamento');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -377,38 +381,42 @@ class Encuestas extends CI_Controller{
       $this->load->model('Gestor_formularios','gf');
       $this->load->model('Gestor_departamentos','gd');
       $this->load->model('Gestor_encuestas','ge');
-  
+      //obtener datos de la encuesta
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
       $formulario = $this->gf->dame($idFormulario);
       $departamento= $this->gd->dame($idDepartamento);
-      
       $secciones = $formulario->listarSecciones();
       
       $datos_secciones = array();
       foreach ($secciones as $i => $seccion) {
+        $datos_secciones[$i]['seccion'] = $seccion;
+        $datos_secciones[$i]['items'] = array();
         $items = $seccion->listarItems();
-        $datos_items = array();
         foreach ($items as $k => $item) {
-          $datos_items[$k]['item'] = $item;
           switch ($item->tipo) {
           case 'S': case 'M': case 'N':
-            $datos_items[$k]['respuestas'] = $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento);
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento)
+            );
             break;
           default:
-            $datos_items[$k]['respuestas'] = null;
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => null
+            );
             break;
           }
         }
-        $datos_secciones[$i] = array(
-          'seccion' => $seccion,
-          'items' => $datos_items
-        );
       }
-      $datos['encuesta'] = &$encuesta;
-      $datos['formulario'] = &$formulario;
-      $datos['departamento'] = &$departamento;
-      $datos['claves'] = $encuesta->cantidadClavesDepartamento($idDepartamento);
-      $datos['secciones'] = &$datos_secciones;
+      //datos para enviar a la vista
+      $datos = array(
+        'encuesta' => &$encuesta,
+        'formulario' => &$formulario,
+        'departamento' => &$departamento,
+        'claves' => $encuesta->cantidadClavesDepartamento($idDepartamento),
+        'secciones' => &$datos_secciones
+      );
       $this->load->view('informe_departamento', $datos);
     }
     else{
@@ -421,7 +429,11 @@ class Encuestas extends CI_Controller{
    * Última revisión: 2012-02-10 1:42 p.m.
    */
   public function informeFacultad(){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->in_group(array('admin','decanos'))){
+      show_error('No tiene permisos para realizar esta operación.');
+      return;
+    }
     //verifico datos POST
     $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
     $tmp = $this->input->post('encuesta');
@@ -442,30 +454,32 @@ class Encuestas extends CI_Controller{
       
       $datos_secciones = array();
       foreach ($secciones as $i => $seccion) {
+        $datos_secciones[$i]['seccion'] = $seccion;
+        $datos_secciones[$i]['items'] = array();
         $items = $seccion->listarItems();
-        $datos_items = array();
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case 'S': case 'M': case 'N':
-            $datos_respuestas = $encuesta->respuestasPreguntaFacultad($item->idPregunta);
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => $encuesta->respuestasPreguntaFacultad($item->idPregunta)
+            );
             break;
           default:
-            $datos_respuestas = null;
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => null
+            );
             break;
           }
-          $datos_items[$k] = array(
-            'item' => $item,
-            'respuestas' => $datos_respuestas
-          );
         }
-        $datos_secciones[$i] = array(
-          'seccion' => $seccion,
-          'items' => $datos_items
-        );
       }
-      $datos['encuesta'] = &$encuesta;
-      $datos['formulario'] = &$formulario;
-      $datos['secciones'] = &$datos_secciones;
+      //datos para enviar a la vista
+      $datos = array(
+        'encuesta' => &$encuesta,
+        'formulario' => &$formulario,
+        'secciones' => &$datos_secciones
+      );
       $this->load->view('informe_facultad', $datos);
     }
     else{
@@ -493,7 +507,6 @@ class Encuestas extends CI_Controller{
             "$clave->utilizada\t\n";
     }
   }
-
 
   //funcion para responder solicitudes AJAX
   public function buscarEncuestaAJAX(){

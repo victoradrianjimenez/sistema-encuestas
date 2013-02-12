@@ -49,31 +49,37 @@
       <h5 class="separador">'.$seccion['seccion']->texto.'</h5>
       <div class="twelve columns">
         <div class="row">';
-          foreach ($seccion['subsecciones'] as $j => $pregunta){
-            switch($pregunta['item']->tipo){
-            //preguntas con opciones
-            case 'S':case 'N':
-              echo '
-              <div class="nine columns">
-                <p>'.$pregunta['item']->texto.'</p>
-                <div class="row">';
-                  foreach ($pregunta['respuestas'] as $k => $respuesta){   
+          foreach ($seccion['items'] as $pregunta){
+            echo '
+            <div class="row">
+              <div class="twelve columns">';
+                switch($pregunta['item']->tipo){
+                //preguntas con opciones
+                case 'S':case 'N':
+                  echo '
+                  <div class="nine columns">
+                    <p>'.$pregunta['item']->texto.'</p>
+                    <div class="row">';
+                      foreach ($pregunta['respuestas'] as $k => $respuesta){   
+                        echo '
+                        <div class="three mobile-one columns end">'.
+                          (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
+                          ': <b>'.$respuesta['cantidad'].'</b>
+                        </div>';
+                      }
                     echo '
-                    <div class="three mobile-one columns end">'.
-                      (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
-                      ': <b>'.$respuesta['cantidad'].'</b>
-                    </div>';
-                  }
-                echo '
-                </div>
+                    </div>
+                  </div>
+                  <div class="three columns">
+                    <img src="'.site_url("pcharts/graficoPreguntaCarrera/".
+                    $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$carrera->idCarrera).
+                    '" width="400" height="160" />
+                  </div>';
+                  break;
+                }//switch
+                echo'
               </div>
-              <div class="three columns">
-                <img src="'.site_url("pcharts/graficoPreguntaCarrera/".
-                $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$carrera->idCarrera).
-                '" width="400" height="160" />
-              </div>';
-              break;
-            }//switch
+            </div>';
           }//foreach preguntas
           echo '
         </div>

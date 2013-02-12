@@ -12,6 +12,7 @@
   <style>
     #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
+    ul.respuestas{list-style-position:inside;}
   </style>
 </head>
 <body>
@@ -39,13 +40,14 @@
       ?>
     </div>
   </div>
-  <div class="row">
-    <?php foreach ($secciones as $seccion):?>
-      <h5 class="separador"><?php echo $seccion['seccion']->texto?></h5>
+  
+  <?php 
+  foreach ($secciones as $seccion){
+    echo'
+    <div class="row">
+      <h5 class="separador">'.$seccion['seccion']->texto.'</h5>
       <div class="twelve columns">
-        <div class="row">
-          <?php
-          //por cada item de la sección
+        <div class="row">';
           foreach ($seccion['items'] as $pregunta){
             echo '
             <div class="row">
@@ -74,14 +76,16 @@
                   </div>';
                   break;
                 }//switch
-            echo '
-            </div></div>';
-          }//foreach
-          ?> 
+                echo'
+              </div>
+            </div>';
+          }//foreach preguntas
+          echo '
         </div>
-      </div>   
-    <?php endforeach //secciones?>
-  </div>
+      </div>
+    </div>';
+  }//foreach secciones
+  ?>
   <!-- Footer -->    
   <div class="row">    
     <?php include 'elements/footer2.php'?>

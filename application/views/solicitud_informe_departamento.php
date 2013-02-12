@@ -48,14 +48,6 @@
               <?php echo form_error('encuesta')?>
             </div>
           </div>
-          <div class="twelve columns">
-            <div class="row">    
-              <input type="checkbox" name="indicesSecciones" />Incluir promedio de índices de secciones
-            </div>
-            <div class="row">    
-              <input type="checkbox" name="indicesGeneral" />Incluir indice general
-            </div>
-          </div>
         </div>
         <div class="row">         
           <div class="three mobile-two columns centered pull-one-mobile">
