@@ -45,6 +45,7 @@
         <li><a href="<?php echo site_url('encuestas/informeDepartamento')?>">Departamentos</a></li>
         <li><a href="<?php echo site_url('encuestas/informeCarrera')?>">Carreras</a></li>
         <li><a href="<?php echo site_url('encuestas/informeMateria')?>">Materias</a></li>
+        <li><a href="<?php echo site_url('encuestas/informeClave')?>">Clave</a></li>
       </ul>
     </li>
     <li><a href="<?php echo site_url("usuarios/modificar")?>">Datos de usuario</a></li>

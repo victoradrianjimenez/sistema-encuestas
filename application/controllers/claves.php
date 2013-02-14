@@ -18,15 +18,46 @@ class Claves extends CI_Controller{
   }
     
   public function index(){
-    $this->listar();
+    $this->ingresar();
   }
   
-  /*
-   * Muestra el listado de claves.
+  /************************************************
+   * Muestra el listado de claves para una encuesta, materia y carrera en particular
    * Última revisión: 2012-02-04 12:47 p.m.
    */
-  public function listar($PagInicio=0){
-    $this->ingresar();
+  public function listar($idMateria, $idCarrera, $idEncuesta, $idFormulario, $PagInicio=0){
+    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    //chequeo parámetros de entrada
+    $pagInicio = (int)$pagInicio;
+    
+    //cargo modelos, librerias, etc.
+    $this->load->library('pagination');
+    $this->load->model('Materia');
+    $this->load->model('Encuesta');
+    $this->load->model('Departamento');
+    $this->load->model('Gestor_materias','gm');
+    $this->load->model('Gestor_departamentos','gd');
+    $this->load->model('Gestor_encuestas','ge');
+    
+    //obtengo lista de claves
+    $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+    $materia = $this->gm->dame($clave->idMateria);
+    $lista = $encuesta->listarClavesMateria($idMateria, $idCarrera, $pagInicio, self::per_page);
+
+    //genero la lista de links de paginación
+    $this->pagination->initialize(array(
+      'base_url' => site_url("claves/listar/$idMateria/$idCarrera/$idEncuesta/$idFormulario"),
+      'total_rows' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
+      'per_page' => self::per_page,
+      'uri_segment' => 7
+    ));
+    
+    //envio datos a la vista
+    $this->data['lista'] = &$lista; //array de datos de los Departamentos
+    $this->data['materia'] = &$materia; //datos de la materia a la que pertenecen las claves
+    $this->data['encuesta'] = &$encuesta; 
+    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $this->load->view('lista_claves_materia', $this->data);
   }
   
   /*
@@ -256,7 +287,36 @@ class Claves extends CI_Controller{
     }
   }
    
-   
+  //funcion para responder solicitudes AJAX
+  public function listarClavesMateriaAJAX(){
+    if (!$this->ion_auth->logged_in()){return;}
+    $this->form_validation->set_rules('idEncuesta','Encuesta','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    if($this->form_validation->run()){
+      $idEncuesta = $this->input->post('idEncuesta');
+      $idFormulario = $this->input->post('idFormulario');
+      $idMateria = $this->input->post('idMateria');
+      $idCarrera = $this->input->post('idCarrera');
+      $this->load->model('Clave');
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_encuestas','ge');
+      //obtengo lista de claves
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      if ($encuesta){
+        $claves = $encuesta->listarClavesMateria($idMateria, $idCarrera, 0, 1000);
+        echo "\n";
+        foreach ($claves as $clave) {
+          echo  "$clave->idClave\t".
+                "$clave->clave\t".
+                "$clave->tipo\t".
+                "$clave->generada\t".
+                "$clave->utilizada\t\n";
+        }
+      }
+    }
+  }
 }
 
 ?>

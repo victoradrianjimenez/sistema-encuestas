@@ -969,38 +969,38 @@ DELIMITER ;
 
 
 
-DROP PROCEDURE IF EXISTS `esp_respuestas_clave`;
+-- DROP PROCEDURE IF EXISTS `esp_respuestas_clave`;
 
 
-DELIMITER $$
+-- DELIMITER $$
 
 -- --------------------------------------------------------------------------------
 -- Routine DDL
 -- Note: comments before and after the routine body will not be stored by the server
 -- --------------------------------------------------------------------------------
-DELIMITER $$
+-- DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_clave`(
-    pidClave INT UNSIGNED,
-    pidMateria SMALLINT UNSIGNED,
-    pidCarrera SMALLINT UNSIGNED,
-    pidEncuesta INT UNSIGNED,
-    pidFormulario INT UNSIGNED)
-BEGIN
-    SELECT  IC.idSeccion, R.idPregunta, P.tipo, R.idDocente, R.opcion, R.texto,
-			COUNT(idOpcion) as opciones, IC.importancia
-    FROM    Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
-            LEFT JOIN Items I ON I.idFormulario = R.idFormulario AND I.idPregunta = R.idPregunta
-            LEFT JOIN Items_Carreras IC ON IC.idCarrera = R.idCarrera AND IC.idFormulario = R.idFormulario AND IC.idPregunta = R.idPregunta
-            LEFT JOIN Docentes_Materias DM ON DM.idDocente = R.idDocente AND DM.idMateria = R.idMateria
-			LEFT JOIN opciones O On O.idPregunta = R.idPregunta
-    WHERE   R.idClave = pidClave AND R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
-            R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
-	GROUP BY R.idPregunta, R.idDocente
-    ORDER BY IC.idSeccion, COALESCE(DM.ordenFormulario,255), COALESCE(IC.posicion, I.posicion);
-END $$
+-- CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_clave`(
+--     pidClave INT UNSIGNED,
+--     pidMateria SMALLINT UNSIGNED,
+--     pidCarrera SMALLINT UNSIGNED,
+--     pidEncuesta INT UNSIGNED,
+--     pidFormulario INT UNSIGNED)
+-- BEGIN
+--     SELECT  IC.idSeccion, R.idPregunta, P.tipo, R.idDocente, R.opcion, R.texto,
+-- 			COUNT(idOpcion) as opciones, IC.importancia
+--     FROM    Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
+--             LEFT JOIN Items I ON I.idFormulario = R.idFormulario AND I.idPregunta = R.idPregunta
+--             LEFT JOIN Items_Carreras IC ON IC.idCarrera = R.idCarrera AND IC.idFormulario = R.idFormulario AND IC.idPregunta = R.idPregunta
+--             LEFT JOIN Docentes_Materias DM ON DM.idDocente = R.idDocente AND DM.idMateria = R.idMateria
+-- 			LEFT JOIN opciones O On O.idPregunta = R.idPregunta
+--     WHERE   R.idClave = pidClave AND R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
+--             R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+-- 	GROUP BY R.idPregunta, R.idDocente
+--     ORDER BY IC.idSeccion, COALESCE(DM.ordenFormulario,255), COALESCE(IC.posicion, I.posicion);
+-- END $$
 
-DELIMITER ;
+-- DELIMITER ;
 
 
 
@@ -1017,7 +1017,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_materia`(
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
 BEGIN
-	SELECT	R.idDocente, R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
+	SELECT	R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
 			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
@@ -1025,6 +1025,34 @@ BEGIN
 			R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND
 			R.idFormulario = pidFormulario AND COALESCE(R.idDocente,0) = COALESCE(pidDocente,0)
 	GROUP BY R.opcion
+	ORDER BY R.opcion;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_respuesta_pregunta_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuesta_pregunta_clave`(
+    pidPregunta INT UNSIGNED,
+	pidDocente INT UNSIGNED,
+	pidClave INT UNSIGNED,
+    pidMateria SMALLINT UNSIGNED,
+    pidCarrera SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+	SELECT	R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto
+	FROM 	Respuestas R 
+			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
+			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+	WHERE   R.idPregunta = pidPregunta AND R.idClave = pidClave AND
+			R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
+			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
+			COALESCE(R.idDocente,0) = COALESCE(pidDocente,0)
 	ORDER BY R.opcion;
 END $$
 
@@ -1114,6 +1142,29 @@ BEGIN
     SELECT  idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin
     FROM    Encuestas
     WHERE   idEncuesta = pidEncuesta AND idFormulario = pidFormulario;            
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_clave`(
+	pidClave INT UNSIGNED,
+	pidMateria SMALLINT UNSIGNED,
+	pidCarrera SMALLINT UNSIGNED,
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT  idClave, idMateria, idCarrera, idEncuesta, idFormulario, 
+			clave, tipo, generada, utilizada
+    FROM    Claves
+    WHERE   idClave = pidClave AND idMateria = pidMateria AND
+			idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND 
+			idFormulario = pidFormulario;
 END $$
 
 DELIMITER ;
@@ -2314,6 +2365,29 @@ DROP PROCEDURE IF EXISTS `esp_listar_docentes_encuesta`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_encuesta`(
+	pidMateria SMALLINT UNSIGNED,
+	pidCarrera SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	SELECT DISTINCT P.id, P.apellido, P.nombre
+	FROM 	Respuestas R 
+			INNER JOIN Usuarios P ON P.id = R.idDocente
+			LEFT JOIN Docentes_Materias DM ON DM.idDocente = R.idDocente AND DM.idMateria = R.idMateria
+	WHERE   R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
+			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+	ORDER BY DM.ordenFormulario;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_docentes_clave`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_clave`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,

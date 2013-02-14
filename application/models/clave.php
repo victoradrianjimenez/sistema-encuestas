@@ -64,6 +64,32 @@ class Clave extends CI_Model{
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
+  
+  /**
+   * Obtiene las respuestas a una pregunta para una clave, materia, carrera y encuesta. Devuelve un array.
+   *
+   * @access public
+   * @param identificador de la pregunta
+   * @param identificador de docente. En caso de no referirse a un docente, este parámetro debe ser 0 o null.
+   * @param identificador de materia
+   * @param idenificador de carrera
+   * @return array
+   */  
+  public function respuestaPregunta($idPregunta, $idDocente){
+    $idPregunta = $this->db->escape($idPregunta);
+    $idDocente = $this->db->escape($idDocente);
+    $idClave = $this->db->escape($this->idClave);
+    $idCarrera = $this->db->escape($this->idCarrera);
+    $idMateria = $this->db->escape($this->idMateria);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_respuesta_pregunta_clave($idPregunta, $idDocente, $idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
 }
 
 ?>

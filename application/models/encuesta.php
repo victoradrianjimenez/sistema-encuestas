@@ -463,7 +463,27 @@ class Encuesta extends CI_Model{
     return ($data)?$data->indice:0;
   }
   
+    
   
+  /**
+   * Obtener un departamento a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
+   *
+   * @access public
+   * @param identificador de departamento
+   * @return object
+   */
+  public function dameClave($idClave, $idMatria, $idCarrera){
+    $idClave = $this->db->escape($idClave);
+    $idMatria = $this->db->escape($idMatria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_dame_clave($idClave, $idMatria, $idCarrera, $idEncuesta, $idFormulario)");
+    $data = $query->result('Clave');
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data != FALSE)?$data[0]:FALSE;
+  }
 }
 
 ?>
