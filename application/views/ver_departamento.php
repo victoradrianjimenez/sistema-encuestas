@@ -1,77 +1,72 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-01-31 11:23 a.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Ver departamento</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Gestión de Departamentos, Carreras y Materias</h3>
+        <p>---Descripción---</p>
+      </div>
     </div>
-  </div>
-  
-  <!-- Main Section -->
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div> 
     
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <div class="row">
-        <div class="twelve columns">
-          <h3><?php echo $departamento->nombre?></h3>
-          <p>Jefe de Departamento: <?php echo $jefeDepartamento->nombre.' '.$jefeDepartamento->apellido?></p>
-        </div>
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+        <h4>Navegación</h4>
+        <ul class="nav nav-pills nav-stacked">      
+          <li class="active"><a href="<?php echo site_url("departamentos")?>" href="">Departamentos</a></li>
+          <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
+          <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
+        </ul>
       </div>
-      <div class="row">
-        <div class="twelve columns">
-          <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalModificar">Modificar departamento...</a></li>
-            <li><a class="button" href="<?php echo site_url('departamentos')?>">Todos los departamentos</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+      
+      <!-- Main -->
+      <div class="span9">
+        <h3><?php echo $departamento->nombre?></h3>
+        <p>Jefe de Departamento: <?php echo $jefeDepartamento->nombre.' '.$jefeDepartamento->apellido?></p>
 
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
+        <!-- Botones -->
+        <div class="btn-group">
+          <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar departamento...</button>
+        </div>
+      </div>
+    </div>
+    <div id="push"></div><br />
+  </div>
+  <?php include 'templates/footer.php'?>  
+
+  <!-- ventana modal para editar datos del departamento -->
+  <div id="modalModificar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Editar departamento</h3>
+    </div>
+    <form class="form-horizontal" action="<?php echo site_url('departamentos/modificar')?>" method="post">
+      <div class="modal-body">
+        <?php include 'templates/form-editar-departamento.php'?>      
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+      </div>
+    </form>
   </div>
   
-  <!-- ventana modal para editar datos de la carrera -->
-  <div id="modalModificar" class="reveal-modal medium">
-    <?php
-      $titulo = 'Editar departamento';
-      $link = site_url('departamentos/modificar'); //a donde mandar los datos editados para darse de alta  
-      include 'elements/form-editar-departamento.php'; 
-    ?>
-    <a class="close-reveal-modal">&#215;</a>
-  </div>
-    
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
-    $('.cancelar').click(function(){
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
-    
     //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
+    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

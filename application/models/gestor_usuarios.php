@@ -83,7 +83,27 @@ class Gestor_usuarios extends CI_Model{
     //$this->db->reconnect();
     return $data;
   }
-
+  
+  /**
+   * Obtener el listado de usuarios que pertenecen a un grupo. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param identificador de grupo
+   * @param item inicial del listado a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
+   * @return array
+   */
+  public function listarGrupo($idGrupo, $pagInicio, $pagLongitud){
+    $idGrupo = $this->db->escape($idGrupo);
+    $pagInicio = $this->db->escape($pagInicio);
+    $pagLongitud = $this->db->escape($pagLongitud);
+    $query = $this->db->query("call esp_listar_usuarios_grupo($idGrupo, $pagInicio, $pagLongitud)");
+    $data = $query->result('Usuario');
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
   /**
    * Modifica un usuario. Devuleve 'ok.' en caso de éxito o un mensaje en caso de error.
    *
@@ -118,7 +138,21 @@ class Gestor_usuarios extends CI_Model{
     return ($data)?$data->cantidad:0;
   }
   
-    
+  /**
+   * Obtener la cantidad de usuarios.
+   *
+   * @access public
+   * @return int
+   */  
+  public function cantidadGrupo($idGrupo){
+    $idGrupo = $this->db->escape($idGrupo);
+    $query = $this->db->query("call esp_cantidad_usuarios_grupo($idGrupo)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->cantidad:0;
+  }
+  
   /**
    * Buscar usuarios por nombre o apellido. Devuleve un array de objetos.
    *

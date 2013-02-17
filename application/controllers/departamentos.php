@@ -12,7 +12,7 @@ class Departamentos extends CI_Controller{
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -136,12 +136,12 @@ class Departamentos extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');      
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
+    print_r($this->input->post());      
     if($this->form_validation->run()){
       $this->load->model('Gestor_departamentos','gd');
       $idDepartamento = $this->input->post('idDepartamento',TRUE);
       $idJefeDepartamento = $this->input->post('idJefeDepartamento',TRUE);
-      
       //modifico departamento y cargo vista para mostrar resultado
       $res = $this->gd->modificar($idDepartamento, ($idJefeDepartamento=='')?NULL:$idJefeDepartamento, $this->input->post('nombre',TRUE));
       $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;

@@ -1,45 +1,61 @@
 <!DOCTYPE html>
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <!--><html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
-  <title>Listar Departamentos</title>
+  <?php include 'templates/head.php'?>
+  <title>Sistema Encuestas</title>
+  <style>
+    header{
+      background-color: #FAA732;
+      padding:10px;
+      height: 150px;
+    }
+    header>div{
+      margin-top: 30px;
+    }
+  </style>
 </head>
+
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>  
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <header class="jumbotron subhead" id="overview">
+      <div class="text-center">
+        <h1>Sistema Encuestas</h1>
+        <p class="lead">Para mejorar la calidad de la enseñanza</p>
+      </div>
+    </header>
     
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-
+    <div class="container">
+      <div class="row-fluid">
+        <div class="span4">
+          <h2><a href="#">Sección 1</a></h2>
+          <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong. Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
+        </div>
+        <div class="span4">
+          <h2><a href="#">Sección 2</a></h2>
+          <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong. Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
+        </div>
+        <div class="span4">
+          <h2><a href="#">Sección 3</a></h2>
+          <p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit, dolore aliqua non est magna in labore pig pork biltong. Eiusmod swine spare ribs reprehenderit culpa. Boudin aliqua adipisicing rump corned beef.</p>
+        </div>
+      </div>
     </div>
+    <div id="push"></div>
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
+  <?php include 'templates/footer.php'?>
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
-  
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/jquery.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-scrollspy.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-tab.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-tooltip.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-popover.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-button.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
 </body>
 </html>

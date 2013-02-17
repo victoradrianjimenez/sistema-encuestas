@@ -18,11 +18,15 @@ class Materia extends CI_Model{
    * Obtener el listado de docentes relacionados a la materia. Devuleve un array.
    *
    * @access  public
+   * @param posicion del primer item de la lista a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listarDocentes(){
+  public function listarDocentes($pagNumero=0, $pagLongitud=1000){
+    $pagNumero = $this->db->escape($pagNumero);
+    $pagLongitud = $this->db->escape($pagLongitud);
     $idMateria = $this->db->escape($this->idMateria);
-    $query = $this->db->query("call esp_listar_docentes_materia($idMateria)");
+    $query = $this->db->query("call esp_listar_docentes_materia($idMateria, $pagNumero, $pagLongitud)");
     $data = $query->result('Usuario');
     $query->free_result();
     //$this->db->reconnect();

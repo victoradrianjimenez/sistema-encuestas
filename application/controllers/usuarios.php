@@ -24,18 +24,46 @@ class Usuarios extends CI_Controller{
    * Muestra el listado de usuarios.
    * Última revisión: 2012-02-01 3:35 p.m.
    */
+  public function listarDecanos($pagInicio=0){
+    $this->_listarGrupo($pagInicio,'decanos',site_url("usuarios/listarDecanos"));
+  }
+  public function listarJefesDepartamentos($pagInicio=0){
+    $this->_listarGrupo($pagInicio,'jefes_departamentos',site_url("usuarios/listarJefesDepartamentos"));
+  }
+  public function listarDirectores($pagInicio=0){
+    $this->_listarGrupo($pagInicio,'directores',site_url("usuarios/listarDirectores"));
+  }
+  public function listarDocentes($pagInicio=0){
+    $this->_listarGrupo($pagInicio,'docentes',site_url("usuarios/listarDocentes"));
+  }
+  public function listarOrganizadores($pagInicio=0){
+    $this->_listarGrupo($pagInicio,'organizadores', site_url("usuarios/listarOrganizadores"));
+  }
   public function listar($pagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
-    
-    //cargo modelos, librerias, etc.
-    $this->load->library('pagination');
     $this->load->model('Usuario');
     $this->load->model('Gestor_usuarios','gu');
+    $this->_listar($this->gu->listar($pagInicio, self::per_page), $this->gu->cantidad(), site_url("usuarios/listar"));
+  }
+  private function _listarGrupo($pagInicio, $grupo, $url){
+    //chequeo parámetros de entrada
+    $pagInicio = (int)$pagInicio;
+    $this->load->model('Usuario');
+    $this->load->model('Gestor_usuarios','gu');
+    $grupos = $this->ion_auth->groups()->result();
+    foreach ($grupos as $g) {
+      if($g->name == $grupo){
+        $this->data['grupo'] = $g;
+        $this->_listar($this->gu->listarGrupo($g->id, $pagInicio, self::per_page), $this->gu->cantidadGrupo($g->id), $url);
+        return;
+      }
+    }
+  }
+  private function _listar($usuarios, $cantidad, $url){
+    //cargo modelos, librerias, etc.
+    $this->load->library('pagination');
 
-    //obtengo lista de usuarios
-    $usuarios = $this->gu->listar($pagInicio, self::per_page);
     $lista = array(); //datos para mandar a la vista
     foreach ($usuarios as $i => $usuario) {
       $lista[$i] = array(
@@ -45,8 +73,8 @@ class Usuarios extends CI_Controller{
     }
     //genero la lista de links de paginación
     $this->pagination->initialize(array(
-      'base_url' => site_url("usuarios/listar"),
-      'total_rows' => $this->gu->cantidad(),
+      'base_url' => $url,
+      'total_rows' => $cantidad,
       'per_page' => self::per_page,
       'uri_segment' => 3
     ));
@@ -92,7 +120,7 @@ class Usuarios extends CI_Controller{
    * POST: apellido, nombre, username, password, email
    * Última revisión: 2012-02-01 6:08 p.m.
    */
-  public function nueva(){
+  public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');

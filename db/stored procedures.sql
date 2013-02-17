@@ -200,12 +200,24 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_carrera`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_carrera`(
-	pidCarrera SMALLINT UNSIGNED)
+	pidCarrera SMALLINT UNSIGNED,
+	pPagInicio INT UNSIGNED,
+    pPagLongitud INT UNSIGNED)
 BEGIN
+	SET @qry = '
     SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
     FROM    Materias M INNER JOIN Materias_Carreras MC ON M.idMateria = MC.idMateria
-	WHERE	MC.idCarrera = pidCarrera
-    ORDER BY M.nombre;
+	WHERE	MC.idCarrera = ?
+    ORDER BY M.nombre
+	LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pidCarrera;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @a, @b;
+    DEALLOCATE PREPARE stmt;
+
+    
 END $$
 
 DELIMITER ;
@@ -273,6 +285,33 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_listar_usuarios_grupo`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_usuarios_grupo`(
+	pidGrupo INT UNSIGNED,
+    pPagInicio INT UNSIGNED,
+    pPagLongitud INT UNSIGNED)
+BEGIN
+    SET @qry = '
+    SELECT  U.id, apellido, nombre, username, password, email, active, last_login
+    FROM    Usuarios U INNER JOIN Usuarios_Grupos G ON U.id = G.id_usuario
+	WHERE	G.id_grupo = ?
+    ORDER BY apellido, nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pidGrupo;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_cantidad_usuarios`;
 
 
@@ -282,6 +321,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_usuarios`()
 BEGIN
     SELECT  COUNT(*) AS cantidad
     FROM    Usuarios;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_cantidad_usuarios_grupo`;
+
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_usuarios_grupo`(
+	pidGrupo INT UNSIGNED)
+BEGIN
+    SELECT  COUNT(*) AS cantidad
+    FROM    Usuarios_Grupos
+	WHERE	id_grupo = pidGrupo;
 END $$
 
 DELIMITER ;
@@ -1409,12 +1464,22 @@ DROP PROCEDURE IF EXISTS `esp_listar_docentes_materia`;
 DELIMITER $$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
-	pidMateria SMALLINT UNSIGNED)
+	pidMateria SMALLINT UNSIGNED,
+	pPagInicio INT UNSIGNED,
+    pPagLongitud INT UNSIGNED)
 BEGIN
+    SET @qry = '
     SELECT  U.id, U.nombre, U.apellido, U.active, U.last_login, DM.tipoAcceso, DM.ordenFormulario, DM.cargo
     FROM    Usuarios U INNER JOIN Docentes_Materias DM ON U.id = DM.idDocente
-	WHERE	DM.idMateria = pidMateria
-    ORDER BY DM.ordenFormulario, U.apellido, U.nombre;
+	WHERE	DM.idMateria = ?
+    ORDER BY DM.ordenFormulario, U.apellido, U.nombre
+    LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pidMateria;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @a, @b;
+    DEALLOCATE PREPARE stmt;
 END $$
 
 DELIMITER ;

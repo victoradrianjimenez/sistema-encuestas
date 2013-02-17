@@ -74,7 +74,7 @@ class Materias extends CI_Controller{
     $materia = $this->gm->dame($idMateria);
     if ($materia){
       //obtengo lista de datos de docentes
-      $lista = $materia->listarDocentes();
+      $lista = $materia->listarDocentes($pagInicio, self::per_page);
 
       //genero la lista de links de paginación
       $this->pagination->initialize(array(
@@ -195,8 +195,8 @@ class Materias extends CI_Controller{
       return;
     }
     //verifico datos POST
-    $this->form_validation->set_rules('idDocente','Materia','is_natural_no_zero|required');
-    $this->form_validation->set_rules('idMateria','Carrera','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idDocente','Docente','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('ordenFormulario','Orden en formulario','is_natural_no_zero|required');
     $this->form_validation->set_rules('cargo','Cargo','alpha_dash_space|max_length[40]');
     if($this->form_validation->run()){

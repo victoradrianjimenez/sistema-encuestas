@@ -37,11 +37,13 @@ class Carrera extends CI_Model{
    * Obtener el listado de materias que pertenecen a la carrera. Devuleve un array de objetos.
    *
    * @access  public
+   * @param posicion del primer item de la lista a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listarMaterias(){
+  public function listarMaterias($pagNumero=0, $pagLongitud=1000){
     $idCarrera = $this->db->escape($this->idCarrera);
-    $query = $this->db->query("call esp_listar_materias_carrera($idCarrera)");
+    $query = $this->db->query("call esp_listar_materias_carrera($idCarrera, $pagNumero, $pagLongitud)");
     $data = $query->result('Materia');
     $query->free_result();
     //$this->db->reconnect();

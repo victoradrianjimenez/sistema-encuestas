@@ -1,0 +1,22 @@
+.nav-bar > li{
+  list-style: none;
+  z-index: 999;
+}
+div.columns,div.column{
+  padding: -10px;
+}
+
+fieldset{
+}
+
+input[type="text"]{
+  border-width: 1px;
+  margin:0px;
+  padding:0px;
+  line-height: 100%;
+  
+} 
+
+.panel{
+
+}
