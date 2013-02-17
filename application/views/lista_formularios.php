@@ -1,104 +1,93 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-01-31 10:23 a.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
-  <title>Lista formularios</title>
+  <?php include 'templates/head.php'?>
+  <title>Lista Formularios</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Gestión de Formularios</h3>
+        <p>---Descripción---</p>
+      </div>
     </div>
-  </div>
-
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>  
     
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <div class="row">
-        <div class="twelve columns">
-          <h3>Formularios</h3>
-          <?php if(count($lista)== 0):?>
-            <p>No se encontraron formularios.</p>
-          <?php else:?>
-            <table class="twelve">
-              <thead>
-                <th>Nombre</th>
-                <th>Título</th>
-                <th>Creacion</th>
-                <th>Acciones</th>
-              </thead>
-              <?php foreach($lista as $item): ?>  
-                <tr>
-                  <td><a class="nombre" href="<?php echo site_url('formularios/ver/'.$item->idFormulario)?>"/><?php echo $item->nombre?></a></td>
-                  <td class="titulo"><?php echo $item->titulo?></td>
-                  <td class="creacion"><?php echo $item->creacion?></td>
-                  <td>
-                    <a class="eliminar" href="" value="<?php echo $item->idFormulario?>">Eliminar</a>
-                  </td>
-                </tr>
-              <?php endforeach ?>
-            </table>
-          <?php endif ?>
-          <?php echo $paginacion ?>
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+        <h4>Navegación</h4>
+        <ul class="nav nav-pills nav-stacked">      
+          <li class="active"><a href="<?php echo site_url("formularios")?>" href="">Formularios</a></li>
+          <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
+        </ul>
+      </div>
+      
+      <!-- Main -->
+      <div class="span9">
+        <h4>Formularios</h4>
+        <?php if(count($lista)== 0):?>
+          <p>No se encontraron formularios.</p>
+        <?php else:?>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <th>Nombre</th>
+              <th>Título</th>
+              <th>Creacion</th>
+              <th>Acciones</th>
+            </thead>
+            <?php foreach($lista as $item): ?>  
+              <tr>
+                <td><a class="nombre" href="<?php echo site_url('formularios/ver/'.$item->idFormulario)?>"/><?php echo $item->nombre?></a></td>
+                <td class="titulo"><?php echo $item->titulo?></td>
+                <td class="creacion"><?php echo $item->creacion?></td>
+                <td>
+                  <a class="eliminar" href="" value="<?php echo $item->idFormulario?>">Eliminar</a>
+                </td>
+              </tr>
+            <?php endforeach ?>
+          </table>
+        <?php endif ?>
+        <?php echo $paginacion ?>
+
+        <!-- Botones -->
+        <div class="btn-group">
+          <a class="btn btn-primary" href="<?php echo site_url('formularios/editar')?>">Agregar formulario</a>
         </div>
       </div>
-      <div class="row">
-        <div class="six mobile-two columns pull-one-mobile">
-          <a class="button" href="<?php echo site_url('formularios/editar')?>">Agregar formulario</a>
-        </div>          
-      </div>
     </div>
+    <div id="push"></div><br />
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
-    
+  <?php include 'templates/footer.php'?>  
+  
   <!-- ventana modal para eliminar formularios -->
-  <div id="modalEliminar" class="reveal-modal medium">
+  <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Eliminar formulario</h3>
+    </div>
     <form action="<?php echo site_url('formularios/eliminar')?>" method="post">
-      <input type="hidden" name="idFormulario" value="" />
-      <h3>Eliminar formulario</h3>
-      <h5 class="nombre"></h5>
-      <p>¿Desea continuar?</p>
-      <div class="row">         
-        <div class="ten columns centered">
-          <div class="six mobile-one columns push-one-mobile">
-            <input class="button cancelar" type="button" value="Cancelar"/>
-          </div>
-          <div class="six mobile-one columns pull-one-mobile ">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </div>
+      <div class="modal-body">
+        <input type="hidden" name="idFormulario" value="" />
+        <h5 class="nombre"></h5>
+        <p>¿Desea continuar?</p>      
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
       </div>
     </form>
-    <a class="close-reveal-modal">&#215;</a>
   </div>
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
-    $('.cancelar').click(function(){
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
-
     $('.eliminar').click(function(){
       idFormulario = $(this).attr('value');
       nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
@@ -106,9 +95,11 @@
       $('#modalEliminar input[name="idFormulario"]').val(idFormulario);
       //pongo el nombre del departamento en el dialogo
       $("#modalEliminar").find('.nombre').html(nombre);
-      $("#modalEliminar").reveal();
+      $("#modalEliminar").modal();
       return false;
     });
+    //abrir automaticamente la ventana modal que contenga entradas con errores
+    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

@@ -64,7 +64,7 @@ class Preguntas extends CI_Controller {
    * POST: texto, descripcion, tipo, obligatoria, ordenInverso, unidad, limiteInferior, limiteSuperior, textoOpcion_###
    * Última revisión: 2012-02-04 12:26 p.m.
    */
-  public function nuevo(){
+  public function nueva(){
     if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     if ($this->input->post('submit')){
       //cargo modelos y librerias necesarias

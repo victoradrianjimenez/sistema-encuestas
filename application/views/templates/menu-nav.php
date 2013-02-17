@@ -6,7 +6,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </a>
-      <a class="brand" href="#">Sistema Encuestas</a>
+      <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
       <div class="nav-collapse collapse">
         <ul class="nav">
           <li class="dropdown">

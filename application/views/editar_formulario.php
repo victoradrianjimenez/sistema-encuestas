@@ -1,102 +1,99 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-02-05 2:01 p.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Editar Formulario</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
+    .Secciones{
+      list-style-type: none;
+      margin: 0;
+    }
     .Secciones li{
       border: 1px solid #2BA6CB;
       padding: 5px;
-      margin: 10px 0;
+      margin: 5px 0;
     }
-    .barra-botones{
+    .Preguntas{
+      list-style-type: none;
+      margin: 5px;
+    }
+    .Preguntas li{
+      border: 1px solid #CCCCCC;
+    }
+    .btn-group{
       float:right;
-      margin: 0;
-    }
-    li{list-style: none;}
-    .Preguntas{margin: 5px;}
-    .Preguntas li{border: 1px solid #CCCCCC;}
-    .Pregunta .barra-botones > a{
-      font-size: 20px;
-      color:#CCCCCC;
-      margin: 0;
+      line-height:0;
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Gestión de Formularios</h3>
+        <p>---Descripción---</p>
+      </div>
     </div>
-  </div>
 
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>  
-    
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <form action="<?php echo site_url('formularios/nuevo')?>" method="post">
-        <div class="row">
-          <div class="twelve columns">
-            <h3>Formulario</h3>
-            <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
-            <input id="campoNombre" type="text" name="nombre" required />
-            <label for="campoTitulo">Título: <span class="opcional">*</span></label>
-            <input id="campoTitulo" type="text" name="titulo" required />
-          </div>
-          <div class="nine mobile-two  columns">
-            <label for="campoDescripcion">Descripción: </label>
-            <input id="campoDescripcion" type="text" name="descripcion" />
-          </div>
-          <div class="three mobile-two columns">
-            <label for="campoAdicionales">Preguntas adicionales: <span class="opcional">*</span></label>
-            <input id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" />
-          </div>
-        </div>
-        <div class="row">
-          <div class="twelve columns">
-            <div class="row Formularios">
-              <div class="twelve columns">
-                <h3 style="float:right"><a id="agregarSeccion" data-reveal-id="modalAgregarSeccion" title="Agregar sección..."><i class="foundicon-plus"></i></a></h3>
-                <h3>Secciones</h3>
-              </div>
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+        <h4>Navegación</h4>
+        <ul class="nav nav-pills nav-stacked">      
+          <li class="active"><a href="<?php echo site_url("formularios")?>" href="">Formularios</a></li>
+          <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
+        </ul>
+      </div>
+      
+      <!-- Main -->
+      <div class="span9">
+      <h4>Formulario</h4>
+        <form action="<?php echo site_url('formularios/nuevo')?>" method="post">
+          <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
+          <input class="input-block-level" id="campoNombre" type="text" name="nombre" required />
+          <label for="campoTitulo">Título: <span class="opcional">*</span></label>
+          <input class="input-block-level" id="campoTitulo" type="text" name="titulo" required />
+          <div class="row-fluid">
+            <div class="span12">
+            <div class="span8">
+              <label for="campoDescripcion">Descripción: </label>
+              <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
             </div>
-            <ul class="Secciones"></ul>
-          </div>
-          <div class="row">
-            <div class="two columns centered">
-              <input id="Aceptar" class="button" type="submit" name="submit" value="Aceptar" />
+            <div class="span4">
+              <label for="campoAdicionales">Preguntas adicionales: <span class="opcional">*</span></label>
+              <input class="input-block-level" id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" />
+            </div>
             </div>
           </div>
-        </div>
-      </form>
+          <div class="Formularios">
+            <legend>Secciones
+              <a style="float:right; margin:0 6px;" href="#modalAgregarSeccion" role="button" data-toggle="modal" title="Agregar sección..."><i class="icon-circle-plus"></i></a>
+            </legend>
+          </div>
+          <ul class="Secciones"></ul>
+          
+          <!-- Botones -->
+          <div>
+            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+          </div>
+        </form>
+      </div>
     </div>
+    <div id="push"></div><br />
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
+  <?php include 'templates/footer.php'?>
   
   <div id="HTMLSeccion" class="hide">
     <li class="Seccion">
-      <h3 class="barra-botones">
-        <a class="subirSeccion" title="Subir" href=""><i class="foundicon-up-arrow"></i></a>
-        <a class="bajarSeccion" title="Bajar" href=""><i class="foundicon-down-arrow"></i></a>
-        <a class="eliminarSeccion" title="Eliminar" href=""><i class="foundicon-remove"></i></a>
-        <a class="agregarPregunta" title="Agregar pregunta..." href=""><i class="foundicon-plus"></i></a>
-      </h3>
+      <div class="btn-group">
+        <a class="subirSeccion" title="Subir" href=""><i class="icon-circle-arrow-top"></i></a>
+        <a class="bajarSeccion" title="Bajar" href=""><i class="icon-circle-arrow-down"></i></a>
+        <a class="eliminarSeccion" title="Eliminar" href=""><i class="icon-circle-remove"></i></a>
+        <a class="nuevaPregunta" title="Agregar pregunta..." href=""><i class="icon-circle-plus"></i></a>
+      </div>
       <input type="hidden" name="textoSeccion" value="" />
       <input type="hidden" name="descripcionSeccion" value="" />
       <input type="hidden" name="tipoSeccion" value="" />
@@ -108,64 +105,64 @@
   
   <div id="HTMLPregunta" class="hide">
     <li class="Pregunta">
-      <h3 class="barra-botones">
-        <a class="subirPregunta" title="Subir" href=""><i class="foundicon-up-arrow"></i></a>
-        <a class="bajarPregunta" title="Bajar" href=""><i class="foundicon-down-arrow"></i></a>
-        <a class="eliminarPregunta" title="Eliminar" href=""><i class="foundicon-remove"></i></a>
-      </h3>
+      <div class="btn-group">
+        <a class="subirPregunta" title="Subir" href=""><i class="icon-circle-arrow-top"></i></a>
+        <a class="bajarPregunta" title="Bajar" href=""><i class="icon-circle-arrow-down"></i></a>
+        <a class="eliminarPregunta" title="Eliminar" href=""><i class="icon-circle-remove"></i></a>
+      </div>
       <input type="hidden" name="idPregunta" value="" />
       <p class="texto"></p>
     </li>
   </div>
   
   <!-- ventana modal para agregar una seccion -->
-  <div id="modalAgregarSeccion" class="reveal-modal medium">
-    <h3>Agregar sección</h3>
-    <label>Texto:
-      <input type="text" name="textoSeccion" />
-    </label>
-    <label>Descripción:
-      <input type="text" name="descripcionSeccion"/>
-    </label>
-    <label>Tipo de Sección:
+  <div id="modalAgregarSeccion" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Agregar sección</h3>
+    </div>
+    <div class="modal-body">
+      <label>Texto: <span class="opcional">*</span></label>
+      <input class="input-block-level" type="text" name="textoSeccion" required/>
+      <label>Descripción: </label>
+      <input class="input-block-level" type="text" name="descripcionSeccion" />
+      <label>Tipo de Sección: <span class="opcional">*</span></label>
       <select name="tipoSeccion">
         <option value="N">Normal</option>
         <option value="D">Docente</option>
       </select>
-    </label>
-    <div>
-      <a class="button agregarSeccion">Agregar</a>
-      <a class="close-reveal-modal">&#215;</a>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+      <button class="btn btn-primary agregarSeccion">Agregar</button>
     </div>
   </div>
   
   <!-- ventana modal para agregar una pregunta -->
-  <div id="modalAgregarPregunta" class="reveal-modal medium">
-    <h3>Agregar pregunta</h3>
-    <label>Buscar pregunta:
-      <div class="buscador">
-        <input id="buscarPregunta" type="text" autocomplete="off">
-        <i class="gen-enclosed foundicon-search"></i>
-        <select id="listaPreguntas" name="idMateria" size="3">
-        </select>
-      </div>
-    </label>
-    <a class="button agregarPregunta">Agregar</a>
-    <a class="close-reveal-modal">&#215;</a>
+  <div id="modalAgregarPregunta" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Agregar pregunta</h3>
+    </div>
+    <div class="modal-body">
+      <label>Buscar pregunta: <span class="opcional">*</span></label>
+      <input class="input-block-level" id="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" >
+      <input type="hidden" name="idMateria" value=""/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+      <button class="btn btn-primary agregarPregunta">Agregar</button>
+    </div>
   </div>
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
     var ContenedorSeccionActual=null;
   
-    $('.nuevaSeccion').click(function(){
-      $(this).siblings('.editarSeccion').show('fast');
-    });
-    
     $('.agregarSeccion').click(function(){
       //busco el contenedor del formulario de agregar seccion
       contFormulario = $('#modalAgregarSeccion');
@@ -204,24 +201,20 @@
         Contenedor.hide('fast', function(){$(this).remove();});
         return false;
       });
-      nuevaSeccion.find('.agregarPregunta').click(function(){
+      nuevaSeccion.find('.nuevaPregunta').click(function(){
         ContenedorSeccionActual = $(this).parentsUntil('li.Seccion').parent(); //variable global
-        $("#modalAgregarPregunta").reveal();
+        $("#modalAgregarPregunta").modal();
         return false;
       });
- 
-      //ocultar ventana
-      $(this).trigger('reveal:close'); //cerrar ventana
     });
-    
     
     $('.agregarPregunta').click(function(){
       //busco el contenedor que tiene los datos de la nueva pregunta
       contFormulario = $('#modalAgregarPregunta');
       
       //leo los datos de la seccion
-      pidPregunta = $('#listaPreguntas').val();
-      ptexto = $('#listaPreguntas').children('[value="'+ pidPregunta +'"]').text();
+      pidPregunta = $('#modalAgregarPregunta').find('[name="idMateria"]').val();
+      ptexto = $('#buscarPregunta').val();
       if (ptexto=='' || pidPregunta=='') return;
       
       //tomo la plantilla de la pregunta y la agrego al formulario
@@ -251,30 +244,46 @@
         Contenedor.hide('fast', function(){$(this).remove();});
         return false;
       });
-      //ocultar la ventana
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
-
-    $('#buscarPregunta').keyup(function(){
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('preguntas/buscarAjax')?>", 
-        data: { buscar: $(this).val() }
-      }).done(function(msg){
-        $('#listaPreguntas').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0]; //IdPregunta
-          var datos = columnas[2]; //Texto
-          //agregar fila a la lista desplegable
-          $('#listaPreguntas').append('<option value="'+id+'">'+datos+'</option>');
-        }
-      })
     });
     
+    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
+    $('#buscarPregunta').keydown(function(){
+      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    });
+    //realizo la busqueda de usuarios con AJAX
+    $('#buscarPregunta').typeahead({
+      matcher: function (item) {return true},    
+      sorter: function (items) {return items},
+      source: function(query, process){
+        return $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('preguntas/buscarAjax')?>", 
+          data:{ buscar: query}
+        }).done(function(msg){
+          var filas = msg.split("\n");
+          var items = new Array();
+          for (var i=0; i<filas.length; i++){
+            if (filas[i].length<5) continue;
+            items.push(filas[i]);
+          }
+          return process(items);
+        });
+      },
+      highlighter: function (item) {
+        var cols = item.split("\t");
+        var texto = cols[2]; //texto
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+          return '<strong>' + match + '</strong>'
+        })
+      },
+      updater: function (item) {
+        var cols = item.split("\t");
+        $('#buscarPregunta').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+        return cols[2];
+      }
+    });
+      
     $('#Aceptar').click(function(){      
       //por cada seccion creada
       $('.Secciones').children().each(function(i){

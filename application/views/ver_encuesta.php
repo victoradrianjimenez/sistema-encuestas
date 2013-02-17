@@ -1,100 +1,81 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-02-05 11:47 p.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Ver encuesta</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Gestión de Encuestas</h3>
+        <p>---Descripción---</p>
+      </div>
     </div>
-  </div>
-  
-  <!-- Main Section -->
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div> 
     
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <div class="row">
-        <div class="twelve columns">
-          <h3>Encuesta</h3>
-          <h5>Período: <?php echo $encuesta->año.' ('.$encuesta->cuatrimestre.')'?></h5>
-          <h5>Fecha de inicio de la toma de encuestas: <?php echo $encuesta->fechaInicio?></h5>
-          <h5>Fecha de cierre de las encuestas: <?php echo $encuesta->fechaFin?></h5>
-        </div>
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+        <h4>Navegación</h4>
+        <ul class="nav nav-pills nav-stacked">      
+          <li class="active"><a href="<?php echo site_url("encuestas")?>" href="">Encuestas realizadas</a></li>
+          <li><a href="<?php echo site_url("claves")?>">Claves de acceso</a></li>
+        </ul>
       </div>
-      <div class="row">
-        <div class="twelve columns">
-          <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalGenerarClaves">Generar claves de acceso</a></li>
-            <li><a class="button" data-reveal-id="">Ver claves generadas</a></li>
-            <li><a class="button" data-reveal-id="modalFinalizar">Cerrar periodo de encuesta</a></li>
-          </ul>
+      
+      <!-- Main -->
+      <div class="span9">
+        <h4>Encuesta</h4>
+        <h5>Período: <?php echo $encuesta->año.' / '.$encuesta->cuatrimestre?></h5>
+        <h5>Fecha de inicio de la toma de encuestas: <?php echo $encuesta->fechaInicio?></h5>
+        <h5>Fecha de cierre de las encuestas: <?php echo $encuesta->fechaFin?></h5>
+        
+        <!-- Botones -->
+        <div>
+          <button class="btn btn-primary" href="#modalGenerarClaves" role="button" data-toggle="modal">Generar claves de acceso</button>
+          <button class="btn btn-primary" href="#modalFinalizar" role="button" data-toggle="modal">Cerrar periodo de encuesta</button>
         </div>
       </div>
     </div>
+    <div id="push"></div><br />
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
+  <?php include 'templates/footer.php'?>  
   
   <!-- ventana modal para generar claves de acceso -->
-  <div id="modalGenerarClaves" class="reveal-modal medium">
-    <?php  
-      //include 'elements/form-alta-claves.php'; 
-    ?>
-    <a class="close-reveal-modal">&#215;</a>
+  <div id="modalGenerarClaves" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   </div>
 
-  <!-- ventana modal para desasociar materias a la carrera -->
-  <div id="modalFinalizar" class="reveal-modal medium">
+  <!-- ventana modal para finalizar un periodo de encuestas -->
+  <div id="modalFinalizar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Finalizar período de encuesta</h3>
+    </div>
     <form action="<?php echo site_url('encuestas/finalizar')?>" method="post">
-      <h3>Finalizar período de encuesta</h3>
-      <h5><?php echo $encuesta->año.' ('.$encuesta->cuatrimestre.')'?></h5>
-      <p>¿Desea continuar?</p>
-      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
-      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
-      <div class="row">         
-        <div class="ten columns centered">
-          <div class="six mobile-one columns push-one-mobile">
-            <input class="button cancelar" type="button" value="Cancelar"/>
-          </div>
-          <div class="six mobile-one columns pull-one-mobile ">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </div>
+      <div class="modal-body">
+        <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+        <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+        <h5><?php echo $encuesta->año.' / '.$encuesta->cuatrimestre?></h5>
+        <p>¿Desea continuar?</p>      
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
       </div>
     </form>
-    <a class="close-reveal-modal">&#215;</a>
   </div>
-    
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
   
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
-    $('.cancelar').click(function(){
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
-    
     //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
+    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

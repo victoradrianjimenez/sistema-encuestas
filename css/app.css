@@ -41,11 +41,38 @@ span.label{
     form{
       margin:0;
     }
+div.modal-body{
+  overflow:visible;
+}
 
-
-div.modal-body{overflow:visible;}
-
-
+i.icon-circle-plus{
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  background-image: url("../img/glyphicons_circle_blue.png");
+  background-position: -52px 0;
+}
+i.icon-circle-arrow-top{
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  background-image: url("../img/glyphicons_circle_blue.png");
+  background-position: 0;
+}
+i.icon-circle-arrow-down{
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  background-image: url("../img/glyphicons_circle_blue.png");
+  background-position: -26px 0;
+}
+i.icon-circle-remove{
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  background-image: url("../img/glyphicons_circle_blue.png");
+  background-position: -78px 0;
+}
 
 
 /* Artfully masterminded by ZURB  */

@@ -2780,7 +2780,7 @@ BEGIN
 			obligatoria, ordenInverso, limiteInferior, limiteSuperior,
 			paso, unidad
     FROM    Preguntas
-    ORDER BY texto
+    ORDER BY creacion DESC
 	LIMIT ?,?';
     PREPARE stmt FROM  @qry;
     SET @a = pPagInicio;

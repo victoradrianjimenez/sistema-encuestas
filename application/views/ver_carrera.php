@@ -16,6 +16,8 @@
       </div>
     </div>
     
+      <!-- Main -->
+      <div class="span9">
     <div class="row">
       <!-- SideBar -->
       <div class="span3" id="menu">
