@@ -1,139 +1,163 @@
 <!DOCTYPE html>
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Generar Informe por Departamento</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <style>
+    .form-horizontal .controls {
+      margin-left: 130px;
+    }
+    .form-horizontal .control-label {
+      width: 110px;
+      float: left;
+    }
+  </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Informes por Encuestas</h3>
+        <p>---Descripción---</p>
+      </div>
     </div>
     
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <h3>Solicitar informe por departamento</h3>
-      <form action="<?php echo site_url('encuestas/informeDepartamento')?>" method="post">
-        <div class="row">
-          <div class="twelve columns">
-            <label for="buscarDepartamento">Departamento: </label>
-            <div class="buscador">
-              <input id="buscarDepartamento" type="text" autocomplete="off">
-              <i class="gen-enclosed foundicon-search"></i>
-              <select id="listaDepartamentos" name="idDepartamento" size="2" required>
-              </select>
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+        <h4>Navegación</h4>
+        <ul class="nav nav-pills nav-stacked">      
+          <li><a href="<?php echo site_url("encuestas/informeMateria")?>">Materia</a></li>
+          <li><a href="<?php echo site_url("encuestas/informeCarrera")?>">Carrera</a></li>
+          <li class="active"><a href="<?php echo site_url("encuestas/informeDepartamento")?>">Departamento</a></li>
+          <li><a href="<?php echo site_url("encuestas/informeFacultad")?>">Facultad</a></li>
+        </ul>
+      </div>
+      
+      <!-- Main -->
+      <div class="span9">
+        <h4>Solicitar informe por departamento</h4>
+        <form class="form-horizontal" action="<?php echo site_url('encuestas/informeDepartamento')?>" method="post">
+          <div class="control-group">
+            <label class="control-label" for="buscarDepartamento">Departamento: <span class="opcional">*</span></label>
+            <div class="controls">
+              <input class="input-block-level" id="buscarDepartamento" type="text" autocomplete="off" data-provide="typeahead" required>
+              <input type="hidden" name="idDepartamento" required/>
               <?php echo form_error('idDepartamento')?>
             </div>
-
-            <label for="buscarEncuesta">Año: </label>
-            <div class="buscador">
-              <input id="buscarEncuesta" type="text" autocomplete="off">
-              <i class="gen-enclosed foundicon-search"></i>
-              <select id="listaEncuestas" name="encuesta" size="2" required>
-              </select>
-              <?php echo form_error('encuesta')?>
+          </div>
+          <div class="control-group">  
+            <label class="control-label" for="buscarEncuesta">Año: <span class="opcional">*</span></label>
+            <div class="controls">
+              <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
+              <input type="hidden" name="idEncuesta" required/>
+              <?php echo form_error('idEncuesta')?>
+              <input type="hidden" name="idFormulario" required/>
+              <?php echo form_error('idFormulario')?>
             </div>
           </div>
-        </div>
-        <div class="row">         
-          <div class="three mobile-two columns centered pull-one-mobile">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
+          <div class="controls btn-group">
+            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
+    <div id="push"></div><br />
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
+  <?php include 'templates/footer.php'?>
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
-    //realizo la busquedas por AJAX
-    $('#buscarDepartamento').keyup(function(){
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('departamentos/buscarAJAX')?>", 
-        data: { buscar: $(this).val() }
-      }).done(function(msg){
-        $('#listaDepartamentos').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0];
-          var datos = columnas[1];
-          //agregar fila a la lista desplegable
-          $('#listaDepartamentos').append('<option value="'+id+'">'+datos+'</option>');
-        }
-        $('#listaDepartamentos').children().first().attr('selected','');
-        $('#buscarDepartamento').next('i').removeClass('active');
-      });
+    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
+    $('#buscarDepartamento').keydown(function(){
+      if (event.which==9) return; //ignorar al presionar Tab
+      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });
-
-    $('#buscarEncuesta').keyup(function(){
-      val = $(this).val();
-      if (isNaN(val) || val<1900 || val>2100) return;
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('encuestas/buscarEncuestaAJAX')?>", 
-        data: { buscar: $(this).val() }
-      }).done(function(msg){
-        $('#listaEncuestas').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0]+"_"+columnas[1];
-          var datos = columnas[2]+"/"+columnas[3];
-          //agregar fila a la lista desplegable
-          $('#listaEncuestas').append('<option value="'+id+'">'+datos+'</option>');
-        }
-        $('#listaEncuestas').children().first().attr('selected','');
-        $('#buscarEncuesta').next('i').removeClass('active');
-      });
-    });
-
-    //actualizar input al seleccionar item de la lista desplegable
-    $('#listaDepartamentos').click(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarDepartamento').val(texto);
-      $(this).next('small.error').hide('fast');
+    //realizo la busqueda de usuarios con AJAX
+    $('#buscarDepartamento').typeahead({
+      matcher: function (item) {return true},    
+      sorter: function (items) {return items},
+      source: function(query, process){
+        return $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('departamentos/buscarAJAX')?>", 
+          data:{ buscar: query}
+        }).done(function(msg){
+          var filas = msg.split("\n");
+          var items = new Array();
+          for (var i=0; i<filas.length; i++){
+            if (filas[i].length<5) continue;
+            items.push(filas[i]);
+          }
+          return process(items);
+        });
+      },
+      highlighter: function (item) {
+        var cols = item.split("\t");
+        var texto = cols[1]; //nombre
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+          return '<strong>' + match + '</strong>'
+        })
+      },
+      updater: function (item) {
+        var cols = item.split("\t");
+        $('#buscarDepartamento').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+        return cols[1];
+      }
     });
     
-    $('#listaEncuestas').click(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarEncuesta').val(texto);
-      $(this).next('small.error').hide('fast');
+    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
+    $('#buscarEncuesta').keydown(function(){
+      if (event.which==9) return; //ignorar al presionar Tab
+      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    });
+    //realizo la busqueda de usuarios con AJAX
+    $('#buscarEncuesta').typeahead({
+      matcher: function (item) {return true},    
+      sorter: function (items) {return items},
+      source: function(query, process){
+        return $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('encuestas/buscarEncuestaAJAX')?>", 
+          data:{buscar: query}
+        }).done(function(msg){
+          var filas = msg.split("\n");
+          var items = new Array();
+          for (var i=0; i<filas.length; i++){
+            if (filas[i].length<5) continue;
+            items.push(filas[i]);
+          }
+          return process(items);
+        });
+      },
+      highlighter: function (item) {
+        var cols = item.split("\t");
+        var texto = cols[2]+" / "+cols[3]; //año / cuatrimestre
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+          return '<strong>' + match + '</strong>'
+        })
+      },
+      updater: function (item) {
+        var cols = item.split("\t");
+        cont = $('#buscarEncuesta').parentsUntil('control-group').first().parent().removeClass('error');
+        cont.find('input[name="idEncuesta"]').val(cols[0]);
+        cont.find('input[name="idFormulario"]').val(cols[1]);
+        return cols[2]+" / "+cols[3];
+      }
     });
     
     //ocultar mensaje de error al escribir
     $('input[type="text"]').keyup(function(){
-      $(this).next('small.error').hide('fast');
+      $(this).siblings('span.label').hide('fast');
     });
   </script>
 </body>

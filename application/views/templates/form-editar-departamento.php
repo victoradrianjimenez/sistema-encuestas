@@ -20,6 +20,7 @@
 <script>
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
   $('#buscarUsuario').keydown(function(){
+    if (event.which==9) return; //ignorar al presionar Tab
     $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   

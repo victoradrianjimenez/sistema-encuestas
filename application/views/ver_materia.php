@@ -21,7 +21,7 @@
       <div class="span3" id="menu">
         <h4>Navegación</h4>
         <ul class="nav nav-pills nav-stacked">      
-          <li><a href="<?php echo site_url("departamentos")?>" href="">Departamentos</a></li>
+          <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
           <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
           <li class="active"><a href="<?php echo site_url("materias")?>">Materias</a></li>
         </ul>

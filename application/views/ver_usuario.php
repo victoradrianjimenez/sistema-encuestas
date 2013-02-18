@@ -1,102 +1,96 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-02-01 6:02 p.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Ver usuario</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
-    </div>
-  </div>
-  
-  <!-- Main Section -->
-  <div class="row">    
-    
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>
-    
-    <!-- Main -->
-    <div id="Main" class="nine columns">
-      <div class="row">
-        <div class="twelve columns">
-          <h3><?php echo $usuario->nombre.' '.$usuario->apellido?></h3>
-          <h5>Email: <?php echo $usuario->email?></h5>
-          <h5>Último acceso: <?php echo date('d/m/Y g:i:s a', $usuario->last_login)?></h5>
-          <h5>Estado: <?php echo ($usuario->active)?'Activo':'Inactivo'?></h5>
-        </div>
-      </div>
-      <div class="row">
-        <div class="twelve columns">
-          <ul class="button-group">
-            <li><a class="button" data-reveal-id="modalModificar">Modificar usuario...</a></li>
-            <li><a class="button" data-reveal-id="modalActivar">Activar/Desactivar cuenta</a></li>
-          </ul>
-        </div>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Gestión de Docentes y Autoridades</h3>
+        <p>---Descripción---</p>
       </div>
     </div>
-  </div>
+    
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+        <h4>Navegación</h4>
+        <ul class="nav nav-pills nav-stacked">      
+          <li class="active"><a href="<?php echo site_url("usuarios")?>">Todos los usuarios</a></li>
+          <li><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
+          <li><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
+          <li><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
+          <li><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
+        </ul>
+      </div>
+      
+      <!-- Main -->
+      <div class="span9">
+        <h3><?php echo $usuario->nombre.' '.$usuario->apellido?></h3>
+        <h5>Email: <?php echo $usuario->email?></h5>
+        <h5>Último acceso: <?php echo date('d/m/Y g:i:s a', $usuario->last_login)?></h5>
+        <h5>Estado: <?php echo ($usuario->active)?'Activo':'Inactivo'?></h5>
 
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
+        <!-- Botones -->
+        <div class="">
+          <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar usuario...</button>
+          <button class="btn btn-primary" href="#modalActivar" role="button" data-toggle="modal">Activar/Desactivar cuenta</button>
+        </div>
+      </div>
+    </div>
+    <div id="push"></div><br />
   </div>
+  <?php include 'templates/footer.php'?>
     
   <!-- ventana modal para editar datos del usuario -->
-  <div id="modalModificar" class="reveal-modal medium">
-    <?php
-      //a donde mandar los datos editados para darse de alta
-      $link = site_url('usuarios/modificar');
-      $titulo = 'Editar usuario';
-      include 'elements/form-editar-usuario.php'; 
-    ?>
-    <a class="close-reveal-modal">&#215;</a>
-  </div>
-
-  <!-- ventana modal para activar/desactivar una cuenta de usuario -->
-  <div id="modalActivar" class="reveal-modal small">
-    <form action="<?php echo site_url(($usuario->active)?'usuarios/desactivar':'usuarios/activar')?>" method="post">
-      <h3><?php echo ($usuario->active)?'Desactivar cuenta de usuario':'Activar cuenta de usuario'?></h3>
-      <h5 class="nombre"></h5>
-      <p>¿Desea continuar?</p>
-      <input type="hidden" name="id" value="<?php echo $usuario->id?>" />
-      <div class="row">
-        <div class="ten columns centered">
-          <div class="six mobile-one columns push-one-mobile">
-            <input class="button cancelar" type="button" value="Cancelar"/>
-          </div>
-          <div class="six mobile-one columns pull-one-mobile ">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </div>
+  <div id="modalModificar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Editar usuario</h3>
+    </div>
+    <form class="form-horizontal" action="<?php echo site_url('usuarios/modificar')?>" method="post">
+      <div class="modal-body">
+        <?php include 'templates/form-editar-usuario.php'?>      
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
       </div>
     </form>
-    <a class="close-reveal-modal">&#215;</a>
   </div>
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+  <!-- ventana modal para activar/desactivar una cuenta de usuario -->
+  <div id="modalActivar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel"><?php echo ($usuario->active)?'Desactivar cuenta de usuario':'Activar cuenta de usuario'?></h3>
+    </div>
+    <form class="form-horizontal" action="<?php echo site_url(($usuario->active)?'usuarios/desactivar':'usuarios/activar')?>" method="post">
+      <div class="modal-body">
+        <h5 class="nombre"><?php echo $usuario->nombre.' '.$usuario->apellido.' - '.$usuario->email?></h5>
+        <p>¿Desea continuar?</p>
+        <input type="hidden" name="id" value="<?php echo $usuario->id?>" />  
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+      </div>
+    </form>
+  </div>
   
-  <script language="JavaScript">
-    $('.cancelar').click(function(){
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
-
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script>   
     //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('small.error').parentsUntil('.reveal-modal').parent().first().reveal();
+    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

@@ -21,7 +21,7 @@
       <div class="span3" id="menu">
         <h4>Navegación</h4>
         <ul class="nav nav-pills nav-stacked">      
-          <li class="active"><a href="<?php echo site_url("encuestas")?>" href="">Encuestas realizadas</a></li>
+          <li class="active"><a href="<?php echo site_url("encuestas")?>">Encuestas realizadas</a></li>
           <li><a href="<?php echo site_url("claves")?>">Claves de acceso</a></li>
         </ul>
       </div>

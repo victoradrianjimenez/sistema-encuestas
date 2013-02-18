@@ -1,188 +1,116 @@
 <!DOCTYPE html>
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Generar Informe por Clave de acceso</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <style>
+    .form-horizontal .controls {
+      margin-left: 90px;
+    }
+    .form-horizontal .control-label {
+      width: 70px;
+      float: left;
+    }
+  </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
+  <?php include 'templates/menu-nav.php'?>
+  <div id="wrapper" class="container">
+    <div class="row">
+      <!-- Titulo -->
+      <div class="span12">
+        <h3>Informes por Claves de Acceso</h3>
+        <p>---Descripción---</p>
+      </div>
     </div>
     
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <h3>Solicitar informe por clave de acceso</h3>
-      <form action="<?php echo site_url('encuestas/informeClave')?>" method="post">
-        <div class="row">
-          <div class="twelve columns">
-            <label for="buscarCarrera">Carrera: </label>
-            <div class="buscador">
-              <input id="buscarCarrera" type="text" autocomplete="off">
-              <i class="gen-enclosed foundicon-search"></i>
-              <select id="listaCarreras" name="idCarrera" size="3" required>
-              </select>
+    <div class="row">
+      <!-- SideBar -->
+      <div class="span3" id="menu">
+      </div>
+      
+      <!-- Main -->
+      <div class="span9">
+        <h4>Solicitar informe por clave de acceso</h4>
+        <form class="form-horizontal" action="<?php echo site_url('encuestas/informeClave')?>" method="post">
+          
+          <div class="control-group">
+            <label class="control-label" for="buscarCarrera">Carrera: <span class="opcional">*</span></label>
+            <div class="controls">
+              <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
+              <input type="hidden" name="idCarrera" required/>
               <?php echo form_error('idCarrera')?>
             </div>
-
-            <label for="buscarMateria">Materia: </label>
-            <div class="buscador">
-              <input id="buscarMateria" type="text" autocomplete="off">
-              <i class="gen-enclosed foundicon-search"></i>
-              <select id="listaMaterias" name="idMateria" size="3" required>
-              </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="buscarMateria">Materia: <span class="opcional">*</span></label>
+            <div class="controls">
+              <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
+              <input type="hidden" name="idMateria" required/>
               <?php echo form_error('idMateria')?>
             </div>
-
-            <label for="buscarEncuesta">Año: </label>
-            <div class="buscador">
-              <input id="buscarEncuesta" type="text" autocomplete="off">
-              <i class="gen-enclosed foundicon-search"></i>
-              <select id="listaEncuestas" name="encuesta" size="3" required>
+          </div>
+          <div class="control-group">  
+            <label class="control-label" for="buscarEncuesta">Año: <span class="opcional">*</span></label>
+            <div class="controls">
+              <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
+              <input type="hidden" name="idEncuesta" required/>
+              <?php echo form_error('idEncuesta')?>
+              <input type="hidden" name="idFormulario" required/>
+              <?php echo form_error('idFormulario')?>
+            </div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="listaClaves">Accesos: <span class="opcional">*</span></label>
+            <div class="controls">
+              <select id="listaClaves" name="idClave" size="3" required>
               </select>
-              <?php echo form_error('encuesta')?>
-            </div>
-
-            <label for="listaClaves">Claves de acceso: </label>
-            <select id="listaClaves" name="idClave" size="3" required>
-            </select>
-            <?php echo form_error('idClave')?>
-
-          </div>
-          <div class="twelve columns">
-            <div class="row">    
-              <input type="checkbox" name="indicesSecciones" checked />Incluir índices de secciones
-            </div>
-            <div class="row">    
-              <input type="checkbox" name="indicesDocentes" checked />Incluir índices para cada docente
-            </div>
-            <div class="row">    
-              <input type="checkbox" name="indiceGlobal" checked />Incluir indice global
+              <?php echo form_error('idClave')?>
             </div>
           </div>
-        </div>
-        <div class="row">         
-          <div class="three mobile-two columns centered pull-one-mobile">
-            <input class="button" type="submit" name="submit" value="Aceptar" />
+          <div class="control-group">
+            <div class="controls">
+              <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir índices de secciones</label>
+              <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir índices para cada docente</label>
+              <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice global</label>
+            </div>
           </div>
-        </div>
-      </form>
+          <div class="controls btn-group">
+            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+          </div>
+        </form>
+      </div>
     </div>
+    <div id="push"></div><br />
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
+  <?php include 'templates/footer.php'?>  
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
-    //realizo la busquedas por AJAX
-    $('#buscarCarrera').keyup(function(){
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('carreras/buscarAJAX')?>", 
-        data: { buscar: $(this).val() }
-      }).done(function(msg){
-        $('#listaCarreras').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0];
-          var datos = columnas[1]+" / "+columnas[2];
-          //agregar fila a la lista desplegable
-          $('#listaCarreras').append('<option value="'+id+'">'+datos+'</option>');
-        }
-        $('#listaCarreras').children().first().attr('selected','');
-        $('#buscarCarrera').next('i').removeClass('active');
-      });
-    });
-    
-    $('#buscarMateria').keyup(function(){
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('carreras/buscarMateriasAJAX')?>", 
-        data: { 
-          idCarrera: $('#listaCarreras').val(),
-          buscar: $(this).val() 
-        }
-      }).done(function(msg){
-        $('#listaMaterias').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0];
-          var datos = columnas[1]+" / "+columnas[2];
-          //agregar fila a la lista desplegable
-          $('#listaMaterias').append('<option value="'+id+'">'+datos+'</option>');
-        }
-        $('#listaMaterias').children().first().attr('selected','');
-        $('#buscarMateria').next('i').removeClass('active');
-      });
-    });
-      
-    $('#buscarEncuesta').keyup(function(){
-      val = $(this).val();
-      if (isNaN(val) || val<1900 || val>2100) return;
-      $(this).next('i').addClass('active');
-      $.ajax({
-        type: "POST", 
-        url: "<?php echo site_url('encuestas/buscarEncuestaAJAX')?>", 
-        data: { buscar: $(this).val() }
-      }).done(function(msg){
-        $('#listaEncuestas').empty();
-        var filas = msg.split("\n");
-        for (var i=0; i<filas.length-1; i++){
-          if (filas[i].length<5) continue;
-          //separo datos en columnas
-          var columnas = filas[i].split("\t");
-          var id = columnas[0]+"_"+columnas[1];
-          var datos = columnas[2]+"/"+columnas[3];
-          //agregar fila a la lista desplegable
-          $('#listaEncuestas').append('<option value="'+id+'" idencuesta="'+columnas[0]+'" idformulario="'+columnas[1]+'" >'+datos+'</option>');
-        }
-        //$('#listaEncuestas').children().first().attr('selected','');
-        $('#buscarEncuesta').next('i').removeClass('active');
-      });
-    });
-    
-    $('#listaEncuestas').change(function(){
-      selected = $('#listaEncuestas').children('[selected]');
+    //listar claves de acceso al elegir la encuesta
+    listarClaves = function(){
+      $('#listaClaves').empty();
+      var idEncuesta = $('#buscarEncuesta').siblings('input[name="idEncuesta"]').val();
+      var idFormulario = $('#buscarEncuesta').siblings('input[name="idFormulario"]').val();
+      var idMateria = $('#buscarMateria').siblings('input[name="idMateria"]').val();
+      var idCarrera = $('#buscarCarrera').siblings('input[name="idCarrera"]').val();
+      //si no se ingreso algun campo, terminar sin buscar nada
+      if (idEncuesta==''||idFormulario==''||idMateria==''||idCarrera=='') return;
       $.ajax({
         type: "POST", 
         url: "<?php echo site_url('claves/listarClavesMateriaAJAX')?>", 
         data: { 
-          idEncuesta: selected.attr('idEncuesta'),
-          idFormulario: selected.attr('idFormulario'),
-          idMateria: $('#listaMaterias').children('[selected]').attr('value'),
-          idCarrera: $('#listaCarreras').children('[selected]').attr('value')
+          idEncuesta: idEncuesta,
+          idFormulario: idFormulario,
+          idMateria: idMateria,
+          idCarrera: idCarrera,
         }
       }).done(function(msg){
-        $('#listaClaves').empty();
         var filas = msg.split("\n");
         for (var i=0; i<filas.length-1; i++){
           if (filas[i].length<5) continue;
@@ -195,31 +123,137 @@
         }
         $('#listaClaves').children().first().attr('selected','');
       });
+    };  
+  
+    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
+    $('#buscarCarrera').keydown(function(){
+      if (event.which==9) return; //ignorar al presionar Tab
+      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    });
+    //realizo la busqueda de usuarios con AJAX
+    $('#buscarCarrera').typeahead({
+      matcher: function (item) {return true},    
+      sorter: function (items) {return items},
+      source: function(query, process){
+        return $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('carreras/buscarAJAX')?>", 
+          data:{ buscar: query}
+        }).done(function(msg){
+          var filas = msg.split("\n");
+          var items = new Array();
+          for (var i=0; i<filas.length; i++){
+            if (filas[i].length<5) continue;
+            items.push(filas[i]);
+          }
+          return process(items);
+        });
+      },
+      highlighter: function (item) {
+        var cols = item.split("\t");
+        var texto = cols[1]+" / "+cols[2]; //nombre / plan
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+          return '<strong>' + match + '</strong>'
+        })
+      },
+      updater: function (item) {
+        var cols = item.split("\t");
+        $('#buscarCarrera').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+        listarClaves();
+        return cols[1]+" / "+cols[2];
+      }
     });
     
-    
-    //actualizar input al seleccionar item de la lista desplegable
-    $('#listaCarreras').change(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarCarrera').val(texto);
-      $(this).next('small.error').hide('fast');
+    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
+    $('#buscarMateria').keydown(function(){
+      if (event.which==9) return; //ignorar al presionar Tab
+      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    });
+    //realizo la busqueda de usuarios con AJAX
+    $('#buscarMateria').typeahead({
+      matcher: function (item) {return true},    
+      sorter: function (items) {return items},
+      source: function(query, process){
+        return $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('carreras/buscarMateriasAJAX')?>", 
+          data:{ 
+            buscar: query,
+            idCarrera: $('input[name="idCarrera"]').val()
+          }
+        }).done(function(msg){
+          var filas = msg.split("\n");
+          var items = new Array();
+          for (var i=0; i<filas.length; i++){
+            if (filas[i].length<5) continue;
+            items.push(filas[i]);
+          }
+          return process(items);
+        });
+      },
+      highlighter: function (item) {
+        var cols = item.split("\t");
+        var texto = cols[1]+" / "+cols[2]; //nombre / codigo
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+          return '<strong>' + match + '</strong>'
+        })
+      },
+      updater: function (item) {
+        var cols = item.split("\t");
+        $('#buscarMateria').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+        listarClaves();
+        return cols[1]+" / "+cols[2];
+      }
+    });
+
+    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
+    $('#buscarEncuesta').keydown(function(){
+      if (event.which==9) return; //ignorar al presionar Tab
+      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    });
+    //realizo la busqueda de usuarios con AJAX
+    $('#buscarEncuesta').typeahead({
+      matcher: function (item) {return true},    
+      sorter: function (items) {return items},
+      source: function(query, process){
+        return $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('encuestas/buscarEncuestaAJAX')?>", 
+          data:{buscar: query}
+        }).done(function(msg){
+          var filas = msg.split("\n");
+          var items = new Array();
+          for (var i=0; i<filas.length; i++){
+            if (filas[i].length<5) continue;
+            items.push(filas[i]);
+          }
+          return process(items);
+        });
+      },
+      highlighter: function (item) {
+        var cols = item.split("\t");
+        var texto = cols[2]+" / "+cols[3]; //año / cuatrimestre
+        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+          return '<strong>' + match + '</strong>'
+        })
+      },
+      updater: function (item) {
+        var cols = item.split("\t");
+        cont = $('#buscarEncuesta').parentsUntil('control-group').first().parent().removeClass('error');
+        cont.find('input[name="idEncuesta"]').val(cols[0]);
+        cont.find('input[name="idFormulario"]').val(cols[1]);
+        listarClaves();
+        return cols[2]+" / "+cols[3];
+      }
     });
     
-    $('#listaMaterias').change(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarMaterias').val(texto);
-      $(this).next('small.error').hide('fast');
-    });
-    
-    $('#listaEncuestas').click(function(){
-      texto = $(this).children('option[selected]').text();
-      $('#buscarEncuesta').val(texto);
-      $(this).next('small.error').hide('fast');
-    });
     
     //ocultar mensaje de error al escribir
     $('input[type="text"]').keyup(function(){
-      $(this).next('small.error').hide('fast');
+      $(this).siblings('span.label').hide('fast');
     });
   </script>
 </body>
