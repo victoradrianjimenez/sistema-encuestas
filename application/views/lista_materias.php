@@ -45,7 +45,7 @@
                 <td><a class="nombre" href="<?php echo site_url("materias/ver/".$item->idMateria)?>"><?php echo $item->nombre?></a></td>
                 <td><?php echo $item->codigo?></td>
                 <td><?php echo $item->alumnos?></td>
-                <td><a class="eliminar" href="" value="<?php echo $item->idMateria?>">Eliminar</a></td>
+                <td><a class="eliminar" href="#" value="<?php echo $item->idMateria?>">Eliminar</a></td>
               </tr>
             <?php endforeach ?>
           </table>

@@ -47,7 +47,7 @@
                 <td class="plan"><?php echo $item['carrera']->plan?></td>
                 <td class="director"><?php echo $item['director']->nombre.' '.$item['director']->apellido?></td>
                 <td class="departamento"><?php echo $item['departamento']->nombre?></td>
-                <td><a class="eliminar" href="" value="<?php echo $item['carrera']->idCarrera?>">Eliminar</a></td>
+                <td><a class="eliminar" href="#" value="<?php echo $item['carrera']->idCarrera?>">Eliminar</a></td>
               </tr>
             <?php endforeach ?>
           </table>

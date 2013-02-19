@@ -619,7 +619,6 @@ class Encuestas extends CI_Controller{
     }
   }
 
-
   //funcion para responder solicitudes AJAX
   public function listarClavesAJAX(){
     $idMateria = $this->input->post('idMateria');

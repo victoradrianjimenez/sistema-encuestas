@@ -5,13 +5,8 @@
   <title>Generar Informe por Facultad</title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
-    .form-horizontal .controls {
-      margin-left: 90px;
-    }
-    .form-horizontal .control-label {
-      width: 70px;
-      float: left;
-    }
+    .form-horizontal .controls {margin-left: 70px}
+    .form-horizontal .control-label {width: 50px; float: left}
   </style>
 </head>
 <body>
@@ -28,21 +23,17 @@
     <div class="row">
       <!-- SideBar -->
       <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li><a href="<?php echo site_url("encuestas/informeMateria")?>">Materia</a></li>
-          <li><a href="<?php echo site_url("encuestas/informeCarrera")?>">Carrera</a></li>
-          <li><a href="<?php echo site_url("encuestas/informeDepartamento")?>">Departamento</a></li>
-          <li class="active"><a href="<?php echo site_url("encuestas/informeFacultad")?>">Facultad</a></li>
-        </ul>
+        <?php $item_submenu = 4;
+          include 'templates/submenu-informes.php';
+        ?>
       </div>
       
       <!-- Main -->
       <div class="span9">
         <h4>Solicitar informe por facultad</h4>
-        <form class="form-horizontal" action="<?php echo site_url('encuestas/informeFacultad')?>" method="post">
+        <form class="form-horizontal" action="<?php echo site_url('informes/facultad')?>" method="post">
           <div class="control-group">  
-            <label class="control-label" for="buscarEncuesta">Año: <span class="opcional">*</span></label>
+            <label class="control-label" for="buscarEncuesta">Año:</label>
             <div class="controls">
               <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
               <input type="hidden" name="idEncuesta" required/>

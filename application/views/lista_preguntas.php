@@ -47,7 +47,7 @@
                 <td class="tipo"><?php echo $item['pregunta']->tipo?></td>
                 <td class="obligatoria"><?php echo $item['pregunta']->obligatoria?></td>
                 <td>
-                  <a class="eliminar" href="" value="<?php echo $item['pregunta']->idPregunta?>">Eliminar</a>
+                  <a class="eliminar" href="#" value="<?php echo $item['pregunta']->idPregunta?>">Eliminar</a>
                 </td>
               </tr>
             <?php endforeach ?>

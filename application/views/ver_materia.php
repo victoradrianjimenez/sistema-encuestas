@@ -46,7 +46,7 @@
                 <td class="apellido"><?php echo $item->nombre?></td>
                 <td class="cargo"><?php //echo $item['cargo']?></td>
                 <td>
-                  <a class="quitar" href="" title="Quitar asociación del docente con la materia" value="<?php echo $item->id?>">Quitar</a>
+                  <a class="quitar" href="#" title="Quitar asociación del docente con la materia" value="<?php echo $item->id?>">Quitar</a>
                 </td>
               </tr>
             <?php endforeach ?>

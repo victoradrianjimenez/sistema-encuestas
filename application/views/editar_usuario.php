@@ -104,9 +104,9 @@
   <div id="HTMLOpcion" class="hide">
     <li class="Opcion">
       <div class="barra-botones">
-        <a class="subirOpcion" title="Subir" href=""><i class="foundicon-up-arrow"></i></a>
-        <a class="bajarOpcion" title="Bajar" href=""><i class="foundicon-down-arrow"></i></a>
-        <a class="eliminarOpcion" title="Eliminar" href=""><i class="foundicon-remove"></i></a>
+        <a class="subirOpcion" title="Subir" href="#"><i class="foundicon-up-arrow"></i></a>
+        <a class="bajarOpcion" title="Bajar" href="#"><i class="foundicon-down-arrow"></i></a>
+        <a class="eliminarOpcion" title="Eliminar" href="#"><i class="foundicon-remove"></i></a>
       </div>
       <input type="hidden" name="TextoOpcion" value="" />
       <p class="texto"></p>

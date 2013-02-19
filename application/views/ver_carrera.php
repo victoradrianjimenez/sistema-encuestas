@@ -47,7 +47,7 @@
               <tr>
                 <td class="nombre"><?php echo $item->nombre?></a></td>
                 <td class="codigo"><?php echo $item->codigo?></td>
-                <td><a class="quitar" href="" title="Quitar asociación de la materia con la carrera" value="<?php echo $item->idMateria?>">Quitar</a></td>
+                <td><a class="quitar" href="#" title="Quitar asociación de la materia con la carrera" value="<?php echo $item->idMateria?>">Quitar</a></td>
               </tr>
             <?php endforeach ?>
           </table>

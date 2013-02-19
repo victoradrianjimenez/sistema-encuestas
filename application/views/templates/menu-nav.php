@@ -10,7 +10,7 @@
       <div class="nav-collapse collapse">
         <ul class="nav">
           <li class="dropdown">
-            <a href="" class="dropdown-toggle" data-toggle="dropdown">Facultad <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Facultad <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="<?php echo site_url("departamentos")?>">Departamentos, Carreras y Materias</a></li>
               <li><a href="<?php echo site_url("usuarios")?>">Docentes y Autoridades</a></li>
@@ -21,17 +21,17 @@
           <li><a href="<?php echo site_url("encuestas")?>">Encuestas</a></li>
           <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
           <li class="dropdown">
-            <a href="" class="dropdown-toggle" data-toggle="dropdown">Resultados <b class="caret"></b></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resultados <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li class="nav-header">Informes</li>
-              <li><a href="<?php echo site_url('encuestas/informeFacultad')?>">Encuestas realizadas</a></li>
-              <li><a href="">Informes históricos</a></li>
+              <li><a href="<?php echo site_url('informes/materia')?>">Encuestas realizadas</a></li>
+              <li><a href="<?php echo site_url('historicos/materia')?>">Informes históricos</a></li>
               <li><a href="<?php echo site_url('encuestas/informeClave')?>">Respuestas individuales</a></li>
               <li class="divider"></li>
               <li><a href="<?php echo site_url('devoluciones')?>">Devoluciones</a></li>
             </ul>
           </li>
-          <li><a href="">Enlaces</a></li>
+          <li><a href="#">Enlaces</a></li>
         </ul>
         <ul class="nav pull-right">
           <?php if(!(isset($usuarioLogin) && is_object($usuarioLogin))): ?>

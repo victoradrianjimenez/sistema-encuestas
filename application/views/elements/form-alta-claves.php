@@ -36,7 +36,7 @@
     <input id="cantidad" type="number" name="cantidad" value="1"/>
     <?php echo form_error('cantidad')?>
   </div>
-  <span id="mensajeCantidad" class="hide" >Se generarán tantas claves como alumnos haya registrados. <a href="">(Ver)</a></span>
+  <span id="mensajeCantidad" class="hide" >Se generarán tantas claves como alumnos haya registrados. <a href="#">(Ver)</a></span>
 
   <div class="row">         
     <div class="ten columns centered">

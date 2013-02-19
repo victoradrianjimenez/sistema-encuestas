@@ -43,7 +43,7 @@
                 <tr>
                   <td><a class="fecha" href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion)?>"/><?php echo $item['devolucion']->fecha?></a></td>
                   <td><a class="materia" /><?php echo $item['materia']->nombre?></a></td>
-                  <td><a class="eliminar" href="" value="<?php echo $item['devoluciones']->idDevolucion?>">Eliminar</a></td>
+                  <td><a class="eliminar" href="#" value="<?php echo $item['devoluciones']->idDevolucion?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>

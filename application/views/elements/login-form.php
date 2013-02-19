@@ -23,7 +23,7 @@
       <?php if(isset($mensajeLogin)):?>
         <div class="alert-box alert")>
           <?php echo $mensajeLogin ?>
-          <a href="" class="close">&times;</a>
+          <a href="#" class="close">&times;</a>
         </div>
       <?php endif ?>
       <div class="row">  

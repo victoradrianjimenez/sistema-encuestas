@@ -45,7 +45,7 @@
                 <td class="titulo"><?php echo $item->titulo?></td>
                 <td class="creacion"><?php echo $item->creacion?></td>
                 <td>
-                  <a class="eliminar" href="" value="<?php echo $item->idFormulario?>">Eliminar</a>
+                  <a class="eliminar" href="#" value="<?php echo $item->idFormulario?>">Eliminar</a>
                 </td>
               </tr>
             <?php endforeach ?>

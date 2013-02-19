@@ -43,7 +43,7 @@
       <div class="span3" id="menu">
         <h4>Navegación</h4>
         <ul class="nav nav-pills nav-stacked">      
-          <li class="active"><a href="<?php echo site_url("formularios")?>" href="">Formularios</a></li>
+          <li class="active"><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
           <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
         </ul>
       </div>
@@ -89,10 +89,10 @@
   <div id="HTMLSeccion" class="hide">
     <li class="Seccion">
       <div class="btn-group">
-        <a class="subirSeccion" title="Subir" href=""><i class="icon-circle-arrow-top"></i></a>
-        <a class="bajarSeccion" title="Bajar" href=""><i class="icon-circle-arrow-down"></i></a>
-        <a class="eliminarSeccion" title="Eliminar" href=""><i class="icon-circle-remove"></i></a>
-        <a class="nuevaPregunta" title="Agregar pregunta..." href=""><i class="icon-circle-plus"></i></a>
+        <a class="subirSeccion" title="Subir" href="#"><i class="icon-circle-arrow-top"></i></a>
+        <a class="bajarSeccion" title="Bajar" href="#"><i class="icon-circle-arrow-down"></i></a>
+        <a class="eliminarSeccion" title="Eliminar" href="#"><i class="icon-circle-remove"></i></a>
+        <a class="nuevaPregunta" title="Agregar pregunta..." href="#"><i class="icon-circle-plus"></i></a>
       </div>
       <input type="hidden" name="textoSeccion" value="" />
       <input type="hidden" name="descripcionSeccion" value="" />
@@ -106,9 +106,9 @@
   <div id="HTMLPregunta" class="hide">
     <li class="Pregunta">
       <div class="btn-group">
-        <a class="subirPregunta" title="Subir" href=""><i class="icon-circle-arrow-top"></i></a>
-        <a class="bajarPregunta" title="Bajar" href=""><i class="icon-circle-arrow-down"></i></a>
-        <a class="eliminarPregunta" title="Eliminar" href=""><i class="icon-circle-remove"></i></a>
+        <a class="subirPregunta" title="Subir" href="#"><i class="icon-circle-arrow-top"></i></a>
+        <a class="bajarPregunta" title="Bajar" href="#"><i class="icon-circle-arrow-down"></i></a>
+        <a class="eliminarPregunta" title="Eliminar" href="#"><i class="icon-circle-remove"></i></a>
       </div>
       <input type="hidden" name="idPregunta" value="" />
       <p class="texto"></p>

@@ -44,7 +44,7 @@
                 <tr>
                   <td><a class="clave" href="<?php echo site_url('claves/ver/'.$item['departamento']->idDepartamento)?>"/><?php echo $item['departamento']->nombre?></a></td>
                   <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
-                  <td><a class="eliminar" href="" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a></td>
+                  <td><a class="eliminar" href="#" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
             </table>
