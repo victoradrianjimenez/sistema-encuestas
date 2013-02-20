@@ -280,13 +280,6 @@ class Encuesta extends CI_Model{
   }
   
   
-  
-  
-  
-  
-  
-  
-  
   /**
    * Obtiene el indice de una seccion de docentes para una encuesta de un alumno.
    *
@@ -296,7 +289,7 @@ class Encuesta extends CI_Model{
    * @param identificador de carrera
    * @param identificador de seccion
    * @param identificador de docente
-   * @return array
+   * @return float
    */  
   public function indiceDocenteClave($idClave, $idMateria, $idCarrera, $idSeccion, $idDocente){
     $idClave = $this->db->escape($idClave);
@@ -321,7 +314,7 @@ class Encuesta extends CI_Model{
    * @param identificador de carrera
    * @param identificador de seccion
    * @param identificador de docente
-   * @return array
+   * @return float
    */  
   public function indiceDocenteMateria($idMateria, $idCarrera, $idSeccion, $idDocente){
     $idCarrera = $this->db->escape($idCarrera);
@@ -345,7 +338,7 @@ class Encuesta extends CI_Model{
    * @param identificador de materia
    * @param identificador de carrera
    * @param identificador de seccion
-   * @return array
+   * @return float
    */  
   public function indiceSeccionClave($idClave, $idMateria, $idCarrera, $idSeccion){
     $idClave = $this->db->escape($idClave);
@@ -368,7 +361,7 @@ class Encuesta extends CI_Model{
    * @param identificador de materia
    * @param identificador de carrera
    * @param identificador de seccion
-   * @return array
+   * @return float
    */  
   public function indiceSeccionMateria($idMateria, $idCarrera, $idSeccion){
     $idCarrera = $this->db->escape($idCarrera);
@@ -410,7 +403,7 @@ class Encuesta extends CI_Model{
    * @param idenificador de clave de acceso
    * @param identificador de materia
    * @param identificador de carrera
-   * @return array
+   * @return float
    */  
   public function indiceGlobalClave($idClave, $idMateria, $idCarrera){
     $idClave = $this->db->escape($idClave);
@@ -431,7 +424,7 @@ class Encuesta extends CI_Model{
    * @access public
    * @param identificador de materia
    * @param identificador de carrera
-   * @return array
+   * @return float
    */  
   public function indiceGlobalMateria($idMateria, $idCarrera){
     $idCarrera = $this->db->escape($idCarrera);
@@ -450,7 +443,7 @@ class Encuesta extends CI_Model{
    *
    * @access public
    * @param identificador de carrera
-   * @return array
+   * @return float
    */  
   public function indiceGlobalCarrera($idCarrera){
     $idCarrera = $this->db->escape($idCarrera);
@@ -472,13 +465,13 @@ class Encuesta extends CI_Model{
    * @param identificador de departamento
    * @return object
    */
-  public function dameClave($idClave, $idMatria, $idCarrera){
+  public function dameClave($idClave, $idMateria, $idCarrera){
     $idClave = $this->db->escape($idClave);
-    $idMatria = $this->db->escape($idMatria);
+    $idMateria = $this->db->escape($idMateria);
     $idCarrera = $this->db->escape($idCarrera);
     $idEncuesta = $this->db->escape($this->idEncuesta);
     $idFormulario = $this->db->escape($this->idFormulario);
-    $query = $this->db->query("call esp_dame_clave($idClave, $idMatria, $idCarrera, $idEncuesta, $idFormulario)");
+    $query = $this->db->query("call esp_dame_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Clave');
     $query->free_result();
     //$this->db->reconnect();

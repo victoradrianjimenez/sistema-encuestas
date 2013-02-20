@@ -25,7 +25,9 @@ class Materias extends CI_Controller{
    * Última revisión: 2012-02-01 3:35 p.m.
    */
   public function listar($pagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -59,7 +61,9 @@ class Materias extends CI_Controller{
    * Última revisión: 2012-02-01 3:39 p.m.
    */
   public function ver($idMateria=null, $pagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idMateria = (int)$idMateria;
@@ -101,7 +105,10 @@ class Materias extends CI_Controller{
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -131,7 +138,10 @@ class Materias extends CI_Controller{
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -158,7 +168,10 @@ class Materias extends CI_Controller{
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -190,7 +203,10 @@ class Materias extends CI_Controller{
    */
   public function asociarDocente(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -221,7 +237,10 @@ class Materias extends CI_Controller{
    */
   public function desasociarDocente(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -287,7 +306,5 @@ class Materias extends CI_Controller{
       }
     }
   }
-  
 }
-
 ?>

@@ -7,7 +7,7 @@ class Materia extends CI_Model{
   var $idMateria;
   var $nombre;
   var $codigo;
-  var $alumnos;
+  var $alumnos=0;
   
   function __construct(){
     parent::__construct();
@@ -20,7 +20,7 @@ class Materia extends CI_Model{
    * @access  public
    * @param posicion del primer item de la lista a mostrar
    * @param cantidad de items a mostrar (tamaño de página)
-   * @return  array
+   * @return  arrayUsuarios
    */  
   public function listarDocentes($pagNumero=0, $pagLongitud=1000){
     $pagNumero = $this->db->escape($pagNumero);
@@ -102,16 +102,7 @@ class Materia extends CI_Model{
     $query->free_result();
     //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
-  }
-  
-  
-  
-  
-   
-  
-  
-  
-  
+  } 
 }
 
 ?>

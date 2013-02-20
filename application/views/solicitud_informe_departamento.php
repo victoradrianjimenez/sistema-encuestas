@@ -10,50 +10,52 @@
   </style>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Informes por Encuestas</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <?php $item_submenu = 3;
-          include 'templates/submenu-informes.php';
-        ?>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Informes por Encuestas</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4>Solicitar informe por departamento</h4>
-        <form class="form-horizontal" action="<?php echo site_url('informe/departamento')?>" method="post">
-          <div class="control-group">
-            <label class="control-label" for="buscarDepartamento">Departamento:</label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarDepartamento" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idDepartamento" required/>
-              <?php echo form_error('idDepartamento')?>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <?php $item_submenu = 3;
+            include 'templates/submenu-informes.php';
+          ?>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h4>Solicitar informe por departamento</h4>
+          <form class="form-horizontal" action="<?php echo site_url('informes/departamento')?>" method="post">
+            <div class="control-group">
+              <label class="control-label" for="buscarDepartamento">Departamento:</label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarDepartamento" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idDepartamento" required/>
+                <?php echo form_error('idDepartamento')?>
+              </div>
             </div>
-          </div>
-          <div class="control-group">  
-            <label class="control-label" for="buscarEncuesta">Año:</label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idEncuesta" required/>
-              <?php echo form_error('idEncuesta')?>
-              <input type="hidden" name="idFormulario" required/>
-              <?php echo form_error('idFormulario')?>
+            <div class="control-group">  
+              <label class="control-label" for="buscarEncuesta">Año:</label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idEncuesta" required/>
+                <?php echo form_error('idEncuesta')?>
+                <input type="hidden" name="idFormulario" required/>
+                <?php echo form_error('idFormulario')?>
+              </div>
             </div>
-          </div>
-          <div class="controls btn-group">
-            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </form>
+            <div class="controls btn-group">
+              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+            </div>
+          </form>
+        </div>
       </div>
     </div>
     <div id="push"></div><br />

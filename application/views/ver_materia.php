@@ -6,58 +6,60 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Departamentos, Carreras y Materias</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
-          <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
-          <li class="active"><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        </ul>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4><?php echo $materia->nombre.' ('.$materia->codigo.')'?></h4>
-        <?php if(count($lista)== 0):?>
-          <p>No se encontraron docentes.</p>
-        <?php else:?>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <th>Apellido</th>
-              <th>Nombre</th>
-              <th>Cargo</th>
-              <th>Acciones</th>
-            </thead>
-            <?php foreach($lista as $item): ?>  
-              <tr>
-                <td class="nombre"><?php echo $item->apellido?></td>
-                <td class="apellido"><?php echo $item->nombre?></td>
-                <td class="cargo"><?php //echo $item['cargo']?></td>
-                <td>
-                  <a class="quitar" href="#" title="Quitar asociación del docente con la materia" value="<?php echo $item->id?>">Quitar</a>
-                </td>
-              </tr>
-            <?php endforeach ?>
-          </table>
-        <?php endif ?>
-        <?php echo $paginacion ?>
-
-        <!-- Botones -->
-        <div class="">
-          <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar materia...</button>
-          <button class="btn btn-primary" href="#modalAsociar" role="button" data-toggle="modal">Asociar docente...</button>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
+            <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
+            <li class="active"><a href="<?php echo site_url("materias")?>">Materias</a></li>
+          </ul>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h4><?php echo $materia->nombre.' ('.$materia->codigo.')'?></h4>
+          <?php if(count($lista)== 0):?>
+            <p>No se encontraron docentes.</p>
+          <?php else:?>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <th>Apellido</th>
+                <th>Nombre</th>
+                <th>Cargo</th>
+                <th>Acciones</th>
+              </thead>
+              <?php foreach($lista as $item): ?>  
+                <tr>
+                  <td class="nombre"><?php echo $item->apellido?></td>
+                  <td class="apellido"><?php echo $item->nombre?></td>
+                  <td class="cargo"><?php //echo $item['cargo']?></td>
+                  <td>
+                    <a class="quitar" href="#" title="Quitar asociación del docente con la materia" value="<?php echo $item->id?>">Quitar</a>
+                  </td>
+                </tr>
+              <?php endforeach ?>
+            </table>
+          <?php endif ?>
+          <?php echo $paginacion ?>
+  
+          <!-- Botones -->
+          <div class="">
+            <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar materia...</button>
+            <button class="btn btn-primary" href="#modalAsociar" role="button" data-toggle="modal">Asociar docente...</button>
+          </div>
         </div>
       </div>
     </div>

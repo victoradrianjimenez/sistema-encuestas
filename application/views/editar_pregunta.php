@@ -23,75 +23,77 @@
   </style>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Formularios</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
-          <li class="active"><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
-        </ul>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Formularios</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4>Preguntas</h4>
-        <form action="<?php echo site_url('preguntas/nueva')?>" method="post">
-          <label for="campoTexto">Texto: <span class="opcional">*</span></label>
-          <input class="input-block-level" id="campoTexto" type="text" name="texto" required />
-          <label for="campoDescripcion">Descripción: </label>
-          <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
-          <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
-          <select id="campoTipo" name="tipo" required>
-            <option value="S" selected>Selección simple</option>
-            <option value="M">Selección múltiple</option>
-            <option value="N">Numérica</option>
-            <option value="T">Texto simple</option>
-            <option value="X">Texto multilínea</option>
-          </select>
-          <label class="checkbox">
-            <input type="checkbox" name="obligatoria" /> Obligatoria
-          </label>
-          <label class="checkbox">
-            <input type="checkbox" name="ordenInverso" /> Orden Inverso
-          </label>
-          <label for="campoUnidad">Unidad: </label>
-          <input id="campoUnidad" type="text" name="unidad"/>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
+            <li class="active"><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
+          </ul>
+        </div>
         
-          <div id="OpcionesNumerico" class="hide">
-            <h3>Opciones</h3>
-            <label for="campoLimiteInferior">Limite inferior: <span class="opcional">*</span></label>
-            <input id="campoLimiteInferior" type="number" name="limiteInferior" />
-            <label for="campoLimiteSuperior">Limite superior: <span class="opcional">*</span></label>
-            <input id="campoLimiteSuperior" type="number" name="limiteSuperior" />
-            <label for="campoPaso">Paso: <span class="opcional">*</span></label>
-            <input id="campoPaso" type="number" name="paso" />
-          </div>
+        <!-- Main -->
+        <div class="span9">
+          <h4>Preguntas</h4>
+          <form action="<?php echo site_url('preguntas/nueva')?>" method="post">
+            <label for="campoTexto">Texto: <span class="opcional">*</span></label>
+            <input class="input-block-level" id="campoTexto" type="text" name="texto" required />
+            <label for="campoDescripcion">Descripción: </label>
+            <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
+            <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
+            <select id="campoTipo" name="tipo" required>
+              <option value="S" selected>Selección simple</option>
+              <option value="M">Selección múltiple</option>
+              <option value="N">Numérica</option>
+              <option value="T">Texto simple</option>
+              <option value="X">Texto multilínea</option>
+            </select>
+            <label class="checkbox">
+              <input type="checkbox" name="obligatoria" /> Obligatoria
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" name="ordenInverso" /> Orden Inverso
+            </label>
+            <label for="campoUnidad">Unidad: </label>
+            <input id="campoUnidad" type="text" name="unidad"/>
           
-          <div id="OpcionesSeleccion">
-            <legend>Opciones<a style="float:right; margin:0 6px;" href="#modalAgregarOpcion" role="button" data-toggle="modal" title="Agregar opción..."><i class="icon-circle-plus"></i></a></legend>
-            <div class="row">
-              <div class="span9">
-                <ul class="Opciones"></ul>
+            <div id="OpcionesNumerico" class="hide">
+              <h3>Opciones</h3>
+              <label for="campoLimiteInferior">Limite inferior: <span class="opcional">*</span></label>
+              <input id="campoLimiteInferior" type="number" name="limiteInferior" />
+              <label for="campoLimiteSuperior">Limite superior: <span class="opcional">*</span></label>
+              <input id="campoLimiteSuperior" type="number" name="limiteSuperior" />
+              <label for="campoPaso">Paso: <span class="opcional">*</span></label>
+              <input id="campoPaso" type="number" name="paso" />
+            </div>
+            
+            <div id="OpcionesSeleccion">
+              <legend>Opciones<a style="float:right; margin:0 6px;" href="#modalAgregarOpcion" role="button" data-toggle="modal" title="Agregar opción..."><i class="icon-circle-plus"></i></a></legend>
+              <div class="row">
+                <div class="span9">
+                  <ul class="Opciones"></ul>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Botones -->
-          <div>
-            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </form>
+            
+            <!-- Botones -->
+            <div>
+              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+            </div>
+          </form>
+        </div>
       </div>
     </div>
     <div id="push"></div><br />

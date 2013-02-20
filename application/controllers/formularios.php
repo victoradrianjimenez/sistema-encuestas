@@ -25,7 +25,9 @@ class Formularios extends CI_Controller{
    * Última revisión: 2012-02-04 1:48 p.m.
    */
   public function listar($PagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $PagInicio = (int)$PagInicio;
     
@@ -64,7 +66,10 @@ class Formularios extends CI_Controller{
    */
   public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -169,7 +174,10 @@ class Formularios extends CI_Controller{
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -197,15 +205,17 @@ class Formularios extends CI_Controller{
    */
   public function buscarAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
-    $buscar = $this->input->post('buscar');
-    $this->load->model('Formulario');
-    $this->load->model('Gestor_formularios','gf');
-    $formularios = $this->gf->buscar($buscar);
-    echo "\n";
-    foreach ($formularios as $formulario) {
-      echo  "$formulario->idFormulario\t".
-            "$formulario->nombre\t".
-            "$formulario->creacion\t\n";
+    $this->form_validation->set_rules('buscar','Buscar','required|is_natural_no_zero');
+    if($this->form_validation->run()){
+      $this->load->model('Formulario');
+      $this->load->model('Gestor_formularios','gf');
+      $formularios = $this->gf->buscar($this->input->post('buscar'));
+      echo "\n";
+      foreach ($formularios as $formulario) {
+        echo  "$formulario->idFormulario\t".
+              "$formulario->nombre\t".
+              "$formulario->creacion\t\n";
+      }
     }
   }
   

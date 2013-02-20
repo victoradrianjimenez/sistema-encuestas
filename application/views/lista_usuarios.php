@@ -6,59 +6,61 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Docentes y Autoridades</h3>
-        <p>---Descripción---</p>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Docentes y Autoridades</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li class="<?php if (!isset($grupo))echo 'active'?>"><a href="<?php echo site_url("usuarios")?>" href="#">Todos los usuarios</a></li>
-          <li class="<?php if (isset($grupo))echo($grupo->name=="decanos")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
-          <li class="<?php if (isset($grupo))echo($grupo->name=="jefes_departamentos")?'active':''?>"><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
-          <li class="<?php if (isset($grupo))echo($grupo->name=="directores")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
-          <li class="<?php if (isset($grupo))echo($grupo->name=="docentes")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
-        </ul>
-      </div>
-
-      <!-- Main -->
-      <div class="span9">
-      <h4><?php echo(isset($grupo))?'Usuarios del grupo '.$grupo->description:'Todos los usuarios'?></h4>
-      <?php if(count($lista)== 0):?>
-        <p>No se encontraron usuarios.</p>
-      <?php else:?>
-        <table class="table table-bordered table-striped">
-          <thead>
-            <th>Apellido</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Acciones</th>
-          </thead>
-          <?php foreach($lista as $item): ?>  
-            <tr>
-              <td><a class="apellido" href="<?php echo site_url("usuarios/ver/".$item['usuario']->id)?>"><?php echo $item['usuario']->apellido?></a></td>
-              <td class="nombre"><?php echo $item['usuario']->nombre?></td>
-              <td class="email"><?php echo $item['usuario']->email?></td>
-              <td>
-                <a class="eliminar" href="#" value="<?php echo $item['usuario']->id?>">Eliminar</a>
-              </td>
-            </tr>
-          <?php endforeach ?>
-        </table>
-        <?php endif ?>
-        <?php echo $paginacion ?>
-
-        <!-- Botones -->
-        <div class="btn-group">
-          <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar usuario...</button>
+      
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li class="<?php if (!isset($grupo))echo 'active'?>"><a href="<?php echo site_url("usuarios")?>" href="#">Todos los usuarios</a></li>
+            <li class="<?php if (isset($grupo))echo($grupo->name=="decanos")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
+            <li class="<?php if (isset($grupo))echo($grupo->name=="jefes_departamentos")?'active':''?>"><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
+            <li class="<?php if (isset($grupo))echo($grupo->name=="directores")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
+            <li class="<?php if (isset($grupo))echo($grupo->name=="docentes")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
+          </ul>
+        </div>
+  
+        <!-- Main -->
+        <div class="span9">
+        <h4><?php echo(isset($grupo))?'Usuarios del grupo '.$grupo->description:'Todos los usuarios'?></h4>
+        <?php if(count($lista)== 0):?>
+          <p>No se encontraron usuarios.</p>
+        <?php else:?>
+          <table class="table table-bordered table-striped">
+            <thead>
+              <th>Apellido</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Acciones</th>
+            </thead>
+            <?php foreach($lista as $item): ?>  
+              <tr>
+                <td><a class="apellido" href="<?php echo site_url("usuarios/ver/".$item['usuario']->id)?>"><?php echo $item['usuario']->apellido?></a></td>
+                <td class="nombre"><?php echo $item['usuario']->nombre?></td>
+                <td class="email"><?php echo $item['usuario']->email?></td>
+                <td>
+                  <a class="eliminar" href="#" value="<?php echo $item['usuario']->id?>">Eliminar</a>
+                </td>
+              </tr>
+            <?php endforeach ?>
+          </table>
+          <?php endif ?>
+          <?php echo $paginacion ?>
+  
+          <!-- Botones -->
+          <div class="btn-group">
+            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar usuario...</button>
+          </div>
         </div>
       </div>
     </div>

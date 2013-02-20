@@ -6,53 +6,55 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Departamentos, Carreras y Materias</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li class="active"><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
-          <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
-          <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        </ul>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4>Departamentos</h4>
-        <?php if(count($lista)== 0):?>
-          <p>No se encontraron departamentos.</p>
-        <?php else:?>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <th>Nombre</th>
-              <th>Jefe de Departamento</th>
-              <th>Acciones</th>
-            </thead>
-            <?php foreach($lista as $item): ?>  
-              <tr>
-                <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$item['departamento']->idDepartamento)?>"/><?php echo $item['departamento']->nombre?></a></td>
-                <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
-                <td><a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a></td>
-              </tr>
-            <?php endforeach ?>
-          </table>
-        <?php endif ?>
-        <?php echo $paginacion ?>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li class="active"><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
+            <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
+            <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
+          </ul>
+        </div>
         
-        <!-- Botones -->
-        <div class="btn-group">
-          <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar departamento...</button>
+        <!-- Main -->
+        <div class="span9">
+          <h4>Departamentos</h4>
+          <?php if(count($lista)== 0):?>
+            <p>No se encontraron departamentos.</p>
+          <?php else:?>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <th>Nombre</th>
+                <th>Jefe de Departamento</th>
+                <th>Acciones</th>
+              </thead>
+              <?php foreach($lista as $item): ?>  
+                <tr>
+                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$item['departamento']->idDepartamento)?>"/><?php echo $item['departamento']->nombre?></a></td>
+                  <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
+                  <td><a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a></td>
+                </tr>
+              <?php endforeach ?>
+            </table>
+          <?php endif ?>
+          <?php echo $paginacion ?>
+          
+          <!-- Botones -->
+          <div class="btn-group">
+            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar departamento...</button>
+          </div>
         </div>
       </div>
     </div>

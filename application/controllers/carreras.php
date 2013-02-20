@@ -25,7 +25,9 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 2:12 p.m.
    */
   public function listar($pagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     
@@ -73,7 +75,9 @@ class Carreras extends CI_Controller{
    * Última revisión: 2012-02-01 2:47 p.m.
    */
   public function ver($idCarrera=null, $pagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $idCarrera = (int)$idCarrera;
@@ -123,7 +127,10 @@ class Carreras extends CI_Controller{
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -155,7 +162,10 @@ class Carreras extends CI_Controller{
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -188,7 +198,10 @@ class Carreras extends CI_Controller{
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -216,7 +229,10 @@ class Carreras extends CI_Controller{
    */
   public function asociarMateria(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -247,7 +263,10 @@ class Carreras extends CI_Controller{
    */
   public function desasociarMateria(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }

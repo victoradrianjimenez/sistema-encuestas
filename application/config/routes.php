@@ -38,7 +38,7 @@
 |
 */
 
-$route['default_controller'] = "claves";
+$route['default_controller'] = "encuestas";
 $route['404_override'] = '';
 
 

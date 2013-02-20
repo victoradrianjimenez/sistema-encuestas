@@ -6,40 +6,42 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Docentes y Autoridades</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li class="active"><a href="<?php echo site_url("usuarios")?>">Todos los usuarios</a></li>
-          <li><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
-          <li><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
-          <li><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
-          <li><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
-        </ul>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Docentes y Autoridades</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h3><?php echo $usuario->nombre.' '.$usuario->apellido?></h3>
-        <h5>Email: <?php echo $usuario->email?></h5>
-        <h5>Último acceso: <?php echo date('d/m/Y g:i:s a', $usuario->last_login)?></h5>
-        <h5>Estado: <?php echo ($usuario->active)?'Activo':'Inactivo'?></h5>
-
-        <!-- Botones -->
-        <div class="">
-          <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar usuario...</button>
-          <button class="btn btn-primary" href="#modalActivar" role="button" data-toggle="modal">Activar/Desactivar cuenta</button>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li class="active"><a href="<?php echo site_url("usuarios")?>">Todos los usuarios</a></li>
+            <li><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
+            <li><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
+            <li><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
+            <li><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
+          </ul>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h3><?php echo $usuario->nombre.' '.$usuario->apellido?></h3>
+          <h5>Email: <?php echo $usuario->email?></h5>
+          <h5>Último acceso: <?php echo date('d/m/Y g:i:s a', $usuario->last_login)?></h5>
+          <h5>Estado: <?php echo ($usuario->active)?'Activo':'Inactivo'?></h5>
+  
+          <!-- Botones -->
+          <div class="">
+            <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar usuario...</button>
+            <button class="btn btn-primary" href="#modalActivar" role="button" data-toggle="modal">Activar/Desactivar cuenta</button>
+          </div>
         </div>
       </div>
     </div>

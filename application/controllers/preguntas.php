@@ -25,7 +25,9 @@ class Preguntas extends CI_Controller {
    * Última revisión: 2012-02-04 12:18 p.m.
    */
   public function listar($PagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $PagInicio = (int)$PagInicio;
     
@@ -65,7 +67,9 @@ class Preguntas extends CI_Controller {
    * Última revisión: 2012-02-04 12:26 p.m.
    */
   public function nueva(){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     if ($this->input->post('submit')){
       //cargo modelos y librerias necesarias
       $this->load->model('Opcion');
@@ -144,7 +148,10 @@ class Preguntas extends CI_Controller {
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -172,21 +179,22 @@ class Preguntas extends CI_Controller {
    */
   public function buscarAjax(){
     if (!$this->ion_auth->logged_in()){return;}
-    $buscar = $this->input->post('buscar');
-    $this->load->model('Pregunta');
-    $this->load->model('Gestor_preguntas','gp');
-    $preguntas = $this->gp->buscar($buscar);
-    echo "\n";
-    foreach ($preguntas as $pregunta) {
-      echo  "$pregunta->idPregunta\t".
-            "$pregunta->idCarrera\t".
-            "$pregunta->texto\t".
-            "$pregunta->creacion\t".
-            "$pregunta->tipo\t".
-            "$pregunta->obligatoria\t\n";
+    $this->form_validation->set_rules('buscar','Buscar','required');
+    if($this->form_validation->run()){
+      $this->load->model('Pregunta');
+      $this->load->model('Gestor_preguntas','gp');
+      $preguntas = $this->gp->buscar($this->input->post('buscar'));
+      echo "\n";
+      foreach ($preguntas as $pregunta) {
+        echo  "$pregunta->idPregunta\t".
+              "$pregunta->idCarrera\t".
+              "$pregunta->texto\t".
+              "$pregunta->creacion\t".
+              "$pregunta->tipo\t".
+              "$pregunta->obligatoria\t\n";
+      }
     }
   }
-  
   
 }
 

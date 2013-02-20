@@ -40,6 +40,9 @@ class Usuarios extends CI_Controller{
     $this->_listarGrupo($pagInicio,'organizadores', site_url("usuarios/listarOrganizadores"));
   }
   public function listar($pagInicio=0){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $this->load->model('Usuario');
@@ -47,6 +50,9 @@ class Usuarios extends CI_Controller{
     $this->_listar($this->gu->listar($pagInicio, self::per_page), $this->gu->cantidad(), site_url("usuarios/listar"));
   }
   private function _listarGrupo($pagInicio, $grupo, $url){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $this->load->model('Usuario');
@@ -93,7 +99,9 @@ class Usuarios extends CI_Controller{
    * Última revisión: 2012-02-01 5:47 p.m.
    */
   public function ver($id=null, $pagInicio=0){
-    if (!$this->ion_auth->logged_in()){redirect('/'); return;}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
     $id = (int)$id;
@@ -122,7 +130,10 @@ class Usuarios extends CI_Controller{
    */
   public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -169,7 +180,10 @@ class Usuarios extends CI_Controller{
    */
   public function modificar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -227,7 +241,10 @@ class Usuarios extends CI_Controller{
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -260,16 +277,18 @@ class Usuarios extends CI_Controller{
       if ($this->ion_auth->login($this->input->post('usuario'), $this->input->post('contrasena'), (bool) $this->input->post('recordarme'))){
         //si el usuario ingresó datos de acceso válidos
         $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-        $this->load->view('index', $this->data);
+        redirect('/');
       }
       else{
         //si no logró validar
         $this->data['mensajeLogin']="Nombre de usuario y/o contraseña incorrectos, por favor vuelva a intentar.";
+        $this->data['showLogin'] = true;
         $this->load->view('index', $this->data);
       }
     }
     else{
       //en caso de que los datos sean incorrectos
+      $this->data['showLogin'] = true;
       $this->load->view('index', $this->data);
     }
   }
@@ -289,7 +308,9 @@ class Usuarios extends CI_Controller{
    * Última revisión: 2012-02-01 7:50 p.m.
    */
   function cambiarContrasena(){
-    if (!$this->ion_auth->logged_in()){redirect('/', 'refresh');}
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
     $this->form_validation->set_rules('Contrasena', 'Contraseña anterior:', 'required');
     $this->form_validation->set_rules('NuevaContrasena', 'Nueva contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[NuevaContrasena2]');
     $this->form_validation->set_rules('NuevaContrasena2', 'Confirmar contraseña', 'required');
@@ -409,7 +430,10 @@ class Usuarios extends CI_Controller{
    */
   public function activar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -436,7 +460,10 @@ class Usuarios extends CI_Controller{
    */
   function desactivar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }

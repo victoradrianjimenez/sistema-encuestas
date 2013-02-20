@@ -6,58 +6,60 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Formularios</h3>
-        <p>---Descripción---</p>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Formularios</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
-          <li class="active"><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
-        </ul>
-      </div>
-
-      <!-- Main -->
-      <div class="span9">
-        <h4>Preguntas</h4>
-        <?php if(count($lista)== 0):?>
-          <p>No se encontraron preguntas.</p>
-        <?php else:?>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <th>Texto</th>
-              <th>Creacion</th>
-              <th>Tipo</th>
-              <th>Obligatoria</th>
-              <th>Acciones</th>
-            </thead>
-            <?php foreach($lista as $item): ?>  
-              <tr>
-                <td><a class="texto" href="<?php echo site_url('preguntas/ver/'.$item['pregunta']->idPregunta)?>"/><?php echo $item['pregunta']->texto?></a></td>
-                <td class="creacion"><?php echo $item['pregunta']->creacion?></td>
-                <td class="tipo"><?php echo $item['pregunta']->tipo?></td>
-                <td class="obligatoria"><?php echo $item['pregunta']->obligatoria?></td>
-                <td>
-                  <a class="eliminar" href="#" value="<?php echo $item['pregunta']->idPregunta?>">Eliminar</a>
-                </td>
-              </tr>
-            <?php endforeach ?>
-          </table>
-        <?php endif ?>
-        <?php echo $paginacion ?>
-
-        <!-- Botones -->
-        <div class="btn-group">
-          <a class="btn btn-primary" href="<?php echo site_url('preguntas/nueva')?>">Agregar pregunta</a>
+      
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
+            <li class="active"><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
+          </ul>
+        </div>
+  
+        <!-- Main -->
+        <div class="span9">
+          <h4>Preguntas</h4>
+          <?php if(count($lista)== 0):?>
+            <p>No se encontraron preguntas.</p>
+          <?php else:?>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <th>Texto</th>
+                <th>Creacion</th>
+                <th>Tipo</th>
+                <th>Obligatoria</th>
+                <th>Acciones</th>
+              </thead>
+              <?php foreach($lista as $item): ?>  
+                <tr>
+                  <td><a class="texto" href="<?php echo site_url('preguntas/ver/'.$item['pregunta']->idPregunta)?>"/><?php echo $item['pregunta']->texto?></a></td>
+                  <td class="creacion"><?php echo $item['pregunta']->creacion?></td>
+                  <td class="tipo"><?php echo $item['pregunta']->tipo?></td>
+                  <td class="obligatoria"><?php echo $item['pregunta']->obligatoria?></td>
+                  <td>
+                    <a class="eliminar" href="#" value="<?php echo $item['pregunta']->idPregunta?>">Eliminar</a>
+                  </td>
+                </tr>
+              <?php endforeach ?>
+            </table>
+          <?php endif ?>
+          <?php echo $paginacion ?>
+  
+          <!-- Botones -->
+          <div class="btn-group">
+            <a class="btn btn-primary" href="<?php echo site_url('preguntas/nueva')?>">Agregar pregunta</a>
+          </div>
         </div>
       </div>
     </div>

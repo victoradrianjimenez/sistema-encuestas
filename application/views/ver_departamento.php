@@ -6,35 +6,37 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Departamentos, Carreras y Materias</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li class="active"><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
-          <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
-          <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        </ul>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h3><?php echo $departamento->nombre?></h3>
-        <p>Jefe de Departamento: <?php echo $jefeDepartamento->nombre.' '.$jefeDepartamento->apellido?></p>
-
-        <!-- Botones -->
-        <div class="btn-group">
-          <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar departamento...</button>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li class="active"><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
+            <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
+            <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
+          </ul>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h3><?php echo $departamento->nombre?></h3>
+          <p>Jefe de Departamento: <?php echo $jefeDepartamento->nombre.' '.$jefeDepartamento->apellido?></p>
+  
+          <!-- Botones -->
+          <div class="btn-group">
+            <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar departamento...</button>
+          </div>
         </div>
       </div>
     </div>

@@ -11,70 +11,72 @@
   </style>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Informes Históricos</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <?php $item_submenu = 1;
-          include 'templates/submenu-historicos.php';
-        ?>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Informes Históricos</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4>Solicitar informe por asignatura</h4>
-        <form class="form-horizontal" action="<?php echo site_url('historicos/materia')?>" method="post">
-  
-          <div class="control-group">
-            <label class="control-label" for="buscarCarrera">Carrera:</label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idCarrera" required/>
-              <?php echo form_error('idCarrera')?>
-            </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="buscarMateria">Materia:</label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idMateria" required/>
-              <?php echo form_error('idMateria')?>
-            </div>
-          </div>
-          <div class="row-fluid">
-            <div class="span6 control-group">
-              <label class="control-label" for="dpd1">Fecha Inicio:</label>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <?php $item_submenu = 1;
+            include 'templates/submenu-historicos.php';
+          ?>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h4>Solicitar informe por asignatura</h4>
+          <form class="form-horizontal" action="<?php echo site_url('historicos/materia')?>" method="post">
+    
+            <div class="control-group">
+              <label class="control-label" for="buscarCarrera">Carrera:</label>
               <div class="controls">
-                <input class="input-block-level" type="text" class="span2" value="" id="dpd1">
+                <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idCarrera" required/>
+                <?php echo form_error('idCarrera')?>
               </div>
             </div>
-            <div class="span6 control-group">
-              <label class="control-label" for="dpd1">Fecha Fin:</label>
+            <div class="control-group">
+              <label class="control-label" for="buscarMateria">Materia:</label>
               <div class="controls">
-                <input class="input-block-level" type="text" class="span2" value="" id="dpd2">
+                <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idMateria" required/>
+                <?php echo form_error('idMateria')?>
               </div>
             </div>
-          </div>
-          <div class="control-group">
-            <div class="controls">
-              <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir promedio de índices de secciones</label>
-              <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir promedio de índices para cada docente</label>
-              <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice general</label>
+            <div class="row-fluid">
+              <div class="span6 control-group">
+                <label class="control-label" for="dpd1">Fecha Inicio:</label>
+                <div class="controls">
+                  <input class="input-block-level" type="text" class="span2" value="" id="dpd1">
+                </div>
+              </div>
+              <div class="span6 control-group">
+                <label class="control-label" for="dpd1">Fecha Fin:</label>
+                <div class="controls">
+                  <input class="input-block-level" type="text" class="span2" value="" id="dpd2">
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="controls btn-group">
-            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </form>
+            <div class="control-group">
+              <div class="controls">
+                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir promedio de índices de secciones</label>
+                <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir promedio de índices para cada docente</label>
+                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice general</label>
+              </div>
+            </div>
+            <div class="controls btn-group">
+              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+            </div>
+          </form>
+        </div>
       </div>
     </div>
     <div id="push"></div><br />

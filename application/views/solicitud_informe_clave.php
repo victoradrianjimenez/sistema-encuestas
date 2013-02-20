@@ -15,71 +15,73 @@
   </style>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Informes por Claves de Acceso</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Informes por Claves de Acceso</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4>Solicitar informe por clave de acceso</h4>
-        <form class="form-horizontal" action="<?php echo site_url('encuestas/informeClave')?>" method="post">
-          
-          <div class="control-group">
-            <label class="control-label" for="buscarCarrera">Carrera: </label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idCarrera" required/>
-              <?php echo form_error('idCarrera')?>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h4>Solicitar informe por clave de acceso</h4>
+          <form class="form-horizontal" action="<?php echo site_url('encuestas/informeClave')?>" method="post">
+            
+            <div class="control-group">
+              <label class="control-label" for="buscarCarrera">Carrera: </label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idCarrera" required/>
+                <?php echo form_error('idCarrera')?>
+              </div>
             </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="buscarMateria">Materia: </label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idMateria" required/>
-              <?php echo form_error('idMateria')?>
+            <div class="control-group">
+              <label class="control-label" for="buscarMateria">Materia: </label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idMateria" required/>
+                <?php echo form_error('idMateria')?>
+              </div>
             </div>
-          </div>
-          <div class="control-group">  
-            <label class="control-label" for="buscarEncuesta">Año: </label>
-            <div class="controls">
-              <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
-              <input type="hidden" name="idEncuesta" required/>
-              <?php echo form_error('idEncuesta')?>
-              <input type="hidden" name="idFormulario" required/>
-              <?php echo form_error('idFormulario')?>
+            <div class="control-group">  
+              <label class="control-label" for="buscarEncuesta">Año: </label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idEncuesta" required/>
+                <?php echo form_error('idEncuesta')?>
+                <input type="hidden" name="idFormulario" required/>
+                <?php echo form_error('idFormulario')?>
+              </div>
             </div>
-          </div>
-          <div class="control-group">
-            <label class="control-label" for="listaClaves">Accesos: </label>
-            <div class="controls">
-              <select id="listaClaves" name="idClave" size="3" required>
-              </select>
-              <?php echo form_error('idClave')?>
+            <div class="control-group">
+              <label class="control-label" for="listaClaves">Accesos: </label>
+              <div class="controls">
+                <select id="listaClaves" name="idClave" size="3" required>
+                </select>
+                <?php echo form_error('idClave')?>
+              </div>
             </div>
-          </div>
-          <div class="control-group">
-            <div class="controls">
-              <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir índices de secciones</label>
-              <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir índices para cada docente</label>
-              <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice global</label>
+            <div class="control-group">
+              <div class="controls">
+                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir índices de secciones</label>
+                <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir índices para cada docente</label>
+                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice global</label>
+              </div>
             </div>
-          </div>
-          <div class="controls btn-group">
-            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </form>
+            <div class="controls btn-group">
+              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+            </div>
+          </form>
+        </div>
       </div>
     </div>
     <div id="push"></div><br />

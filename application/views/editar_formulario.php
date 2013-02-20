@@ -28,58 +28,60 @@
   </style>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Formularios</h3>
-        <p>---Descripción---</p>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Formularios</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
-    </div>
-
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li class="active"><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
-          <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
-        </ul>
-      </div>
-      
-      <!-- Main -->
-      <div class="span9">
-      <h4>Formulario</h4>
-        <form action="<?php echo site_url('formularios/nuevo')?>" method="post">
-          <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
-          <input class="input-block-level" id="campoNombre" type="text" name="nombre" required />
-          <label for="campoTitulo">Título: <span class="opcional">*</span></label>
-          <input class="input-block-level" id="campoTitulo" type="text" name="titulo" required />
-          <div class="row-fluid">
-            <div class="span12">
-            <div class="span8">
-              <label for="campoDescripcion">Descripción: </label>
-              <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
+  
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li class="active"><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
+            <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
+          </ul>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+        <h4>Formulario</h4>
+          <form action="<?php echo site_url('formularios/nuevo')?>" method="post">
+            <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
+            <input class="input-block-level" id="campoNombre" type="text" name="nombre" required />
+            <label for="campoTitulo">Título: <span class="opcional">*</span></label>
+            <input class="input-block-level" id="campoTitulo" type="text" name="titulo" required />
+            <div class="row-fluid">
+              <div class="span12">
+              <div class="span8">
+                <label for="campoDescripcion">Descripción: </label>
+                <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
+              </div>
+              <div class="span4">
+                <label for="campoAdicionales">Preguntas adicionales: <span class="opcional">*</span></label>
+                <input class="input-block-level" id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" />
+              </div>
+              </div>
             </div>
-            <div class="span4">
-              <label for="campoAdicionales">Preguntas adicionales: <span class="opcional">*</span></label>
-              <input class="input-block-level" id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" />
+            <div class="Formularios">
+              <legend>Secciones
+                <a style="float:right; margin:0 6px;" href="#modalAgregarSeccion" role="button" data-toggle="modal" title="Agregar sección..."><i class="icon-circle-plus"></i></a>
+              </legend>
             </div>
+            <ul class="Secciones"></ul>
+            
+            <!-- Botones -->
+            <div>
+              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
             </div>
-          </div>
-          <div class="Formularios">
-            <legend>Secciones
-              <a style="float:right; margin:0 6px;" href="#modalAgregarSeccion" role="button" data-toggle="modal" title="Agregar sección..."><i class="icon-circle-plus"></i></a>
-            </legend>
-          </div>
-          <ul class="Secciones"></ul>
-          
-          <!-- Botones -->
-          <div>
-            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
     <div id="push"></div><br />

@@ -6,55 +6,57 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <?php include 'templates/menu-nav.php'?>
-  <div id="wrapper" class="container">
-    <div class="row">
-      <!-- Titulo -->
-      <div class="span12">
-        <h3>Gestión de Departamentos, Carreras y Materias</h3>
-        <p>---Descripción---</p>
-      </div>
-    </div>
-    
-    <div class="row">
-      <!-- SideBar -->
-      <div class="span3" id="menu">
-        <h4>Navegación</h4>
-        <ul class="nav nav-pills nav-stacked">      
-          <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
-          <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
-          <li class="active"><a href="<?php echo site_url("materias")?>">Materias</a></li>
-        </ul>
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Titulo -->
+        <div class="span12">
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>---Descripción---</p>
+        </div>
       </div>
       
-      <!-- Main -->
-      <div class="span9">
-        <h4>Materias</h4>
-        <?php if(count($lista)== 0):?>
-          <p>No se encontraron materias.</p>
-        <?php else:?>
-          <table class="table table-bordered table-striped">
-            <thead>
-              <th>Nombre</th>
-              <th>Codigo</th>
-              <th>Alumnos</th>
-              <th>Acciones</th>
-            </thead>
-            <?php foreach($lista as $item): ?>  
-              <tr>
-                <td><a class="nombre" href="<?php echo site_url("materias/ver/".$item->idMateria)?>"><?php echo $item->nombre?></a></td>
-                <td><?php echo $item->codigo?></td>
-                <td><?php echo $item->alumnos?></td>
-                <td><a class="eliminar" href="#" value="<?php echo $item->idMateria?>">Eliminar</a></td>
-              </tr>
-            <?php endforeach ?>
-          </table>
-        <?php endif ?>
-        <?php echo $paginacion ?>
-
-        <!-- Botones -->
-        <div class="btn-group">
-          <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar materia...</button>
+      <div class="row">
+        <!-- SideBar -->
+        <div class="span3" id="menu">
+          <h4>Navegación</h4>
+          <ul class="nav nav-pills nav-stacked">      
+            <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
+            <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
+            <li class="active"><a href="<?php echo site_url("materias")?>">Materias</a></li>
+          </ul>
+        </div>
+        
+        <!-- Main -->
+        <div class="span9">
+          <h4>Materias</h4>
+          <?php if(count($lista)== 0):?>
+            <p>No se encontraron materias.</p>
+          <?php else:?>
+            <table class="table table-bordered table-striped">
+              <thead>
+                <th>Nombre</th>
+                <th>Codigo</th>
+                <th>Alumnos</th>
+                <th>Acciones</th>
+              </thead>
+              <?php foreach($lista as $item): ?>  
+                <tr>
+                  <td><a class="nombre" href="<?php echo site_url("materias/ver/".$item->idMateria)?>"><?php echo $item->nombre?></a></td>
+                  <td><?php echo $item->codigo?></td>
+                  <td><?php echo $item->alumnos?></td>
+                  <td><a class="eliminar" href="#" value="<?php echo $item->idMateria?>">Eliminar</a></td>
+                </tr>
+              <?php endforeach ?>
+            </table>
+          <?php endif ?>
+          <?php echo $paginacion ?>
+  
+          <!-- Botones -->
+          <div class="btn-group">
+            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar materia...</button>
+          </div>
         </div>
       </div>
     </div>

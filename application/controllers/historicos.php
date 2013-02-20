@@ -46,7 +46,10 @@ class Historicos extends CI_Controller{
    */
   public function materia(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -155,7 +158,10 @@ class Historicos extends CI_Controller{
    */
   public function carrera(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -232,7 +238,10 @@ class Historicos extends CI_Controller{
    */
   public function departamento(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
@@ -303,7 +312,10 @@ class Historicos extends CI_Controller{
    */
   public function facultad(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }

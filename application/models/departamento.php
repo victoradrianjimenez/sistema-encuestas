@@ -19,7 +19,7 @@ class Departamento extends CI_Model{
    * Obtener el listado de carreras del departamento. Devuleve un array de objetos.
    *
    * @access  public
-   * @return  array
+   * @return  arrayCarreras
    */  
   public function listarCarreras(){
     $idDepartamento = $this->db->escape($this->IdDepartamento);

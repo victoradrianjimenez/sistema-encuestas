@@ -6,6 +6,7 @@
   </div>
   <form id="login" class="form-horizontal" action="<?php echo site_url("usuarios/login")?>" method="post"> 
     <div class="modal-body">
+      <input type="hidden" name="redirect" value="<?php if(isset($redirectLogin)) echo $redirectLogin?>" />
       <div class="control-group">
         <label class="control-label" for="loginUsuario">Usuario</label>
         <div class="controls">

@@ -45,15 +45,21 @@ class Informes extends CI_Controller{
    */
   public function materia(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
     $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    if($this->form_validation->run() && sscanf($this->input->post('encuesta'),"%d_%d",$idEncuesta,$idFormulario)==2){
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
       $idMateria = (int)$this->input->post('idMateria');
       $idCarrera = (int)$this->input->post('idCarrera');
       $indicesDocentes = (bool)$this->input->post('indicesDocentes');
@@ -154,14 +160,20 @@ class Informes extends CI_Controller{
    */
   public function carrera(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    if($this->form_validation->run() && sscanf($this->input->post('encuesta'), "%d_%d",$idEncuesta, $idFormulario) == 2){
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
       $idCarrera = (int)$this->input->post('idCarrera');
       $indicesSecciones = (bool)$this->input->post('indicesSecciones');
       $indiceGlobal = (bool)$this->input->post('indiceGlobal');
@@ -231,17 +243,21 @@ class Informes extends CI_Controller{
    */
   public function departamento(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','required|is_natural_no_zero');
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    $tmp = $this->input->post('encuesta');
-    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    if($this->form_validation->run()){
       $idDepartamento = (int)$this->input->post('idDepartamento');
-      
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
@@ -302,14 +318,19 @@ class Informes extends CI_Controller{
    */
   public function facultad(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->in_group(array('admin','decanos'))){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos'))){
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
     //verifico datos POST
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    $tmp = $this->input->post('encuesta');
-    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
