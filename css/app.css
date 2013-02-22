@@ -74,6 +74,13 @@ i.icon-circle-remove{
   background-position: -78px 0;
 }
 
+#logout input[type="submit"]{
+  color:#333333;  
+}
+#logout input[type="submit"]:hover{
+  color:#FFFFFF;
+  text-decoration:none;
+}
 
 /* Artfully masterminded by ZURB  */
 

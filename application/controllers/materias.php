@@ -51,7 +51,7 @@ class Materias extends CI_Controller{
 
     //envio datos a la vista
     $this->data['lista'] = &$lista; //array de datos de las materias
-    $this->data['materia'] = &$this->Materia; //datos por defecto de una nueva materia
+    $this->data['materia'] = &$this->Materia; //datos por defecto de una  materia
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $this->load->view('lista_materias', $this->data);
   }
@@ -99,7 +99,7 @@ class Materias extends CI_Controller{
   }
 
   /*
-   * Recepción del formulario para agregar nueva materia
+   * Recepción del formulario para agregar  materia
    * POST: nombre, codigo
    * Última revisión: 2012-02-01 3:44 p.m.
    */
@@ -121,7 +121,7 @@ class Materias extends CI_Controller{
       
       //agrego materia y cargo vista para mostrar resultado
       $res = $this->gm->alta($this->input->post('nombre',TRUE), $this->input->post('codigo',TRUE), $this->input->post('alumnos',TRUE));
-      $this->data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
+      $this->data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva materia es $res.":$res;
       $this->data['link'] = site_url('materias'); //hacia donde redirigirse
       $this->load->view('resultado_operacion', $this->data);
     }

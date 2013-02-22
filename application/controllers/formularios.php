@@ -162,7 +162,6 @@ class Formularios extends CI_Controller{
       $this->load->view('resultado_operacion', $this->data);
     }
     else{
-      echo "d'oh!";
       $this->editar();
     }
   }

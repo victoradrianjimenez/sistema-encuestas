@@ -69,7 +69,7 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
     //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarDepartamento').keydown(function(){
+    $('#buscarDepartamento').keydown(function(event){
       if (event.which==9) return; //ignorar al presionar Tab
       $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });
@@ -108,7 +108,7 @@
     });
     
     //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarEncuesta').keydown(function(){
+    $('#buscarEncuesta').keydown(function(event){
       if (event.which==9) return; //ignorar al presionar Tab
       $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });

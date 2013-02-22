@@ -1,172 +1,135 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-02-03 4:33 p.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
-  <title>Encuesta</title>
-  
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <!-- Le styles -->
+    <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+    <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
+    <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+    
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <script src="<?php echo base_url('js/jquery.js')?>"></script>
+    <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
+    
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="ico/favicon.png">
+
+  <title>Respuestas Encuesta</title>
   <style>
-    div.item{
-      margin: 5px 0;
-    }
-    .titulo_seccion > h5{
-      border-bottom: 4px solid #2795B6;
-    }
-    #titulo h2, #titulo h4, #titulo h5{
-      text-align: center;
-    }
-    a.button{
-      width: 100%;
-    }
-  </style>  
+    #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
+    h5.separador{border-bottom: 3px solid #2BA6CB;}
+    ul.respuestas{list-style-position:inside;}
+    .row-fluid [class*="span"]{margin-left:0;}
+  </style>
 </head>
 <body>
-
-  <div class="row">
-    <!-- Main Section -->
-    
-    <div class="twelve columns">
-      <div id="titulo">
+  <div class="container">
+    <div id="header" class="row">
+      <div class="span12">
         <h2><?php echo $formulario->titulo?></h2>
         <h5><?php echo $carrera->nombre?></h5>
         <h4>Asignatura: <?php echo $materia->nombre?></h4>
       </div>
-      <form id="formulario" action="<?php echo site_url('claves/responder')?>" method="post">
-        <input type="hidden" name="clave" value="<?php echo $clave->clave?>" />        
-        <?php foreach ($secciones as $itemSeccion): ?>
-          <div class="row">
-            <div class="twelve columns">
-              <div class="titulo_seccion">
-                <h5><?php echo $itemSeccion['seccion']->texto?></h5>
-                <h6><?php echo $itemSeccion['seccion']->descripcion?></h6>
-              </div>  
-              <?php 
-              $colCount = 0; //variable para verificar si me paso del maximo de 4 columnas
-              
-              //SUBSECCIONES
-              
-              foreach ($itemSeccion['subsecciones'] as $subseccion){
-                $docente = $subseccion['docente'];
-                $ncol = 0;
-                printf('
-                <div class="row">
-                  <div class="twelve columns">
-                    <h3>%s %s</h3>
-                  </div>', $docente->nombre, $docente->apellido);
-                
-                //ITEMS
-
-                foreach ($subseccion['items'] as $i){
-                  $item = &$i['item'];
-                  $respuestas = &$i['respuestas'];
-                  
-                  if ($ncol>=12){
-                    $ncol=12-$ncol;
-                    echo '<div class="row"></div>';
-                  }
-                  
-                  //genero el html de la ayuda contextual
-                  $tip = ($item->descripcion!='')?'<span class="secondary round label has-tip" title="'.$item->descripcion.'">!</span>':'';
-                  
-                  //para las preguntas con opciones
-                  if($item->tipo == 'S'){
-                    printf('
-                    <div class="item six columns">
-                      <div class="twelve columns">
-                        <p>%s %s</p>
-                        <p><b>%s</b></p>
-                      </div>
-                    </div>', $item->texto, $tip, $respuestas[0]['texto']);
-                    $ncol += 6;
-                  }
-                  //multiple choice
-                  elseif($item->tipo == 'M'){
-                    $ncol += 6;
-                  }
-                  //para las preguntas numericas
-                  elseif($item->tipo == 'N'){
-                    printf ('
-                    <div class="item six columns">
-                      <div class="twelve columns">
-                        <p>%s %s</p>
-                        <p><b>%s</b></p>
-                      </div>
-                    </div>', $item->texto, $tip, $respuestas[0]['texto']);
-                    $ncol += 6; 
-                  }
-                  //texto de una linea
-                  elseif($i['item']->tipo == 'T'){
-                    printf ('
-                    <div class="item six columns">
-                      <div class="twelve columns">
-                        <p>%s %s</p>
-                        <p><b>%s</b></p>
-                      </div>
-                    </div>', $item->texto, $tip, $respuestas[0]['texto']);
-                    $ncol += 12;
-                  }
-                  //texto multilinea
-                  elseif($item->tipo == 'X'){
-                    printf ('
-                    <div class="item six columns">
-                      <div class="twelve columns">
-                        <p>%s %s</p>
-                        <p><b>%s</b></p>
-                      </div>
-                    </div>', $item->texto, $tip, $respuestas[0]['texto']);
-                    $ncol += 12;
-                  }
-                }//foreach items
-                echo '</div>';
-              }//foreach subsecciones
-              ?>
-            </div>
+    </div>
+    <div class="row">
+      <div class="span12">
+        <h5 class="separador">Estadísticas Generales</h5>
+        <div class="row">
+          <div class="span6">
+            
+            
           </div>
-        <?php endforeach?>
-        
-        <div class="three mobile-two columns centered push-one-mobile">
-          <a class="button" data-reveal-id="modalConfirmar">Enviar</a>
         </div>
-        
-        <!-- ventana modal para eliminar materias -->
-        <div id="modalConfirmar" class="reveal-modal small">
-          <h3>Confirmación</h3>
-          <p>¿Desea continuar?</p>
-          <div class="row">         
-            <div class="ten columns centered">
-              <div class="six mobile-one columns push-one-mobile">
-                <a class="button cancelar">Cancelar</a>
-              </div>
-              <div class="six mobile-one columns pull-one-mobile ">
-                <input type="submit" class="button" name="submit" value="Enviar" />
-              </div>
-            </div>
-          </div>
-          <a class="close-reveal-modal">&#215;</a>
-        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span12">
+        <?php foreach ($secciones as $seccion) {
+          echo'
+          <h5 class="separador">'.$seccion['seccion']->texto.'</h5>
+          <h6>'.$seccion['seccion']->descripcion.'</h6>';
           
-      </form>
+          //SUBSECCIONES
+          
+          foreach ($seccion['subsecciones'] as $subseccion){
+            $docente = $subseccion['docente'];
+            echo'
+            <div class="row">
+              <div class="span12">
+                <h3>'.$docente->nombre.' '.$docente->apellido.'</h3>
+                <div class="row-fluid">';
+                  $col = 0;
+                  //ITEMS
+                  foreach ($subseccion['items'] as $i){
+                    $item = &$i['item'];
+                    $respuestas = &$i['respuestas'];
+      
+                    //genero el html de la ayuda contextual
+                    $tip = ($item->descripcion!='')?'<i class="icon-info-sign" data-toggle="tooltip" title="" data-original-title="'.$item->descripcion.'"></i>':'';
+                    
+                    //para las preguntas con opciones
+                    if($item->tipo == 'S'){
+                      printf('
+                      <div class="item span6">
+                        <p>%s %s</p>
+                        <p><b>%s</b></p>
+                      </div>', $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
+                    }
+                    //multiple choice
+                    elseif($item->tipo == 'M'){
+      
+                    }
+                    //para las preguntas numericas
+                    elseif($item->tipo == 'N'){
+                      printf ('
+                      <div class="item span6">
+                        <p>%s %s</p>
+                        <p><b>%s</b></p>
+                      </div>', $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
+      
+                    }
+                    //texto de una linea
+                    elseif($i['item']->tipo == 'T'){
+                      printf ('
+                      <div class="item span6">
+                        <p>%s %s</p>
+                        <p><b>%s</b></p>
+                      </div>', $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
+                    }
+                    //texto multilinea
+                    elseif($item->tipo == 'X'){
+                      printf ('
+                      <div class="item span6">
+                        <p>%s %s</p>
+                        <p><b>%s</b></p>
+                      </div>', $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
+                    }
+                    $col = ($col+1)%2;
+                    if ($col == 0) echo'</div><div class="row-fluid">';
+                  }//foreach items
+                  echo '
+                </div>
+              </div>
+            </div>';
+          }//foreach subsecciones
+        }
+        ?>
+      </div>
     </div>
   </div>
+  <?php //include 'templates/footer2.php'?>  
 
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
-
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+  <script src="<?php echo base_url('js/bootstrap-tooltip.js')?>"></script>
   <script>
-    $('.cancelar').click(function(){
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
+    $('i.icon-info-sign').tooltip();
   </script>
 </body>
 </html>

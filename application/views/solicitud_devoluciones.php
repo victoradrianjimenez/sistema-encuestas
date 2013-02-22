@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Generar Informe por Carrera</title>
+  <title>Lista Devoluciones</title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     .form-horizontal .controls {margin-left: 70px}
@@ -16,23 +16,22 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Informes por Encuestas</h3>
+          <h3>Devoluciones</h3>
           <p>---Descripción---</p>
         </div>
       </div>
       
       <div class="row">
         <!-- SideBar -->
-        <div class="span3" id="menu">
-          <?php $item_submenu = 2;
-            include 'templates/submenu-informes.php';
-          ?>
+
+        <div class="span3">
+          
         </div>
-        
         <!-- Main -->
         <div class="span9">
-        <h4>Solicitar informe por carrera</h4>
-          <form class="form-horizontal" action="<?php echo site_url('informes/carrera')?>" method="post">
+          <h4>Devoluciones</h4>
+          <form class="form-horizontal" action="<?php echo site_url('devoluciones/listar')?>" method="post">
+    
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
               <div class="controls">
@@ -41,20 +40,12 @@
                 <?php echo form_error('idCarrera')?>
               </div>
             </div>
-            <div class="control-group">  
-              <label class="control-label" for="buscarEncuesta">Año:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
-                <input type="hidden" name="idEncuesta" required/>
-                <?php echo form_error('idEncuesta')?>
-                <input type="hidden" name="idFormulario" required/>
-                <?php echo form_error('idFormulario')?>
-              </div>
-            </div>          
             <div class="control-group">
+              <label class="control-label" for="buscarMateria">Materia:</label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked/>Incluir promedio de índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked/>Incluir indice general</label>
+                <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idMateria" required/>
+                <?php echo form_error('idMateria')?>
               </div>
             </div>
             <div class="controls btn-group">
@@ -114,19 +105,22 @@
     });
     
     //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarEncuesta').keydown(function(event){
+    $('#buscarMateria').keydown(function(event){
       if (event.which==9) return; //ignorar al presionar Tab
       $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });
     //realizo la busqueda de usuarios con AJAX
-    $('#buscarEncuesta').typeahead({
+    $('#buscarMateria').typeahead({
       matcher: function (item) {return true},    
       sorter: function (items) {return items},
       source: function(query, process){
         return $.ajax({
           type: "POST", 
-          url: "<?php echo site_url('encuestas/buscarEncuestaAJAX')?>", 
-          data:{buscar: query}
+          url: "<?php echo site_url('carreras/buscarMateriasAJAX')?>", 
+          data:{ 
+            buscar: query,
+            idCarrera: $('input[name="idCarrera"]').val()
+          }
         }).done(function(msg){
           var filas = msg.split("\n");
           var items = new Array();
@@ -139,7 +133,7 @@
       },
       highlighter: function (item) {
         var cols = item.split("\t");
-        var texto = cols[2]+" / "+cols[3]; //año / cuatrimestre
+        var texto = cols[1]+" / "+cols[2]; //nombre / codigo
         var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
         return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
           return '<strong>' + match + '</strong>'
@@ -147,10 +141,8 @@
       },
       updater: function (item) {
         var cols = item.split("\t");
-        cont = $('#buscarEncuesta').parentsUntil('control-group').first().parent().removeClass('error');
-        cont.find('input[name="idEncuesta"]').val(cols[0]);
-        cont.find('input[name="idFormulario"]').val(cols[1]);
-        return cols[2]+" / "+cols[3];
+        $('#buscarMateria').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+        return cols[1]+" / "+cols[2];
       }
     });
     

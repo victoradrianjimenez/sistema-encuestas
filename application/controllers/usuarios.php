@@ -277,7 +277,8 @@ class Usuarios extends CI_Controller{
       if ($this->ion_auth->login($this->input->post('usuario'), $this->input->post('contrasena'), (bool) $this->input->post('recordarme'))){
         //si el usuario ingresó datos de acceso válidos
         $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-        redirect('/');
+        //redirect('/');
+        $this->load->view('index', $this->data);
       }
       else{
         //si no logró validar
@@ -411,7 +412,6 @@ class Usuarios extends CI_Controller{
         $this->data['csrf'] = $this->_get_csrf_nonce();
         $this->data['code'] = $code;
         $this->data['user_id'] = $user->id;
-        echo 'dfdf';
         $this->load->view('cambiar_contrasena',$this->data);
       }
     }

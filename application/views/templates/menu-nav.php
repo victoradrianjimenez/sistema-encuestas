@@ -26,7 +26,7 @@
               <li class="nav-header">Informes</li>
               <li><a href="<?php echo site_url('informes/materia')?>">Encuestas realizadas</a></li>
               <li><a href="<?php echo site_url('historicos/materia')?>">Informes históricos</a></li>
-              <li><a href="<?php echo site_url('encuestas/informeClave')?>">Respuestas individuales</a></li>
+              <li><a href="<?php echo site_url('informes/clave')?>">Respuestas individuales</a></li>
               <li class="divider"></li>
               <li><a href="<?php echo site_url('devoluciones')?>">Devoluciones</a></li>
             </ul>
@@ -44,8 +44,8 @@
                 <li><a href="#">Cambiar contraseña</a></li>
                 <li class="divider"></li>
                 <li>
-                  <a><form id="logout" action="<?php echo site_url("usuarios/logout")?>" method="post" style="margin:0">
-                    <input class="btn btn-link" type="submit" name="submit" value="Cerrar sesión" style="margin:0;padding:0;text-align:left"/>
+                  <a style="padding:0"><form id="logout" action="<?php echo site_url("usuarios/logout")?>" method="post" style="margin:0">
+                    <input class="btn btn-link" type="submit" name="submit" value="Cerrar sesión" style=":hover{color:red} width:100%;margin:0;padding:0px 20px;text-align:left"/>
                   </form></a>
                 </li>
               </ul>

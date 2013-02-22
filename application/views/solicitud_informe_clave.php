@@ -34,7 +34,7 @@
         <!-- Main -->
         <div class="span9">
           <h4>Solicitar informe por clave de acceso</h4>
-          <form class="form-horizontal" action="<?php echo site_url('encuestas/informeClave')?>" method="post">
+          <form class="form-horizontal" action="<?php echo site_url('informes/clave')?>" method="post">
             
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera: </label>
@@ -128,7 +128,7 @@
     };  
   
     //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarCarrera').keydown(function(){
+    $('#buscarCarrera').keydown(function(event){
       if (event.which==9) return; //ignorar al presionar Tab
       $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });
@@ -168,7 +168,7 @@
     });
     
     //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarMateria').keydown(function(){
+    $('#buscarMateria').keydown(function(event){
       if (event.which==9) return; //ignorar al presionar Tab
       $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });
@@ -211,7 +211,7 @@
     });
 
     //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarEncuesta').keydown(function(){
+    $('#buscarEncuesta').keydown(function(event){
       if (event.which==9) return; //ignorar al presionar Tab
       $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
     });

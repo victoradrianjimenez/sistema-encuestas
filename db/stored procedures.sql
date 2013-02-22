@@ -1,8 +1,28 @@
-DROP PROCEDURE IF EXISTS `esp_listar_devoluciones`;
+DROP PROCEDURE IF EXISTS `esp_dame_devolucion`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_devoluciones`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_devolucion`(
+	pidDevolucion INT UNSIGNED,
+	pidMateria SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT  idDevolucion, idMateria, idEncuesta, idFormulario, fecha,
+			fortalezas, debilidades, alumnos, docentes, mejoras
+    FROM Devoluciones
+	WHERE 	idDevolucion = pidDevolucion AND idMateria = pidMateria AND 
+			idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
+END $$
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `esp_listar_devoluciones_materia`;
+
+DELIMITER $$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_devoluciones_materia`(
+	pidMateria SMALLINT UNSIGNED,
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -10,12 +30,14 @@ BEGIN
     SELECT  idDevolucion, idMateria, idEncuesta, idFormulario, fecha,
 			fortalezas, debilidades, alumnos, docentes, mejoras
     FROM Devoluciones
+	WHERE 	idMateria = ?
     ORDER BY fecha DESC
     LIMIT ?,?';
     PREPARE stmt FROM  @qry;
+	SET @c = pidMateria;
     SET @a = pPagInicio;
     SET @b = pPagLongitud;
-    EXECUTE stmt USING @a, @b;
+    EXECUTE stmt USING @c, @a, @b;
     DEALLOCATE PREPARE stmt;
 END $$
 

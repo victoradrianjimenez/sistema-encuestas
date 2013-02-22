@@ -17,7 +17,7 @@
       </div>
       <div class="row">
         <div class="twelve mobile-one columns pull-three-mobile">
-          <input type="submit" name="sumit" value="Enviar" class="small button" />
+          <input type="submit" name="submit" value="Enviar" class="small button" />
         </div>
       </div>
       <?php if(isset($mensajeLogin)):?>
