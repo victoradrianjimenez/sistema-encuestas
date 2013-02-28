@@ -12,7 +12,7 @@ class Usuarios extends CI_Controller{
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -178,7 +178,7 @@ class Usuarios extends CI_Controller{
    * POST: id, apellido, nombre, username, password, email
    * Última revisión: 2012-02-01 6:10 p.m.
    */
-  public function modificar(){
+  public function modificar($id){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
       redirect('usuarios/login');
@@ -187,24 +187,28 @@ class Usuarios extends CI_Controller{
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
-    //leo los grupos a los que pertenece el nuevo usuario
-    $entradas = $this->input->post(NULL, TRUE);
-    $i = 0;
-    $grupos = array();
-    foreach ($entradas as $key => $b) {
-      if (strpos($key, 'grupo') !== false && (bool)$b) {
-        sscanf($key, "grupo_%d",$x);
-        $grupos[$i++] = $x;
-      }
-    }
+    $id = (int)$id;
+    
     //verifico datos POST
-    $this->form_validation->set_rules('id','Identificador','is_natural_no_zero|required');
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email');
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     if($this->form_validation->run()){
+      
+      //leo los grupos a los que pertenece el nuevo usuario
+      $entradas = $this->input->post(NULL, TRUE);
+      $i = 0;
+      $grupos = array();
+      foreach ($entradas as $key => $b) {
+        if (strpos($key, 'grupo') !== false && (bool)$b) {
+          sscanf($key, "grupo_%d",$x);
+          $grupos[$i++] = $x;
+        }
+      }
+      
+      
       $id = $this->input->post('id',TRUE);
       $password = $this->input->post('password',TRUE);
       $data = array(
@@ -230,7 +234,19 @@ class Usuarios extends CI_Controller{
     }
     else{
       //en caso de que los datos sean incorrectos, vuelvo a la pagina del departamento
-      $this->ver($this->input->post('id',TRUE));
+      $this->load->model('Usuario');
+      $this->load->model('Gestor_usuarios', 'gu');
+      $usuario = $this->gu->dame($id);
+      $this->data['grupos'] = $this->ion_auth->groups()->result();
+      if ($usuario){
+        $this->data['usuario'] = $usuario;
+        $this->data['usuario_grupos'] = $this->ion_auth->get_users_groups($id)->result();        
+      }  
+      else{
+        $this->data['usuario'] = $this->Usuario;
+        $this->data['usuario_grupos'] = array();        
+      }
+      $this->load->view('editar_usuario', $this->data);
     }
   }
 

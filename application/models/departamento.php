@@ -20,7 +20,7 @@ class Departamento extends CI_Model{
    *
    * @access  public
    * @return  arrayCarreras
-   */  
+   
   public function listarCarreras(){
     $idDepartamento = $this->db->escape($this->IdDepartamento);
     $query = $this->db->query("call esp_listar_carreras_departamento($idDepartamento)");
@@ -28,7 +28,7 @@ class Departamento extends CI_Model{
     $query->free_result();
     //$this->db->reconnect();
     return $data;
-  }
+  }*/  
     
     
   /**
@@ -36,7 +36,7 @@ class Departamento extends CI_Model{
    *
    * @access public
    * @return int
-   */ 
+   
   public function cantidadCarreras(){
     $idDepartamento = $this->db->escape($this->IdDepartamento);
     $query = $this->db->query("call esp_cantidad_carreras_departamento($idDepartamento)");
@@ -44,7 +44,7 @@ class Departamento extends CI_Model{
     $query->free_result();
     //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
-  }
+  }*/ 
 
 }
 

@@ -8,6 +8,7 @@
   <style>
     .form-horizontal .controls {margin-left: 100px}
     .form-horizontal .control-label {width: 80px; float: left}
+    #contenedor{padding-top:9px}
   </style>
 </head>
 <body>
@@ -31,7 +32,7 @@
         </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span9">
           <h4>Solicitar informe por asignatura</h4>
           <form class="form-horizontal" action="<?php echo site_url('historicos/materia')?>" method="post">
     

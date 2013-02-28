@@ -12,7 +12,7 @@ class Materias extends CI_Controller{
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -289,7 +289,7 @@ class Materias extends CI_Controller{
    * Funcion para responder solicitudes AJAX
    * POST: buscar
    * Última revisión: 2012-02-01 3:51 p.m.
-   */
+   
   public function listarCarrerasAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
@@ -306,5 +306,6 @@ class Materias extends CI_Controller{
       }
     }
   }
+   */
 }
 ?>

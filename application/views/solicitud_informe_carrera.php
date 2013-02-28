@@ -7,6 +7,7 @@
   <style>
     .form-horizontal .controls {margin-left: 70px}
     .form-horizontal .control-label {width: 50px; float: left}
+    #contenedor{padding-top:9px}
   </style>
 </head>
 <body>
@@ -30,7 +31,7 @@
         </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span9">
         <h4>Solicitar informe por carrera</h4>
           <form class="form-horizontal" action="<?php echo site_url('informes/carrera')?>" method="post">
             <div class="control-group">
@@ -48,11 +49,11 @@
                 <input type="hidden" name="idEncuesta" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" required/>
-                <?php echo form_error('idFormulario')?>
               </div>
             </div>          
             <div class="control-group">
               <div class="controls">
+                <label class="checkbox"><input type="checkbox" name="graficos" checked />Incluir gráficos de barras</label>
                 <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked/>Incluir promedio de índices de secciones</label>
                 <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked/>Incluir indice general</label>
               </div>

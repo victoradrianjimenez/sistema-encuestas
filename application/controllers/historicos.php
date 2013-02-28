@@ -12,7 +12,7 @@ class Historicos extends CI_Controller{
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -21,7 +21,7 @@ class Historicos extends CI_Controller{
    * Última revisión: 2012-02-09 7:32 p.m.
    */
   private function _dameDatosSeccionMateria($seccion, $encuesta, $idDocente, $idMateria, $idCarrera){
-      $items = $seccion->listarItemsCarrera();
+      $items = $seccion->listarItemsCarrera($idCarrera);
       $datos_items = array();
       foreach ($items as $k => $item) {
         switch ($item->tipo) {
@@ -197,7 +197,7 @@ class Historicos extends CI_Controller{
         $datos_secciones[$i]['seccion'] = $seccion;
         $datos_secciones[$i]['items'] = array();
         $datos_secciones[$i]['indice'] = ($indicesSecciones)?$encuesta->indiceSeccionCarrera($idCarrera, $seccion->idSeccion):null;        
-        $items = $seccion->listarItemsCarrera();
+        $items = $seccion->listarItemsCarrera($idCarrera);
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case 'S': case 'M': case 'N':

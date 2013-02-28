@@ -12,6 +12,7 @@
       width: 70px;
       float: left;
     }
+    #contenedor{padding-top:9px}
   </style>
 </head>
 <body>
@@ -27,12 +28,9 @@
       </div>
       
       <div class="row">
-        <!-- SideBar -->
-        <div class="span3" id="menu">
-        </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span12">
           <h4>Solicitar informe por clave de acceso</h4>
           <form class="form-horizontal" action="<?php echo site_url('informes/clave')?>" method="post">
             
@@ -59,7 +57,6 @@
                 <input type="hidden" name="idEncuesta" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" required/>
-                <?php echo form_error('idFormulario')?>
               </div>
             </div>
             <div class="control-group">

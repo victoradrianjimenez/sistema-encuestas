@@ -10,6 +10,7 @@
   <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
   <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
   <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
   
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
@@ -111,5 +112,18 @@
     </div>
   </div>
   <?php //include 'templates/footer2.php'?>
+  
+  <div id="barra-herramientas">
+    <div class="btn-toolbar">
+      <div class="btn-group">
+        <a class="btn btn-primary btn-large" onclick="window.print()">Imprimir</a>
+      </div>
+      <div class="btn-group">
+        <a class="btn btn-primary btn-large">Descargar</a>
+      </div>
+    </div>
+  </div>
+
+  
 </body>
 </html>

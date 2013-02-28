@@ -18,13 +18,8 @@
       </div>
       
       <div class="row">
-        <!-- SideBar -->
-        <div class="span3" id="menu">
-          
-        </div>
-        
         <!-- Main -->
-        <div class="span9">
+        <div class="span12">
           <h4>Devoluciones</h4>
           <p>Asignatura: <?php echo $materia->nombre.' / '.$materia->codigo?></p>
           <?php if(count($lista)== 0):?>
@@ -41,7 +36,7 @@
                   <td><a class="fecha" href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>
                     <?php echo $item['devolucion']->fecha?>
                   </a></td>
-                  <td><a class="encuesta" href="#"/><?php echo $item['encuesta']->año.' / '.$item['encuesta']->cuatrimestre?></a></td>
+                  <td><?php echo $item['encuesta']->año.' / '.$item['encuesta']->cuatrimestre?></td>
                   <td><a class="eliminar" href="#" value="<?php echo $item['devolucion']->idDevolucion?>">Eliminar</a></td>
                 </tr>
               <?php endforeach ?>
@@ -71,7 +66,7 @@
     </div>
     <form action="<?php echo site_url('devoluciones/eliminar')?>" method="post">
       <div class="modal-body">
-        <input type="hidden" name="idMateria" value="" />
+        <input type="hidden" name="idDevolucion" value="" />
         <h5 class="nombre"></h5>
         <p>¿Desea continuar?</p>      
       </div>
@@ -95,10 +90,9 @@
       $('#modalEliminar input[name="idDevolucion"]').val(idDevolucion);
       //pongo la fecha de la devolucion en el dialogo
       $("#modalEliminar").find('.nombre').html(fecha);
-      $("#modalEliminar").reveal();
+      $("#modalEliminar").modal();
       return false;
     });
-    
     //abrir automaticamente la ventana modal que contenga entradas con errores
     $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>

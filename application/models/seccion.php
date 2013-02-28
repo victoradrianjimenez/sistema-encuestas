@@ -37,10 +37,11 @@ class Seccion extends CI_Model{
    * @access public
    * @return arrayItems
    */
-  public function listarItemsCarrera(){
+  public function listarItemsCarrera($idCarrera){
     $idFormulario = $this->db->escape($this->idFormulario);
     $idSeccion = $this->db->escape($this->idSeccion);
-    $query = $this->db->query("call esp_listar_items_seccion_carrera($idSeccion, $idFormulario)");
+    $idCarrera = $this->db->escape($idCarrera);
+    $query = $this->db->query("call esp_listar_items_seccion_carrera($idSeccion, $idFormulario, $idCarrera)");
     $data = $query->result('Item');
     $query->free_result();
     //$this->db->reconnect();

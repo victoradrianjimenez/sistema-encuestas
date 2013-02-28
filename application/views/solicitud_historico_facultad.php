@@ -7,6 +7,7 @@
   <style>
     .form-horizontal .controls {margin-left: 100px}
     .form-horizontal .control-label {width: 80px; float: left}
+    #contenedor{padding-top:9px}
   </style>
 </head>
 <body>
@@ -30,7 +31,7 @@
         </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span9">
           <h4>Solicitar informe por facultad</h4>
           <form class="form-horizontal" action="<?php echo site_url('encuestas/informeFacultad')?>" method="post">
             <div class="row-fluid">

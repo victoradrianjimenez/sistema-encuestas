@@ -37,7 +37,6 @@
                 <input type="hidden" name="idEncuesta" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" required/>
-                <?php echo form_error('idFormulario')?>
               </div>
               
               <label for="campoFortalezas">Identifique las fortalezas del curso: </label>

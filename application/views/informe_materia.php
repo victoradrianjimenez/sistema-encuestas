@@ -1,26 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    
-    <!-- Le styles -->
-    <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
-    <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
-    <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
-    
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <script src="<?php echo base_url('js/jquery.js')?>"></script>
-    <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
-    
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-    <link rel="shortcut icon" href="ico/favicon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  
+  <!-- Le styles -->
+  <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  <style>body{padding-top:40px;}</style>
+  <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
+  <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
+  
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <script src="<?php echo base_url('js/jquery.js')?>"></script>
+  <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
 
   <title>Informe Materia</title>
   <style>
@@ -31,6 +26,49 @@
   </style>
 </head>
 <body>
+  <!-- Menu de opciones -->
+  <div id="barra-herramientas">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
+          <ul class="nav">
+            <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="#">
+                    <form action="<?php echo site_url('informes/archivoMateria')?>" method="post">
+                      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                      <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                      <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
+                      <input type="hidden" name="tipo" value="xlsx" />
+                      <input type="submit" name="submit" value="Libro de Excel 2007-2010 (.xlsx)..." />
+                    </form>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <form action="<?php echo site_url('informes/archivoMateria')?>" method="post">
+                      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                      <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                      <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
+                      <input type="hidden" name="tipo" value="xls" />
+                      <input type="submit" name="submit" value="Libro de Excel 97-2003 (.xls)..." />
+                    </form>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Informe -->
   <div class="container">
     <div id="header" class="row">
       <div class="span12">
@@ -83,8 +121,9 @@
                     //preguntas con opciones
                     case 'S':case 'N': 
                       echo '
-                      <div class="row">
-                        <div class="span9">
+                      <div class="row">';
+                        echo ($graficos)?'<div class="span9">':'<div class="span12">';
+                          echo'
                           <p>'.$pregunta['item']->texto.'</p>
                           <div class="row-fluid">';
                             foreach ($pregunta['respuestas'] as $k => $respuesta){   
@@ -94,15 +133,18 @@
                                 ': <b>'.$respuesta['cantidad'].'</b>
                               </div>';
                             }
-                          echo '
+                            echo '
                           </div>
-                        </div>
-                        <div class="span3">
-                          <img src="'.site_url("pcharts/graficoPreguntaMateria/".
-                            $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$subseccion['docente']->id.'/'.$materia->idMateria.'/'.$carrera->idCarrera).
-                            '" width="400" height="160" />
-                        </div>
-                      </div>';
+                        </div>';
+                        if ($graficos){
+                          echo '
+                          <div class="span3">
+                            <img src="'.site_url("pcharts/graficoPreguntaMateria/".
+                              $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$subseccion['docente']->id.'/'.$materia->idMateria.'/'.$carrera->idCarrera).
+                              '" width="400" height="160" />
+                          </div>';
+                        }
+                      echo '</div>';
                       break;
                     case 'T': case 'X':
                       echo '
@@ -129,6 +171,10 @@
       </div>
     </div>
   </div>
-  <?php //include 'templates/footer2.php'?>  
+  <?php //include 'templates/footer2.php'?>
+
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
 </body>
 </html>

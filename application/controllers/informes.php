@@ -11,7 +11,7 @@ class Informes extends CI_Controller{
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -20,7 +20,7 @@ class Informes extends CI_Controller{
    * Última revisión: 2012-02-09 7:32 p.m.
    */
   private function _dameDatosSeccionMateria($seccion, $encuesta, $idDocente, $idMateria, $idCarrera){
-      $items = $seccion->listarItemsCarrera();
+      $items = $seccion->listarItemsCarrera($idCarrera);
       $datos_items = array();
       foreach ($items as $k => $item) {
         switch ($item->tipo) {
@@ -65,6 +65,7 @@ class Informes extends CI_Controller{
       $indicesDocentes = (bool)$this->input->post('indicesDocentes');
       $indicesSecciones = (bool)$this->input->post('indicesSecciones');
       $indiceGlobal = (bool)$this->input->post('indiceGlobal');
+      $graficos = (bool)$this->input->post('graficos');
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
@@ -145,6 +146,7 @@ class Informes extends CI_Controller{
         'materia' => &$materia,
         'claves' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
         'indice' => ($indiceGlobal)?$encuesta->indiceGlobalMateria($idMateria, $idCarrera):null,
+        'graficos' => &$graficos,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_materia', $datos);
@@ -202,7 +204,7 @@ class Informes extends CI_Controller{
         $datos_secciones[$i]['seccion'] = $seccion;
         $datos_secciones[$i]['items'] = array();
         $datos_secciones[$i]['indice'] = ($indicesSecciones)?$encuesta->indiceSeccionCarrera($idCarrera, $seccion->idSeccion):null;        
-        $items = $seccion->listarItemsCarrera();
+        $items = $seccion->listarItemsCarrera($idCarrera);
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case 'S': case 'M': case 'N':
@@ -462,7 +464,7 @@ class Informes extends CI_Controller{
         //si la sección es referida a docentes
         case 'D':
           foreach ($docentes as $j => $docente) {
-            $items = $seccion->listarItemsCarrera();
+            $items = $seccion->listarItemsCarrera($idCarrera);
             $datos_items = array();
             foreach ($items as $k => $item) {
               $datos_items[$k] = array(
@@ -479,7 +481,7 @@ class Informes extends CI_Controller{
           break;
         //si la sección es referida a la materia (sección comun)
         case 'N':
-          $items = $seccion->listarItemsCarrera();
+          $items = $seccion->listarItemsCarrera($idCarrera);
           $datos_items = array();
           foreach ($items as $k => $item) {
             $datos_items[$k] = array(
@@ -511,6 +513,193 @@ class Informes extends CI_Controller{
     }
     else{
       $this->load->view('solicitud_informe_clave', $this->data);
+    }
+  }
+
+
+
+
+
+
+
+
+  /*
+   * Solicitar y mostrar un informe por facultad
+   * Última revisión: 2012-02-10 1:42 p.m.
+   */
+  public function archivoMateria(){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      show_error('No tiene permisos para realizar esta operación.');
+      return;
+    }
+    //verifico datos POST
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
+    $this->form_validation->set_rules('tipo','Tipo de archivo','required|alpha');
+    if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idMateria = (int)$this->input->post('idMateria');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      $tipo = $this->input->post('tipo');
+      
+      //cargo librerias y modelos
+      $this->load->model('Opcion');
+      $this->load->model('Usuario');
+      $this->load->model('Pregunta');
+      $this->load->model('Item');
+      $this->load->model('Seccion');
+      $this->load->model('Formulario');
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_formularios','gf');
+      $this->load->model('Gestor_encuestas','ge');
+      $this->load->library('PHPExcel/PHPExcel');
+
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $formulario = $this->gf->dame($idFormulario);
+      
+      //Iniciar la planilla de cálculo
+      $objPHPExcel = $this->phpexcel;
+      $this->phpexcel->getProperties()->setCreator("Sistema Encuestas Vía Web")
+                     ->setLastModifiedBy("Sistema Encuestas Vía Web")
+                     ->setTitle("Datos Encuestas ".$encuesta->año.'/'.$encuesta->cuatrimestre)
+                     ->setSubject("Datos Encuestas ".$encuesta->año.'/'.$encuesta->cuatrimestre)
+                     ->setDescription("Datos de las encuestas para una materia.");
+      $this->phpexcel->setActiveSheetIndex(0)
+        ->setCellValueByColumnAndRow(0, 1, 'ID Pregunta')
+        ->setCellValueByColumnAndRow(1, 1, 'Pregunta')
+        ->setCellValueByColumnAndRow(2, 1, 'Opciones')
+        ->setTitle('Preguntas');
+      //obtengo datos de los docentes             
+      $docentes = $encuesta->listarDocentes($idMateria, $idCarrera);
+      $posDocente = array();
+      foreach ($docentes as $i => $docente) {
+        //genero un array para obtener posicion a partir del id
+        $posDocente[$docente->id] = $i;
+      }
+      
+      //recorrer secciones del formulario
+      $posItem = array();
+      $secItem = array();
+      $cntPaginas = 1;
+      $cntPreguntas = 0;
+      $secciones = $formulario->listarSecciones();
+      foreach ($secciones as $i => $seccion) {
+        //activo la primer pagina de la planilla de cálculo
+        $worksheet = $this->phpexcel->setActiveSheetIndex(0);
+        
+        //listo las preguntas de la sección
+        $items = $seccion->listarItems();
+        foreach ($items as $k => $item) {
+          //genero un array para obtener posicion y seccion a partir del id
+          $posItem[$item->idPregunta] = $k;
+          $secItem[$item->idPregunta] = $i;
+          
+          //guardo datos de la pregunta en la primer pagina, a partir de la fila 2
+          $opciones = $item->listarOpciones();
+          $worksheet->setCellValueByColumnAndRow(0, 2+$cntPreguntas, $item->idPregunta)
+                    ->setCellValueByColumnAndRow(1, 2+$cntPreguntas, $item->texto);
+          foreach ($opciones as $j => $opcion) {
+            $worksheet->setCellValueByColumnAndRow(2+$j, 2+$cntPreguntas, $opcion->texto.': '.$opcion->idOpcion);
+          }
+          $cntPreguntas++;
+        }
+        //creo una hoja de excel por cada seccion y por cada docente
+        if ($seccion->tipo=='N'){
+          //los datos van a partir de fila 4, clave nula
+          $filaPagina[$cntPaginas] = 4; 
+          $clavePagina[$cntPaginas] = null; 
+          
+          //crear hoja, colocarle titulo e identificadores de pregunta
+          $this->phpexcel->createSheet();
+          $worksheet = $this->phpexcel->setActiveSheetIndex($cntPaginas);
+          $worksheet->setTitle('Sección '.($i+1)); //nombre de la hoja
+          $worksheet->setCellValueByColumnAndRow(0, 1, $seccion->texto); //titulo de la hoja (celda A1)
+          $worksheet->setCellValueByColumnAndRow(0, 3, 'Clave');
+          foreach ($items as $k => $item) {
+            //pongo el ID de la pregunta al inicio de cada columna correspondiente
+            $worksheet->setCellValueByColumnAndRow($k+1, 3, 'Preg.'.$item->idPregunta);
+          }
+          $cntPaginas++; 
+        }
+        else{
+          for($j=0; $j < count($docentes); $j++){
+            //los datos van a partir de fila 4, clave nula
+            $filaPagina[$cntPaginas] = 4;
+            $clavePagina[$cntPaginas] = '';
+            
+            //crear hoja, colocarle titulo e identificadores de pregunta
+            $this->phpexcel->createSheet();
+            $worksheet = $this->phpexcel->setActiveSheetIndex($cntPaginas);
+            $worksheet->setTitle('Sección '.($i+1).' Docente '.($j+1));
+            $worksheet->setCellValueByColumnAndRow(0, 1, $seccion->texto.' - '.$docentes[$j]->nombre.' '.$docentes[$j]->apellido); //titulo de la hoja (celda A1)
+            $worksheet->setCellValueByColumnAndRow(0, 3, 'Clave');
+            foreach ($items as $k => $item) {
+              //pongo el ID de la pregunta al inicio de cada columna correspondiente
+              $worksheet->setCellValueByColumnAndRow($k+1, 3, $item->idPregunta);
+            }
+            $cntPaginas++;
+          }
+        }
+      }
+  
+      //obtengo respuestas de la base de datos
+      $respuestas = $encuesta->respuestasMateria($idCarrera, $idMateria);
+      foreach ($respuestas as $respuesta) {
+        $idPregunta = $respuesta['idPregunta'];
+        $idDocente = $respuesta['idDocente'];
+        
+        //calculo la posicion de la columna y la pagina de la respuesta actual
+        $col = $posItem[$idPregunta] + 1;
+        $pagina =  $secItem[$idPregunta] + (($idDocente)?$posDocente[$idDocente]:0) + 1;
+        
+        //ubico la respuesta actual dentro de la planilla de cálculo. 
+        //Es una hoja por sección y por docente. Cada columna tiene las respuestas a una pregunta.
+        $this->phpexcel->setActiveSheetIndex($pagina)
+          ->setCellValueByColumnAndRow(0,    $filaPagina[$pagina], $respuesta['idClave'])
+          ->setCellValueByColumnAndRow($col, $filaPagina[$pagina], $respuesta['opcion'].$respuesta['texto']);
+        
+        //si la clave cambia, significa que debo pasar a la siguiente fila de la pagina actual (empiezan respuestas de otro alumno)
+        if ($respuesta['idClave'] != $clavePagina[$pagina]){
+          if ($clavePagina[$pagina] != null) $filaPagina[$pagina]++;
+          $clavePagina[$pagina] = $respuesta['idClave']; 
+        }
+      }
+  
+      //genero la descarga para el usuario
+      switch ($tipo) {
+        case 'xls':
+          ob_end_clean();
+          header('Content-Type: application/vnd.ms-excel');
+          header('Content-Disposition: attachment;filename="myfile.xls"');
+          header('Cache-Control: max-age=0');
+          //genero el archivo y guardo
+          $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel5');
+          $objWriter->save('php://output');
+          ob_end_clean();
+          break;
+        case 'xlsx':
+          ob_end_clean();
+          header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+          header('Content-Disposition: attachment;filename="myfile.xlsx"');
+          header('Cache-Control: max-age=0');
+          $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+          $objWriter->save('php://output');
+          ob_end_clean();
+          break;
+        default:
+          show_404();
+      }
+    }
+    //si no pasa la validación
+    else{
+      
     }
   }
 }

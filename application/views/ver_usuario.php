@@ -39,7 +39,7 @@
   
           <!-- Botones -->
           <div class="">
-            <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar usuario...</button>
+            <a class="btn btn-primary" href="<?php echo site_url('usuarios/modificar/'.$usuario->id)?>">Modificar usuario...</a>
             <button class="btn btn-primary" href="#modalActivar" role="button" data-toggle="modal">Activar/Desactivar cuenta</button>
           </div>
         </div>

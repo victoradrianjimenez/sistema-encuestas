@@ -142,8 +142,7 @@ class Departamentos extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
-    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
-    print_r($this->input->post());      
+    $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required'); 
     if($this->form_validation->run()){
       $this->load->model('Gestor_departamentos','gd');
       $idDepartamento = $this->input->post('idDepartamento',TRUE);

@@ -31,7 +31,7 @@
               <li><a href="<?php echo site_url('devoluciones')?>">Devoluciones</a></li>
             </ul>
           </li>
-          <li><a href="#">Enlaces</a></li>
+          <!-- <li><a href="#">Enlaces</a></li> -->
         </ul>
         <ul class="nav pull-right">
           <?php if(!(isset($usuarioLogin) && is_object($usuarioLogin))): ?>

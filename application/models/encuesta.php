@@ -477,6 +477,29 @@ class Encuesta extends CI_Model{
     //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
+  
+  
+  /**
+   * Obtiene las respuestas de todas las preguntas de una materia
+   *
+   * @access publics
+   * @param identificador de carrera
+   * @param idenificador de materia
+   * @return array
+   */  
+  public function respuestasMateria($idCarrera, $idMateria){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $query = $this->db->query("call esp_respuestas_materia($idCarrera, $idMateria, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data;
+  }
+  
+  
 }
 
 ?>

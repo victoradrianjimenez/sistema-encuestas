@@ -1,8 +1,96 @@
-DROP PROCEDURE IF EXISTS `esp_dame_devolucion`;
+DROP PROCEDURE IF EXISTS `esp_respuestas_facultad`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_devolucion`(
+CREATE PROCEDURE `esp_respuestas_facultad`(
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	-- Respuestas Materia
+	SELECT	idClave, R.idPregunta, 
+			IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),R.opcion) as 'opcion', 
+			R.texto
+	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
+	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+	ORDER BY idClave;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_departamento`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_respuestas_departamento`(
+	pidDepartamento SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	-- Respuestas Materia
+	SELECT	idClave, R.idPregunta, 
+			IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),R.opcion) as 'opcion', 
+			R.texto
+	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
+						 INNER JOIN Carreras C ON C.idCarrera = R.idCarrera
+	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
+			C.idDepartamento = pidDepartamento
+	ORDER BY idClave;
+END $$
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_carrera`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_respuestas_carrera`(
+	pidCarrera SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	-- Respuestas Materia
+	SELECT	idClave, R.idPregunta, 
+			IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),R.opcion) as 'opcion', 
+			R.texto
+	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
+	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
+			R.idCarrera = pidCarrera
+	ORDER BY idClave;
+END $$
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_materia`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_respuestas_materia`(
+	pidCarrera SMALLINT UNSIGNED,
+	pidMateria SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	-- Respuestas Materia
+	SELECT	idClave, R.idDocente, R.idPregunta, 
+			IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),R.opcion) as 'opcion', 
+			R.texto
+	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
+	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
+			R.idCarrera = pidCarrera AND R.idMateria = pidMateria
+	ORDER BY idClave, R.idDocente;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_devolucion`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_dame_devolucion`(
 	pidDevolucion INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -10,7 +98,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_devolucion`(
 BEGIN
     SELECT  idDevolucion, idMateria, idEncuesta, idFormulario, fecha,
 			fortalezas, debilidades, alumnos, docentes, mejoras
-    FROM Devoluciones
+    FROM	Devoluciones
 	WHERE 	idDevolucion = pidDevolucion AND idMateria = pidMateria AND 
 			idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
 END $$
@@ -21,7 +109,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_devoluciones_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_devoluciones_materia`(
+CREATE PROCEDURE `esp_listar_devoluciones_materia`(
 	pidMateria SMALLINT UNSIGNED,
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
@@ -29,7 +117,7 @@ BEGIN
     SET @qry = '
     SELECT  idDevolucion, idMateria, idEncuesta, idFormulario, fecha,
 			fortalezas, debilidades, alumnos, docentes, mejoras
-    FROM Devoluciones
+    FROM	Devoluciones
 	WHERE 	idMateria = ?
     ORDER BY fecha DESC
     LIMIT ?,?';
@@ -44,15 +132,17 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_cantidad_devoluciones`;
+DROP PROCEDURE IF EXISTS `esp_cantidad_devoluciones_materia`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_devoluciones`()
+CREATE PROCEDURE `esp_cantidad_devoluciones_materia`(
+	pidMateria SMALLINT UNSIGNED)
 BEGIN
     SELECT  COUNT(*) AS cantidad
-    FROM    Devoluciones;
+    FROM    Devoluciones
+	WHERE	idMateria = pidMateria;
 END $$
 
 DELIMITER ;
@@ -63,7 +153,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_devolucion`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_devolucion`(
+CREATE PROCEDURE `esp_alta_devolucion`(
     pidMateria SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED,
@@ -81,12 +171,12 @@ BEGIN
     IF COALESCE(pfortalezas,'') = '' AND COALESCE(pdebilidades,'') = '' AND
        COALESCE(pdebilidades,'') = '' AND COALESCE(palumnos,'') = '' AND
        COALESCE(pdocentes,'') = '' AND COALESCE(pmejoras,'') = '' THEN
-        SET Mensaje = 'Debe escribir en al menos un campo.';
+        SET mensaje = 'Debe escribir en al menos un campo.';
     ELSE
         START TRANSACTION;
         IF NOT EXISTS(  SELECT  idEncuesta FROM Encuestas 
                         WHERE   idEncuesta = pidEncuesta AND idFormulario = pidFormulario LIMIT 1) THEN
-            SET Mensaje = 'No se encontró la Encuesta correspondiente.';
+            SET mensaje = 'No se encontró la Encuesta correspondiente.';
             ROLLBACK;
         ELSE
             SET id = (  
@@ -120,7 +210,7 @@ DROP PROCEDURE IF EXISTS `esp_registrar_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_registrar_clave`(
+CREATE PROCEDURE `esp_registrar_clave`(
     pidClave INT UNSIGNED,
     pidMateria SMALLINT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
@@ -156,7 +246,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_respuesta`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_respuesta`(
+CREATE PROCEDURE `esp_alta_respuesta`(
     pidPregunta INT UNSIGNED,
     pidClave INT UNSIGNED,
     pidMateria SMALLINT UNSIGNED,
@@ -172,29 +262,35 @@ BEGIN
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
     
-    START TRANSACTION;    
-    SET id = (  
-        SELECT COALESCE(MAX(idRespuesta),0)+1 
-        FROM    Respuestas
-        WHERE   idPregunta = pidPregunta AND
-                idClave = pidClave AND 
-                idMateria = pidMateria AND 
-                idCarrera = pidCarrera AND 
-                idEncuesta = pidEncuesta AND                 
-                idFormulario = pidFormulario);
-    INSERT INTO Respuestas 
-        (idRespuesta, idPregunta, idClave, idMateria, idCarrera, idEncuesta, 
-        idFormulario, idDocente, opcion, texto)
-    VALUES (id, pidPregunta, pidClave, pidMateria, pidCarrera, pidEncuesta, 
-        pidFormulario, pidDocente, popcion, ptexto); 
-    IF err THEN
-        SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
-        ROLLBACK;
-    ELSE 
-        SET mensaje = id;
-        COMMIT;
-    END IF;
-    SELECT mensaje;
+    START TRANSACTION;
+	IF NOT EXISTS (	SELECT idClave FROM Claves WHERE idClave = pidClave AND idMateria = pidMateria AND 
+				idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND utilizada IS NULL LIMIT 1) THEN
+		SET mensaje = 'La clave de acceso utilizada no existe o ya fue usada.';
+		ROLLBACK;
+	ELSE
+		SET id = (  
+			SELECT COALESCE(MAX(idRespuesta),0)+1 
+			FROM    Respuestas
+			WHERE   idPregunta = pidPregunta AND
+					idClave = pidClave AND 
+					idMateria = pidMateria AND 
+					idCarrera = pidCarrera AND 
+					idEncuesta = pidEncuesta AND                 
+					idFormulario = pidFormulario);
+		INSERT INTO Respuestas 
+			(idRespuesta, idPregunta, idClave, idMateria, idCarrera, idEncuesta, 
+			idFormulario, idDocente, opcion, texto)
+		VALUES (id, pidPregunta, pidClave, pidMateria, pidCarrera, pidEncuesta, 
+			pidFormulario, pidDocente, popcion, ptexto); 
+		IF err THEN
+			SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET mensaje = id;
+			COMMIT;
+		END IF;
+	END IF;
+	SELECT mensaje;
 END $$
 
 DELIMITER ;
@@ -205,7 +301,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_materias_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_materias_carrera`(
+CREATE PROCEDURE `esp_cantidad_materias_carrera`(
 	pidCarrera SMALLINT UNSIGNED)
 BEGIN
     SELECT  COUNT(*) AS cantidad
@@ -221,7 +317,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_carrera`(
+CREATE PROCEDURE `esp_listar_materias_carrera`(
 	pidCarrera SMALLINT UNSIGNED,
 	pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
@@ -238,8 +334,6 @@ BEGIN
     SET @b = pPagLongitud;
     EXECUTE stmt USING @c, @a, @b;
     DEALLOCATE PREPARE stmt;
-
-    
 END $$
 
 DELIMITER ;
@@ -250,7 +344,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_materias`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_materias`()
+CREATE PROCEDURE `esp_cantidad_materias`()
 BEGIN
     SELECT  COUNT(*) AS cantidad
     FROM    Materias;
@@ -264,7 +358,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias`(
+CREATE PROCEDURE `esp_listar_materias`(
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -288,7 +382,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_usuarios`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_usuarios`(
+CREATE PROCEDURE `esp_listar_usuarios`(
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -312,7 +406,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_usuarios_grupo`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_usuarios_grupo`(
+CREATE PROCEDURE `esp_listar_usuarios_grupo`(
 	pidGrupo INT UNSIGNED,
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
@@ -339,7 +433,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_usuarios`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_usuarios`()
+CREATE PROCEDURE `esp_cantidad_usuarios`()
 BEGIN
     SELECT  COUNT(*) AS cantidad
     FROM    Usuarios;
@@ -353,7 +447,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_usuarios_grupo`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_usuarios_grupo`(
+CREATE PROCEDURE `esp_cantidad_usuarios_grupo`(
 	pidGrupo INT UNSIGNED)
 BEGIN
     SELECT  COUNT(*) AS cantidad
@@ -369,7 +463,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_departamentos`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_departamentos`(
+CREATE PROCEDURE `esp_listar_departamentos`(
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -393,7 +487,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_departamentos`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_departamentos`()
+CREATE PROCEDURE `esp_cantidad_departamentos`()
 BEGIN
     SELECT COUNT(*) AS cantidad
     FROM Departamentos;
@@ -407,7 +501,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_usuario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_usuario`(
+CREATE PROCEDURE `esp_dame_usuario`(
     pid INT UNSIGNED)
 BEGIN
     SELECT id, username, NULL as 'password', email, last_login, active, nombre, apellido
@@ -423,7 +517,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_docente_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_docente_materia`(
+CREATE PROCEDURE `esp_dame_docente_materia`(
     pid INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED)
 BEGIN
@@ -435,38 +529,38 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
+-- DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
 
 
-DELIMITER $$
+-- DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_departamento`(
-    pidDepartamento SMALLINT UNSIGNED)
-BEGIN
-    SELECT  idDepartamento, idCarrera, idDirectorCarrera, nombre, plan
-    FROM    Carreras
-    WHERE   idDepartamento = pidDepartamento
-    ORDER BY nombre, plan DESC;
-END $$
+-- CREATE PROCEDURE `esp_listar_carreras_departamento`(
+--     pidDepartamento SMALLINT UNSIGNED)
+-- BEGIN
+--     SELECT  idDepartamento, idCarrera, idDirectorCarrera, nombre, plan
+--     FROM    Carreras
+--     WHERE   idDepartamento = pidDepartamento
+--     ORDER BY nombre, plan DESC;
+-- END $$
 
-DELIMITER ;
-
-
-DROP PROCEDURE IF EXISTS `esp_cantidad_carreras_departamento`;
+-- DELIMITER ;
 
 
-DELIMITER $$
+-- DROP PROCEDURE IF EXISTS `esp_cantidad_carreras_departamento`;
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_carreras_departamento`(
-    pidDepartamento SMALLINT UNSIGNED)
-BEGIN
-    SELECT  COUNT(*) AS cantidad
-    FROM    Carreras
-    WHERE   idDepartamento = pidDepartamento;
-END $$
+-- DELIMITER $$
 
-DELIMITER ;
+
+-- CREATE PROCEDURE `esp_cantidad_carreras_departamento`(
+--     pidDepartamento SMALLINT UNSIGNED)
+-- BEGIN
+--     SELECT  COUNT(*) AS cantidad
+--     FROM    Carreras
+--     WHERE   idDepartamento = pidDepartamento;
+-- END $$
+
+-- DELIMITER ;
 
 
 DROP PROCEDURE IF EXISTS `esp_dame_departamento`;
@@ -475,7 +569,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_departamento`;
 DELIMITER $$
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_departamento`(
+CREATE PROCEDURE `esp_dame_departamento`(
     pidDepartamento SMALLINT UNSIGNED)
 BEGIN
     SELECT idDepartamento, idJefeDepartamento, nombre
@@ -492,7 +586,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_pregunta`;
 DELIMITER $$
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_pregunta`(
+CREATE PROCEDURE `esp_dame_pregunta`(
     pidPregunta INT UNSIGNED)
 BEGIN
     SELECT	idPregunta, idCarrera, texto, descripcion, creacion, tipo,
@@ -511,14 +605,14 @@ DROP PROCEDURE IF EXISTS `esp_buscar_clave`;
 DELIMITER $$
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_clave`(
+CREATE PROCEDURE `esp_buscar_clave`(
     pclave CHAR(16))
 BEGIN
     -- busca una clave en las encuestas que no finalizaron
     SELECT  idClave, idMateria, idCarrera, C.idEncuesta, C.idFormulario,
             clave, tipo, generada, utilizada
-    FROM    claves C INNER JOIN Encuestas E ON C.idEncuesta = E.idEncuesta AND C.idFormulario = E.idFormulario
-    WHERE   clave = pclave AND fechaFin IS NOT NULL
+    FROM    Claves C INNER JOIN Encuestas E ON C.idEncuesta = E.idEncuesta AND C.idFormulario = E.idFormulario
+    WHERE   clave = UPPER(pclave) AND fechaFin IS NULL
     LIMIT   1;
 END $$
 
@@ -530,7 +624,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_clave`(
+CREATE PROCEDURE `esp_alta_clave`(
     pidMateria SMALLINT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
@@ -549,20 +643,20 @@ BEGIN
         START TRANSACTION;
         IF NOT EXISTS(  SELECT  idEncuesta FROM Encuestas 
                         WHERE   idEncuesta = pidEncuesta AND 
-                                idFormulario = idFormulario AND fechaFin IS NOT NULL LIMIT 1) THEN
-            SET mensaje = 'No se encontró la encuesta correspondiente y la misma ya concluyó.';
+                                idFormulario = idFormulario AND fechaFin IS NULL LIMIT 1) THEN
+            SET mensaje = 'No se encontró la encuesta correspondiente o la misma ya concluyó.';
             ROLLBACK;
         ELSE
             SET nid = (  
                 SELECT COALESCE(MAX(idClave),0)+1 
-                FROM    claves
+                FROM    Claves
                 WHERE   idMateria = pidMateria AND
                         idCarrera = pidCarrera AND
                         idEncuesta = pidEncuesta AND
                         idFormulario = pidFormulario);            
             SET clave = SUBSTRING(MD5(CONCAT(
                 nid,pidMateria,pidCarrera,pidEncuesta,pidFormulario,ptipo,NOW())),1,12);
-            INSERT INTO claves 
+            INSERT INTO Claves 
                 (idClave, idMateria, idCarrera, idEncuesta, idFormulario, clave, tipo, generada, utilizada)
             VALUES (nid, pidMateria, pidCarrera, pidEncuesta, pidFormulario, UPPER(clave), ptipo, NOW(), NULL);
             IF err THEN
@@ -585,7 +679,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_secciones_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_secciones_carrera`(
+CREATE PROCEDURE `esp_listar_secciones_carrera`(
     pidFormulario INT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED)
 BEGIN
@@ -604,7 +698,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_secciones`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_secciones`(
+CREATE PROCEDURE `esp_listar_secciones`(
     pidFormulario INT UNSIGNED)
 BEGIN
     SELECT  idSeccion, idFormulario, idCarrera, texto, descripcion, tipo
@@ -622,13 +716,12 @@ DROP PROCEDURE IF EXISTS `esp_listar_items_seccion_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_items_seccion_carrera`(
+CREATE PROCEDURE `esp_listar_items_seccion_carrera`(
     pidSeccion INT UNSIGNED,
-    pidFormulario INT UNSIGNED)
+    pidFormulario INT UNSIGNED,
+	pidCarrera SMALLINT UNSIGNED)
 BEGIN
-    DECLARE pidCarrera INT UNSIGNED;
     START TRANSACTION;
-    SET pidCarrera = (SELECT idCarrera FROM Secciones WHERE idSeccion = pidSeccion AND idFormulario = pidFormulario);
     -- las columnas posicion y tamaño los toma de items_secciones, pero si son nulos, los toma de items
     SELECT  P.idPregunta, P.idCarrera, P.texto, P.descripcion, P.creacion, P.tipo, 
             obligatoria, ordenInverso, limiteInferior, limiteSuperior, paso, unidad,
@@ -650,7 +743,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_items_seccion`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_items_seccion`(
+CREATE PROCEDURE `esp_listar_items_seccion`(
     pidSeccion INT UNSIGNED,
     pidFormulario INT UNSIGNED)
 BEGIN
@@ -674,11 +767,11 @@ DROP PROCEDURE IF EXISTS `esp_listar_opciones`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_opciones`(
+CREATE PROCEDURE `esp_listar_opciones`(
     pidPregunta INT UNSIGNED)
 BEGIN
     SELECT  idOpcion, texto
-    FROM    opciones
+    FROM    Opciones
     WHERE   idPregunta = pidPregunta
     ORDER BY idOpcion;
     -- ordenados por orden de creacion
@@ -692,7 +785,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_materia`(
+CREATE PROCEDURE `esp_dame_materia`(
     pidMateria SMALLINT UNSIGNED)
 BEGIN
     SELECT idMateria, nombre, codigo, alumnos
@@ -708,7 +801,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_carrera`(
+CREATE PROCEDURE `esp_dame_carrera`(
     pidCarrera SMALLINT UNSIGNED)
 BEGIN
     SELECT idCarrera, idDepartamento, idDirectorCarrera, nombre, plan
@@ -724,7 +817,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_departamento`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_departamento`(
+CREATE PROCEDURE `esp_alta_departamento`(
 	pidJefeDepartamento INT UNSIGNED,
     pnombre VARCHAR(60))
 BEGIN
@@ -770,7 +863,7 @@ DROP PROCEDURE IF EXISTS `esp_baja_departamento`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_departamento`(
+CREATE PROCEDURE `esp_baja_departamento`(
     pidDepartamento SMALLINT UNSIGNED)
 BEGIN
     DECLARE nid INT  UNSIGNED;
@@ -804,7 +897,7 @@ DROP PROCEDURE IF EXISTS `esp_modificar_departamento`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_departamento`(
+CREATE PROCEDURE `esp_modificar_departamento`(
     pidDepartamento SMALLINT UNSIGNED,
 	pidJefeDepartamento INT UNSIGNED,
     pnombre VARCHAR(60))
@@ -850,7 +943,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_carrera`(
+CREATE PROCEDURE `esp_alta_carrera`(
     pidDepartamento SMALLINT UNSIGNED,
 	pidDirectorCarrera INT UNSIGNED,
     pnombre VARCHAR(60),
@@ -904,7 +997,7 @@ DROP PROCEDURE IF EXISTS `esp_baja_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_carrera`(
+CREATE PROCEDURE `esp_baja_carrera`(
     pidCarrera SMALLINT UNSIGNED)
 BEGIN
     DECLARE mensaje VARCHAR(100);
@@ -945,7 +1038,7 @@ DROP PROCEDURE IF EXISTS `esp_modificar_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_carrera`(
+CREATE PROCEDURE `esp_modificar_carrera`(
     pidCarrera SMALLINT UNSIGNED,
     pidDepartamento SMALLINT UNSIGNED,
 	pidDirectorCarrera INT UNSIGNED,
@@ -995,7 +1088,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_carreras`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras`(
+CREATE PROCEDURE `esp_listar_carreras`(
     pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -1019,7 +1112,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_carreras`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_carreras`()
+CREATE PROCEDURE `esp_cantidad_carreras`()
 BEGIN
     SELECT  COUNT(*) AS cantidad
     FROM    Carreras;
@@ -1033,7 +1126,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_formulario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_formulario`(
+CREATE PROCEDURE `esp_dame_formulario`(
     pidFormulario INT UNSIGNED)
 BEGIN
     SELECT  idFormulario, nombre, titulo, descripcion, 
@@ -1057,7 +1150,7 @@ DELIMITER ;
 -- --------------------------------------------------------------------------------
 -- DELIMITER $$
 
--- CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_clave`(
+-- CREATE PROCEDURE `esp_respuestas_clave`(
 --     pidClave INT UNSIGNED,
 --     pidMateria SMALLINT UNSIGNED,
 --     pidCarrera SMALLINT UNSIGNED,
@@ -1086,7 +1179,7 @@ DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_materia`(
+CREATE PROCEDURE `esp_respuestas_pregunta_materia`(
     pidPregunta INT UNSIGNED,
 	pidDocente INT UNSIGNED,
     pidMateria SMALLINT UNSIGNED,
@@ -1113,7 +1206,7 @@ DROP PROCEDURE IF EXISTS `esp_respuesta_pregunta_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuesta_pregunta_clave`(
+CREATE PROCEDURE `esp_respuesta_pregunta_clave`(
     pidPregunta INT UNSIGNED,
 	pidDocente INT UNSIGNED,
 	pidClave INT UNSIGNED,
@@ -1141,7 +1234,7 @@ DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_carrera`(
+CREATE PROCEDURE `esp_respuestas_pregunta_carrera`(
     pidPregunta INT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
@@ -1165,7 +1258,7 @@ DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_departamento`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_departamento`(
+CREATE PROCEDURE `esp_respuestas_pregunta_departamento`(
     pidPregunta INT UNSIGNED,
     pidDepartamento SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
@@ -1190,7 +1283,7 @@ DROP PROCEDURE IF EXISTS `esp_respuestas_pregunta_facultad`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_respuestas_pregunta_facultad`(
+CREATE PROCEDURE `esp_respuestas_pregunta_facultad`(
     pidPregunta INT UNSIGNED,
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
@@ -1212,7 +1305,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_encuesta`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_encuesta`(
+CREATE PROCEDURE `esp_dame_encuesta`(
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
 BEGIN
@@ -1229,7 +1322,7 @@ DROP PROCEDURE IF EXISTS `esp_dame_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_dame_clave`(
+CREATE PROCEDURE `esp_dame_clave`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -1252,7 +1345,7 @@ DROP PROCEDURE IF EXISTS `esp_textos_pregunta_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_textos_pregunta_materia`(
+CREATE PROCEDURE `esp_textos_pregunta_materia`(
     pidPregunta INT UNSIGNED,
     pidMateria SMALLINT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
@@ -1269,12 +1362,12 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_cantidad_claves_carrera`;
+DROP PROCEDURE IF EXISTS `esp_cantidad_Claves_carrera`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_carrera`(
+CREATE PROCEDURE `esp_cantidad_Claves_carrera`(
     pidCarrera SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
@@ -1288,12 +1381,12 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_cantidad_claves_departamento`;
+DROP PROCEDURE IF EXISTS `esp_cantidad_Claves_departamento`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_departamento`(
+CREATE PROCEDURE `esp_cantidad_Claves_departamento`(
     pidDepartamento SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
@@ -1307,12 +1400,12 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_cantidad_claves_materia`;
+DROP PROCEDURE IF EXISTS `esp_cantidad_Claves_materia`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_claves_materia`(
+CREATE PROCEDURE `esp_cantidad_Claves_materia`(
     pidMateria SMALLINT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
@@ -1333,7 +1426,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_usuario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_usuario`(
+CREATE PROCEDURE `esp_alta_usuario`(
     papellido VARCHAR(40),
     pnombre VARCHAR(40))
 BEGIN
@@ -1371,7 +1464,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_usuarios`;
 
 DELIMITER $$
 
-CREATE PROCEDURE `sistema_encuestas`.`esp_buscar_usuarios` (
+CREATE PROCEDURE `esp_buscar_usuarios` (
 	pnombre VARCHAR(40))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
@@ -1389,7 +1482,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_carreras`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_carreras`(
+CREATE PROCEDURE `esp_buscar_carreras`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
@@ -1409,7 +1502,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_materias`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_materias`(
+CREATE PROCEDURE `esp_buscar_materias`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
@@ -1427,7 +1520,7 @@ DROP PROCEDURE IF EXISTS `esp_asociar_materia_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_asociar_materia_carrera`(
+CREATE PROCEDURE `esp_asociar_materia_carrera`(
     pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED)
 BEGIN
@@ -1469,7 +1562,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_docentes_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_docentes_materia`(
+CREATE PROCEDURE `esp_cantidad_docentes_materia`(
 	pidMateria SMALLINT UNSIGNED)
 BEGIN
     SELECT  COUNT(*) AS cantidad
@@ -1485,7 +1578,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_docentes_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_materia`(
+CREATE PROCEDURE `esp_listar_docentes_materia`(
 	pidMateria SMALLINT UNSIGNED,
 	pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
@@ -1512,7 +1605,7 @@ DROP PROCEDURE IF EXISTS `esp_asociar_docente_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_asociar_docente_materia`(
+CREATE PROCEDURE `esp_asociar_docente_materia`(
     pidDocente INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pordenFormulario TINYINT UNSIGNED,
@@ -1556,7 +1649,7 @@ DROP PROCEDURE IF EXISTS `esp_desasociar_docente_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_desasociar_docente_materia`(
+CREATE PROCEDURE `esp_desasociar_docente_materia`(
     pidDocente INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED)
 BEGIN
@@ -1586,7 +1679,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_materia`;
 DELIMITER $$
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_materia`(
+CREATE PROCEDURE `esp_alta_materia`(
     pnombre VARCHAR(60),
     pcodigo CHAR(5),
 	palumnos SMALLINT UNSIGNED)
@@ -1634,7 +1727,7 @@ DROP PROCEDURE IF EXISTS `esp_modificar_materia`;
 DELIMITER $$
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_materia`(
+CREATE PROCEDURE `esp_modificar_materia`(
 	pidMateria SMALLINT UNSIGNED,
     pnombre VARCHAR(60),
     pcodigo CHAR(5),
@@ -1680,7 +1773,7 @@ DROP PROCEDURE IF EXISTS `esp_baja_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_materia`(
+CREATE PROCEDURE `esp_baja_materia`(
     pidMateria SMALLINT UNSIGNED)
 BEGIN
     DECLARE mensaje VARCHAR(100);
@@ -1722,7 +1815,7 @@ DROP PROCEDURE IF EXISTS `esp_modificar_usuario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_modificar_usuario`(
+CREATE PROCEDURE `esp_modificar_usuario`(
 	pid INT UNSIGNED,
     papellido VARCHAR(40),
     pnombre VARCHAR(40))
@@ -1762,7 +1855,7 @@ DROP PROCEDURE IF EXISTS `esp_estado_usuario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_estado_usuario`(
+CREATE PROCEDURE `esp_estado_usuario`(
 	pid INT UNSIGNED,
 	pEstado CHAR(1))
 BEGIN
@@ -1801,7 +1894,7 @@ DROP PROCEDURE IF EXISTS `esp_asignar_cantidad_alumnos`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_asignar_cantidad_alumnos`(
+CREATE PROCEDURE `esp_asignar_cantidad_alumnos`(
     pidMateria SMALLINT UNSIGNED,
 	palumnos SMALLINT UNSIGNED)
 BEGIN
@@ -1836,7 +1929,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_encuestas`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_encuestas`(
+CREATE PROCEDURE `esp_listar_encuestas`(
 	pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -1861,7 +1954,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_encuestas`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_encuestas`()
+CREATE PROCEDURE `esp_cantidad_encuestas`()
 BEGIN
     SELECT  COUNT(*) AS cantidad
     FROM    Encuestas;
@@ -1875,7 +1968,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_encuesta`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_encuesta`(
+CREATE PROCEDURE `esp_alta_encuesta`(
     pidFormulario INT UNSIGNED,
     paño SMALLINT UNSIGNED, 
     pcuatrimestre TINYINT UNSIGNED)
@@ -1916,12 +2009,12 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_claves_encuesta_materia`;
+DROP PROCEDURE IF EXISTS `esp_listar_Claves_encuesta_materia`;
 
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_claves_encuesta_materia`(
+CREATE PROCEDURE `esp_listar_Claves_encuesta_materia`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -1932,7 +2025,7 @@ BEGIN
     SET @qry = '
     SELECT  idClave, idMateria, idCarrera, idEncuesta, idFormulario, 
 			clave, tipo, generada, utilizada
-    FROM    claves
+    FROM    Claves
 	WHERE	idMateria = ? AND idCarrera = ? AND idEncuesta = ? AND idFormulario = ?
     ORDER BY generada DESC, utilizada DESC
     LIMIT ?,?';
@@ -1955,7 +2048,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_formularios`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_formularios`(
+CREATE PROCEDURE `esp_listar_formularios`(
 	pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -1981,7 +2074,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_formularios`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_formularios`()
+CREATE PROCEDURE `esp_cantidad_formularios`()
 BEGIN
     SELECT  COUNT(*) AS cantidad
     FROM    Formularios;
@@ -1995,7 +2088,7 @@ DROP PROCEDURE IF EXISTS `esp_finalizar_encuesta`;
 
 DELIMITER $$
 
-CREATE PROCEDURE `sistema_encuestas`.`esp_finalizar_encuesta` (
+CREATE PROCEDURE `esp_finalizar_encuesta` (
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED)
 BEGIN
@@ -2030,7 +2123,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_global`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global`(
+CREATE PROCEDURE `esp_indice_global`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -2076,7 +2169,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_seccion`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion`(
+CREATE PROCEDURE `esp_indice_seccion`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -2124,7 +2217,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_docente`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente`(
+CREATE PROCEDURE `esp_indice_docente`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -2173,7 +2266,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_docente_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente_clave`(
+CREATE PROCEDURE `esp_indice_docente_clave`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -2197,7 +2290,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_docente_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_docente_materia`(
+CREATE PROCEDURE `esp_indice_docente_materia`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2212,7 +2305,7 @@ BEGIN
 	DECLARE n INT DEFAULT 0;
 	DECLARE cur CURSOR FOR 
 		SELECT idClave 
-		FROM claves
+		FROM Claves
 		WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND
 				idEncuesta = pidEncuesta AND idFormulario = pidFormulario;  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
@@ -2241,7 +2334,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_global_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_carrera`(
+CREATE PROCEDURE `esp_indice_global_carrera`(
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED)
@@ -2254,7 +2347,7 @@ BEGIN
 	DECLARE n INT DEFAULT 0;
 	DECLARE cur CURSOR FOR 
 		SELECT	idClave, idMateria
-		FROM	claves
+		FROM	Claves
 		WHERE	idCarrera = pidCarrera AND
 				idEncuesta = pidEncuesta AND idFormulario = pidFormulario;  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
@@ -2281,7 +2374,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_global_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_materia`(
+CREATE PROCEDURE `esp_indice_global_materia`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2294,7 +2387,7 @@ BEGIN
 	DECLARE n INT DEFAULT 0;
 	DECLARE cur CURSOR FOR 
 		SELECT idClave 
-		FROM claves
+		FROM Claves
 		WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND
 				idEncuesta = pidEncuesta AND idFormulario = pidFormulario;  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
@@ -2321,7 +2414,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_global_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_global_clave`(
+CREATE PROCEDURE `esp_indice_global_clave`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -2342,7 +2435,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_seccion_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_carrera`(
+CREATE PROCEDURE `esp_indice_seccion_carrera`(
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED,
@@ -2356,7 +2449,7 @@ BEGIN
 	DECLARE n INT DEFAULT 0;
 	DECLARE cur CURSOR FOR 
 		SELECT idClave, idMateria
-		FROM claves
+		FROM Claves
 		WHERE	idCarrera = pidCarrera AND
 				idEncuesta = pidEncuesta AND idFormulario = pidFormulario;  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
@@ -2385,7 +2478,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_seccion_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_clave`(
+CREATE PROCEDURE `esp_indice_seccion_clave`(
 	pidClave INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
@@ -2408,7 +2501,7 @@ DROP PROCEDURE IF EXISTS `esp_indice_seccion_materia`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_indice_seccion_materia`(
+CREATE PROCEDURE `esp_indice_seccion_materia`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2422,7 +2515,7 @@ BEGIN
 	DECLARE n INT DEFAULT 0;
 	DECLARE cur CURSOR FOR 
 		SELECT idClave 
-		FROM claves
+		FROM Claves
 		WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND
 				idEncuesta = pidEncuesta AND idFormulario = pidFormulario;  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
@@ -2451,7 +2544,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_docentes_encuesta`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_encuesta`(
+CREATE PROCEDURE `esp_listar_docentes_encuesta`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2474,7 +2567,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_docentes_clave`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_docentes_clave`(
+CREATE PROCEDURE `esp_listar_docentes_clave`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2497,7 +2590,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_materias_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_materias_carrera`(
+CREATE PROCEDURE `esp_buscar_materias_carrera`(
 	pidCarrera SMALLINT UNSIGNED,
 	pnombre VARCHAR(60))
 BEGIN
@@ -2515,7 +2608,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_departamentos`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_departamentos`(
+CREATE PROCEDURE `esp_buscar_departamentos`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
@@ -2533,7 +2626,7 @@ DROP PROCEDURE IF EXISTS `esp_baja_usuario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_usuario`(
+CREATE PROCEDURE `esp_baja_usuario`(
     pid INT UNSIGNED)
 BEGIN
     DECLARE mensaje VARCHAR(100);
@@ -2577,7 +2670,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_formularios`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_formularios`(
+CREATE PROCEDURE `esp_buscar_formularios`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
@@ -2597,7 +2690,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_preguntas`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_preguntas`(
+CREATE PROCEDURE `esp_buscar_preguntas`(
 	ptexto VARCHAR(200))
 BEGIN
 	IF COALESCE(ptexto,'') != '' THEN
@@ -2618,7 +2711,7 @@ DROP PROCEDURE IF EXISTS `esp_baja_formulario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_formulario`(
+CREATE PROCEDURE `esp_baja_formulario`(
     pidFormulario INT UNSIGNED)
 BEGIN
     DECLARE mensaje VARCHAR(100);
@@ -2657,7 +2750,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_formulario`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_formulario`(
+CREATE PROCEDURE `esp_alta_formulario`(
     pnombre VARCHAR(60),
     ptitulo VARCHAR(200),
     pdescripcion VARCHAR(200),
@@ -2697,7 +2790,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_seccion`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_seccion`(
+CREATE PROCEDURE `esp_alta_seccion`(
     pidFormulario INT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
     ptexto VARCHAR(200),
@@ -2749,7 +2842,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_item`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_item`(
+CREATE PROCEDURE `esp_alta_item`(
     pidSeccion INT UNSIGNED,
 	pidFormulario INT UNSIGNED,
 	pidPregunta INT UNSIGNED,
@@ -2793,7 +2886,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_preguntas`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_preguntas`(
+CREATE PROCEDURE `esp_listar_preguntas`(
 	pPagInicio INT UNSIGNED,
     pPagLongitud INT UNSIGNED)
 BEGIN
@@ -2819,7 +2912,7 @@ DROP PROCEDURE IF EXISTS `esp_cantidad_preguntas`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_cantidad_preguntas`()
+CREATE PROCEDURE `esp_cantidad_preguntas`()
 BEGIN
     SELECT COUNT(*) AS cantidad
     FROM Preguntas;
@@ -2833,7 +2926,7 @@ DROP PROCEDURE IF EXISTS `esp_baja_pregunta`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_baja_pregunta`(
+CREATE PROCEDURE `esp_baja_pregunta`(
     pidPregunta INT UNSIGNED)
 BEGIN
     DECLARE mensaje VARCHAR(100);
@@ -2871,7 +2964,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_pregunta`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_pregunta`(
+CREATE PROCEDURE `esp_alta_pregunta`(
     pidCarrera SMALLINT UNSIGNED,
     ptexto VARCHAR(200),
     pdescripcion VARCHAR(200),
@@ -2928,7 +3021,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_opcion`;
 DELIMITER $$
 
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_alta_opcion`(
+CREATE PROCEDURE `esp_alta_opcion`(
     pidPregunta INT UNSIGNED,
     ptexto VARCHAR(40))
 BEGIN
@@ -2967,7 +3060,7 @@ DROP PROCEDURE IF EXISTS `esp_desasociar_materia_carrera`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_desasociar_materia_carrera`(
+CREATE PROCEDURE `esp_desasociar_materia_carrera`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED)
 BEGIN
@@ -3010,7 +3103,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_docente`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_docente`(
+CREATE PROCEDURE `esp_listar_materias_docente`(
 	pid INT UNSIGNED)
 BEGIN
     SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
@@ -3028,7 +3121,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_director`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_director`(
+CREATE PROCEDURE `esp_listar_materias_director`(
 	pid INT UNSIGNED)
 BEGIN
     SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos
@@ -3047,7 +3140,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_materias_jefe_departamento`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_materias_jefe_departamento`(
+CREATE PROCEDURE `esp_listar_materias_jefe_departamento`(
 	pid INT UNSIGNED)
 BEGIN
     SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos
@@ -3067,7 +3160,7 @@ DROP PROCEDURE IF EXISTS `esp_listar_carreras_docente`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_listar_carreras_docente`(
+CREATE PROCEDURE `esp_listar_carreras_docente`(
 	pid INT UNSIGNED)
 BEGIN
     SELECT  DISTINCT C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
@@ -3100,7 +3193,7 @@ DROP PROCEDURE IF EXISTS `esp_buscar_encuestas`;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `esp_buscar_encuestas`(
+CREATE PROCEDURE `esp_buscar_encuestas`(
 	paño SMALLINT UNSIGNED)
 BEGIN
     SELECT  idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin
@@ -3108,3 +3201,5 @@ BEGIN
 	WHERE	año = paño
     ORDER BY cuatrimestre DESC, fechaInicio DESC, fechaFin DESC;
 END $$
+
+DELIMITER ;

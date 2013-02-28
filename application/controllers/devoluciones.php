@@ -12,7 +12,7 @@ class Devoluciones extends CI_Controller {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<small class="error">', '</small>');
+    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -21,7 +21,7 @@ class Devoluciones extends CI_Controller {
   }
   
   /*
-   * Muestra el listado de devoluciones.
+   * Muestra el listado de devoluciones, para una materia.
    * Última revisión: 2012-02-06 4:41 p.m.
    */
   public function listar($pagInicio=0){
@@ -65,7 +65,7 @@ class Devoluciones extends CI_Controller {
       //genero la lista de links de paginación
       $this->pagination->initialize(array(
         'base_url' => site_url("devoluciones/listar"),
-        'total_rows' => $this->gd->cantidad(),
+        'total_rows' => $this->gd->cantidad($idMateria),
         'per_page' => self::per_page,
         'uri_segment' => 3
       ));

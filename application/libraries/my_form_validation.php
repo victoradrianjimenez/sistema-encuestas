@@ -7,7 +7,7 @@ class MY_Form_Validation extends CI_Form_Validation {
   }
 
   function alpha_dash_space($str){
-    if (! preg_match("/^([-a-z0-9_ÁÉÍÓÚÑáéíóúñ ])+$/i", $str)){
+    if (! preg_match("/^([-a-z0-9_ÁÉÍÓÚÑÜáéíóúñü,])+$/i", $str)){
       $this->set_message('alpha_dash_space', 'El campo %s debe contener sólo letras, números y guiones.');
       return FALSE;
     }

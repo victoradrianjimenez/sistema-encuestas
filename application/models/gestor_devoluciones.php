@@ -11,7 +11,7 @@ class Gestor_devoluciones extends CI_Model{
 	}
   
   /**
-   * Obtener el listado de devoluciones. Devuleve un array de objetos.
+   * Obtener el listado de devoluciones de una materia. Devuleve un array de objetos.
    *
    * @access public
    * @param item inicial del listado a mostrar
@@ -30,13 +30,14 @@ class Gestor_devoluciones extends CI_Model{
   }
   
   /**
-   * Obtener la cantidad de devoluciones
+   * Obtener la cantidad de devoluciones de una materia
    *
    * @access public
    * @return int
    */  
-  public function cantidad(){
-    $query = $this->db->query("call esp_cantidad_devoluciones()");
+  public function cantidad($idMateria){
+    $idMateria = $this->db->escape($idMateria);
+    $query = $this->db->query("call esp_cantidad_devoluciones_materia($idMateria)");
     $data=$query->row();
     $query->free_result();
     //$this->db->reconnect();

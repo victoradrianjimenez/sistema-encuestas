@@ -7,6 +7,7 @@
   <style>
     .form-horizontal .controls {margin-left: 110px}
     .form-horizontal .control-label {width: 90px; float: left}
+    #contenedor{padding-top:9px}
   </style>
 </head>
 <body>
@@ -30,7 +31,7 @@
         </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span9">
           <h4>Solicitar informe por departamento</h4>
           <form class="form-horizontal" action="<?php echo site_url('informes/departamento')?>" method="post">
             <div class="control-group">
@@ -48,7 +49,11 @@
                 <input type="hidden" name="idEncuesta" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" required/>
-                <?php echo form_error('idFormulario')?>
+              </div>
+            </div>
+            <div class="control-group">
+              <div class="controls">
+                <label class="checkbox"><input type="checkbox" name="graficos" checked />Incluir gráficos de barras</label>
               </div>
             </div>
             <div class="controls btn-group">
