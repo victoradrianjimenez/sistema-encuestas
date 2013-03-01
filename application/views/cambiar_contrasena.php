@@ -1,71 +1,54 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-02-01 7:45 p.m. -->
-
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
+  <?php include 'templates/head.php'?>
   <title>Cambiar contraseña</title>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
-  <!-- Header -->
-  <div class="row">
-    <div class="twelve columns">
-      <?php include 'elements/header.php'?>
-    </div>
-  </div>
-
-  <div class="row">
-    <!-- Nav Sidebar -->
-    <div class="three columns">
-      <!-- Panel de navegación -->
-      <?php include 'elements/nav-sidebar.php'?>
-    </div>  
-    
-    <!-- Main Section -->  
-    <div id="Main" class="nine columns">
-      <form action="<?php echo site_url('usuarios/resetearContrasena/'.$code)?>" method="post">
-        <div class="row">
-          <div class="twelve columns">
-            <h3>Cambiar la contraseña</h3>      
-            <label for="campoContraseña">Nueva contraseña: <span class="opcional">*</span></label>
-            <input id="campoContraseña" type="password" name="nuevaContrasena" value="<?php echo set_value('nuevaContrasena', '')?>" required />
-            <?php echo form_error('nuevaContrasena')?>
-            
-            <label for="campoContraseña2">Confirmar contraseña: <span class="opcional">*</span></label>
-            <input id="campoContraseña2" type="password" name="confirmarContrasena" required />
-            <?php echo form_error('confirmarContrasena')?>
-            
+  <div id="wrapper">
+    <?php include 'templates/menu-nav.php'?>
+    <div class="container">
+      <div class="row">
+        <!-- Main -->
+        <div class="span12">
+          <h4>Cambiar la contraseña</h4>
+          <form action="<?php echo site_url('usuarios/resetearContrasena/'.$code)?>" method="post">
             <input type="hidden" name="user_id" value="<?php echo $user_id?>" />
             <input type="hidden" <?php echo 'name="'.$csrf[0].'" value="'.$csrf[1].'"'?> />
-          </div>
-        </div>    
-        <div class="row">              
-          <div class="three mobile-two columns centered pull-one-mobile">
-            <input type="submit" class="button" name="submit" value="Aceptar" />
-          </div>
+            <div class="control-group">
+              <label for="campoContraseña">Nueva contraseña: <span class="opcional">*</span></label>
+              <div class="controls">
+                <input id="campoContraseña" type="password" name="nuevaContrasena" value="<?php echo set_value('nuevaContrasena', '')?>" required />
+                <?php echo form_error('nuevaContrasena')?>
+              </div>
+            </div>
+            <div class="control-group">
+              <label for="campoContraseña2">Confirmar contraseña: <span class="opcional">*</span></label>
+              <div class="controls">
+                <input id="campoContraseña2" type="password" name="confirmarContrasena" required />
+                <?php echo form_error('confirmarContrasena')?>
+              </div>
+            </div>
+            <div>
+              <input class="btn btn-primary" type="submit" class="button" name="submit" value="Aceptar" />
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
+    <div id="push"></div><br />
   </div>
-
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
+  <?php include 'templates/footer.php'?>
   
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
-  
+  <!-- Le javascript -->
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script>
-    //ocultar mensaje de error al escribir
-    $('input[type="password"]').keyup(function(){
-      $(this).next('small.error').hide('fast');
+    $('input[type="text"], input[type="password"]').keyup(function(){
+      $(this).siblings('span.label').hide('fast');
     });
   </script>
 </body>

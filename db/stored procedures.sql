@@ -762,12 +762,12 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_opciones`;
+DROP PROCEDURE IF EXISTS `esp_listar_Opciones`;
 
 
 DELIMITER $$
 
-CREATE PROCEDURE `esp_listar_opciones`(
+CREATE PROCEDURE `esp_listar_Opciones`(
     pidPregunta INT UNSIGNED)
 BEGIN
     SELECT  idOpcion, texto
@@ -1158,12 +1158,12 @@ DELIMITER ;
 --     pidFormulario INT UNSIGNED)
 -- BEGIN
 --     SELECT  IC.idSeccion, R.idPregunta, P.tipo, R.idDocente, R.opcion, R.texto,
--- 			COUNT(idOpcion) as opciones, IC.importancia
+-- 			COUNT(idOpcion) as Opciones, IC.importancia
 --     FROM    Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
 --             LEFT JOIN Items I ON I.idFormulario = R.idFormulario AND I.idPregunta = R.idPregunta
 --             LEFT JOIN Items_Carreras IC ON IC.idCarrera = R.idCarrera AND IC.idFormulario = R.idFormulario AND IC.idPregunta = R.idPregunta
 --             LEFT JOIN Docentes_Materias DM ON DM.idDocente = R.idDocente AND DM.idMateria = R.idMateria
--- 			LEFT JOIN opciones O On O.idPregunta = R.idPregunta
+-- 			LEFT JOIN Opciones O On O.idPregunta = R.idPregunta
 --     WHERE   R.idClave = pidClave AND R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
 --             R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
 -- 	GROUP BY R.idPregunta, R.idDocente
@@ -1190,7 +1190,7 @@ BEGIN
 	SELECT	R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
-			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+			LEFT JOIN Opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
 	WHERE   R.idPregunta = pidPregunta AND R.idMateria = pidMateria AND 
 			R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND
 			R.idFormulario = pidFormulario AND COALESCE(R.idDocente,0) = COALESCE(pidDocente,0)
@@ -1218,7 +1218,7 @@ BEGIN
 	SELECT	R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
-			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+			LEFT JOIN Opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
 	WHERE   R.idPregunta = pidPregunta AND R.idClave = pidClave AND
 			R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
 			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
@@ -1243,7 +1243,7 @@ BEGIN
 	SELECT	R.idDocente, R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
-			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+			LEFT JOIN Opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
 	WHERE   R.idPregunta = pidPregunta AND R.idCarrera = pidCarrera AND 
 			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
 	GROUP BY R.opcion
@@ -1268,7 +1268,7 @@ BEGIN
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
 			INNER JOIN Carreras C ON C.idCarrera = R.idCarrera
-			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+			LEFT JOIN Opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
 	WHERE   R.idPregunta = pidPregunta AND C.idDepartamento = pidDepartamento AND 
 			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
 	GROUP BY R.opcion
@@ -1291,7 +1291,7 @@ BEGIN
 	SELECT	R.idDocente, R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto, COUNT(idRespuesta) AS cantidad
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
-			LEFT JOIN opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
+			LEFT JOIN Opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
 	WHERE   R.idPregunta = pidPregunta AND R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
 	GROUP BY R.opcion
 	ORDER BY R.opcion;
@@ -2138,7 +2138,7 @@ BEGIN
 		-- realizo las sumatorias necesarias
 		SELECT SUM(Respuesta*importancia) AS RI, SUM(Alternativa*importancia) AS AI, SUM(importancia) AS T, COUNT(Respuesta) AS C
 		FROM(
-			-- obtener datos de respuestas y preguntas(importancias, cantidad de opciones, etc)
+			-- obtener datos de respuestas y preguntas(importancias, cantidad de Opciones, etc)
 			SELECT	IF(P.ordenInverso='S', IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta, 
 					IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) AS Alternativa, 
 					COALESCE(IC.importancia,1) AS importancia
@@ -2150,7 +2150,7 @@ BEGIN
 					LEFT JOIN Items_Carreras IC ON
 						IC.idCarrera = R.idCarrera AND IC.idSeccion = I.idSeccion AND
 						IC.idFormulario = I.idFormulario AND IC.idPregunta = I.idPregunta
-					LEFT JOIN opciones O ON
+					LEFT JOIN Opciones O ON
 						O.idPregunta = P.idPregunta
 			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
 					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
@@ -2185,7 +2185,7 @@ BEGIN
 		-- realizo las sumatorias necesarias
 		SELECT SUM(Respuesta*importancia) AS RI, SUM(Alternativa*importancia) AS AI, SUM(importancia) AS T, COUNT(Respuesta) AS C
 		FROM(
-			-- obtener datos de respuestas y preguntas(importancias, cantidad de opciones, etc)
+			-- obtener datos de respuestas y preguntas(importancias, cantidad de Opciones, etc)
 			SELECT	IF(P.ordenInverso='S', IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta, 
 					IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) AS Alternativa, 
 					COALESCE(IC.importancia,1) AS importancia
@@ -2197,7 +2197,7 @@ BEGIN
 					LEFT JOIN Items_Carreras IC ON
 						IC.idCarrera = R.idCarrera AND IC.idSeccion = I.idSeccion AND
 						IC.idFormulario = I.idFormulario AND IC.idPregunta = I.idPregunta
-					LEFT JOIN opciones O ON
+					LEFT JOIN Opciones O ON
 						O.idPregunta = P.idPregunta
 			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
 					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
@@ -2234,7 +2234,7 @@ BEGIN
 		-- realizo las sumatorias necesarias
 		SELECT SUM(Respuesta*importancia) AS RI, SUM(Alternativa*importancia) AS AI, SUM(importancia) AS T, COUNT(Respuesta) AS C
 		FROM(
-			-- obtener datos de respuestas y preguntas(importancias, cantidad de opciones, etc)
+			-- obtener datos de respuestas y preguntas(importancias, cantidad de Opciones, etc)
 			SELECT	IF(P.ordenInverso='S', IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta, 
 					IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) AS Alternativa, 
 					COALESCE(IC.importancia,1) AS importancia
@@ -2246,7 +2246,7 @@ BEGIN
 					LEFT JOIN Items_Carreras IC ON
 						IC.idCarrera = R.idCarrera AND IC.idSeccion = I.idSeccion AND
 						IC.idFormulario = I.idFormulario AND IC.idPregunta = I.idPregunta
-					LEFT JOIN opciones O ON
+					LEFT JOIN Opciones O ON
 						O.idPregunta = P.idPregunta
 			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
 					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
@@ -2941,7 +2941,7 @@ BEGIN
         SET mensaje = 'No se puede eliminar, existen respuestas asociadas a la pregunta.';
         ROLLBACK;
     ELSE
-        DELETE FROM opciones
+        DELETE FROM Opciones
         WHERE idPregunta = pidPregunta;
 		DELETE FROM Preguntas
 		WHERE idPregunta = pidPregunta;
@@ -3036,9 +3036,9 @@ BEGIN
         START TRANSACTION;
         SET nid = (  
             SELECT COALESCE(MAX(idOpcion),0)+1 
-            FROM    opciones
+            FROM    Opciones
             WHERE   idPregunta = pidPregunta);
-        INSERT INTO opciones 
+        INSERT INTO Opciones 
             (idOpcion, idPregunta, texto)
         VALUES (nid, pidPregunta, ptexto);
         IF err THEN

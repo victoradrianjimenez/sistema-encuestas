@@ -6,8 +6,8 @@
   <link href="<?php echo base_url('css/datepicker.css')?>" rel="stylesheet">
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
-    .form-horizontal .controls {margin-left: 90px}
-    .form-horizontal .control-label {width: 70px; float: left}
+    .form-horizontal .controls {margin-left: 100px}
+    .form-horizontal .control-label {width: 80px; float: left}
     #contenedor{padding-top:9px}
   </style>
 </head>
@@ -47,20 +47,14 @@
               <div class="span6 control-group">
                 <label class="control-label" for="dpd1">Fecha Inicio:</label>
                 <div class="controls">
-                  <input class="input-block-level" type="text" class="span2" value="" id="dpd1">
+                  <input class="input-block-level" type="text" class="span2" value="" id="dpd1" data-date-viewmode="years">
                 </div>
               </div>
               <div class="span6 control-group">
                 <label class="control-label" for="dpd1">Fecha Fin:</label>
                 <div class="controls">
-                  <input class="input-block-level" type="text" class="span2" value="" id="dpd2">
+                  <input class="input-block-level" type="text" class="span2" value="" id="dpd2" data-date-viewmode="years">
                 </div>
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked/>Incluir promedio de índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked/>Incluir indice general</label>
               </div>
             </div>
             <div class="controls btn-group">

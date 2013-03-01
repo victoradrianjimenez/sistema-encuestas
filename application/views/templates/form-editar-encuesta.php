@@ -39,6 +39,7 @@
         url: "<?php echo site_url('formularios/buscarAJAX')?>", 
         data:{ buscar: query}
       }).done(function(msg){
+        window.alert(msg);
         var filas = msg.split("\n");
         var items = new Array();
         for (var i=0; i<filas.length; i++){

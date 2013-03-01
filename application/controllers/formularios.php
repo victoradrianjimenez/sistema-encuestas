@@ -204,7 +204,7 @@ class Formularios extends CI_Controller{
    */
   public function buscarAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
-    $this->form_validation->set_rules('buscar','Buscar','required|is_natural_no_zero');
+    $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $this->load->model('Formulario');
       $this->load->model('Gestor_formularios','gf');

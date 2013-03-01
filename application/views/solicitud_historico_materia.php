@@ -56,21 +56,14 @@
               <div class="span6 control-group">
                 <label class="control-label" for="dpd1">Fecha Inicio:</label>
                 <div class="controls">
-                  <input class="input-block-level" type="text" class="span2" value="" id="dpd1">
+                  <input class="input-block-level" type="text" class="span2" value="" id="dpd1" data-date-viewmode="years">
                 </div>
               </div>
               <div class="span6 control-group">
                 <label class="control-label" for="dpd1">Fecha Fin:</label>
                 <div class="controls">
-                  <input class="input-block-level" type="text" class="span2" value="" id="dpd2">
+                  <input class="input-block-level" type="text" class="span2" value="" id="dpd2" data-date-viewmode="years">
                 </div>
-              </div>
-            </div>
-            <div class="control-group">
-              <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir promedio de índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir promedio de índices para cada docente</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice general</label>
               </div>
             </div>
             <div class="controls btn-group">

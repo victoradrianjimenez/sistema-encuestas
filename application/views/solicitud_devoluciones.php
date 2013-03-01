@@ -22,13 +22,8 @@
       </div>
       
       <div class="row">
-        <!-- SideBar -->
-
-        <div class="span3">
-          
-        </div>
         <!-- Main -->
-        <div class="span9">
+        <div class="span12">
           <h4>Devoluciones</h4>
           <form class="form-horizontal" action="<?php echo site_url('devoluciones/listar')?>" method="post">
     

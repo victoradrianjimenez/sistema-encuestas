@@ -178,7 +178,7 @@ class Usuarios extends CI_Controller{
    * POST: id, apellido, nombre, username, password, email
    * Última revisión: 2012-02-01 6:10 p.m.
    */
-  public function modificar($id){
+  public function modificar($id=0){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
       redirect('usuarios/login');
@@ -187,7 +187,6 @@ class Usuarios extends CI_Controller{
       show_error('No tiene permisos para realizar esta operación.');
       return;
     }
-    $id = (int)$id;
     
     //verifico datos POST
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
@@ -208,7 +207,6 @@ class Usuarios extends CI_Controller{
         }
       }
       
-      
       $id = $this->input->post('id',TRUE);
       $password = $this->input->post('password',TRUE);
       $data = array(
@@ -228,11 +226,12 @@ class Usuarios extends CI_Controller{
       }
       //modifico datos y cargo vista para mostrar resultado
       $res = $this->ion_auth->update($id, $data);
-      $data['mensaje'] = ($res)?'La operación se realizó con éxito.':'Se produjo un error al intentar modificar los datos del usuario.';
-      $data['link'] = site_url("usuarios/ver/$id"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $data);
+      $this->data['mensaje'] = ($res)?'La operación se realizó con éxito.':'Se produjo un error al intentar modificar los datos del usuario.';
+      $this->data['link'] = site_url("usuarios/ver/$id"); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $this->data);
     }
     else{
+      $id = (int)$id;
       //en caso de que los datos sean incorrectos, vuelvo a la pagina del departamento
       $this->load->model('Usuario');
       $this->load->model('Gestor_usuarios', 'gu');
@@ -250,6 +249,47 @@ class Usuarios extends CI_Controller{
     }
   }
 
+  /*
+   * Recepción del formulario para modificar los datos de una cuenta Usuario (cuando el mismo usuario lo hace)
+   * POST: username, password, email
+   * Última revisión: 2012-02-01 6:10 p.m.
+   */
+  public function modificarCuenta(){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
+      show_error('No tiene permisos para realizar esta operación.');
+      return;
+    }
+    $id = (int)$this->data['usuarioLogin']->id;
+    
+    //verifico datos POST
+    $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
+    $this->form_validation->set_rules('email','E-mail','required|valid_email');
+    $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
+    if($this->form_validation->run()){
+      $password = $this->input->post('password',TRUE);
+      $data = array(
+        'username' => $this->input->post('username',TRUE),
+        'email' => $this->input->post('email',TRUE),
+      );
+      //si el ususario escribe una contraseña, actualizarla
+      if ($password){
+        $data['password'] = $password;
+      }
+      //modifico datos y cargo vista para mostrar resultado
+      $res = $this->ion_auth->update($id, $data);
+      $this->data['mensaje'] = ($res)?'La operación se realizó con éxito.':'Se produjo un error al intentar modificar los datos del usuario.';
+      $this->data['link'] = site_url(); //hacia donde redirigirse
+      $this->load->view('resultado_operacion', $this->data);
+    }
+    else{
+      //en caso de que los datos sean incorrectos, vuelvo a la pagina del departamento
+      $this->load->view('editar_cuenta', $this->data);
+    }
+  }
   /*
    * Recepción del formulario para eliminar un usuario
    * POST: idMateria
@@ -335,23 +375,21 @@ class Usuarios extends CI_Controller{
       $identity = $this->session->userdata($this->config->item('identity', 'ion_auth'));
       $change = $this->ion_auth->change_password($identity, $this->input->post('Contrasena'), $this->input->post('NuevaContrasena'));
       if ($change){
-        $data['mensaje'] = 'La operación se realizó con éxito.';
-        $data['link'] = site_url('usuarios');
-        $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-        $this->load->view('resultado_operacion', $data);                
+        $this->data['mensaje'] = 'La operación se realizó con éxito.';
+        $this->data['link'] = site_url('usuarios');
+        $this->load->view('resultado_operacion', $this->data);                
       }
       else{
-        $data['mensaje'] = 'Ocurrió un error al intentar cambiar la contraseña.';
-        $data['link'] = site_url('usuarios/cambiarContrasena');
-        $data['usuarioLogin'] = $this->ion_auth->user()->row(); //datos de sesion
-        $this->load->view('resultado_operacion', $data);
+        $this->data['mensaje'] = 'Ocurrió un error al intentar cambiar la contraseña.';
+        $this->data['link'] = site_url('usuarios/cambiarContrasena');
+        $this->load->view('resultado_operacion', $this->data);
       }
     }
     else{
       $user = $this->ion_auth->user()->row();        
-      $data['user_id'] = $user->id;
-      $data['usuarioLogin'] = $user;
-      $this->load->view('cambiar_contraseña');
+      $this->data['user_id'] = $user->id;
+      $this->data['usuarioLogin'] = $user;
+      $this->load->view('cambiar_contrasena', $this->data);
     }
   }
 

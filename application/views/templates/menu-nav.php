@@ -13,9 +13,7 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Facultad <b class="caret"></b></a>
             <ul class="dropdown-menu">
               <li><a href="<?php echo site_url("departamentos")?>">Departamentos, Carreras y Materias</a></li>
-              <li><a href="<?php echo site_url("usuarios")?>">Docentes y Autoridades</a></li>
-              <li class="divider"></li>
-              <li><a href="<?php echo site_url("claves/ingresar")?>">Alumnos</a></li>                  
+              <li><a href="<?php echo site_url("usuarios")?>">Docentes y Autoridades</a></li>               
             </ul>
           </li>
           <li><a href="<?php echo site_url("encuestas/listar")?>">Encuestas</a></li>
@@ -40,8 +38,7 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $usuarioLogin->username?> <b class="caret"></b></a>
               <ul class="dropdown-menu">
-                <li><a href="#">Datos de usuario</a></li>
-                <li><a href="#">Cambiar contraseña</a></li>
+                <li><a href="<?php echo site_url('usuarios/modificarCuenta')?>">Datos de usuario</a></li>
                 <li class="divider"></li>
                 <li>
                   <a style="padding:0"><form id="logout" action="<?php echo site_url("usuarios/logout")?>" method="post" style="margin:0">

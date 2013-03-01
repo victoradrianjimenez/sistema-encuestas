@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Ver usuario</title>
+  <title>Editar usuario</title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
