@@ -6,13 +6,12 @@
 class Usuarios extends CI_Controller{
   
   var $data=array(); //datos para mandar a las vistas
-  const per_page = 10; //cuantos items se mostraran por pagina en un listado
-  
+
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
+    $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -47,7 +46,7 @@ class Usuarios extends CI_Controller{
     $pagInicio = (int)$pagInicio;
     $this->load->model('Usuario');
     $this->load->model('Gestor_usuarios','gu');
-    $this->_listar($this->gu->listar($pagInicio, self::per_page), $this->gu->cantidad(), site_url("usuarios/listar"));
+    $this->_listar($this->gu->listar($pagInicio, PER_PAGE), $this->gu->cantidad(), site_url("usuarios/listar"));
   }
   private function _listarGrupo($pagInicio, $grupo, $url){
     if (!$this->ion_auth->logged_in()){
@@ -61,7 +60,7 @@ class Usuarios extends CI_Controller{
     foreach ($grupos as $g) {
       if($g->name == $grupo){
         $this->data['grupo'] = $g;
-        $this->_listar($this->gu->listarGrupo($g->id, $pagInicio, self::per_page), $this->gu->cantidadGrupo($g->id), $url);
+        $this->_listar($this->gu->listarGrupo($g->id, $pagInicio, PER_PAGE), $this->gu->cantidadGrupo($g->id), $url);
         return;
       }
     }
@@ -80,9 +79,7 @@ class Usuarios extends CI_Controller{
     //genero la lista de links de paginación
     $this->pagination->initialize(array(
       'base_url' => $url,
-      'total_rows' => $cantidad,
-      'per_page' => self::per_page,
-      'uri_segment' => 3
+      'total_rows' => $cantidad
     ));
     
     //envio datos a la vista

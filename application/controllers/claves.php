@@ -7,13 +7,12 @@
 class Claves extends CI_Controller{
   
   var $data=array(); //datos para mandar a las vistas
-  const per_page = 10; //cuantos items se mostraran por pagina en un listado
   
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
+    $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
     
@@ -42,13 +41,12 @@ class Claves extends CI_Controller{
     //obtengo lista de claves
     $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
     $materia = $this->gm->dame($clave->idMateria);
-    $lista = $encuesta->listarClavesMateria($idMateria, $idCarrera, $pagInicio, self::per_page);
+    $lista = $encuesta->listarClavesMateria($idMateria, $idCarrera, $pagInicio, PER_PAGE);
 
     //genero la lista de links de paginación
     $this->pagination->initialize(array(
       'base_url' => site_url("claves/listar/$idMateria/$idCarrera/$idEncuesta/$idFormulario"),
       'total_rows' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
-      'per_page' => self::per_page,
       'uri_segment' => 7
     ));
     

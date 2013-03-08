@@ -6,13 +6,12 @@
 class Formularios extends CI_Controller{
 
   var $data=array(); //datos para mandar a las vistas
-  const per_page = 10; //cuantos items se mostraran por pagina en un listado
 
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
+    $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
 
@@ -37,14 +36,12 @@ class Formularios extends CI_Controller{
     $this->load->model('Gestor_formularios','gf');
     
     //obtengo lista de formularios
-    $lista = $this->gf->listar($PagInicio, self::per_page);
+    $lista = $this->gf->listar($PagInicio, PER_PAGE);
 
     //genero la lista de links de paginación
     $this->pagination->initialize(array(
       'base_url' => site_url("formularios/listar"),
-      'total_rows' => $this->gf->cantidad(),
-      'per_page' => self::per_page,
-      'uri_segment' => 3
+      'total_rows' => $this->gf->cantidad()
     ));
     //envio datos a la vista
     $this->data['lista'] = &$lista; //array de datos de los formularios

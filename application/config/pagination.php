@@ -4,7 +4,7 @@
 $config = array(
   'num_links' => 4,
   //contenedor
-  'full_tag_open' => '<div class="pagination pagination-centered"><ul>',
+  'full_tag_open' => '<div class="pagination"><ul>',
   'full_tag_close' => '</ul></div>',
   //primera pagina
   'first_link' => '&laquo;',
@@ -27,6 +27,7 @@ $config = array(
   'cur_tag_close' => '</span></li>',
   //pagina central
   'num_tag_open' => '<li>',
-  'num_tag_close' => '</li>'
+  'num_tag_close' => '</li>',
+  'per_page' => PER_PAGE
   );
 ?>

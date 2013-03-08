@@ -6,13 +6,12 @@
 class Devoluciones extends CI_Controller {
     
   var $data=array(); //datos para mandar a las vistas
-  const per_page = 10; //cuantos items se mostraran por pagina en un listado
 
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
+    $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -53,7 +52,7 @@ class Devoluciones extends CI_Controller {
       $materia = $this->gm->dame($idMateria);
     
       //obtengo lista de departamentos
-      $devoluciones = $this->gd->listar($idMateria, $pagInicio, self::per_page);
+      $devoluciones = $this->gd->listar($idMateria, $pagInicio, PER_PAGE);
       $lista = array(); //datos para mandar a la vista
       foreach ($devoluciones as $i => $devolucion) {
         $encuesta = $this->ge->dame($devolucion->idEncuesta, $devolucion->idFormulario);
@@ -65,9 +64,7 @@ class Devoluciones extends CI_Controller {
       //genero la lista de links de paginación
       $this->pagination->initialize(array(
         'base_url' => site_url("devoluciones/listar"),
-        'total_rows' => $this->gd->cantidad($idMateria),
-        'per_page' => self::per_page,
-        'uri_segment' => 3
+        'total_rows' => $this->gd->cantidad($idMateria)
       ));
       
       //envio datos a la vista

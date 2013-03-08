@@ -6,6 +6,7 @@
 class Encuesta extends CI_Model{
 	var $idEncuesta;
   var $idFormulario;
+  var $tipo;  
   var $año;
   var $cuatrimestre;
   var $fechaInicio;

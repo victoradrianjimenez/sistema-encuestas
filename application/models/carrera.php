@@ -10,6 +10,8 @@ class Carrera extends CI_Model{
   var $idFormulario;
   var $nombre;
   var $plan;
+  var $publicarInformes;
+  var $publicarHistoricos;
   
   function __construct(){
     parent::__construct();

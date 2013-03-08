@@ -20,12 +20,9 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li class="active"><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
-            <li><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
-            <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-          </ul>
+          <?php $item_submenu = 1;
+            include 'templates/submenu-facultad.php';
+          ?>
         </div>
         
         <!-- Main -->
@@ -44,7 +41,10 @@
                 <tr>
                   <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$item['departamento']->idDepartamento)?>"/><?php echo $item['departamento']->nombre?></a></td>
                   <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
-                  <td><a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a></td>
+                  <td>
+                    <a class="modificar" href="<?php echo site_url('departamentos/modificar/'.$item['departamento']->idDepartamento)?>">Modificar</a> / 
+                    <a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a>
+                  </td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -53,7 +53,7 @@
           
           <!-- Botones -->
           <div class="btn-group">
-            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar departamento...</button>
+            <a class="btn btn-primary" href="<?php echo site_url('departamentos/nuevo')?>">Agregar departamento</a>
           </div>
         </div>
       </div>
@@ -87,6 +87,7 @@
     </div>
     <form action="<?php echo site_url('departamentos/eliminar')?>" method="post">
       <div class="modal-body">
+        <input type="hidden" <?php echo 'name="'.$csrf[0].'" value="'.$csrf[1].'"'?> />
         <input type="hidden" name="idDepartamento" value="" />
         <h5 class="nombre"></h5>
         <p>¿Desea continuar?</p>      
@@ -103,6 +104,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       idDepartamento = $(this).attr('value');

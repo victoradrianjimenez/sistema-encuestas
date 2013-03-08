@@ -8,7 +8,8 @@ class Departamento extends CI_Model{
   var $idDepartamento;
   var $idJefeDepartamento;
   var $nombre;
-  
+  var $publicarInformes;
+  var $publicarHistoricos;
   
   function __construct(){
     parent::__construct();

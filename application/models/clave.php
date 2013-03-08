@@ -10,7 +10,6 @@ class Clave extends CI_Model{
   var $idEncuesta;
   var $idFormulario;
   var $clave;
-  var $tipo;
   var $generada;
   var $utilizada;
   

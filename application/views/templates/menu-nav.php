@@ -54,6 +54,14 @@
   </div>
 </div>
 <?php 
+if(isset($resultadoOperacion)){
+  echo '
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">×</button>
+    '.$resultadoOperacion.'
+  </div>
+  ';
+}
 if(!(isset($usuarioLogin) && is_object($usuarioLogin)))
   include 'modal-login.php';
 ?>

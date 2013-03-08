@@ -6,13 +6,12 @@
 class Carreras extends CI_Controller{
   
   var $data=array(); //datos para mandar a las vistas
-  const per_page = 10; //cuantos items se mostraran por pagina en un listado
   
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
+    $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -41,7 +40,7 @@ class Carreras extends CI_Controller{
     $this->load->model('Gestor_departamentos','gd');
     
     //obtengo lista de carreras
-    $carreras = $this->gc->listar($pagInicio, self::per_page);
+    $carreras = $this->gc->listar($pagInicio, PER_PAGE);
     $lista = array();
     foreach ($carreras as $i => $carrera) {
       $departamento = $this->gd->dame($carrera->idDepartamento);
@@ -56,8 +55,6 @@ class Carreras extends CI_Controller{
     $this->pagination->initialize(array(
       'base_url' => site_url("carreras/listar"),
       'total_rows' => $this->gc->cantidad(),
-      'per_page' => self::per_page,
-      'uri_segment' => 3
     ));
     
     //envio datos a la vista
@@ -95,13 +92,12 @@ class Carreras extends CI_Controller{
     $carrera = $this->gc->dame($idCarrera);
     if ($carrera){
       //obtengo lista de materias
-      $lista = $carrera->listarMaterias($pagInicio, self::per_page);
+      $lista = $carrera->listarMaterias($pagInicio, PER_PAGE);
       
       //genero la lista de links de paginación
       $this->pagination->initialize(array(
         'base_url' => site_url("carreras/ver/$idCarrera"),
         'total_rows' => $carrera->cantidadMaterias(),
-        'per_page' => self::per_page,
         'uri_segment' => 4
       ));
       

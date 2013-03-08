@@ -83,3 +83,23 @@ define('APPPATH_URI', BASE_URI.APPPATH);
 
 // We dont need these variables any more
 unset($base_uri, $base_url); 
+
+
+/*
+|--------------------------------------------------------------------------
+| Constantes del Sistema de Encuestas
+|--------------------------------------------------------------------------
+|
+| Estas constantes son propias del sistema
+|
+*/
+
+//delimitadores de los errores de validación de formularios
+define('ERROR_DELIMITER_START', '<span class="label label-important">');
+define('ERROR_DELIMITER_END', '</span>');
+//cuantos items se mostraran por pagina en un listado
+define('PER_PAGE', 10);
+//periodos cada cuanto se toma una encuesta
+define('PERIODO', 'Cuatrimestre');
+
+

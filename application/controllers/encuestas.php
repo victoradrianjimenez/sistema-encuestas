@@ -6,13 +6,12 @@
 class Encuestas extends CI_Controller{
   
   var $data=array(); //datos para mandar a las vistas
-  const per_page = 10; //cuantos items se mostraran por pagina en un listado
   
   function __construct() {
     parent::__construct();
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
-    $this->form_validation->set_error_delimiters('<span class="label label-important">', '</span>');
+    $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
   }
   
@@ -37,14 +36,12 @@ class Encuestas extends CI_Controller{
     $this->load->model('Gestor_encuestas','ge');
     
     //obtengo lista de encuestas
-    $lista = $this->ge->listar($pagInicio, self::per_page);
+    $lista = $this->ge->listar($pagInicio, PER_PAGE);
     
     //genero la lista de links de paginación
     $this->pagination->initialize(array(
       'base_url' => site_url("encuestas/listar"),
-      'total_rows' => $this->ge->cantidad(),
-      'per_page' => self::per_page,
-      'uri_segment' => 3
+      'total_rows' => $this->ge->cantidad()
     ));
     
     //envio datos a la vista
