@@ -323,7 +323,8 @@ CREATE PROCEDURE `esp_listar_materias_carrera`(
     pPagLongitud INT UNSIGNED)
 BEGIN
 	SET @qry = '
-    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
+    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos,
+			M.publicarInformes, M.publicarHistoricos, M.publicarDevoluciones
     FROM    Materias M INNER JOIN Materias_Carreras MC ON M.idMateria = MC.idMateria
 	WHERE	MC.idCarrera = ?
     ORDER BY M.nombre
@@ -363,7 +364,8 @@ CREATE PROCEDURE `esp_listar_materias`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  idMateria, nombre, codigo, alumnos
+    SELECT  idMateria, nombre, codigo, alumnos,
+			publicarInformes, publicarHistoricos, publicarDevoluciones
     FROM    Materias
     ORDER BY nombre
     LIMIT ?,?';
@@ -412,7 +414,7 @@ CREATE PROCEDURE `esp_listar_usuarios_grupo`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  U.id, apellido, nombre, username, password, email, active, last_login
+    SELECT  U.id, apellido, nombre, username, password, email, active, last_login, imagen
     FROM    Usuarios U INNER JOIN Usuarios_Grupos G ON U.id = G.id_usuario
 	WHERE	G.id_grupo = ?
     ORDER BY apellido, nombre
@@ -468,7 +470,7 @@ CREATE PROCEDURE `esp_listar_departamentos`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  idDepartamento, idJefeDepartamento, nombre
+    SELECT  idDepartamento, idJefeDepartamento, nombre, publicarInformes, publicarHistoricos
     FROM Departamentos
     ORDER BY nombre
     LIMIT ?,?';
@@ -504,7 +506,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_dame_usuario`(
     pid INT UNSIGNED)
 BEGIN
-    SELECT id, username, NULL as 'password', email, last_login, active, nombre, apellido
+    SELECT id, username, NULL as 'password', email, last_login, active, nombre, apellido, imagen
     FROM Usuarios
     WHERE id = pid;
 END $$
@@ -537,7 +539,7 @@ DELIMITER ;
 -- CREATE PROCEDURE `esp_listar_carreras_departamento`(
 --     pidDepartamento SMALLINT UNSIGNED)
 -- BEGIN
---     SELECT  idDepartamento, idCarrera, idDirectorCarrera, nombre, plan
+--     SELECT  idDepartamento, idCarrera, idDirectorCarrera, nombre, plan, publicarInformes, publicarHistoricos
 --     FROM    Carreras
 --     WHERE   idDepartamento = pidDepartamento
 --     ORDER BY nombre, plan DESC;
@@ -572,7 +574,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_dame_departamento`(
     pidDepartamento SMALLINT UNSIGNED)
 BEGIN
-    SELECT idDepartamento, idJefeDepartamento, nombre
+    SELECT idDepartamento, idJefeDepartamento, nombre, publicarInformes, publicarHistoricos
     FROM Departamentos
     WHERE idDepartamento = pidDepartamento;
 END $$
@@ -610,7 +612,7 @@ CREATE PROCEDURE `esp_buscar_clave`(
 BEGIN
     -- busca una clave en las encuestas que no finalizaron
     SELECT  idClave, idMateria, idCarrera, C.idEncuesta, C.idFormulario,
-            clave, tipo, generada, utilizada
+            clave, generada, utilizada
     FROM    Claves C INNER JOIN Encuestas E ON C.idEncuesta = E.idEncuesta AND C.idFormulario = E.idFormulario
     WHERE   clave = UPPER(pclave) AND fechaFin IS NULL
     LIMIT   1;
@@ -628,47 +630,42 @@ CREATE PROCEDURE `esp_alta_clave`(
     pidMateria SMALLINT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
-    pidFormulario INT UNSIGNED,
-    ptipo CHAR(1))
+    pidFormulario INT UNSIGNED)
 BEGIN
     DECLARE nid INT UNSIGNED;
     DECLARE clave CHAR(12);
     DECLARE mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
-    
-    IF NOT ptipo IN ('E','R','O') THEN
-        SET mensaje = 'El tipo de clave es incorrecto.';
-    ELSE
-        START TRANSACTION;
-        IF NOT EXISTS(  SELECT  idEncuesta FROM Encuestas 
-                        WHERE   idEncuesta = pidEncuesta AND 
-                                idFormulario = idFormulario AND fechaFin IS NULL LIMIT 1) THEN
-            SET mensaje = 'No se encontró la encuesta correspondiente o la misma ya concluyó.';
-            ROLLBACK;
-        ELSE
-            SET nid = (  
-                SELECT COALESCE(MAX(idClave),0)+1 
-                FROM    Claves
-                WHERE   idMateria = pidMateria AND
-                        idCarrera = pidCarrera AND
-                        idEncuesta = pidEncuesta AND
-                        idFormulario = pidFormulario);            
-            SET clave = SUBSTRING(MD5(CONCAT(
-                nid,pidMateria,pidCarrera,pidEncuesta,pidFormulario,ptipo,NOW())),1,12);
-            INSERT INTO Claves 
-                (idClave, idMateria, idCarrera, idEncuesta, idFormulario, clave, tipo, generada, utilizada)
-            VALUES (nid, pidMateria, pidCarrera, pidEncuesta, pidFormulario, UPPER(clave), ptipo, NOW(), NULL);
-            IF err THEN
-                SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
-                ROLLBACK;
-            ELSE 
-                SET mensaje = nid;
-                COMMIT;
-            END IF;            
-        END IF;
-    END IF;
-    SELECT mensaje;
+
+	START TRANSACTION;
+	IF NOT EXISTS(  SELECT  idEncuesta FROM Encuestas 
+					WHERE   idEncuesta = pidEncuesta AND 
+							idFormulario = idFormulario AND fechaFin IS NULL LIMIT 1) THEN
+		SET mensaje = 'No se encontró la encuesta correspondiente o la misma ya concluyó.';
+		ROLLBACK;
+	ELSE
+		SET nid = (  
+			SELECT COALESCE(MAX(idClave),0)+1 
+			FROM    Claves
+			WHERE   idMateria = pidMateria AND
+					idCarrera = pidCarrera AND
+					idEncuesta = pidEncuesta AND
+					idFormulario = pidFormulario);            
+		SET clave = SUBSTRING(MD5(CONCAT(
+			nid,pidMateria,pidCarrera,pidEncuesta,pidFormulario,NOW())),1,12);
+		INSERT INTO Claves 
+			(idClave, idMateria, idCarrera, idEncuesta, idFormulario, clave, generada, utilizada)
+		VALUES (nid, pidMateria, pidCarrera, pidEncuesta, pidFormulario, UPPER(clave), NOW(), NULL);
+		IF err THEN
+			SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET mensaje = nid;
+			COMMIT;
+		END IF;            
+	END IF;
+	SELECT mensaje;
 END $$
 
 DELIMITER ;
@@ -788,7 +785,8 @@ DELIMITER $$
 CREATE PROCEDURE `esp_dame_materia`(
     pidMateria SMALLINT UNSIGNED)
 BEGIN
-    SELECT idMateria, nombre, codigo, alumnos
+    SELECT	idMateria, nombre, codigo, alumnos, 
+			publicarInformes, publicarHistoricos, publicarDevoluciones
     FROM Materias
     WHERE idMateria = pidMateria;
 END $$
@@ -804,7 +802,8 @@ DELIMITER $$
 CREATE PROCEDURE `esp_dame_carrera`(
     pidCarrera SMALLINT UNSIGNED)
 BEGIN
-    SELECT idCarrera, idDepartamento, idDirectorCarrera, nombre, plan
+    SELECT	idCarrera, idDepartamento, idDirectorCarrera, nombre, plan,
+			publicarInformes, publicarHistoricos
     FROM Carreras
     WHERE idCarrera = pidCarrera;
 END $$
@@ -819,7 +818,9 @@ DELIMITER $$
 
 CREATE PROCEDURE `esp_alta_departamento`(
 	pidJefeDepartamento INT UNSIGNED,
-    pnombre VARCHAR(60))
+    pnombre VARCHAR(60),
+	ppublicarInformes CHAR(1),
+	ppublicarHistoricos CHAR(1))
 BEGIN
     DECLARE nid SMALLINT UNSIGNED;
     DECLARE mensaje VARCHAR(100);
@@ -841,8 +842,8 @@ BEGIN
                 SELECT COALESCE(MAX(idDepartamento),0)+1 
                 FROM    Departamentos);
             INSERT INTO Departamentos 
-                (idDepartamento, idJefeDepartamento, nombre)
-            VALUES (nid, pidJefeDepartamento, pnombre);
+                (idDepartamento, idJefeDepartamento, nombre, publicarInformes, publicarHistoricos)
+            VALUES (nid, pidJefeDepartamento, pnombre, ppublicarInformes, ppublicarHistoricos);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -900,7 +901,9 @@ DELIMITER $$
 CREATE PROCEDURE `esp_modificar_departamento`(
     pidDepartamento SMALLINT UNSIGNED,
 	pidJefeDepartamento INT UNSIGNED,
-    pnombre VARCHAR(60))
+    pnombre VARCHAR(60),
+	ppublicarInformes CHAR(1),
+	ppublicarHistoricos CHAR(1))
 BEGIN
     DECLARE mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
@@ -920,8 +923,9 @@ BEGIN
             SET mensaje = CONCAT('Ya existe un departamento que se llama ',pnombre,'.');
             ROLLBACK;
         ELSE    
-            UPDATE Departamentos 
-            SET nombre = pnombre, idJefeDepartamento = pidJefeDepartamento
+            UPDATE Departamentos
+            SET nombre = pnombre, idJefeDepartamento = pidJefeDepartamento, 
+				publicarInformes=ppublicarInformes, publicarHistoricos=ppublicarHistoricos
             WHERE idDepartamento = pidDepartamento;
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
@@ -947,7 +951,9 @@ CREATE PROCEDURE `esp_alta_carrera`(
     pidDepartamento SMALLINT UNSIGNED,
 	pidDirectorCarrera INT UNSIGNED,
     pnombre VARCHAR(60),
-    pplan SMALLINT UNSIGNED)
+    pplan SMALLINT UNSIGNED,
+	ppublicarInformes CHAR(1),
+	ppublicarHistoricos CHAR(1))
 BEGIN
     DECLARE nid SMALLINT UNSIGNED;
     DECLARE mensaje VARCHAR(120);
@@ -975,8 +981,8 @@ BEGIN
                 SELECT COALESCE(MAX(idCarrera),0)+1 
                 FROM    Carreras);
             INSERT INTO Carreras 
-                (idCarrera, idDepartamento, idDirectorCarrera, nombre, plan)
-            VALUES (nid, pidDepartamento, pidDirectorCarrera, pnombre, pplan);
+                (idCarrera, idDepartamento, idDirectorCarrera, nombre, plan, publicarInformes, publicarHistoricos)
+            VALUES (nid, pidDepartamento, pidDirectorCarrera, pnombre, pplan, ppublicarInformes, ppublicarHistoricos);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -1043,7 +1049,9 @@ CREATE PROCEDURE `esp_modificar_carrera`(
     pidDepartamento SMALLINT UNSIGNED,
 	pidDirectorCarrera INT UNSIGNED,
     pnombre VARCHAR(60),
-    pplan SMALLINT UNSIGNED)
+    pplan SMALLINT UNSIGNED,
+	ppublicarInformes CHAR(1),
+	ppublicarHistoricos CHAR(1))
 BEGIN
     DECLARE mensaje VARCHAR(120);
     DECLARE err BOOLEAN DEFAULT FALSE;
@@ -1066,7 +1074,8 @@ BEGIN
             ROLLBACK;
         ELSE    
             UPDATE Carreras 
-            SET idDepartamento=pidDepartamento, idDirectorCarrera=pidDirectorCarrera, nombre = pnombre, plan = pplan
+            SET idDepartamento=pidDepartamento, idDirectorCarrera=pidDirectorCarrera, nombre = pnombre, 
+				plan = pplan, publicarInformes=ppublicarInformes, publicarHistoricos=ppublicarHistoricos
             WHERE idCarrera = pidCarrera;
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
@@ -1093,7 +1102,8 @@ CREATE PROCEDURE `esp_listar_carreras`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  idCarrera, idDepartamento, idDirectorCarrera, nombre, plan
+    SELECT  idCarrera, idDepartamento, idDirectorCarrera, nombre, plan,
+			publicarInformes, publicarHistoricos
     FROM    Carreras
     ORDER BY nombre, plan DESC
     LIMIT ?,?';
@@ -1309,7 +1319,7 @@ CREATE PROCEDURE `esp_dame_encuesta`(
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
 BEGIN
-    SELECT  idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin
+    SELECT  idEncuesta, idFormulario, tipo, año, cuatrimestre, fechaInicio, fechaFin
     FROM    Encuestas
     WHERE   idEncuesta = pidEncuesta AND idFormulario = pidFormulario;            
 END $$
@@ -1330,7 +1340,7 @@ CREATE PROCEDURE `esp_dame_clave`(
     pidFormulario INT UNSIGNED)
 BEGIN
     SELECT  idClave, idMateria, idCarrera, idEncuesta, idFormulario, 
-			clave, tipo, generada, utilizada
+			clave, generada, utilizada
     FROM    Claves
     WHERE   idClave = pidClave AND idMateria = pidMateria AND
 			idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND 
@@ -1399,6 +1409,23 @@ END $$
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `esp_cantidad_claves_facultad`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_cantidad_claves_facultad`(
+    pidEncuesta INT UNSIGNED,
+    pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT  Count(idClave) AS generadas, Count(utilizada) AS utilizadas, 
+			MIN(utilizada) AS primerAcceso, MAX(utilizada) AS ultimoAcceso
+    FROM    Claves
+    WHERE   idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_cantidad_Claves_materia`;
 
@@ -1426,6 +1453,7 @@ DROP PROCEDURE IF EXISTS `esp_alta_usuario`;
 
 DELIMITER $$
 
+-- este sp no se usa!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 CREATE PROCEDURE `esp_alta_usuario`(
     papellido VARCHAR(40),
     pnombre VARCHAR(40))
@@ -1486,7 +1514,8 @@ CREATE PROCEDURE `esp_buscar_carreras`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
-		SELECT	idCarrera, idDepartamento, idDirectorCarrera, nombre, plan 
+		SELECT	idCarrera, idDepartamento, idDirectorCarrera, nombre, plan,
+				publicarInformes, publicarHistoricos
 		FROM	Carreras
 		WHERE	nombre like CONCAT('%',pnombre,'%')
 		ORDER BY nombre, plan DESC;
@@ -1506,7 +1535,8 @@ CREATE PROCEDURE `esp_buscar_materias`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
-		SELECT	idMateria, nombre, codigo, alumnos
+		SELECT	idMateria, nombre, codigo, alumnos,
+				publicarInformes, publicarHistoricos, publicarDevoluciones
 		FROM	Materias
 		WHERE	nombre like CONCAT('%',pnombre,'%');
 	END IF;
@@ -1682,7 +1712,10 @@ DELIMITER $$
 CREATE PROCEDURE `esp_alta_materia`(
     pnombre VARCHAR(60),
     pcodigo CHAR(5),
-	palumnos SMALLINT UNSIGNED)
+	palumnos SMALLINT UNSIGNED,
+	ppublicarInformes CHAR(1),
+	ppublicarHistoricos CHAR(1),
+	ppublicarDevoluciones CHAR(1))
 BEGIN
     DECLARE nid SMALLINT UNSIGNED;
     DECLARE mensaje VARCHAR(100);
@@ -1703,12 +1736,12 @@ BEGIN
                 SELECT COALESCE(MAX(idMateria),0)+1 
                 FROM    Materias );
             INSERT INTO Materias 
-                (idMateria, nombre, codigo, alumnos)
-            VALUES (nid, pnombre, pcodigo, palumnos);
+                (idMateria, nombre, codigo, alumnos, publicarInformes, publicarHistoricos, publicarDevoluciones)
+            VALUES (nid, pnombre, pcodigo, palumnos, ppublicarInformes, ppublicarHistoricos, ppublicarDevoluciones);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
-            ELSE 
+            ELSE
                 SET mensaje = nid;
                 COMMIT;
             END IF;
@@ -1718,7 +1751,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-
 
 
 DROP PROCEDURE IF EXISTS `esp_modificar_materia`;
@@ -1731,7 +1763,10 @@ CREATE PROCEDURE `esp_modificar_materia`(
 	pidMateria SMALLINT UNSIGNED,
     pnombre VARCHAR(60),
     pcodigo CHAR(5),
-	palumnos SMALLINT UNSIGNED)
+	palumnos SMALLINT UNSIGNED,
+	ppublicarInformes CHAR(1),
+	ppublicarHistoricos CHAR(1),
+	ppublicarDevoluciones CHAR(1))
 BEGIN
     DECLARE mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
@@ -1751,7 +1786,8 @@ BEGIN
             ROLLBACK;
         ELSE
             UPDATE Materias 
-			SET nombre = pnombre, codigo = pcodigo, alumnos = palumnos
+			SET nombre = pnombre, codigo = pcodigo, alumnos = palumnos, publicarInformes=ppublicarInformes,
+				publicarHistoricos=ppublicarHistoricos, publicarDevoluciones=ppublicarDevoluciones
 			WHERE idMateria = pidMateria;
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
@@ -1787,9 +1823,6 @@ BEGIN
     ELSEIF EXISTS(SELECT idMateria FROM Devoluciones WHERE idMateria = pidMateria LIMIT 1) THEN
         SET mensaje = 'No se puede eliminar, existe al menos una devolucion asociada a la materia.';
         ROLLBACK;
-    ELSEIF EXISTS(SELECT idMateria FROM alumnos_Materias WHERE idMateria = pidMateria LIMIT 1) THEN
-        SET mensaje = 'No se puede eliminar, existe un alumno asociado a la materia.';
-        ROLLBACK;
     ELSEIF EXISTS(SELECT idMateria FROM Docentes_Materias WHERE idMateria = pidMateria LIMIT 1) THEN
         SET mensaje = 'No se puede eliminar, existe un docente asociado a la materia.';
         ROLLBACK;
@@ -1813,8 +1846,8 @@ DELIMITER ;
 DROP PROCEDURE IF EXISTS `esp_modificar_usuario`;
 
 
-DELIMITER $$
-
+DELIMITER $$ 
+-- Ver, es posible que no se use este SP!!!!!!!!!!!!!!!!!!!!!!!!
 CREATE PROCEDURE `esp_modificar_usuario`(
 	pid INT UNSIGNED,
     papellido VARCHAR(40),
@@ -1934,7 +1967,7 @@ CREATE PROCEDURE `esp_listar_encuestas`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin
+    SELECT  idEncuesta, idFormulario, tipo, año, cuatrimestre, fechaInicio, fechaFin
     FROM    Encuestas
     ORDER BY año DESC, cuatrimestre DESC, fechaInicio DESC, fechaFin DESC
     LIMIT ?,?';
@@ -1970,6 +2003,7 @@ DELIMITER $$
 
 CREATE PROCEDURE `esp_alta_encuesta`(
     pidFormulario INT UNSIGNED,
+	ptipo CHAR(1),
     paño SMALLINT UNSIGNED, 
     pcuatrimestre TINYINT UNSIGNED)
 BEGIN
@@ -1978,7 +2012,9 @@ BEGIN
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
     
-    IF paño < 1900 OR paño > 2100 THEN
+	IF NOT ptipo IN ('A') THEN
+        SET mensaje = 'El tipo de clave es incorrecto.';
+	ELSEIF paño < 1900 OR paño > 2100 THEN
         SET mensaje = 'El año ingresado es incorrecto.';
     ELSE
         START TRANSACTION;
@@ -1992,8 +2028,8 @@ BEGIN
                 FROM    Encuestas
                 WHERE   idFormulario = pidFormulario);
             INSERT INTO Encuestas 
-                (idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin)
-            VALUES (nid, pidFormulario, paño, pcuatrimestre, NOW(), NULL);
+                (idEncuesta, idFormulario, tipo, año, cuatrimestre, fechaInicio, fechaFin)
+            VALUES (nid, pidFormulario, ptipo, paño, pcuatrimestre, NOW(), NULL);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -2024,7 +2060,7 @@ CREATE PROCEDURE `esp_listar_Claves_encuesta_materia`(
 BEGIN
     SET @qry = '
     SELECT  idClave, idMateria, idCarrera, idEncuesta, idFormulario, 
-			clave, tipo, generada, utilizada
+			clave, generada, utilizada
     FROM    Claves
 	WHERE	idMateria = ? AND idCarrera = ? AND idEncuesta = ? AND idFormulario = ?
     ORDER BY generada DESC, utilizada DESC
@@ -2594,7 +2630,8 @@ CREATE PROCEDURE `esp_buscar_materias_carrera`(
 	pidCarrera SMALLINT UNSIGNED,
 	pnombre VARCHAR(60))
 BEGIN
-	SELECT	M.idMateria, M.nombre, M.codigo, M.alumnos
+	SELECT	M.idMateria, M.nombre, M.codigo, M.alumnos,
+			M.publicarInformes, M.publicarHistoricos, M.publicarDevoluciones
 	FROM	Materias M INNER JOIN Materias_Carreras MC ON 
 			M.idMateria = MC.idMateria
 	WHERE	MC.idCarrera = pidCarrera AND M.nombre like CONCAT('%',pnombre,'%');
@@ -2612,7 +2649,8 @@ CREATE PROCEDURE `esp_buscar_departamentos`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
-		SELECT	idDepartamento, idJefeDepartamento, nombre
+		SELECT	idDepartamento, idJefeDepartamento, nombre,
+				publicarInformes, publicarHistoricos
 		FROM	Departamentos
 		WHERE	nombre like CONCAT('%',pnombre,'%');
 	END IF;
@@ -2983,7 +3021,7 @@ BEGIN
     
     IF COALESCE(ptexto,'') = '' THEN
         SET mensaje = 'El texto de la pregunta no puede ser vacío';
-    ELSEIF NOT ptipo IN ('S', 'M', 'N', 'T', 'X') THEN
+    ELSEIF NOT ptipo IN ('S', 'N', 'T', 'X') THEN
         SET mensaje = 'El tipo de pregunta es incorrecto.';
     ELSEIF NOT pobligatoria IN ('S', 'N') THEN
         SET mensaje = 'El campo obligatoria es incorrecto.';
@@ -3069,14 +3107,19 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
     
     START TRANSACTION;
-	DELETE FROM Materias_Carreras
-	WHERE idMateria = pidMateria AND idCarrera = pidCarrera;
-	IF err THEN
-		SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
-		ROLLBACK;
-	ELSE 
-		SET mensaje = 'ok';
-		COMMIT;
+    IF EXISTS(SELECT idMateria FROM Claves WHERE idMateria = pidMateria AND idCarrera = pidCarrera LIMIT 1) THEN
+        SET mensaje = 'No se puede desasociar la materia porque tiene claves de acceso asociadas.';
+        ROLLBACK;
+	ELSE
+		DELETE FROM Materias_Carreras
+		WHERE idMateria = pidMateria AND idCarrera = pidCarrera;
+		IF err THEN
+			SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+			ROLLBACK;
+		ELSE 
+			SET mensaje = 'ok';
+			COMMIT;
+		END IF;
 	END IF;
     SELECT mensaje;
 END $$
@@ -3106,7 +3149,8 @@ DELIMITER $$
 CREATE PROCEDURE `esp_listar_materias_docente`(
 	pid INT UNSIGNED)
 BEGIN
-    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos
+    SELECT  M.idMateria, M.nombre, M.codigo, M.alumnos,
+			M.publicarInformes, M.publicarHistoricos, M.publicarDevoluciones
     FROM    Materias M 
 			INNER JOIN Docentes_Materias DM ON M.idMateria = DM.idMateria
 	WHERE	DM.idDocente = pid
@@ -3124,7 +3168,8 @@ DELIMITER $$
 CREATE PROCEDURE `esp_listar_materias_director`(
 	pid INT UNSIGNED)
 BEGIN
-    SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos
+    SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos,
+			M.publicarInformes, M.publicarHistoricos, M.publicarDevoluciones
     FROM    Materias M 
 			INNER JOIN Materias_Carreras MC ON MC.idMateria = MC.idMateria
 			INNER JOIN Carreras C ON C.idCarrera = MC.idCarrera
@@ -3143,7 +3188,8 @@ DELIMITER $$
 CREATE PROCEDURE `esp_listar_materias_jefe_departamento`(
 	pid INT UNSIGNED)
 BEGIN
-    SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos
+    SELECT  DISTINCT M.idMateria, M.nombre, M.codigo, M.alumnos,
+			M.publicarInformes, M.publicarHistoricos, M.publicarDevoluciones
     FROM    Materias M 
 			INNER JOIN Materias_Carreras MC ON MC.idMateria = MC.idMateria
 			INNER JOIN Carreras C ON C.idCarrera = MC.idCarrera
@@ -3163,7 +3209,8 @@ DELIMITER $$
 CREATE PROCEDURE `esp_listar_carreras_docente`(
 	pid INT UNSIGNED)
 BEGIN
-    SELECT  DISTINCT C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan
+    SELECT  DISTINCT C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan,
+			C.publicarInformes, C.publicarHistoricos
     FROM    Carreras C 
 			INNER JOIN Materias_Carreras MC ON MC.idCarrera = C.idCarrera
 			INNER JOIN Docentes_Materias DM ON MC.idMateria = DM.idMateria
@@ -3196,7 +3243,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_buscar_encuestas`(
 	paño SMALLINT UNSIGNED)
 BEGIN
-    SELECT  idEncuesta, idFormulario, año, cuatrimestre, fechaInicio, fechaFin
+    SELECT  idEncuesta, idFormulario, tipo, año, cuatrimestre, fechaInicio, fechaFin
     FROM    Encuestas
 	WHERE	año = paño
     ORDER BY cuatrimestre DESC, fechaInicio DESC, fechaFin DESC;

@@ -20,12 +20,14 @@ class Gestor_carreras extends CI_Model{
    * @param plan de la carrera (año)
    * @return  string
    */
-  public function alta($idDepartamento, $idDirectorCarrera, $nombre, $plan){
+  public function alta($idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos){
+    $publicarInformes = ($publicarInformes)?'S':'N';
+    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
     $idDepartamento = $this->db->escape($idDepartamento);
     $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
     $nombre = $this->db->escape($nombre);
     $plan = $this->db->escape($plan);
-    $query = $this->db->query("call esp_alta_carrera($idDepartamento, $idDirectorCarrera, $nombre, $plan)");
+    $query = $this->db->query("call esp_alta_carrera($idDepartamento, $idDirectorCarrera, $nombre, $plan, '$publicarInformes', '$publicarHistoricos')");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();
@@ -61,13 +63,15 @@ class Gestor_carreras extends CI_Model{
    * @param plan de la carrera (año)
    * @return string
    */
-  public function modificar($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan){
+  public function modificar($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos){
+    $publicarInformes = ($publicarInformes)?'S':'N';
+    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
     $idDepartamento = $this->db->escape($idDepartamento);
     $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
     $idCarrera = $this->db->escape($idCarrera);
     $nombre = $this->db->escape($nombre);
     $plan = $this->db->escape($plan);
-    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan)");
+    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, '$publicarInformes', '$publicarHistoricos')");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();

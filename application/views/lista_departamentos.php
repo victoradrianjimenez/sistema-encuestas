@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Lista Departamentos</title>
+  <title>Departamentos - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
+    
     <?php include 'templates/menu-nav.php'?>
+    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
@@ -39,7 +41,7 @@
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url('departamentos/ver/'.$item['departamento']->idDepartamento)?>"/><?php echo $item['departamento']->nombre?></a></td>
+                  <td class="nombre"><?php echo $item['departamento']->nombre?></td>
                   <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
                   <td>
                     <a class="modificar" href="<?php echo site_url('departamentos/modificar/'.$item['departamento']->idDepartamento)?>">Modificar</a> / 
@@ -62,23 +64,6 @@
   </div>
   <?php include 'templates/footer.php'?>  
   
-  <!-- ventana modal para agregar un departamento -->
-  <div id="modalAgregar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Crear nuevo departamento</h3>
-    </div>
-    <form class="form-horizontal" action="<?php echo site_url('departamentos/nuevo')?>" method="post">
-      <div class="modal-body">
-        <?php include 'templates/form-editar-departamento.php'?>      
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-      </div>
-    </form>
-  </div>
-  
   <!-- ventana modal para eliminar materias -->
   <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
@@ -87,7 +72,6 @@
     </div>
     <form action="<?php echo site_url('departamentos/eliminar')?>" method="post">
       <div class="modal-body">
-        <input type="hidden" <?php echo 'name="'.$csrf[0].'" value="'.$csrf[1].'"'?> />
         <input type="hidden" name="idDepartamento" value="" />
         <h5 class="nombre"></h5>
         <p>¿Desea continuar?</p>      

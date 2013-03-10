@@ -20,7 +20,7 @@
       <div class="row">
         <!-- Main -->
         <div class="span12">
-          <form class="form-horizontal" action="<?php echo site_url('usuarios/modificarCuenta')?>" method="post">
+          <form action="<?php echo site_url('usuarios/modificarCuenta')?>" method="post">
             <input type="hidden" name="id" value="<?php echo $usuarioLogin->id?>"/>
             <div class="control-group">
               <div class="controls">

@@ -101,5 +101,10 @@ define('ERROR_DELIMITER_END', '</span>');
 define('PER_PAGE', 10);
 //periodos cada cuanto se toma una encuesta
 define('PERIODO', 'Cuatrimestre');
+define('NOMBRE_SISTEMA', 'Sistema Encuestas');
 
-
+//nombres de clases HTML para cada tipo de error 
+define('ALERT_WARNING', 'alert-block');
+define('ALERT_ERROR', 'alert-error');
+define('ALERT_INFO', 'alert-info');
+define('ALERT_SUCCESS', 'alert-success');

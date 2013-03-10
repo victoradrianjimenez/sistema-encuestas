@@ -8,9 +8,9 @@ class Materia extends CI_Model{
   var $nombre;
   var $codigo;
   var $alumnos=0;
-  var $publicarInformes;
-  var $publicarHistoricos;
-  var $publicarDevoluciones;
+  var $publicarInformes='N';
+  var $publicarHistoricos='N';
+  var $publicarDevoluciones='N';
   
   function __construct(){
     parent::__construct();

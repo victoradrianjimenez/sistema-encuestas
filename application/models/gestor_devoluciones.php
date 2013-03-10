@@ -93,5 +93,8 @@ class Gestor_devoluciones extends CI_Model{
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
+  public function eliminar(){ //!!IMPLEMENTAR
+    
+  }
 }
 ?>

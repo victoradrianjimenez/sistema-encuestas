@@ -33,7 +33,7 @@
         <!-- Main -->
         <div class="span9">
           
-          <form class="form-horizontal" action="<?php echo site_url('usuarios/modificar')?>" method="post">
+          <form action="<?php echo $urlFormulario?>" method="post">
             <input type="hidden" name="id" value="<?php echo $usuario->id?>"/>
             
             <div class="control-group">
@@ -44,43 +44,50 @@
             <div class="control-group">
               <label class="control-label"  for="campoNombre">Nombre: </label>
               <div class="controls">
-                <input class="input-block-level" id="campoNombre" type="text" name="nombre" value="<?php echo $usuario->nombre?>"/>
+                <input class="input-block-level" id="campoNombre" type="text" name="nombre" value="<?php echo (set_value('nombre'))?set_value('nombre'):$usuario->nombre?>"/>
                 <?php echo form_error('nombre'); ?>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label"  for="campoApellido">Apellido: </label>
+              <label class="control-label"  for="campoApellido">Apellido: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoApellido" type="text" name="apellido" required value="<?php echo $usuario->apellido?>"/>
+                <input class="input-block-level" id="campoApellido" type="text" name="apellido" required value="<?php echo (set_value('apellido'))?set_value('apellido'):$usuario->apellido?>"/>
                 <?php echo form_error('apellido'); ?>
               </div>
             </div>
             <div class="control-group">  
-              <label class="control-label" for="campoEmail">E-mail: </label>
+              <label class="control-label" for="campoEmail">E-mail: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoEmail" type="text" name="email" required value="<?php echo $usuario->email?>"/>
+                <input class="input-block-level" id="campoEmail" type="text" name="email" required value="<?php echo (set_value('email'))?set_value('email'):$usuario->email?>"/>
                 <?php echo form_error('email'); ?>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoUsuario">Nombre de usuario: </label>
+              <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoUsuario" type="text" name="username" required value="<?php echo $usuario->username?>"/>
+                <input class="input-block-level" id="campoUsuario" type="text" name="username" required value="<?php echo (set_value('username'))?set_value('username'):$usuario->username?>"/>
                 <?php echo form_error('username'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoContraseña">Contraseña: </label>
               <div class="controls">
-                <input class="input-block-level" id="campoContraseña" type="password" name="password" value=""/>
+                <input class="input-block-level" id="campoContraseña" type="password" name="password" value="<?php echo set_value('password')?>"/>
                 <?php echo form_error('password'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoContraseña2">Confirmar contraseña: </label>
               <div class="controls">
-                <input class="input-block-level" id="campoContraseña2" type="password" name="password2" value=""/>
+                <input class="input-block-level" id="campoContraseña2" type="password" name="password2" value="<?php echo set_value('password2')?>"/>
                 <?php echo form_error('password2'); ?>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label">Estado: </label>
+              <div class="controls">
+                <label class="checkbox"><input type="checkbox" name="active" <?php echo (isset($_POST['active']) || $usuario->active)?'checked="checked"':''?> />Cuenta de usuario Activa</label>
+                <?php echo form_error('active')?>
               </div>
             </div>
             <div class="control-group">
@@ -88,8 +95,7 @@
               <div class="controls">
                 <div class="row-fluid">
                   <?php
-                    $col = 0; 
-                    foreach($grupos as $grupo){
+                    foreach($grupos as $i => $grupo){
                       $selected = '';
                       //verifico si el el usuario pertenece al grupo actual
                       foreach ($usuario_grupos as $g) {
@@ -98,14 +104,19 @@
                           break;
                         }
                       }
+                      if(isset($_POST['grupos'])){
+                        foreach ($_POST['grupos'] as $g) {
+                          if ($grupo->id == $g){
+                            $selected = 'checked';
+                            break;
+                          }
+                        }
+                      }
                       echo '
                       <div class="span6">
-                        <input type="checkbox" name="grupo_'.$grupo->id.'" '.$selected.'/> '.$grupo->description.'
+                        <label class="checkbox"><input type="checkbox" name="grupos[]" value="'.$grupo->id.'" '.$selected.'/> '.$grupo->description.'</label>
                       </div>';
-                      if ($col==1){
-                        echo '</div><div class="row-fluid">';
-                      }
-                      $col = ($col + 1)%2; 
+                      echo ($i%2==1)?'</div><div class="row-fluid">':''; 
                     }?>
                   </div>
               </div>
@@ -128,10 +139,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script>
-    $('input[type="text"], input[type="password"]').keyup(function(){
-      $(this).siblings('span.label').hide('fast');
-    });
-  </script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/formularios.js')?>"></script>
 </body>
 </html>  

@@ -51,7 +51,7 @@ class Encuestas extends CI_Controller{
   }
   
   /*
-   * Ver y editar datos relacionados a una encuesta
+   * Ver y editar datos relacionados a una encuesta !!!!!!!!!!!!!!!!!!!!!!!!!NO VA
    * Última revisión: 2012-02-06 11:45 p.m.
    */
   public function ver($idEncuesta=null, $idFormulario=null, $pagInicio=0){

@@ -91,14 +91,7 @@ class pCharts extends CI_Controller{
     $pos = 0;
     $datos = array();
     $etiquetas = array();
-    /*
-    //incluir NC en los gráficos
-    if ($pregunta->obligatoria=='N'){
-      $datos[$pos] = ($datos_respuestas[0]['opcion'] == '')?$datos_respuestas[0]['cantidad']:'';
-      $etiquetas[$pos] = 'NC';
-      $pos++;
-    }
-    */
+
     foreach ($opciones as $i => $opcion) {
       $datos[$pos] = '';
       $etiquetas[$pos] = $opciones[$i]->texto;
@@ -143,14 +136,6 @@ class pCharts extends CI_Controller{
     $pos = 0;
     $datos = array();
     $etiquetas = array();
-    /*
-    //incluir NC en los gráficos
-    if ($pregunta->obligatoria=='N'){
-      $datos[$pos] = ($datos_respuestas[0]['opcion'] == '')?$datos_respuestas[0]['cantidad']:'';
-      $etiquetas[$pos] = 'NC';
-      $pos++;
-    }
-    */
     for ($i=1; $i <= (($pregunta->limiteSuperior - $pregunta->limiteInferior + $pregunta->paso) / $pregunta->paso); $i++) {
       $datos[$pos] = '';
       $etiquetas[$pos] = ($i-1) * $pregunta->paso + $pregunta->limiteInferior;

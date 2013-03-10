@@ -18,10 +18,12 @@ class Gestor_departamentos extends CI_Model{
    * @param nombre del departamento
    * @return  string
    */
-  public function alta($idJefeDepartamento, $nombre){
+  public function alta($idJefeDepartamento, $nombre, $publicarInformes, $publicarHistoricos){
+    $publicarInformes = ($publicarInformes)?'S':'N';
+    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
     $nombre = $this->db->escape($nombre);
     $idJefeDepartamento = $this->db->escape($idJefeDepartamento);
-    $query = $this->db->query("call esp_alta_departamento($idJefeDepartamento, $nombre)");
+    $query = $this->db->query("call esp_alta_departamento($idJefeDepartamento, $nombre, '$publicarInformes', '$publicarHistoricos')");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();
@@ -53,11 +55,13 @@ class Gestor_departamentos extends CI_Model{
    * @param nombre del departamento
    * @return  string
    */
-  public function modificar($idDepartamento, $idJefeDepartamento, $nombre){
+  public function modificar($idDepartamento, $idJefeDepartamento, $nombre, $publicarInformes, $publicarHistoricos){
+    $publicarInformes = ($publicarInformes)?'S':'N';
+    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
     $nombre = $this->db->escape($nombre);
     $idJefeDepartamento = $this->db->escape($idJefeDepartamento);
     $idDepartamento = $this->db->escape($idDepartamento);
-    $query = $this->db->query("call esp_modificar_departamento($idDepartamento, $idJefeDepartamento, $nombre)");
+    $query = $this->db->query("call esp_modificar_departamento($idDepartamento, $idJefeDepartamento, $nombre, '$publicarInformes', '$publicarHistoricos')");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();

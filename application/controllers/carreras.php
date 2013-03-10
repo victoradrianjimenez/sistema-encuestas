@@ -5,7 +5,7 @@
  */
 class Carreras extends CI_Controller{
   
-  var $data=array(); //datos para mandar a las vistas
+  var $data = array(); //datos para mandar a las vistas
   
   function __construct() {
     parent::__construct();
@@ -13,15 +13,18 @@ class Carreras extends CI_Controller{
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    $this->data['resultadoTipo'] = ALERT_ERROR;
+    $this->data['resultadoOperacion'] = null;
   }
+  
   
   public function index(){
     $this->listar();
   }
   
+  
   /*
    * Muestra el listado de carreras.
-   * Última revisión: 2012-02-01 2:12 p.m.
    */
   public function listar($pagInicio=0){
     if (!$this->ion_auth->logged_in()){
@@ -63,13 +66,15 @@ class Carreras extends CI_Controller{
     $this->data['carrera'] = &$this->Carrera; //datos por defecto de una nueva carrera
     $this->data['departamento'] = &$this->Departamento;
     $this->data['director'] = &$this->Usuario;
-    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación    
+    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
+    $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->load->view('lista_carreras', $this->data);
   }
 
+
   /*
    * Ver y editar datos relacionados a una carrera
-   * Última revisión: 2012-02-01 2:47 p.m.
    */
   public function ver($idCarrera=null, $pagInicio=0){
     if (!$this->ion_auth->logged_in()){
@@ -109,6 +114,8 @@ class Carreras extends CI_Controller{
       $this->data['director'] = ($director)?$director:$this->Usuario;
       $this->data['lista'] = &$lista; //array de datos de las materias de la carrera
       $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+      $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
+      $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
       $this->load->view('ver_carrera', $this->data);
     }
     else{
@@ -116,10 +123,10 @@ class Carreras extends CI_Controller{
     }
   }
 
+
   /*
    * Recepción del formulario para agregar nueva carrera
-   * POST: idDepartamento, nombre, plan
-   * Última revisión: 2012-02-01 3:16 p.m.
+   * POST: idDepartamento, idDirectorCarrera, nombre, plan, publicarInforme, publicarHistorico
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
@@ -127,8 +134,9 @@ class Carreras extends CI_Controller{
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('carreras/listar');
     }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
@@ -137,60 +145,100 @@ class Carreras extends CI_Controller{
     $this->form_validation->set_rules('plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');      
     if($this->form_validation->run()){
       $this->load->model('Gestor_carreras','gc');
-      $idDirectorCarrera = $this->input->post('idDirectorCarrera',TRUE);
-      
+      $idDirectorCarrera = (int)$this->input->post('idDirectorCarrera');
       //agrego carrera y cargo vista para mostrar resultado
-      $res = $this->gc->alta($this->input->post('idDepartamento',TRUE), ($idDirectorCarrera=='')?NULL:$idDirectorCarrera, $this->input->post('nombre',TRUE), $this->input->post('plan',TRUE));
-      $this->data['mensaje'] = (is_numeric($res))?"La operación se realizó con éxito. El ID de la nueva carrera es $res.":$res;
-      $this->data['link'] = site_url("carreras/listar"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $this->data);
+      $res = $this->gc->alta( (int)$this->input->post('idDepartamento'), 
+                              ($idDirectorCarrera=='')?NULL:$idDirectorCarrera, 
+                              $this->input->post('nombre',TRUE), 
+                              (int)$this->input->post('plan'), 
+                              (bool)$this->input->post('publicarInforme'), 
+                              (bool)$this->input->post('publicarHistorico'));
+      if (is_numeric($res)){
+        $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. El ID de la nueva carrera es $res.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+        redirect('carreras/listar');
+      }
+      $this->data['resultadoOperacion'] = $res;
+      $this->data['resultadoTipo'] = ALERT_ERROR;
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->listar();
-    }
+    //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
+    $this->load->model('Usuario');
+    $this->load->model('Departamento');
+    $this->load->model('Carrera');
+    $this->Carrera->plan = date('Y');
+    $this->data['carrera'] = &$this->Carrera; //datos por defecto de una nueva carrera
+    $this->data['departamento'] = &$this->Departamento;
+    $this->data['director'] = &$this->Usuario;
+    $this->data['tituloFormulario'] = 'Nueva Carrera';
+    $this->data['urlFormulario'] = site_url('carreras/nueva');
+    $this->load->view('editar_carrera', $this->data);
   }
+
 
   /*
    * Recepción del formulario para modificar los datos de una carrera
-   * POST: idCarrera, idDepartamento, nombre, plan
-   * Última revisión: 2012-02-01 3:17 p.m.
+   * POST: idCarrera, idDirectorCarrera, idDepartamento, nombre, plan, publicarInforme, publicarHistorico
    */
-  public function modificar(){
+  public function modificar($idCarrera=null){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('carreras/listar');
     }
+    //cargo modelos, librerias, etc.
+    $this->load->model('Carrera');
+    $this->load->model('Gestor_carreras','gc');
+    
     //verifico datos POST
+    $idCarrera = ($this->input->post('idCarrera')) ? (int)$this->input->post('idCarrera') : (int)$idCarrera;
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idDirectorCarrera','Director de Carrera','is_natural_no_zero');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
     $this->form_validation->set_rules('plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');      
     if($this->form_validation->run()){
-      $this->load->model('Gestor_carreras','gc');
-      $idCarrera = $this->input->post('idCarrera',TRUE);
       $idDirectorCarrera = $this->input->post('idDirectorCarrera',TRUE);
-      
       //modifico carrera y cargo vista para mostrar resultado
-      $res = $this->gc->modificar($idCarrera, $this->input->post('idDepartamento',TRUE), ($idDirectorCarrera=='')?NULL:$idDirectorCarrera, $this->input->post('nombre',TRUE),$this->input->post('plan',TRUE));
-      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $this->data['link'] = site_url("carreras/ver/$idCarrera"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $this->data);
+      $res = $this->gc->modificar($idCarrera, 
+                                  (int)$this->input->post('idDepartamento'), 
+                                  ($idDirectorCarrera=='')?NULL:$idDirectorCarrera, 
+                                  $this->input->post('nombre',TRUE),
+                                  (int)$this->input->post('plan'), 
+                                  (bool)$this->input->post('publicarInforme'),
+                                  (bool)$this->input->post('publicarHistorico'));
+      if (strcmp($res, 'ok')==0){
+        $this->session->set_flashdata('resultadoOperacion', 'La modificación de la carrera se realizó con éxito.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+        redirect('carreras/listar');
+      }
+      $this->data['resultadoOperacion'] = $res;
+      $this->data['resultadoTipo'] = ALERT_ERROR;
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->ver($this->input->post('idCarrera',TRUE));
-    }
+    if ($idCarrera==0) redirect('carreras/nueva');
+    //obtengo datos de la carrera
+    $this->load->model('Departamento');
+    $this->load->model('Usuario');
+    $this->load->model('Gestor_departamentos','gd');
+    $this->load->model('Gestor_usuarios','gu');
+    $carrera = $this->gc->dame((int)$idCarrera);
+    $departamento = ($carrera)?$this->gd->dame($carrera->idDepartamento):$this->Departamento;
+    $director = ($carrera)?$this->gu->dame($carrera->idDirectorCarrera):$this->Usuario;
+
+    $this->data['carrera'] =($carrera)?$carrera:$this->Carrera;
+    $this->data['departamento'] = ($departamento)?$departamento:$this->Departamento;
+    $this->data['director'] = ($director)?$director:$this->Usuario;
+    $this->data['tituloFormulario'] = 'Nueva Carrera';
+    $this->data['urlFormulario'] = site_url('carreras/modificar/'.$idCarrera);
+    $this->load->view('editar_carrera', $this->data);
   }
+
 
   /*
    * Recepción del formulario para eliminar una carrera
    * POST: idCarrera
-   * Última revisión: 2012-02-01 3:19 p.m.
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
@@ -198,30 +246,32 @@ class Carreras extends CI_Controller{
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('carreras/listar');
     }
     //verifico datos POST
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     if($this->form_validation->run()){
       $this->load->model('Gestor_carreras','gc');
-      
       //doy de baja y cargo vista para mostrar resultado
-      $res = $this->gc->baja($this->input->post('idCarrera',TRUE));
-      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $this->data['link'] = site_url("carreras/listar"); //link para boton aceptar/continuar
-      $this->load->view('resultado_operacion', $this->data);
+      $res = $this->gc->baja((int)$this->input->post('idCarrera'));
+      if (strcmp($res, 'ok')==0){
+        $this->session->set_flashdata('resultadoOperacion', 'La carrera se eliminó con éxito.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+      }
+      else{
+        $this->session->set_flashdata('resultadoOperacion', $res);
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      }
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
-      $this->listar();
-    }
+    redirect('carreras/listar');
   }
+
 
   /*
    * Recepción del formulario para crear una asociacion entre una materia y una carrera
    * POST: idMateria, idCarrera
-   * Última revisión: 2012-02-01 3:20 p.m.
    */
   public function asociarMateria(){
     //verifico si el usuario tiene permisos para continuar
@@ -229,33 +279,35 @@ class Carreras extends CI_Controller{
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('carreras/listar');
     }
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    $idCarrera = (int)$this->input->post('idCarrera');
     if($this->form_validation->run()){
       $this->load->model('Carrera');
-      $idCarrera = $this->input->post('idCarrera',TRUE);
       $this->Carrera->idCarrera = $idCarrera;
-      
       //creo la asociacion y cargo vista para mostrar resultado
-      $res = $this->Carrera->asociarMateria($this->input->post('idMateria', TRUE));
-      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $this->data['link'] = site_url("carreras/ver/$idCarrera"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $this->data);      
+      $res = $this->Carrera->asociarMateria((int)$this->input->post('idMateria'));
+      if (strcmp($res, 'ok')==0){
+        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+      }
+      else{
+        $this->session->set_flashdata('resultadoOperacion', $res);
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      } 
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->ver($this->input->post('idCarrera',TRUE));
-    }
+    redirect('carreras/ver/'.$idCarrera);
   }
+
 
   /*
    * Recepción del formulario para eliminar una asociacion entre una materia y una carrera
    * POST: idMateria, idCarrera
-   * Última revisión: 2012-02-01 3:20 p.m.
    */
   public function desasociarMateria(){
     //verifico si el usuario tiene permisos para continuar
@@ -263,33 +315,35 @@ class Carreras extends CI_Controller{
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('carreras/listar');
     }
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    $idCarrera = (int)$this->input->post('idCarrera');
     if($this->form_validation->run()){
       $this->load->model('Carrera');
-      $idCarrera = $this->input->post('idCarrera',TRUE);
       $this->Carrera->idCarrera = $idCarrera;
-      
       //elimino la asociacion y cargo vista para mostrar resultado
-      $res = $this->Carrera->desasociarMateria($this->input->post('idMateria', TRUE));
-      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $this->data['link'] = site_url("carreras/ver/$idCarrera"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $this->data);      
+      $res = $this->Carrera->desasociarMateria((int)$this->input->post('idMateria'));
+      if (strcmp($res, 'ok')==0){
+        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+      }
+      else{
+        $this->session->set_flashdata('resultadoOperacion', $res);
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      }   
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->ver($this->input->post('idCarrera',TRUE));
-    }
+    redirect('carreras/ver/'.$idCarrera);
   }
+
 
   /*
    * Método para responder solicitudes AJAX
    * POST: buscar
-   * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function buscarAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
@@ -308,10 +362,10 @@ class Carreras extends CI_Controller{
     }
   }
   
+  
   /*
    * Método para responder solicitudes AJAX
    * POST: idCarrera, buscar
-   * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function buscarMateriasAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
@@ -333,10 +387,10 @@ class Carreras extends CI_Controller{
     }
   }
 
+
   /*
    * Método para responder solicitudes AJAX
    * POST: idCarrera
-   * Última revisión: 2012-02-01 3:22 p.m.
    */
   public function listarMateriasAJAX(){
     if (!$this->ion_auth->logged_in()){return;}

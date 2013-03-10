@@ -126,7 +126,7 @@
       source: function(query, process){
         return $.ajax({
           type: "POST", 
-          url: "<?php echo site_url('encuestas/buscarEncuestaAJAX')?>", 
+          url: "<?php echo site_url('encuestas/buscarEncuestasAJAX')?>", 
           data:{buscar: query}
         }).done(function(msg){
           var filas = msg.split("\n");

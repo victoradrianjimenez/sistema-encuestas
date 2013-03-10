@@ -130,6 +130,21 @@ class Encuesta extends CI_Model{
     return $data; //devuelve dos elementos: Generadas y Utilizadas
   }
   
+   /**
+   * Obtiene cuantas claves se generaron y cuantas se usaron de una encuesta para una facultad.
+   *
+   * @access public
+   * @return array
+   */  
+  public function cantidadClavesFacultad(){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_cantidad_claves_facultad($idEncuesta, $idFormulario)");
+    $data=$query->row_array();
+    $query->free_result();
+    //$this->db->reconnect();
+    return $data; //devuelve dos elementos: Generadas y Utilizadas
+  }
   /**
    * Obtiene las respuestas a una pregunta para una encuesta. Devuelve un array.
    *

@@ -60,7 +60,7 @@ class Preguntas extends CI_Controller {
 
   /*
    * Recepción del formulario para agregar nueva pregunta
-   * POST: texto, descripcion, tipo, obligatoria, ordenInverso, unidad, limiteInferior, limiteSuperior, textoOpcion_###
+   * POST: texto, descripcion, tipo, ordenInverso, unidad, limiteInferior, limiteSuperior, textoOpcion_###
    * Última revisión: 2012-02-04 12:26 p.m.
    */
   public function nueva(){
@@ -92,8 +92,6 @@ class Preguntas extends CI_Controller {
       $tmp =  $this->input->post('descripcion', TRUE);
       $this->Pregunta->descripcion = ($tmp)?$tmp:NULL;
       $this->Pregunta->tipo = $this->input->post('tipo', TRUE);
-      $tmp = $this->input->post('obligatoria', TRUE);
-      $this->Pregunta->obligatoria = ((bool)$tmp)?'S':'N';
       $tmp = $this->input->post('ordenInverso', TRUE);
       $this->Pregunta->ordenInverso = ((bool)$tmp)?'S':'N';
       $tmp = $this->input->post('unidad', TRUE);
@@ -108,7 +106,7 @@ class Preguntas extends CI_Controller {
         $this->Pregunta->limiteSuperior = NULL;
         $this->Pregunta->paso = NULL;
       }
-      $res = $this->gp->alta(NULL, $this->Pregunta->texto, $this->Pregunta->descripcion, $this->Pregunta->tipo, $this->Pregunta->obligatoria, 
+      $res = $this->gp->alta(NULL, $this->Pregunta->texto, $this->Pregunta->descripcion, $this->Pregunta->tipo, 
                             $this->Pregunta->ordenInverso, $this->Pregunta->limiteInferior, $this->Pregunta->limiteSuperior, $this->Pregunta->paso, $this->Pregunta->unidad);
       if (is_numeric($res)){
         $this->Pregunta->idPregunta = (int)$res;
@@ -187,11 +185,16 @@ class Preguntas extends CI_Controller {
               "$pregunta->idCarrera\t".
               "$pregunta->texto\t".
               "$pregunta->creacion\t".
-              "$pregunta->tipo\t".
-              "$pregunta->obligatoria\t\n";
+              "$pregunta->tipo\t\n";
       }
     }
   }
+  
+  // POST: idPregunta, texto, descripcion //HACER PARA REFORMULAR PREGUNTAS
+  public function modificar(){
+    
+  }
+  
   
 }
 

@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Ver carrera</title>
+  <title>Datos Carrera - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
+    
     <?php include 'templates/menu-nav.php'?>
+    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
@@ -21,12 +23,9 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li><a href="<?php echo site_url("departamentos")?>">Departamentos</a></li>
-            <li class="active"><a href="<?php echo site_url("carreras")?>">Carreras</a></li>
-            <li><a href="<?php echo site_url("materias")?>">Materias</a></li>
-          </ul>
+          <?php $item_submenu = 2;
+            include 'templates/submenu-facultad.php';
+          ?>
         </div>
         
         <!-- Main -->
@@ -56,7 +55,7 @@
   
           <!-- Botones -->
           <div class="">
-            <button class="btn btn-primary" href="#modalModificar" role="button" data-toggle="modal">Modificar carrera...</button>
+            <a class="btn btn-primary" href="<?php echo site_url('carreras/modificar/'.$carrera->idCarrera)?>">Modificar carrera</a>
             <button class="btn btn-primary" href="#modalAsociar" role="button" data-toggle="modal">Asociar materia...</button>
           </div>
         </div>
@@ -65,23 +64,6 @@
     <div id="push"></div><br />
   </div>
   <?php include 'templates/footer.php'?>  
-  
-  <!-- ventana modal para editar datos de la carrera -->
-  <div id="modalModificar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Editar carrera</h3>
-    </div>
-    <form class="form-horizontal" action="<?php echo site_url('carreras/modificar')?>" method="post">
-      <div class="modal-body">
-        <?php include 'templates/form-editar-carrera.php'?>      
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-      </div>
-    </form>
-  </div>
   
   <!-- ventana modal para asociar materias a la carrera -->
   <div id="modalAsociar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -125,6 +107,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('.quitar').click(function(){
       idMateria = $(this).attr('value');

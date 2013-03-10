@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Lista Carreras</title>
+  <title>Carreras - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
+    
     <?php include 'templates/menu-nav.php'?>
+    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
@@ -45,7 +47,10 @@
                   <td class="plan"><?php echo $item['carrera']->plan?></td>
                   <td class="director"><?php echo $item['director']->nombre.' '.$item['director']->apellido?></td>
                   <td class="departamento"><?php echo $item['departamento']->nombre?></td>
-                  <td><a class="eliminar" href="#" value="<?php echo $item['carrera']->idCarrera?>">Eliminar</a></td>
+                  <td>
+                    <a class="modificar" href="<?php echo site_url('carreras/modificar/'.$item['carrera']->idCarrera)?>">Modificar</a> /
+                    <a class="eliminar" href="#" value="<?php echo $item['carrera']->idCarrera?>">Eliminar</a>
+                  </td>
                 </tr>
               <?php endforeach ?>
             </table>
@@ -54,7 +59,7 @@
           
           <!-- Botones -->
           <div class="btn-group">
-            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar carrera...</button>
+            <a class="btn btn-primary" href="<?php echo site_url('carreras/nueva')?>">Agregar carrera</a>
           </div>      
         </div>
       </div>
@@ -62,24 +67,7 @@
     <div id="push"></div><br />
   </div>
   <?php include 'templates/footer.php'?>  
-
-  <!-- ventana modal para agregar una carrera -->
-  <div id="modalAgregar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Crear nueva carrera</h3>
-    </div>
-    <form class="form-horizontal" action="<?php echo site_url('carreras/nueva')?>" method="post">
-      <div class="modal-body">
-        <?php include 'templates/form-editar-carrera.php'?>      
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-      </div>
-    </form>
-  </div>
-  
+ 
   <!-- ventana modal para eliminar una carrera -->
   <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
@@ -104,6 +92,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       idCarrera = $(this).attr('value');

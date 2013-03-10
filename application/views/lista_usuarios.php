@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Lista Usuarios</title>
+  <title>Usuarios - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
+    
     <?php include 'templates/menu-nav.php'?>
+    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
@@ -20,14 +22,7 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li class="<?php if (!isset($grupo))echo 'active'?>"><a href="<?php echo site_url("usuarios")?>" href="#">Todos los usuarios</a></li>
-            <li class="<?php if (isset($grupo))echo($grupo->name=="decanos")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
-            <li class="<?php if (isset($grupo))echo($grupo->name=="jefes_departamentos")?'active':''?>"><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
-            <li class="<?php if (isset($grupo))echo($grupo->name=="directores")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
-            <li class="<?php if (isset($grupo))echo($grupo->name=="docentes")?'active':''?>"><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
-          </ul>
+          <?php include 'templates/submenu-usuarios.php'?>
         </div>
   
         <!-- Main -->
@@ -40,15 +35,18 @@
             <thead>
               <th>Apellido</th>
               <th>Nombre</th>
-              <th>Email</th>
+              <th>Último acceso</th>
+              <th>Estado</th>
               <th>Acciones</th>
             </thead>
             <?php foreach($lista as $item): ?>  
               <tr>
                 <td><a class="apellido" href="<?php echo site_url("usuarios/ver/".$item['usuario']->id)?>"><?php echo $item['usuario']->apellido?></a></td>
                 <td class="nombre"><?php echo $item['usuario']->nombre?></td>
-                <td class="email"><?php echo $item['usuario']->email?></td>
+                <td class="ultimo-acceso"><?php echo date('d/m/Y g:i:s a',$item['usuario']->last_login)?></td>
+                <td class="estado"><?php echo ($item['usuario']->active)?'Activo':'Inactivo'?></td>
                 <td>
+                  <a class="modificar" href="<?php echo site_url('usuarios/modificar/'.$item['usuario']->id)?>">Modificar</a> /
                   <a class="eliminar" href="#" value="<?php echo $item['usuario']->id?>">Eliminar</a>
                 </td>
               </tr>
@@ -59,7 +57,7 @@
   
           <!-- Botones -->
           <div class="btn-group">
-            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Agregar usuario...</button>
+            <a class="btn btn-primary" href="<?php echo site_url('usuarios/nuevo')?>">Agregar usuario</a>
           </div>
         </div>
       </div>
@@ -67,23 +65,6 @@
     <div id="push"></div><br />
   </div>
   <?php include 'templates/footer.php'?>  
-  
-  <!-- ventana modal para agregar una usuario -->
-  <div id="modalAgregar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Crear nuevo usuario</h3>
-    </div>
-    <form class="form-horizontal" action="<?php echo site_url('usuarios/nuevo')?>" method="post">
-      <div class="modal-body">
-        <?php include 'templates/form-editar-usuario.php'?>      
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-      </div>
-    </form>
-  </div>
   
   <!-- ventana modal para eliminar usuarios --> 
   <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -109,6 +90,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       id = $(this).attr('value');
@@ -121,6 +103,7 @@
       $("#modalEliminar").modal();
       return false;
     });
+    
     //abrir automaticamente la ventana modal que contenga entradas con errores
     $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>

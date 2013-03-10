@@ -54,9 +54,9 @@
   </div>
 </div>
 <?php 
-if(isset($resultadoOperacion)){
+if($resultadoOperacion){
   echo '
-  <div class="alert alert-success">
+  <div class="alert '.$resultadoTipo.'">
     <button type="button" class="close" data-dismiss="alert">×</button>
     '.$resultadoOperacion.'
   </div>

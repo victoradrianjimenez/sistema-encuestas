@@ -172,5 +172,6 @@ class Devoluciones extends CI_Controller {
     }
   }
   
+  public function eliminar(){} //IMPLEMENTAR
 
 }
