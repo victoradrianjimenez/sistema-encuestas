@@ -26,6 +26,16 @@
               </div>
             </div>
             <div class="control-group">
+              <label class="control-label" for="captcha">Código de verificación: </label>
+              <div class="controls">
+                <?php echo $captcha ?>
+              </div>
+              <div class="controls">
+                <input class="input-large" id="captcha" type="text" name="captcha" style="margin-top:5px;" required/>
+                <?php echo form_error('captcha')?>
+              </div>
+            </div>
+            <div class="control-group">
               <div class="controls">
                 <input type="submit" class="btn btn-primary" name="submit" value="Aceptar" />
               </div>

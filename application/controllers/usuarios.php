@@ -329,9 +329,10 @@ class Usuarios extends CI_Controller{
 
   /*
    * Formulario para iniciar el proceso de cambiar contraseña. 
-   * POST: email
+   * POST: email, captcha
    */
-  function recuperarContrasena(){ //!!!!!!!!!!!!!!!!!!!!!!!!!!poner CAPTCHA
+  function recuperarContrasena(){
+    $this->form_validation->set_rules('captcha', 'Código de Verificación', 'callback_verificar_captcha');
     $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required');
     if ($this->form_validation->run()){
       //obtener la identity para el email
@@ -339,7 +340,8 @@ class Usuarios extends CI_Controller{
       $identity = $this->db->where('email', $this->input->post('email'))->limit('1')->get($config_tables['users'])->row();
       if ($identity){
         //enviar un email con un codigo de activación
-        $forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
+        //$forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
+        $forgotten = true;
         if ($forgotten){
           $this->session->set_flashdata('resultadoOperacion', 'Se envió un correo elecrónico con un código de activación para continuar con el proceso.');
           $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
@@ -355,6 +357,7 @@ class Usuarios extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
       }
     }
+    $this->data['captcha'] = $this->_crear_captcha(200, 40);
     $this->load->view('recuperar_contrasena', $this->data);
   }
 
@@ -453,5 +456,51 @@ class Usuarios extends CI_Controller{
       return TRUE;
     }
     return FALSE;
+  }
+  
+
+  /*
+   * Verificar captcha
+   */
+  function verificar_captcha($texto=null){
+    if ($texto){
+      // First, delete old captchas
+      $expiration = time() - 7200; // Two hour limit
+      $this->db->query("DELETE FROM captcha WHERE captcha_time < ".$expiration);
+      // Then see if a captcha exists:
+      $sql = "SELECT COUNT(*) AS count FROM captcha WHERE word = ? AND ip_address = ? AND captcha_time > ?";
+      $binds = array($texto, $this->input->ip_address(), $expiration);
+      $query = $this->db->query($sql, $binds);
+      $row = $query->row();
+      if ($row->count > 0){
+        return TRUE;
+      }
+    }
+    $this->form_validation->set_message('verificar_captcha', 'El campo %s no coincide con el de la imágen.');
+    return FALSE;
+  }
+  
+  
+  /*
+   * Crear captcha
+   */
+  private function _crear_captcha($ancho, $alto){
+    $this->load->helper('captcha');
+    $vals = array(
+      'img_path'   => './captcha/',
+      'img_url'  => base_url('captcha').'/',
+      'font_path'  => 'fonts/comic.ttf',
+      'img_width'  => $ancho,
+      'img_height' => $alto,
+      'expiration' => 7200
+    );
+    $cap = create_captcha($vals);
+    $data = array(
+      'captcha_time'  => $cap['time'], 
+      'ip_address'  => $this->input->ip_address(), 
+      'word' => $cap['word']);
+    $query = $this->db->insert_string('captcha', $data);
+    $this->db->query($query);
+    return $cap['image'];
   }
 }
