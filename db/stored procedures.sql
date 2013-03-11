@@ -1,4 +1,87 @@
+DROP PROCEDURE IF EXISTS `esp_alta_imagen`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_alta_imagen`(
+	pimagen LONGBLOB,
+    ptipo VARCHAR(200))
+BEGIN
+    DECLARE nid SMALLINT UNSIGNED;
+    DECLARE mensaje VARCHAR(120);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+	START TRANSACTION;
+	SET nid = (  
+		SELECT	COALESCE(MAX(idImagen),0)+1 
+		FROM    Imagenes);
+	INSERT INTO Imagenes
+		(idImagen, imagen, tipo)
+	VALUES (nid, pimagen, ptipo);
+	IF err THEN
+		SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+		ROLLBACK;
+	ELSE 
+		SET mensaje = nid;
+		COMMIT;
+	END IF;        
+    SELECT mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_baja_imagen`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_baja_imagen`(
+    pidImagen INT UNSIGNED)
+BEGIN
+    DECLARE mensaje VARCHAR(100);
+    DECLARE err BOOLEAN DEFAULT FALSE;
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
+    
+    START TRANSACTION;
+    IF EXISTS(SELECT idImagen FROM Usuarios WHERE idImagen = pidImagen LIMIT 1) THEN
+        SET mensaje = 'No se puede eliminar, existe un usuario asociado a la imagen.';
+        ROLLBACK;
+    ELSE
+        DELETE FROM Imagenes
+        WHERE idImagen = pidImagen;
+        IF err THEN
+            SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+            ROLLBACK;
+        ELSE 
+            SET mensaje = 'ok';
+            COMMIT;
+        END IF;
+    END IF;
+    SELECT mensaje;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_dame_imagen`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_dame_imagen`(
+    pidImagen INT UNSIGNED)
+BEGIN
+    SELECT	idImagen, imagen, tipo
+    FROM Imagenes
+    WHERE idImagen = pidImagen;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_respuestas_facultad`;
+
 
 DELIMITER $$
 
@@ -389,7 +472,7 @@ CREATE PROCEDURE `esp_listar_usuarios`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  id, apellido, nombre, username, password, email, active, last_login
+    SELECT  id, idImagen, apellido, nombre, username, password, email, active, last_login
     FROM    Usuarios
     ORDER BY apellido, nombre
     LIMIT ?,?';
@@ -414,7 +497,7 @@ CREATE PROCEDURE `esp_listar_usuarios_grupo`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  U.id, apellido, nombre, username, password, email, active, last_login, imagen
+    SELECT  U.id, idImagen, apellido, nombre, username, password, email, active, last_login
     FROM    Usuarios U INNER JOIN Usuarios_Grupos G ON U.id = G.id_usuario
 	WHERE	G.id_grupo = ?
     ORDER BY apellido, nombre
@@ -506,7 +589,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_dame_usuario`(
     pid INT UNSIGNED)
 BEGIN
-    SELECT id, username, NULL as 'password', email, last_login, active, nombre, apellido, imagen
+    SELECT id, idImagen, username, NULL as 'password', email, last_login, active, nombre, apellido
     FROM Usuarios
     WHERE id = pid;
 END $$
@@ -1614,7 +1697,7 @@ CREATE PROCEDURE `esp_listar_docentes_materia`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  U.id, U.nombre, U.apellido, U.active, U.last_login, DM.tipoAcceso, DM.ordenFormulario, DM.cargo
+    SELECT  U.id, U.idImagen, U.nombre, U.apellido, U.active, U.last_login, DM.tipoAcceso, DM.ordenFormulario, DM.cargo
     FROM    Usuarios U INNER JOIN Docentes_Materias DM ON U.id = DM.idDocente
 	WHERE	DM.idMateria = ?
     ORDER BY DM.ordenFormulario, U.apellido, U.nombre
@@ -2667,6 +2750,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_baja_usuario`(
     pid INT UNSIGNED)
 BEGIN
+	DECLARE pidImagen INT UNSIGNED;
     DECLARE mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
@@ -2685,11 +2769,14 @@ BEGIN
         SET mensaje = 'No se puede eliminar, existe una carrera que lo tiene como Director de Carrera.';
         ROLLBACK;
     ELSE
-        DELETE FROM Usuarios_Grupos
+		SET pidImagen = (SELECT idImagen FROM Usuarios WHERE id=pid LIMIT 1);
+		DELETE FROM Usuarios_Grupos
         WHERE id_usuario = pid;
         DELETE FROM Usuarios
         WHERE id = pid;
-        IF err THEN
+        DELETE FROM Imagenes
+        WHERE idImagen = pidImagen;
+		IF err THEN
             SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
             ROLLBACK;
         ELSE 

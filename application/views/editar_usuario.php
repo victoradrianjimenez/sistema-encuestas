@@ -32,13 +32,13 @@
         
         <!-- Main -->
         <div class="span9">
-          
-          <form action="<?php echo $urlFormulario?>" method="post">
+          <form action="<?php echo $urlFormulario?>" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo $usuario->id?>"/>
             
             <div class="control-group">
               <div class="controls">
                 <h4>Editar Usuario</h4>
+                <img src="<?php echo site_url('usuarios/imagen/'.$usuarioLogin->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>
               </div>
             </div>
             <div class="control-group">
@@ -81,6 +81,13 @@
               <div class="controls">
                 <input class="input-block-level" id="campoContraseña2" type="password" name="password2" value="<?php echo set_value('password2')?>"/>
                 <?php echo form_error('password2'); ?>
+              </div>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="campoImagen">Subir una imágen (tamaño máximo 500KB): </label>
+              <div class="controls">
+                <input id="campoImagen" type="file" name="imagen"/>
+                <?php echo form_error('imagen'); ?>
               </div>
             </div>
             <div class="control-group">

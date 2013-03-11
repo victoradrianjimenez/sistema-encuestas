@@ -107,6 +107,7 @@ class Usuarios extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/listar');
     }
+    $this->load->model('Gestor_imagenes', 'gi');
 
     //verifico datos POST
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
@@ -115,24 +116,46 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('email','E-mail','required|valid_email');
     $this->form_validation->set_rules('password', 'Contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     if($this->form_validation->run()){
-      //leo los grupos a los que pertenece el nuevo usuario
-      $grupos = $this->input->post('grupos');
-      $username = $this->input->post('username',TRUE);
-      $password = $this->input->post('password',TRUE);
-      $email = $this->input->post('email',TRUE);
-      $additional_data = array(
-        'apellido' => $this->input->post('apellido',TRUE), 
-        'nombre' => $this->input->post('nombre',TRUE),
-        'active' => ($this->input->post('active'))?1:0
-      );
-      $res = $this->ion_auth->register($username, $password, $email, $additional_data, $grupos);
-      if (is_numeric($res)){
-        $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. El ID del nuevo usuario es $res.");
-        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-        redirect('usuarios/listar');
+      //si el usuario sube una imagen, guardarla
+      $error = false;
+      $idImagen = null;
+      if (isset($_FILES['imagen'])){
+        if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
+          $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
+          if (!is_numeric($idImagen)){
+            $error = true;
+            $this->session->set_flashdata('resultadoOperacion', $idImagen);
+            $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          }
+        }
+        else{
+          $error = true;
+          $this->session->set_flashdata('resultadoOperacion', 'Se produjo un error al intentar leer el archivo de imagen.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        }
       }
-      $this->data['resultadoOperacion'] = $res;
-      $this->data['resultadoTipo'] = ALERT_ERROR;
+      //si no hubo error, modifico datos del usuario
+      if (!$error){
+        //leo los grupos a los que pertenece el nuevo usuario
+        $grupos = $this->input->post('grupos');
+        $username = $this->input->post('username',TRUE);
+        $password = $this->input->post('password',TRUE);
+        $email = $this->input->post('email',TRUE);
+        $additional_data = array(
+          'apellido' => $this->input->post('apellido',TRUE), 
+          'nombre' => $this->input->post('nombre',TRUE),
+          'active' => ($this->input->post('active'))?1:0,
+          'idImagen' => $idImagen
+        );
+        $res = $this->ion_auth->register($username, $password, $email, $additional_data, $grupos);
+        if (is_numeric($res)){
+          $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. El ID del nuevo usuario es $res.");
+          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+          redirect('usuarios/listar');
+        }
+        $this->data['resultadoOperacion'] = $res;
+        $this->data['resultadoTipo'] = ALERT_ERROR;
+      }
     }
     //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
     $this->load->model('Usuario');
@@ -160,6 +183,9 @@ class Usuarios extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/listar');
     }
+    $this->load->model('Usuario');
+    $this->load->model('Gestor_usuarios', 'gu');
+    $this->load->model('Gestor_imagenes', 'gi');
     
     //verifico datos POST
     $id = ($this->input->post('id')) ? (int)($this->input->post('id')) : (int)$id;
@@ -170,39 +196,61 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('email','E-mail','required|valid_email');
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     if($this->form_validation->run()){
-      //leo los grupos a los que pertenece el nuevo usuario
-      $grupos = $this->input->post('grupos');
-      $password = $this->input->post('password',TRUE);
-      $data = array(
-        'nombre' => $this->input->post('nombre',TRUE),
-        'apellido' => $this->input->post('apellido',TRUE),
-        'username' => $this->input->post('username',TRUE),
-        'email' => $this->input->post('email',TRUE),
-        'active' => ($this->input->post('active'))?1:0
-      );
-      //si el ususario escribe una contraseña, actualizarla
-      if ($password){
-        $data['password'] = $password;
+      $usuario = $this->gu->dame($id);
+      //si el usuario sube una imagen, guardarla
+      $error = false;
+      $idImagen = null;
+      if (isset($_FILES['imagen'])){
+        if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
+          $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
+          if (!is_numeric($idImagen)){
+            $error = true;
+            $this->session->set_flashdata('resultadoOperacion', $idImagen);
+            $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          }
+        }
+        else{
+          $error = true;
+          $this->session->set_flashdata('resultadoOperacion', 'Se produjo un error al intentar leer el archivo de imagen.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        }
       }
-      //agrego al usuario a los grupos elegidos
-      $this->ion_auth->remove_from_group(NULL, $id);
-      foreach ($grupos as $g) {
-        $this->ion_auth->add_to_group($g, $id);
+      //si no hubo error, modifico datos del usuario
+      if (!$error){
+        //leo los grupos a los que pertenece el nuevo usuario
+        $grupos = $this->input->post('grupos');
+        $password = $this->input->post('password',TRUE);
+        $data = array(
+          'nombre' => $this->input->post('nombre',TRUE),
+          'apellido' => $this->input->post('apellido',TRUE),
+          'username' => $this->input->post('username',TRUE),
+          'email' => $this->input->post('email',TRUE),
+          'active' => ($this->input->post('active'))?1:0,
+          'idImagen' => $idImagen
+        );
+        //si el ususario escribe una contraseña, actualizarla
+        if ($password){
+          $data['password'] = $password;
+        }
+        //agrego al usuario a los grupos elegidos
+        $this->ion_auth->remove_from_group(NULL, $id);
+        foreach ($grupos as $g) {
+          $this->ion_auth->add_to_group($g, $id);
+        }
+        //modifico datos y cargo vista para mostrar resultado
+        $res = $this->ion_auth->update($id, $data);
+        if ($res){
+          $this->gi->baja($usuario->idImagen); //elimino la imagen anterior que tenia el usuario
+          $this->session->set_flashdata('resultadoOperacion', 'La modificación de los datos del usuario se realizó con éxito.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+          redirect('usuarios/listar');
+        }
+        $this->data['resultadoOperacion'] = 'Se produjo un error al intentar modificar los datos del usuario.';
+        $this->data['resultadoTipo'] = ALERT_ERROR;
       }
-      //modifico datos y cargo vista para mostrar resultado
-      $res = $this->ion_auth->update($id, $data);
-      if ($res){
-        $this->session->set_flashdata('resultadoOperacion', 'La modificación de los datos del usuario se realizó con éxito.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-        redirect('usuarios/listar');
-      }
-      $this->data['resultadoOperacion'] = 'Se produjo un error al intentar modificar los datos del usuario.';
-      $this->data['resultadoTipo'] = ALERT_ERROR;
     }
     //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
     if ($id==0) redirect('usuarios/nuevo');
-    $this->load->model('Usuario');
-    $this->load->model('Gestor_usuarios', 'gu');
     $usuario = $this->gu->dame($id);
     $this->load->model('Usuario');
     $this->data['usuario'] = ($usuario)?$usuario:$this->Usuario;
@@ -224,32 +272,58 @@ class Usuarios extends CI_Controller{
       redirect('usuarios/login');
     }
     $id = (int)$this->data['usuarioLogin']->id;
+    $this->load->model('Gestor_imagenes', 'gi');
+    
     //verifico datos POST
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email');
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     if($this->form_validation->run()){
-      $password = $this->input->post('password',TRUE);
-      $data = array(
-        'username' => $this->input->post('username',TRUE),
-        'email' => $this->input->post('email',TRUE),
-      );
-      //si el ususario escribe una contraseña, actualizarla
-      if ($password){
-        $data['password'] = $password;
+      //si el usuario sube una imagen, guardarla
+      $error = false;
+      $idImagen = null;
+      if (isset($_FILES['imagen'])){
+        if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
+          $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
+          if (!is_numeric($idImagen)){
+            $error = true;
+            $this->session->set_flashdata('resultadoOperacion', $idImagen);
+            $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          }
+        }
+        else{
+          $error = true;
+          $this->session->set_flashdata('resultadoOperacion', 'Se produjo un error al intentar leer el archivo de imagen.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        }
       }
-      //modifico datos y cargo vista para mostrar resultado
-      $res = $this->ion_auth->update($id, $data);
-      if ($res){
-        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-        redirect('/');
-      }
-      else{
-        $this->session->set_flashdata('resultadoOperacion', 'Se produjo un error al intentar modificar los datos del usuario.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      //si no hubo error, modifico datos del usuario
+      if (!$error){
+        $password = $this->input->post('password',TRUE);
+        $data = array(
+          'username' => $this->input->post('username',TRUE),
+          'email' => $this->input->post('email',TRUE),
+          'idImagen' => $idImagen
+        );
+        //si el ususario escribe una contraseña, actualizarla
+        if ($password){
+          $data['password'] = $password;
+        }
+        //modifico datos y cargo vista para mostrar resultado
+        $res = $this->ion_auth->update($id, $data);
+        if ($res){
+          $this->gi->baja($this->data['usuarioLogin']->idImagen); //elimino la imagen anterior que tenia el usuario
+          $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+          redirect('/');
+        }
+        else{
+          $this->session->set_flashdata('resultadoOperacion', 'Se produjo un error al intentar modificar los datos del usuario.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        }
       }
     }
+    
     $this->load->view('editar_cuenta', $this->data);
   }
 
@@ -433,6 +507,25 @@ class Usuarios extends CI_Controller{
     }
   }
   
+  
+  /*
+   * Obtener la imagen de un usuario
+   */
+  function imagen($idImagen=null){
+    if ($idImagen != null){
+      $this->load->model('Gestor_imagenes', 'gi');
+      $imagen = $this->gi->dame($idImagen);
+      if ($imagen){
+        ob_end_clean();
+        header ('Content-type: '.$imagen->tipo);
+        echo base64_decode($imagen->imagen);
+        ob_end_clean();
+      }
+      else{
+        //echo 'NO IMAGEN';
+      }
+    }
+  }
   
   /*
    * Generar clave aleatoria

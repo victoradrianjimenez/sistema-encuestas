@@ -14,13 +14,14 @@
         <div class="span12">
           <h3>Editar datos de cuenta de usuario</h3>
           <p>Nombre: <?php echo $usuarioLogin->nombre.' '.$usuarioLogin->apellido?></p>
+          <img src="<?php echo site_url('usuarios/imagen/'.$usuarioLogin->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>
         </div>
       </div>
       
       <div class="row">
         <!-- Main -->
         <div class="span12">
-          <form action="<?php echo site_url('usuarios/modificarCuenta')?>" method="post">
+          <form action="<?php echo site_url('usuarios/modificarCuenta')?>" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo $usuarioLogin->id?>"/>
             <div class="control-group">
               <div class="controls">
@@ -55,7 +56,13 @@
                 <?php echo form_error('password2'); ?>
               </div>
             </div>
-            
+            <div class="control-group">
+              <label class="control-label" for="campoImagen">Subir una imágen (tamaño máximo 500KB): </label>
+              <div class="controls">
+                <input id="campoImagen" type="file" name="imagen"/>
+                <?php echo form_error('imagen'); ?>
+              </div>
+            </div>
             <div class="control-group">
               <div class="controls">
                 <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />

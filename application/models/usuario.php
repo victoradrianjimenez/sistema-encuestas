@@ -12,6 +12,7 @@ class Usuario extends CI_Model{
   var $active;
   var $nombre;
   var $apellido;
+  var $idImagen;
   
 	function __construct(){
 		parent::__construct();
