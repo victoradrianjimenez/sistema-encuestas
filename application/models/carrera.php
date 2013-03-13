@@ -43,9 +43,9 @@ class Carrera extends CI_Model{
    * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listarMaterias($pagNumero=0, $pagLongitud=1000){
+  public function listarMaterias($pagInicio=0, $pagLongitud=1000){
     $idCarrera = $this->db->escape($this->idCarrera);
-    $query = $this->db->query("call esp_listar_materias_carrera($idCarrera, $pagNumero, $pagLongitud)");
+    $query = $this->db->query("call esp_listar_materias_carrera($idCarrera, $pagInicio, $pagLongitud)");
     $data = $query->result('Materia');
     $query->free_result();
     //$this->db->reconnect();

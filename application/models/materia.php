@@ -43,7 +43,7 @@ class Materia extends CI_Model{
    *
    * @access  public
    * @return  array
-   */  
+   
   public function listarCarreras(){
     $idMateria = $this->db->escape($this->idMateria);
     $query = $this->db->query("call esp_listar_carreras_materia($idMateria)");
@@ -52,7 +52,7 @@ class Materia extends CI_Model{
     //$this->db->reconnect();
     return $data;
   }
-  
+  */
   
   /**
    * Obtener la cantidad de docentes relacionados a la materia.

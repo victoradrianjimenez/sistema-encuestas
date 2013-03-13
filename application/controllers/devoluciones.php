@@ -13,6 +13,8 @@ class Devoluciones extends CI_Controller {
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    $this->data['resultadoTipo'] = ALERT_ERROR;
+    $this->data['resultadoOperacion'] = null;
   }
   
   public function index(){
@@ -96,7 +98,6 @@ class Devoluciones extends CI_Controller {
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
     if($this->form_validation->run()){
-      echo '2';
       //si se enviaron datos de la nueva devolucion
       if($this->input->post('idEncuesta')){
         //verifico otros datos POST

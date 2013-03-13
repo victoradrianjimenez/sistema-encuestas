@@ -38,7 +38,7 @@
             <div class="control-group">
               <div class="controls">
                 <h4>Editar Usuario</h4>
-                <img src="<?php echo site_url('usuarios/imagen/'.$usuarioLogin->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>
+                <img src="<?php echo site_url('usuarios/imagen/'.$usuario->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>               
               </div>
             </div>
             <div class="control-group">

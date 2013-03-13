@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Lista Encuestas</title>
+  <title>Encuestas - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
+    
     <?php include 'templates/menu-nav.php'?>
+    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
@@ -20,11 +22,9 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li class="active"><a href="<?php echo site_url("encuestas")?>">Encuestas realizadas</a></li>
-            <li><a href="<?php echo site_url("claves")?>">Claves de acceso</a></li>
-          </ul>
+          <?php $item_submenu = 1;
+            include 'templates/submenu-encuestas.php';
+          ?>
         </div>
         
         <!-- Main -->
@@ -35,19 +35,18 @@
           <?php else:?>
             <table class="table table-bordered table-striped">
               <thead>
-                <th>Año / Periodo</th>
+                <th>Año</th>
                 <th>Fecha inicio</th>
                 <th>Fecha cierre</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a href="<?php echo site_url("encuestas/ver/".$item->idEncuesta.'/'.$item->idFormulario)?>">
-                    <?php echo $item->año.' / '.$item->cuatrimestre?>
-                  </a></td>
-                  <td><?php echo $item->fechaInicio?></td>
-                  <td><?php echo $item->fechaFin?></td>
+                  <td class="anio"><?php echo $item->año.' / '.PERIODO.' '.$item->cuatrimestre?></td>
+                  <td><?php echo date('d/m/Y G:i:s', strtotime($item->fechaInicio))?></td>
+                  <td><?php echo date('d/m/Y G:i:s', strtotime($item->fechaFin))?></td>
                   <td>
+                    <a class="finalizar" href="#modalFinalizar" role="button" data-toggle="modal" value="<?php echo $item->idEncuesta.'_'.$item->idFormulario?>" title="Cerrar período de encuesta">Finalizar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -57,7 +56,7 @@
   
           <!-- Botones -->
           <div class="btn-group">
-            <button class="btn btn-primary" href="#modalAgregar" role="button" data-toggle="modal">Nueva Encuesta...</button>
+            <a class="btn btn-primary" href="<?php echo site_url('encuestas/nueva')?>">Nueva encuesta</a>
           </div>
         </div>
       </div>
@@ -66,15 +65,18 @@
   </div>
   <?php include 'templates/footer.php'?>  
   
-  <!-- ventana modal para agregar una encuesta -->
-  <div id="modalAgregar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- ventana modal para finalizar un periodo de encuestas -->
+  <div id="modalFinalizar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Crear nueva Encuesta</h3>
+      <h3 id="myModalLabel">Finalizar período de encuesta</h3>
     </div>
-    <form class="form-horizontal" action="<?php echo site_url('encuestas/nueva')?>" method="post">
+    <form action="<?php echo site_url('encuestas/finalizar')?>" method="post">
       <div class="modal-body">
-        <?php include 'templates/form-editar-encuesta.php'?>      
+        <input type="hidden" name="idEncuesta" value="" />
+        <input type="hidden" name="idFormulario" value="" />
+        <h5 class="nombre"></h5>
+        <p>¿Desea continuar?</p>      
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -88,7 +90,21 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
+    $('.finalizar').click(function(){
+      id = $(this).attr('value').split("_");
+      idEncuesta = id[0];
+      idFormulario = id[1];
+      nombre = $(this).parentsUntil('tr').parent().find('.anio').text();
+      $('#modalFinalizar input[name="idEncuesta"]').val(idEncuesta);
+      $('#modalFinalizar input[name="idFormulario"]').val(idFormulario);
+      //pongo el nombre del departamento en el dialogo
+      $("#modalFinalizar").find('.nombre').html(nombre);
+      $("#modalFinalizar").modal();
+      return false;
+    });
+  
     //abrir automaticamente la ventana modal que contenga entradas con errores
     $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>

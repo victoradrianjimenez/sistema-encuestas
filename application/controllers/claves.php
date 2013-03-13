@@ -22,6 +22,36 @@ class Claves extends CI_Controller{
     $this->ingresar();
   }
   
+  /*
+   * Gestion de claves de acceso
+   */
+  public function claves_acceso(){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    //verifico datos POST
+    $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idMateria = (int)$this->input->post('idMateria');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      //cargo librerias y modelos
+
+      
+      
+      $this->load->view('vista_claves', $this->data);
+    }
+    else{
+      $this->load->view('claves_acceso', $this->data);
+    }
+  }
+  
+  
   /************************************************
    * Muestra el listado de claves para una encuesta, materia y carrera en particular
    * Última revisión: 2012-02-04 12:47 p.m.

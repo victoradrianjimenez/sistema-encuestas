@@ -33,11 +33,12 @@
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="fecha" href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>
-                    <?php echo $item['devolucion']->fecha?>
-                  </a></td>
+                  <td class="fecha"><?php echo $item['devolucion']->fecha?></td>
                   <td><?php echo $item['encuesta']->año.' / '.$item['encuesta']->cuatrimestre?></td>
-                  <td><a class="eliminar" href="#" value="<?php echo $item['devolucion']->idDevolucion?>">Eliminar</a></td>
+                  <td>
+                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a>
+                  </td>
+                  
                 </tr>
               <?php endforeach ?>
             </table>
@@ -48,7 +49,7 @@
           <div class="btn-group">
             <form action="<?php echo site_url('devoluciones/nueva')?>" method="post">
               <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
-              <input type="submit" name="submit" class="btn btn-primary" value="Agregar devolucion" />
+              <input type="submit" name="submit" class="btn btn-primary" value="Agregar devolución" />
             </form>
           </div>
         </div>

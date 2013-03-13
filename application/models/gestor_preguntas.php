@@ -69,25 +69,23 @@ class Gestor_preguntas extends CI_Model{
    * @param texto de la pregunta
    * @param una descripcion opcional de la pregunta. Se usará como ayuda contextual.
    * @param tipo de respuesta a la pregunta
-   * @param valor que indica si la pregunta puede debe ser respondida si o si.
    * @param minimo valor que puede tomar la respuesta si es del tipo numerica
    * @param maximo valor que puede tomar la respuesta si es del tipo numerica
    * @param paso de un valor a otro en la respuesta si es del tipo numerica
    * @param unidad en que se mide la respuesta a la pregunta
    * @return  string
    */
-  public function alta($idCarrera, $texto, $descripcion, $tipo, $obligatoria, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad){
+  public function alta($idCarrera, $texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad){
     $idCarrera = $this->db->escape($idCarrera);
     $texto = $this->db->escape($texto);
     $descripcion= $this->db->escape($descripcion);
     $tipo = $this->db->escape($tipo);
-    $obligatoria = $this->db->escape($obligatoria);
     $ordenInverso = $this->db->escape($ordenInverso);
     $limiteInferior = $this->db->escape($limiteInferior);
     $limiteSuperior = $this->db->escape($limiteSuperior);
     $paso = $this->db->escape($paso);
     $unidad = $this->db->escape($unidad);
-    $query = $this->db->query("call esp_alta_pregunta($idCarrera, $texto, $descripcion, $tipo, $obligatoria, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
+    $query = $this->db->query("call esp_alta_pregunta($idCarrera, $texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();
@@ -129,5 +127,24 @@ class Gestor_preguntas extends CI_Model{
   }
 
 
+  /**
+   * Modificar una pregunta (solamente reformularla)
+   * 
+   * @access  public
+   * @param identificador de la pregunta
+   * @param texto de la pregunta
+   * @param una descripcion opcional de la pregunta. Se usará como ayuda contextual.
+   * @return  string
+   */
+  public function modificar($idPregunta, $texto, $descripcion){
+    $idPregunta = $this->db->escape($idPregunta);
+    $texto = $this->db->escape($texto);
+    $descripcion = $this->db->escape($descripcion);
+    $query = $this->db->query("call esp_modificar_pregunta($idPregunta, $texto, $descripcion)");
+    $data = $query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  }
 }
 ?>

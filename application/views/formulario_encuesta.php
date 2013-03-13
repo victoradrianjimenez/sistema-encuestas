@@ -1,78 +1,70 @@
 <!DOCTYPE html>
 <!-- Última revisión: 2012-02-03 4:33 p.m. -->
 
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="es"> <!--<![endif]-->
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <?php include 'elements/head.php'?> 
-  <title>Encuesta</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
   
+  <!-- Le styles -->
+  <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
+  <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
+  
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <script src="<?php echo base_url('js/jquery.js')?>"></script>
+  <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
+
+  <title>Formulario de Encuesta - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-    div.item{
-      margin: 5px 0;
-    }
-    .titulo_seccion > h5{
-      border-bottom: 4px solid #2795B6;
-    }
-    #titulo h2, #titulo h4, #titulo h5{
-      text-align: center;
-    }
-    a.button{
-      width: 100%;
-    }
-  </style>  
+    h5.separador{border-bottom: 3px solid #2BA6CB;}
+    .item{min-height: 50px}
+  </style>
 </head>
 <body>
-
-  <div class="row">
-    <!-- Main Section -->
-    
-    <div class="twelve columns">
-      <div id="titulo">
-        <h2><?php echo $formulario->titulo?></h2>
-        <h5><?php echo $carrera->nombre?></h5>
-        <h4>Asignatura: <?php echo $materia->nombre?></h4>
+  <div class="container">
+    <div id="cabecera" class="row">
+      <div class="span12">
+        <h2 class="text-center"><?php echo $formulario->titulo?></h2>
+        <h4 class="text-center">Asignatura: <?php echo $materia->nombre?></h4>
+        <h5 class="text-center"><?php echo $carrera->nombre?></h5>
       </div>
+    </div>
+    <div id="cuerpo">
       <form id="formulario" action="<?php echo site_url('claves/responder')?>" method="post">
-        <input type="hidden" name="clave" value="<?php echo $clave->clave?>" />        
+        <input type="hidden" name="clave" value="<?php echo $clave->clave?>" />
         <?php foreach ($secciones as $itemSeccion): ?>
           <div class="row">
-            <div class="twelve columns">
-              <div class="titulo_seccion">
-                <h5><?php echo $itemSeccion['seccion']->texto?></h5>
-                <h6><?php echo $itemSeccion['seccion']->descripcion?></h6>
-              </div>  
+            <div class="span12">
+              <h5 class="separador"><?php echo $itemSeccion['seccion']->texto?></h5>
+              <h6><?php echo $itemSeccion['seccion']->descripcion?></h6>
               <?php 
-              $colCount = 0; //variable para verificar si me paso del maximo de 4 columnas
               
               //SUBSECCIONES
               
               foreach ($itemSeccion['subsecciones'] as $subseccion){
                 $docente = $subseccion['docente'];
-                $ncol = 0;
                 printf('
-                <div class="row">
-                  <div class="twelve columns">
-                    <h3>%s %s</h3>
-                  </div>', $docente->nombre, $docente->apellido);
+                <h3>%s %s</h3>', $docente->nombre, $docente->apellido);
                 
                 //ITEMS
                 
-                foreach ($subseccion['items'] as $i){
+                echo '
+                <div class="row preguntas">';
+                foreach ($subseccion['items'] as $k => $i){
                   $item = &$i['item'];
                   $opciones = &$i['opciones'];
-                  
-                  if ($ncol>=12){
-                    $ncol=12-$ncol;
-                    echo '<div class="row"></div>';
+                  if ($k%2==0){
+                    echo'
+                    </div>
+                    <div class="row">';
                   }
-                  
                   //genero el html de la ayuda contextual
-                  $tip = ($item->descripcion!='')?'<span class="secondary round label has-tip" title="'.$item->descripcion.'">!</span>':'';
-                  
+                  $tip = ($item->descripcion!='')?'<span class="badge badge-info" data-toggle="tooltip" title="'.$item->descripcion.'">!</span>':'';
                   //para las preguntas con opciones
                   if($item->tipo == 'S'){
                     $html_opciones = '';
@@ -80,55 +72,48 @@
                       $html_opciones .= '<option value="'.$opcion->idOpcion.'">'.$opcion->texto.'</option>';
                     }
                     printf('
-                    <div class="item six columns">
-                      <div class="eight mobile-three columns">
-                        <p>%s %s</p>
-                      </div>
-                      <div class="four mobile-one columns">
-                        <select name="idPregunta_%d_%s_%d">
-                          <option value="">(No Contesta)</option>%s
-                        </select>
+                    <div class="item span6">
+                      <div class="row-fluid">
+                        <div class="span8">
+                          <p>%s %s</p>
+                        </div>
+                        <div class="span4">
+                          <select name="idPregunta_%d_%s_%d">
+                            <option value="">(No Contesta)</option>%s
+                          </select>
+                        </div>
                       </div>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, $html_opciones);
-                    $ncol += 6;
-                  }
-                  //multiple choice
-                  elseif($item->tipo == 'M'){
-                    $ncol += 6;
                   }
                   //para las preguntas numericas
                   elseif($item->tipo == 'N'){
                     printf ('
-                    <div class="item six columns">
-                      <div class="eight mobile-three columns">
-                        <p>%s %s</p>
-                      </div>
-                      <div class="four mobile-one columns">
-                        <input type="number" name="idPregunta_%d_%s_%d" min="%f" max="%f" step="%f"/>
+                    <div class="item span6">
+                      <div class="row-fluid">
+                        <div class="span8">
+                          <p>%s %s</p>
+                        </div>
+                        <div class="span4">
+                          <input class="input-block-level" type="number" name="idPregunta_%d_%s_%d" min="%f" max="%f" step="%f"/>
+                        </div>
                       </div>
                     </div>',  $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, 
                               $item->limiteInferior, $item->limiteSuperior, $item->paso);
-                    $ncol += 6; 
                   }
                   //texto de una linea
                   elseif($i['item']->tipo == 'T'){
                     printf ('
-                    <div class="item twelve columns">
-                      <div class="twelve columns">
-                        <p>%s %s<input type="text" name="idPregunta_%d_%s_%d"/></p>
-                      </div>
+                    <div class="item span6">
+                      <p>%s %s<input class="input-block-level" type="text" name="idPregunta_%d_%s_%d"/></p>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
-                    $ncol += 12;
                   }
                   //texto multilinea
                   elseif($item->tipo == 'X'){
                     printf ('
-                    <div class="item twelve columns">
-                      <div class="twelve columns">
-                        <p>%s %s<textarea name="idPregunta_%d_%s_%d"></textarea></p>
-                      </div>
+                    <div class="item span12">
+                      <p>%s %s</p>
+                      <textarea class="input-block-level" name="idPregunta_%d_%s_%d"></textarea>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
-                    $ncol += 12;
                   }
                 }//foreach items
                 echo '</div>';
@@ -138,44 +123,36 @@
           </div>
         <?php endforeach?>
         
-        <div class="three mobile-two columns centered push-one-mobile">
-          <a class="button" data-reveal-id="modalConfirmar">Enviar</a>
+        <div class="span12">
+          <a class="btn btn-primary" href="#modalConfirmarEnvio" role="button" data-toggle="modal">Enviar</a>
         </div>
         
-        <!-- ventana modal para eliminar materias -->
-        <div id="modalConfirmar" class="reveal-modal small">
-          <h3>Confirmación</h3>
-          <p>¿Desea continuar?</p>
-          <div class="row">         
-            <div class="ten columns centered">
-              <div class="six mobile-one columns push-one-mobile">
-                <a class="button cancelar">Cancelar</a>
-              </div>
-              <div class="six mobile-one columns pull-one-mobile ">
-                <input type="submit" class="button" name="submit" value="Enviar" />
-              </div>
-            </div>
+        <!-- ventana modal para confirmar envio -->
+        <div id="modalConfirmarEnvio" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Confirmación</h3>
           </div>
-          <a class="close-reveal-modal">&#215;</a>
+          <div class="modal-body">
+            <p>Esta a punto de enviar sus respuestas, ¿desea continuar?</p>      
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+            <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+          </div>
         </div>
           
       </form>
     </div>
   </div>
+  <?php //include 'templates/footer2.php'?>
 
-  <!-- Footer -->    
-  <div class="row">    
-    <?php include 'elements/footer.php'?>
-  </div>
-
-  <!-- Included JS Files (Compressed) -->
-  <script src="<?php echo base_url()?>js/foundation/foundation.min.js"></script>
-  <!-- Initialize JS Plugins -->
-  <script src="<?php echo base_url()?>js/foundation/app.js"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-tooltip.js')?>"></script>
   <script>
-    $('.cancelar').click(function(){
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
+    $('span.badge').tooltip();
   </script>
 </body>
 </html>

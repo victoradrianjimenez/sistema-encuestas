@@ -13,6 +13,8 @@ class Informes extends CI_Controller{
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    $this->data['resultadoTipo'] = ALERT_ERROR;
+    $this->data['resultadoOperacion'] = null;
   }
   
   /*

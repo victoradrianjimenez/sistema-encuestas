@@ -41,9 +41,9 @@
             </thead>
             <?php foreach($lista as $item): ?>  
               <tr>
-                <td><a class="apellido" href="<?php echo site_url("usuarios/ver/".$item['usuario']->id)?>"><?php echo $item['usuario']->apellido?></a></td>
+                <td class="apellido"><?php echo $item['usuario']->apellido?></td>
                 <td class="nombre"><?php echo $item['usuario']->nombre?></td>
-                <td class="ultimo-acceso"><?php echo date('d/m/Y g:i:s a',$item['usuario']->last_login)?></td>
+                <td class="ultimo-acceso"><?php echo date('d/m/Y G:i:s',$item['usuario']->last_login)?></td>
                 <td class="estado"><?php echo ($item['usuario']->active)?'Activo':'Inactivo'?></td>
                 <td>
                   <a class="modificar" href="<?php echo site_url('usuarios/modificar/'.$item['usuario']->id)?>">Modificar</a> /

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Editar Formulario</title>
+  <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     .Secciones{
@@ -42,17 +42,15 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li class="active"><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
-            <li><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
-          </ul>
+          <?php $item_submenu = 1;
+            include 'templates/submenu-formularios.php';
+          ?>
         </div>
         
         <!-- Main -->
         <div class="span9">
-        <h4>Formulario</h4>
-          <form action="<?php echo site_url('formularios/nuevo')?>" method="post">
+          <h4>Formulario</h4>
+          <form action="<?php echo $urlFormulario?>" method="post">
             <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
             <input class="input-block-level" id="campoNombre" type="text" name="nombre" required />
             <label for="campoTitulo">Título: <span class="opcional">*</span></label>

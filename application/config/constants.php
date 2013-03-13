@@ -108,3 +108,19 @@ define('ALERT_WARNING', 'alert-block');
 define('ALERT_ERROR', 'alert-error');
 define('ALERT_INFO', 'alert-info');
 define('ALERT_SUCCESS', 'alert-success');
+
+define('TIPO_ANONIMA', 'A');
+define('TIPO_REGISTRO', 'R');
+define('TIPO_OBLIGATORIA', 'O');
+
+define('TIPO_SELECCION_SIMPLE', 'S');
+define('TIPO_NUMERICA', 'N');
+define('TIPO_TEXTO_SIMPLE', 'T');
+define('TIPO_TEXTO_MULTILINEA', 'X');
+
+define('SECCION_TIPO_NORMAL', 'N');
+define('SECCION_TIPO_DOCENTE', 'D');
+
+
+
+

@@ -70,6 +70,36 @@ class Seccion extends CI_Model{
     //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
+  
+  /*
+   * 
+   */
+  public function bajaItem($idPregunta){
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idSeccion = $this->db->escape($this->idSeccion);
+    $idPregunta = $this->db->escape($idPregunta);
+    $query = $this->db->query("call esp_baja_item($idSeccion, $idFormulario, $idPregunta)");
+    $data = $query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  /*
+   * 
+   */
+  public function bajaItemCarrera($idPregunta, $idCarrera){
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idSeccion = $this->db->escape($this->idSeccion);
+    $idPregunta = $this->db->escape($idPregunta);
+    $idCarrera = $this->db->escape($idCarrera);
+    $query = $this->db->query("call esp_baja_item_carrera($idSeccion, $idFormulario, $idPregunta, $idCarrera)");
+    $data = $query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
 }
 
 ?>

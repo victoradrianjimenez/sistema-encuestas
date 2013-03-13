@@ -37,11 +37,12 @@ class Gestor_encuestas extends CI_Model{
    * @param cuatrimestre o periodo al que se refiere la encuesta
    * @return  string
    */
-  public function alta($idFormulario, $año, $cuatrimestre){
+  public function alta($idFormulario, $tipo, $año, $cuatrimestre){
     $idFormulario = $this->db->escape($idFormulario);
+    $tipo = $this->db->escape($tipo);
     $año = $this->db->escape($año);
     $cuatrimestre = $this->db->escape($cuatrimestre);
-    $query = $this->db->query("call esp_alta_encuesta($idFormulario, $año, $cuatrimestre)");
+    $query = $this->db->query("call esp_alta_encuesta($idFormulario, $tipo, $año, $cuatrimestre)");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();

@@ -6,11 +6,10 @@
 class Pregunta extends CI_Model{
   var $idPregunta;
   var $idCarrera;
+  var $tipo;
   var $texto;
   var $descripcion;
   var $creacion;
-  var $tipo;
-  var $obligatoria;
   var $ordenInverso;
   var $limiteInferior;
   var $limiteSuperior;
@@ -53,6 +52,20 @@ class Pregunta extends CI_Model{
     return $data;
   }
   
+  /**
+   * Devuelve el tipo (el texto solamente) de la pregunta
+   *
+   * @access public
+   * @return array
+   */
+  public function tipo(){
+    $idPregunta = $this->db->escape($this->idPregunta);
+    $query = $this->db->query("call esp_tipo_pregunta($idPregunta)");
+    $data=$query->row();
+    $query->free_result();
+    //$this->db->reconnect();
+    return ($data)?$data->tipo:'';
+  }
 }
 
 ?>

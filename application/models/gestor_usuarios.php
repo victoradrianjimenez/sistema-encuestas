@@ -17,7 +17,7 @@ class Gestor_usuarios extends CI_Model{
    * @param apellido del usuario
    * @param nombre del usuario
    * @return  string
-   */
+   
   public function alta($apellido, $nombre, $username, $email, $password){
     $apellido = $this->db->escape($apellido);
     $nombre = $this->db->escape($nombre);
@@ -30,7 +30,7 @@ class Gestor_usuarios extends CI_Model{
     //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
-  
+  */
   
   /**
    * Obtener los datos de un usuario a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.
@@ -112,7 +112,7 @@ class Gestor_usuarios extends CI_Model{
    * @param apellido de la usuario
    * @param nombre de la usuario
    * @return string
-   */
+   
   public function modificar($id, $apellido, $nombre){
     $id = $this->db->escape($id);
     $apellido = $this->db->escape($apellido);
@@ -123,6 +123,8 @@ class Gestor_usuarios extends CI_Model{
     //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
+  */
+  
   
   /**
    * Obtener la cantidad de usuarios.

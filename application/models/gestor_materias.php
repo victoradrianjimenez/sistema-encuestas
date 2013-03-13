@@ -148,7 +148,7 @@ class Gestor_materias extends CI_Model{
    * @access public
    * @param identificador de usuario
    * @return array
-   */
+   
   public function listarMateriasDocente($id){
     $id = $this->db->escape($id);
     $query = $this->db->query("call esp_listar_materias_docente($id)");
@@ -157,7 +157,7 @@ class Gestor_materias extends CI_Model{
     //$this->db->reconnect();
     return $data;
   }
-  
+  */
   
   /**
    * Obtener el listado de materias a las que puede acceder el director de carreras. Devuleve un array de objetos.
@@ -165,7 +165,7 @@ class Gestor_materias extends CI_Model{
    * @access public
    * @param identificador de usuario
    * @return array
-   */
+   
   public function listarMateriasDirector($id){
     $id = $this->db->escape($id);
     $query = $this->db->query("call esp_listar_materias_director($id)");
@@ -174,7 +174,7 @@ class Gestor_materias extends CI_Model{
     //$this->db->reconnect();
     return $data;
   }
-  
+  */
   
   /**
    * Obtener el listado de materias a las que puede acceder el jefe de departamento. Devuleve un array de objetos.
@@ -182,7 +182,7 @@ class Gestor_materias extends CI_Model{
    * @access public
    * @param identificador de usuario
    * @return array
-   */
+   
   public function listarMateriasJefeDepartamento($id){
     $id = $this->db->escape($id);
     $query = $this->db->query("call esp_listar_materias_jefe_departamento($id)");
@@ -191,6 +191,6 @@ class Gestor_materias extends CI_Model{
     //$this->db->reconnect();
     return $data;
   }
-
+  */
 }
 ?>

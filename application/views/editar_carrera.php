@@ -12,7 +12,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Gestión de Docentes y Autoridades</h3>
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
           <p>---Descripción---</p>
         </div>
       </div>
@@ -91,6 +91,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>

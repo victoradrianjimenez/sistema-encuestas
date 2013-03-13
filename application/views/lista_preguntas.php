@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Lista Preguntas</title>
+  <title>Preguntas - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
+    
     <?php include 'templates/menu-nav.php'?>
+    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
@@ -20,11 +22,9 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
-            <li class="active"><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
-          </ul>
+          <?php $item_submenu = 2;
+            include 'templates/submenu-formularios.php';
+          ?>
         </div>
   
         <!-- Main -->
@@ -38,16 +38,17 @@
                 <th>Texto</th>
                 <th>Creacion</th>
                 <th>Tipo</th>
-                <th>Obligatoria</th>
+                <th>Carrera</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="texto" href="<?php echo site_url('preguntas/ver/'.$item['pregunta']->idPregunta)?>"/><?php echo $item['pregunta']->texto?></a></td>
-                  <td class="creacion"><?php echo $item['pregunta']->creacion?></td>
-                  <td class="tipo"><?php echo $item['pregunta']->tipo?></td>
-                  <td class="obligatoria"><?php echo $item['pregunta']->obligatoria?></td>
+                  <td class="texto"><?php echo $item['pregunta']->texto?></td>
+                  <td class="creacion"><?php echo date('d/m/Y G:i:s', strtotime($item['pregunta']->creacion))?></td>
+                  <td class="tipo"><?php echo $item['tipo']?></td>
+                  <td class="carrera"><?php echo $item['carrera']->nombre?></td>
                   <td>
+                    <a class="modificar" href="<?php echo site_url('preguntas/modificar/'.$item['pregunta']->idPregunta)?>">Modificar</a> /
                     <a class="eliminar" href="#" value="<?php echo $item['pregunta']->idPregunta?>">Eliminar</a>
                   </td>
                 </tr>
@@ -91,14 +92,15 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       idPregunta = $(this).attr('value');
-      texto = $(this).parentsUntil('tr').parent().find('.texto').text();
+      nombre = $(this).parentsUntil('tr').parent().find('.texto').text();
       //cargo el id de la pregunta en el formulario
       $('#modalEliminar input[name="idPregunta"]').val(idPregunta);
       //pongo el texto de la pregunta en el dialogo
-      $("#modalEliminar").find('.texto').html(texto);
+      $("#modalEliminar").find('.nombre').html(nombre);
       $("#modalEliminar").modal();
       return false;
     });

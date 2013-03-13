@@ -19,11 +19,9 @@
   
       <div class="row">
         <!-- SideBar -->
-        <div class="span3" id="menu">
-        </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div class="span12">
           <h4>Nueva devolución</h4>
           <p>Asignatura: <?php echo $materia->nombre.' / '.$materia->codigo?></p>
           <form action="<?php echo site_url('devoluciones/nueva')?>" method="post">

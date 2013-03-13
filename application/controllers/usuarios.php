@@ -414,7 +414,7 @@ class Usuarios extends CI_Controller{
       $identity = $this->db->where('email', $this->input->post('email'))->limit('1')->get($config_tables['users'])->row();
       if ($identity){
         //enviar un email con un codigo de activación
-        //$forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
+        $forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
         $forgotten = true;
         if ($forgotten){
           $this->session->set_flashdata('resultadoOperacion', 'Se envió un correo elecrónico con un código de activación para continuar con el proceso.');

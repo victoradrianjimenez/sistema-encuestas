@@ -5,7 +5,7 @@
  */
 class Formularios extends CI_Controller{
 
-  var $data=array(); //datos para mandar a las vistas
+  var $data = array(); //datos para mandar a las vistas
 
   function __construct() {
     parent::__construct();
@@ -13,15 +13,18 @@ class Formularios extends CI_Controller{
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    $this->data['resultadoTipo'] = ALERT_ERROR;
+    $this->data['resultadoOperacion'] = null;
   }
 
-  public function index(){  
+
+  public function index(){
     $this->listar();
   }
+
   
   /*
    * Muestra el listado de formularios
-   * Última revisión: 2012-02-04 1:48 p.m.
    */
   public function listar($PagInicio=0){
     if (!$this->ion_auth->logged_in()){
@@ -46,20 +49,106 @@ class Formularios extends CI_Controller{
     //envio datos a la vista
     $this->data['lista'] = &$lista; //array de datos de los formularios
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
+    $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->load->view('lista_formularios', $this->data);
   }
 
+  /* 
+   * Función auxiliar para generar el formulario de encuesta
+   * Última revisión: 2012-02-02 07:38 p.m.
+   */
+  private function _datosItems($seccion){
+    $items = $seccion->listarItems();
+    //por cada item
+    $datos_items = array();
+    foreach ($items as $k => $item) {
+      $datos_items[$k]['item'] = $item;
+      $datos_items[$k]['opciones'] = $item->listarOpciones();
+    }
+    return $datos_items;
+  }
+
+  /*
+   * Mostrar el formulario, tal como lo vería el alumno
+   * POST: idFormulario, idMateria
+   */
+  public function ver(){
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
+    }
+    $this->load->model('Usuario');
+    $this->load->model('Opcion');
+    $this->load->model('Pregunta');
+    $this->load->model('Item');
+    $this->load->model('Seccion');
+    $this->load->model('Materia');
+    $this->load->model('Carrera');
+    $this->load->model('Clave');
+    $this->load->model('Formulario');
+    $this->load->model('Encuesta');
+    $this->load->model('Gestor_carreras', 'gc');
+    $this->load->model('Gestor_formularios', 'gf');
+    $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      $formulario = $this->gf->dame($idFormulario);
+      if($idCarrera){
+        $carrera = $this->gc->dame($idCarrera);
+        $secciones = $formulario->listarSeccionesCarrera($idCarrera);
+      }
+      else{
+        $carrera = $this->Carrera;
+        $secciones = $formulario->listarSecciones();
+        $idCarrera = false;
+      }
+      $docentes = array($this->Usuario);  
+      //por cada seccion
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $datos_subsecciones = array();
+        $items = ($idCarrera) ? $seccion->listarItemsCarrera($idCarrera) : $seccion->listarItems();
+        //por cada item
+        $datos_items = array();
+        foreach ($items as $k => $item) {
+          $datos_items[$k]['item'] = $item;
+          $datos_items[$k]['opciones'] = $item->listarOpciones();
+        }
+        //si la sección es común, habrá una única subsección
+        $datos_subsecciones[0]['docente'] = $this->Usuario;
+        $datos_subsecciones[0]['items'] = $datos_items;
+        //guardo los datos de la sección
+        $datos_secciones[$i]['seccion'] = $seccion;
+        $datos_secciones[$i]['subsecciones'] = $datos_subsecciones;
+      }
+      $this->Materia->nombre = '[Nombre Asignatura]';
+      $this->data['clave'] = &$this->Clave;
+      $this->data['formulario'] = &$formulario;
+      $this->data['carrera'] = ($carrera)?$carrera:$this->Carrera;
+      $this->data['materia'] = &$this->Materia;
+      $this->data['secciones'] = &$datos_secciones;
+      $this->load->view('formulario_encuesta', $this->data);
+    }
+    else {
+     show_404();
+    }
+  }
+
+  
   /*
    * Muestra el formulario de edicion de formularios
-   * Última revisión: 2012-02-04 3:27 p.m.
    */
   public function editar(){
+    $this->data['tituloFormulario'] = 'Nuevo Formulario';
+    $this->data['urlFormulario'] = site_url('formularios/nuevo');
     $this->load->view('editar_formulario', $this->data);
   }
   
+  
   /*
    * Recepción del formulario para agregar nuevo formulario con sus secciones y preguntas
-   * Última revisión: 2012-02-04 4:09 p.m.
    */
   public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
@@ -67,8 +156,9 @@ class Formularios extends CI_Controller{
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('formularios/listar');
     }
     //verifico datos POST
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
@@ -163,10 +253,10 @@ class Formularios extends CI_Controller{
     }
   }
   
+  
   /*
    * Recepción del formulario para eliminar un formulario
    * POST: idFormulario
-   * Última revisión: 2012-02-04 3:31 p.m.
    */
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
@@ -174,8 +264,9 @@ class Formularios extends CI_Controller{
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('formularios/listar');
     }
     //verifico datos POST
     $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
@@ -184,20 +275,22 @@ class Formularios extends CI_Controller{
 
       //doy de baja y cargo vista para mostrar resultado
       $res = $this->gf->baja($this->input->post('idFormulario',TRUE));
-      $this->data['mensaje'] = (strcmp($res, 'ok')==0)?'La operación se realizó con éxito.':$res;
-      $this->data['link'] = site_url("formularios/listar"); //link para boton aceptar/continuar
-      $this->load->view('resultado_operacion', $this->data);
+      if (strcmp($res, 'ok')==0){
+        $this->session->set_flashdata('resultadoOperacion', 'El formulario se eliminó con éxito.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+      }
+      else{
+        $this->session->set_flashdata('resultadoOperacion', $res);
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      }
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina principal
-      $this->listar();
-    }
+    redirect('formularios/listar');
   }
+
 
   /*
    * Funcion para responder solicitudes AJAX
    * POST: buscar
-   * Última revisión: 2012-02-05 3:42 p.m.
    */
   public function buscarAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
@@ -210,15 +303,15 @@ class Formularios extends CI_Controller{
       foreach ($formularios as $formulario) {
         echo  "$formulario->idFormulario\t".
               "$formulario->nombre\t".
-              "$formulario->creacion\t\n";
+              date('d/m/Y', strtotime($formulario->creacion))."\t\n";
       }
     }
   }
   
+  
   /*
    * Funcion para responder solicitudes AJAX
    * POST: buscar
-   * Última revisión: 2012-02-05 3:44 p.m.
    */
   public function listarAJAX(){
     if (!$this->ion_auth->logged_in()){return;}
@@ -229,7 +322,7 @@ class Formularios extends CI_Controller{
     foreach ($formularios as $formulario) {
       echo  "$formulario->idFormulario\t".
             "$formulario->nombre\t".
-            "$formulario->creacion\t\n";
+            date('d/m/Y', strtotime($formulario->creacion))."\t\n";
     }
   }
 }

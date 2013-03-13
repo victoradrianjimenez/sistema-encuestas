@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Editar Pregunta</title>
+  <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     .Opciones{
@@ -37,56 +37,84 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li><a href="<?php echo site_url("formularios")?>">Formularios</a></li>
-            <li class="active"><a href="<?php echo site_url("preguntas")?>">Preguntas</a></li>
-          </ul>
+          <?php $item_submenu = 2;
+            include 'templates/submenu-formularios.php';
+          ?>
         </div>
         
         <!-- Main -->
         <div class="span9">
           <h4>Preguntas</h4>
-          <form action="<?php echo site_url('preguntas/nueva')?>" method="post">
-            <label for="campoTexto">Texto: <span class="opcional">*</span></label>
-            <input class="input-block-level" id="campoTexto" type="text" name="texto" required />
-            <label for="campoDescripcion">Descripción: </label>
-            <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
-            <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
-            <select id="campoTipo" name="tipo" required>
-              <option value="S" selected>Selección simple</option>
-              <option value="M">Selección múltiple</option>
-              <option value="N">Numérica</option>
-              <option value="T">Texto simple</option>
-              <option value="X">Texto multilínea</option>
-            </select>
-            <label class="checkbox">
-              <input type="checkbox" name="obligatoria" /> Obligatoria
-            </label>
-            <label class="checkbox">
-              <input type="checkbox" name="ordenInverso" /> Orden Inverso
-            </label>
-            <label for="campoUnidad">Unidad: </label>
-            <input id="campoUnidad" type="text" name="unidad"/>
-          
-            <div id="OpcionesNumerico" class="hide">
-              <h3>Opciones</h3>
-              <label for="campoLimiteInferior">Limite inferior: <span class="opcional">*</span></label>
-              <input id="campoLimiteInferior" type="number" name="limiteInferior" />
-              <label for="campoLimiteSuperior">Limite superior: <span class="opcional">*</span></label>
-              <input id="campoLimiteSuperior" type="number" name="limiteSuperior" />
-              <label for="campoPaso">Paso: <span class="opcional">*</span></label>
-              <input id="campoPaso" type="number" name="paso" />
-            </div>
+          <form action="<?php echo $urlFormulario?>" method="post">
+            <input type="hidden" name="idPregunta" value="<?php echo $pregunta->idPregunta?>"/>
             
-            <div id="OpcionesSeleccion">
-              <legend>Opciones<a style="float:right; margin:0 6px;" href="#modalAgregarOpcion" role="button" data-toggle="modal" title="Agregar opción..."><i class="icon-circle-plus"></i></a></legend>
-              <div class="row">
-                <div class="span9">
-                  <ul class="Opciones"></ul>
+            <label for="campoTexto">Texto: <span class="opcional">*</span></label>
+            <input class="input-block-level" id="campoTexto" type="text" name="texto" value="<?php echo $pregunta->texto?>" />
+            <?php echo form_error('texto')?>
+            
+            <label for="campoDescripcion">Descripción: </label>
+            <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" value="<?php echo $pregunta->descripcion?>" />
+            <?php echo form_error('descripcion')?>
+
+            <?php if (!isset($disabled)):?>
+              
+              <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
+              <select id="campoTipo" name="tipo" required>
+                <option value="S" <?php echo set_select('tipo', 'S', TRUE)?>>Selección simple</option>
+                <option value="N" <?php echo set_select('tipo', 'N')?>>Numérica</option>
+                <option value="T" <?php echo set_select('tipo', 'T')?>>Texto simple</option>
+                <option value="X" <?php echo set_select('tipo', 'X')?>>Texto multilínea</option>
+              </select>
+              <?php echo form_error('tipo')?>
+              
+              <label class="checkbox">
+                <input type="checkbox" name="ordenInverso" <?php echo ($pregunta->ordenInverso=='S')?'checked="checked"':''?> /> Orden Inverso
+              </label>
+              
+              <label for="campoUnidad">Unidad: </label>
+              <input id="campoUnidad" type="text" name="unidad" value="<?php echo $pregunta->unidad?>"/>
+              <?php echo form_error('unidad')?>
+  
+              <div id="OpcionesNumerico" class="hide">
+                <h4>Opciones</h4>
+                <label for="campoLimiteInferior">Limite inferior: <span class="opcional">*</span></label>
+                <input id="campoLimiteInferior" type="number" name="limiteInferior" value="<?php echo $pregunta->limiteInferior?>" />
+                <?php echo form_error('limiteInferior')?>
+                
+                <label for="campoLimiteSuperior">Limite superior: <span class="opcional">*</span></label>
+                <input id="campoLimiteSuperior" type="number" name="limiteSuperior" value="<?php echo $pregunta->limiteSuperior?>" />
+                <?php echo form_error('limiteSuperior')?>
+                
+                <label for="campoPaso">Paso: <span class="opcional">*</span></label>
+                <input id="campoPaso" type="number" name="paso" value="<?php echo $pregunta->paso?>" />
+                <?php echo form_error('paso')?>
+              </div>
+              
+              <div id="OpcionesSeleccion">
+                <legend>Opciones<a style="float:right; margin:0 6px;" href="#modalAgregarOpcion" role="button" data-toggle="modal" title="Agregar opción..."><i class="icon-circle-plus"></i></a></legend>
+                <div class="row">
+                  <div class="span9">
+                    <ul class="Opciones">
+                      <?php
+                        foreach ($opciones as $opcion) {
+                          echo '
+                          <li class="Opcion">
+                            <div class="btn-group">
+                              <a class="subirOpcion" title="Subir" href="#"><i class="icon-circle-arrow-top"></i></a>
+                              <a class="bajarOpcion" title="Bajar" href="#"><i class="icon-circle-arrow-down"></i></a>
+                              <a class="eliminarOpcion" title="Eliminar" href="#"><i class="icon-circle-remove"></i></a>
+                            </div>
+                            <p class="texto">'.$opcion.'</p>
+                            <input type="hidden" name="textoOpcion[]" value="'.$opcion.'" />
+                          </li>';  
+                        }
+                      ?>
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
+              
+            <?php endif?>
             
             <!-- Botones -->
             <div>
@@ -100,7 +128,6 @@
   </div>
   <?php include 'templates/footer.php'?>
   
-  
   <div id="HTMLOpcion" class="hide">
     <li class="Opcion">
       <div class="btn-group">
@@ -109,7 +136,7 @@
         <a class="eliminarOpcion" title="Eliminar" href="#"><i class="icon-circle-remove"></i></a>
       </div>
       <p class="texto"></p>
-      <input type="hidden" name="textoOpcion" value="" />
+      <input type="hidden" name="textoOpcion[]" value="" />
     </li>
   </div>
 
@@ -120,7 +147,7 @@
       <h3 id="myModalLabel">Agregar opción</h3>
     </div>
     <div class="modal-body">
-      <label>Texto: <span class="opcional">*</span>
+      <label>Texto:
         <input type="text" name="texto" required />
       </label>
     </div>
@@ -135,14 +162,15 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('select[name="tipo"]').change(function(){
       switch($(this).val()){
-      case 'S': case 'M':
+      case "<?php echo TIPO_SELECCION_SIMPLE?>":
         $('#OpcionesNumerico').hide('fast');
         $('#OpcionesSeleccion').show('fast');
         break;
-      case 'N':
+      case "<?php echo TIPO_NUMERICA?>":
         $('#OpcionesSeleccion').hide('fast');
         $('#OpcionesNumerico').show('fast');
         break;
@@ -167,7 +195,7 @@
       
       //actualizo valores la plantilla
       nuevaOpcion.find('.texto').html(pTexto);
-      nuevaOpcion.find('input[name="textoOpcion"]').val(pTexto);
+      nuevaOpcion.find('input[name="textoOpcion[]"]').val(pTexto);
       
       //agrego gestor de eventos de los nuevos botones
       nuevaOpcion.find('.subirOpcion').click(function(){
@@ -185,17 +213,11 @@
         Contenedor.hide('fast', function(){$(this).remove();});
         return false;
       });
+      
       //ocultar ventana
-      $(this).trigger('reveal:close'); //cerrar ventana
-    });
-    
-    $('#Aceptar').click(function(){      
-      //por cada opcion creada
-      $('.Opciones').children().each(function(i){
-        //le cambio los nombres a los campos para poder enviarlos. Se le agrega un numero al final.
-        $(this).find('input[name="textoOpcion"]').attr('name', 'textoOpcion_'+i);
-      });
-      $(this).submit();
+      $('#modalAgregarOpcion').modal('hide'); //cerrar ventana
+      //borro los campos del modal para la proxima
+      contFormulario.find('input[name="texto"]').val('');       
     });
   </script>
 </body>

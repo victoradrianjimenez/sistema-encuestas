@@ -12,7 +12,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Gestión de Docentes y Autoridades</h3>
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
           <p>---Descripción---</p>
         </div>
       </div>
