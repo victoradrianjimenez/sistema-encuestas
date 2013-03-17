@@ -5,7 +5,6 @@
  */
 class Pregunta extends CI_Model{
   var $idPregunta;
-  var $idCarrera;
   var $tipo;
   var $texto;
   var $descripcion;

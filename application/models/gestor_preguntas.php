@@ -75,8 +75,7 @@ class Gestor_preguntas extends CI_Model{
    * @param unidad en que se mide la respuesta a la pregunta
    * @return  string
    */
-  public function alta($idCarrera, $texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad){
-    $idCarrera = $this->db->escape($idCarrera);
+  public function alta($texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad){
     $texto = $this->db->escape($texto);
     $descripcion= $this->db->escape($descripcion);
     $tipo = $this->db->escape($tipo);
@@ -85,7 +84,7 @@ class Gestor_preguntas extends CI_Model{
     $limiteSuperior = $this->db->escape($limiteSuperior);
     $paso = $this->db->escape($paso);
     $unidad = $this->db->escape($unidad);
-    $query = $this->db->query("call esp_alta_pregunta($idCarrera, $texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
+    $query = $this->db->query("call esp_alta_pregunta($texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();

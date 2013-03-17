@@ -44,10 +44,8 @@ class Preguntas extends CI_Controller {
     $preguntas = $this->gp->listar($PagInicio, PER_PAGE);
     $lista = array(); //datos para mandar a la vista
     foreach ($preguntas as $i => $pregunta) {
-      $carrera = ($pregunta->idCarrera!='')?$this->gc->dame($pregunta->idCarrera):FALSE;
       $lista[$i] = array(
         'pregunta' => $pregunta,
-        'carrera' => ($carrera)?$carrera:$this->Carrera,
         'tipo' => $pregunta->tipo()
       );
     }
@@ -199,7 +197,6 @@ class Preguntas extends CI_Controller {
       echo "\n";
       foreach ($preguntas as $pregunta) {
         echo  "$pregunta->idPregunta\t".
-              "$pregunta->idCarrera\t".
               "$pregunta->texto\t".
               "$pregunta->creacion\t".
               "$pregunta->tipo\t\n";

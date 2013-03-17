@@ -8,6 +8,7 @@
   
   <!-- Le styles -->
   <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  <style>body{padding-top:40px;}</style>
   <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
   <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
   <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
@@ -32,6 +33,47 @@
   </style>
 </head>
 <body>
+  <!-- Menu de opciones -->
+  <div id="barra-herramientas">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
+          <ul class="nav">
+            <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a href="#">
+                    <form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
+                      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                      <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                      <input type="hidden" name="tipo" value="xlsx" />
+                      <input type="submit" name="submit" value="Libro de Excel 2007-2010 (.xlsx)..." />
+                    </form>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
+                      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                      <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                      <input type="hidden" name="tipo" value="xls" />
+                      <input type="submit" name="submit" value="Libro de Excel 97-2003 (.xls)..." />
+                    </form>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Informe -->
   <div class="container">
     <div id="header" class="row">
       <div class="span12">
@@ -113,17 +155,8 @@
   </div>
   <?php //include 'templates/footer2.php'?>
   
-  <div id="barra-herramientas">
-    <div class="btn-toolbar">
-      <div class="btn-group">
-        <a class="btn btn-primary btn-large" onclick="window.print()">Imprimir</a>
-      </div>
-      <div class="btn-group">
-        <a class="btn btn-primary btn-large">Descargar</a>
-      </div>
-    </div>
-  </div>
-
-  
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ class Claves extends CI_Controller{
   }
   
   /*
-   * Gestion de claves de acceso
+   * Gestion de claves de acceso. Aqui el usuario elige la carrera, materia y encuesta para ver listado de claves a imprimir
    */
   public function claves_acceso(){
     //verifico si el usuario tiene permisos para continuar
@@ -36,15 +36,36 @@ class Claves extends CI_Controller{
     $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
     $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
     if($this->form_validation->run()){
+      $this->load->model('Clave');
+      $this->load->model('Encuesta');
+      $this->load->model('Materia');
+      $this->load->model('Carrera');
+      $this->load->model('Departamento');
+      $this->load->model('Gestor_encuestas','ge');
+      $this->load->model('Gestor_materias','gm');
+      $this->load->model('Gestor_carreras','gc');
+      $this->load->model('Gestor_departamentos','gd');
       $idEncuesta = (int)$this->input->post('idEncuesta');
       $idFormulario = (int)$this->input->post('idFormulario');
       $idMateria = (int)$this->input->post('idMateria');
       $idCarrera = (int)$this->input->post('idCarrera');
       //cargo librerias y modelos
-
-      
-      
-      $this->load->view('vista_claves', $this->data);
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $claves = $encuesta->listarClavesMateria($idMateria, $idCarrera);
+      $lista = array();
+      foreach ($claves as $i => $clave) {
+        $materia = $this->gm->dame($clave->idMateria);
+        $carrera = $this->gc->dame($clave->idCarrera);
+        $departamento =  $this->gd->dame($carrera->idDepartamento);
+        $lista[$i] = array(
+          'materia' => $materia,
+          'carrera' => $carrera,
+          'departamento' => $departamento,
+          'clave' => $clave
+        );
+      }
+      $this->data['lista'] = &$lista;
+      $this->load->view('vista_claves', $this->data); 
     }
     else{
       $this->load->view('claves_acceso', $this->data);
@@ -56,7 +77,7 @@ class Claves extends CI_Controller{
    * Muestra el listado de claves para una encuesta, materia y carrera en particular
    * Última revisión: 2012-02-04 12:47 p.m.
    */
-  public function listar($idMateria, $idCarrera, $idEncuesta, $idFormulario, $PagInicio=0){
+  public function listar($idMateria, $idCarrera, $idEncuesta, $idFormulario, $pagInicio=0){
     if (!$this->ion_auth->logged_in()){redirect('/'); return;}
     //chequeo parámetros de entrada
     $pagInicio = (int)$pagInicio;
@@ -64,6 +85,7 @@ class Claves extends CI_Controller{
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Materia');
+    $this->load->model('Clave');
     $this->load->model('Encuesta');
     $this->load->model('Departamento');
     $this->load->model('Gestor_materias','gm');
@@ -72,13 +94,12 @@ class Claves extends CI_Controller{
     
     //obtengo lista de claves
     $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-    $materia = $this->gm->dame($clave->idMateria);
+    $materia = $this->gm->dame($idMateria);
     $lista = $encuesta->listarClavesMateria($idMateria, $idCarrera, $pagInicio, PER_PAGE);
-
     //genero la lista de links de paginación
     $this->pagination->initialize(array(
       'base_url' => site_url("claves/listar/$idMateria/$idCarrera/$idEncuesta/$idFormulario"),
-      'total_rows' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
+      'total_rows' => 100,//$encuesta->cantidadClavesMateria($idMateria, $idCarrera),
       'uri_segment' => 7
     ));
     
@@ -86,46 +107,33 @@ class Claves extends CI_Controller{
     $this->data['lista'] = &$lista; //array de datos de los Departamentos
     $this->data['materia'] = &$materia; //datos de la materia a la que pertenecen las claves
     $this->data['encuesta'] = &$encuesta; 
+    echo '1';
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    echo '2';
     $this->load->view('lista_claves_materia', $this->data);
+    
   }
+  
   
   /*
    * Ingresar la clave de acceso para llenar la encuesta
-   * Última revisión: 2012-02-02 07:01 p.m.
    */
   public function ingresar(){
-    //verifico si se envio clave
-    $pclave = $this->input->post('clave');
-    if($pclave){
-      $this->load->model('Clave');
-      $this->load->model('Encuesta');
-      $this->data['clave'] = $pclave;
-
-      //busco la clave ingresada
-      $clave = $this->Encuesta->buscarClave($pclave);
-      if ($clave){                
-        //si la clave no fue utilizada
-        if ($clave->utilizada == ''){
-          //mostrar formulario para completar la encuesta
-          $this->encuesta($clave);
-        }
-        else{
-          $this->data['mensaje'] = "Clave de Acceso Utilizada el $clave->utilizada.";
-          $this->load->view('ingreso_clave', $this->data);
-        }
-      }
-      else{
-        $this->data['mensaje'] = 'Clave de Acceso Inválida';
-        $this->load->view('ingreso_clave', $this->data);
-      }
+    $this->load->model('Clave');
+    $this->load->model('Encuesta');
+    //verifico los datos del POST
+    $this->form_validation->set_rules('clave', 'Clave de Acceso', 'callback_validar_clave_acceso');
+    if ($this->form_validation->run()){
+      $clave = $this->Encuesta->buscarClave($this->input->post('clave'));
+      //mostrar formulario para completar la encuesta
+      $this->encuesta($clave);
+      return;
     }
-    else{
-      $this->data['clave'] = '';
-      $this->data['mensaje'] = '';
-      $this->load->view('ingreso_clave', $this->data);
-    }
+    $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
+    $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
+    $this->load->view('ingreso_clave', $this->data);
   }
+  
   
   /* 
    * Función auxiliar para generar el formulario de encuesta
@@ -175,7 +183,7 @@ class Claves extends CI_Controller{
     foreach ($secciones as $i => $seccion) {
       $datos_subsecciones = array();
       //si la pregunta es referida a docentes
-      if($seccion->tipo == 'D'){
+      if($seccion->tipo == SECCION_TIPO_DOCENTE){
         //por cada docente
         foreach ($docentes as $j => $docente) {
           //guardo los datos de la subsección
@@ -281,42 +289,69 @@ class Claves extends CI_Controller{
    */
    public function generar(){
     //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->is_admin()){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
+    if (!$this->ion_auth->logged_in()){
+      redirect('usuarios/login');
     }
     //chequeo parámetros de entrada
     $this->form_validation->set_rules('idEncuesta','Encuesta','is_natural_no_zero|required');
     $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
-    $this->form_validation->set_rules('tipo','Tipo','alpha|exact_length[1]|required');
     $this->form_validation->set_rules('cantidad','Cantidad','is_natural_no_zero');      
     if($this->form_validation->run()){
       $this->load->model('Encuesta');
-      
-      $tipo = $this->input->post('tipo',TRUE);
-      
-      //VER POR TIPO DE CLAVE!!!!!!!!!!!!
-      
-      $cantidad = $this->input->post('cantidad',TRUE);
+      $cantidad = (int)$this->input->post('cantidad');
       $cnt = 0;
       for ($i=0; $i<$cantidad; $i++){
-        $clave = $this->Encuesta->altaClave( $this->input->post('idEncuesta',TRUE), $this->input->post('idFormulario',TRUE), $this->input->post('idCarrera',TRUE), $this->input->post('idMateria',TRUE), $tipo);
-        if (is_numeric($clave)){
-          $cnt++;
-        }
+        $clave = $this->Encuesta->altaClave((int)$this->input->post('idEncuesta'), 
+                                            (int)$this->input->post('idFormulario'), 
+                                            (int)$this->input->post('idCarrera'), 
+                                            (int)$this->input->post('idMateria'));
+        if (is_numeric($clave)){$cnt++;}
       }
-      $this->data['mensaje'] = ($cnt>0)?"La operación se realizó con éxito. Se generaron $cnt claves.":'No se generaron claves.';
-      $this->data['link'] = site_url("claves"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $this->data);
+      if ($cnt == $cantidad){
+        $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. Se generaron $cnt claves.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+      }
+      elseif($cnt==0) {
+        $this->session->set_flashdata('resultadoOperacion', "Se produjo un error. No se generaron claves.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
+      }
+      else{
+        $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con problemas. Se generaron $cnt claves.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      }
+      redirect('claves');
     }
-    else{
-      //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-      $this->index();
-    }
+    $this->load->view('claves_acceso', $this->data);
   }
    
+   
+  /*
+   * Verificar la calve de acceso dada por el alumno
+   */
+  function validar_clave_acceso($pclave=null){
+    if ($pclave){
+      $clave = $this->Encuesta->buscarClave($pclave);
+      if ($clave){                
+        //si la clave no fue utilizada
+        if ($clave->utilizada == ''){
+          return TRUE;
+        }
+        else{
+          $this->form_validation->set_message('validar_clave_acceso', "Clave de Acceso Utilizada el $clave->utilizada.");
+        }
+      }
+      else{
+        $this->form_validation->set_message('validar_clave_acceso', 'Clave de Acceso Inválida');
+      }
+    }
+    else{
+      $this->form_validation->set_message('validar_clave_acceso', 'La clave de acceso no puede ser nula.');
+    }
+    return FALSE;
+  }
+  
   //funcion para responder solicitudes AJAX
   public function listarClavesMateriaAJAX(){
     if (!$this->ion_auth->logged_in()){return;}

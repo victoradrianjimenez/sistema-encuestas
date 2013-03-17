@@ -42,10 +42,12 @@
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="nombre verEncuesta" href="#" value="<?php echo $item->idFormulario?>"/><?php echo $item->nombre?></a></td>
+                  <td><a class="nombre verFormulario" href="#" value="<?php echo $item->idFormulario?>"/><?php echo $item->nombre?></a></td>
                   <td class="titulo"><?php echo $item->titulo?></td>
                   <td class="creacion"><?php echo date('d/m/Y G:i:s', strtotime($item->creacion))?></td>
                   <td>
+                    <a class="editarFormulario" href="#" value="<?php echo $item->idFormulario?>">Modificar</a> /
+                    <a class="" href="#" value="<?php echo $item->idFormulario?>">Pesos</a> /
                     <a class="eliminar" href="#" value="<?php echo $item->idFormulario?>">Eliminar</a>
                   </td>
                 </tr>
@@ -65,16 +67,41 @@
   </div>
   <?php include 'templates/footer.php'?>  
   
+  <!-- ventana modal para asociar docentes a la materia -->
+  <div id="modalEditarFormulario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Ver Formulario</h3>
+    </div>
+    <form class="form-horizontal" action="<?php echo site_url('formularios/editar')?>" method="post">
+      <div class="modal-body">
+        <input type="hidden" name="idFormulario" value="" />
+        <h5 class="nombre"></h5>
+        <div class="control-group"> 
+          <label class="control-label" for="buscarCarrera">Buscar carrera: </label>
+          <div class="controls">
+            <input class="input-xlarge" id="buscarCarrera" type="text" data-provide="typeahead" autocomplete="off">
+            <input type="hidden" name="idCarrera" value=""/>
+            <?php echo form_error('idCarrera')?>
+          </div>
+        </div> 
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+      </div>
+    </form>
+  </div>
   
   <!-- ventana modal para asociar docentes a la materia -->
   <div id="modalMostrarFormulario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Ver Formulario</h3>
+      <h3 id="myModalLabel">Editar Formulario</h3>
     </div>
-    <form class="form-horizontal" action="<?php echo site_url('formularios/ver')?>" method="post">
+    <form class="form-horizontal" action="" method="post">
       <div class="modal-body">
-        <input type="hidden" name="idFormulario" value="" />
+        <input type="hidden" name="idFormulario" value="<?php echo site_url('formularios/ver')?>" />
         <h5 class="nombre"></h5>
         <div class="control-group"> 
           <label class="control-label" for="buscarCarrera">Buscar carrera: </label>
@@ -128,7 +155,7 @@
       $("#modalEliminar").modal();
       return false;
     });
-    $('.verEncuesta').click(function(){
+    $('.verFormulario').click(function(){
       idFormulario = $(this).attr('value');
       nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
       //cargo el id del departamento en el formulario
@@ -139,7 +166,17 @@
       $("#modalMostrarFormulario").modal();
       return false;
     });
-
+    $('.editarFormulario').click(function(){
+      idFormulario = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      //cargo el id del departamento en el formulario
+      $('#modalEditarFormulario input[name="idFormulario"]').val(idFormulario);
+      //pongo el nombre del departamento en el dialogo
+      $("#modalEditarFormulario").find('.nombre').html(nombre);
+      $("#modalEditarFormulario").find('input[type="text"], input[name="idCarrera"]').val(''); //borro los controles
+      $("#modalEditarFormulario").modal();
+      return false;
+    });
     autocompletar_carrera("<?php echo site_url('carreras/buscarAJAX')?>");
 
   </script>

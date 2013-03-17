@@ -36,7 +36,8 @@
                   <td class="fecha"><?php echo $item['devolucion']->fecha?></td>
                   <td><?php echo $item['encuesta']->año.' / '.$item['encuesta']->cuatrimestre?></td>
                   <td>
-                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a>
+                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a> /
+                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Nueva</a>
                   </td>
                   
                 </tr>

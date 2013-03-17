@@ -87,14 +87,13 @@ class Gestor_materias extends CI_Model{
    * @param nuevo codigo de la materia
    * @return string
    */
-  public function modificar($idMateria, $nombre, $codigo, $alumnos, $publicarInformes, $publicarHistoricos, $publicarDevoluciones){
+  public function modificar($idMateria, $nombre, $codigo, $publicarInformes, $publicarHistoricos, $publicarDevoluciones){
     $publicarInformes = ($publicarInformes)?'S':'N';
     $publicarHistoricos = ($publicarHistoricos)?'S':'N';
     $publicarDevoluciones = ($publicarDevoluciones)?'S':'N';
     $nombre = $this->db->escape($nombre);
     $codigo = $this->db->escape($codigo);
-    $alumnos = $this->db->escape($alumnos);
-    $query = $this->db->query("call esp_modificar_materia($idMateria, $nombre, $codigo, $alumnos, '$publicarInformes', '$publicarHistoricos', '$publicarDevoluciones')");
+    $query = $this->db->query("call esp_modificar_materia($idMateria, $nombre, $codigo, '$publicarInformes', '$publicarHistoricos', '$publicarDevoluciones')");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();
@@ -110,14 +109,13 @@ class Gestor_materias extends CI_Model{
    * @param código de la materia
    * @return  string
    */
-  public function alta($nombre, $codigo, $alumnos, $publicarInformes, $publicarHistoricos, $publicarDevoluciones){
+  public function alta($nombre, $codigo, $publicarInformes, $publicarHistoricos, $publicarDevoluciones){
     $publicarInformes = ($publicarInformes)?'S':'N';
     $publicarHistoricos = ($publicarHisticos)?'S':'N';
     $publicarDevoluciones = ($publicarDevoluciones)?'S':'N';
     $nombre = $this->db->escape($nombre);
     $codigo = $this->db->escape($codigo);
-    $alumnos = $this->db->escape($alumnos);
-    $query = $this->db->query("call esp_alta_materia($nombre, $codigo, $alumnos, '$publicarInformes', '$publicarHistoricos', '$publicarDevoluciones')");
+    $query = $this->db->query("call esp_alta_materia($nombre, $codigo, '$publicarInformes', '$publicarHistoricos', '$publicarDevoluciones')");
     $data = $query->row();
     $query->free_result();
     //$this->db->reconnect();

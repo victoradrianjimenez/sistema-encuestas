@@ -141,8 +141,7 @@ class Encuestas extends CI_Controller{
 
 
   //funcion para responder solicitudes AJAX
-  public function buscarEncuestasAJAX(){
-    if (!$this->ion_auth->logged_in()){return;}
+  public function buscarAJAX(){
     $this->form_validation->set_rules('buscar','Buscar','required|is_natural_no_zero');
     if($this->form_validation->run()){
       $this->load->model('Encuesta');

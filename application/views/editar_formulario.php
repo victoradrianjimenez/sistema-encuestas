@@ -160,7 +160,10 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
+    autocompletar_pregunta("<?php echo site_url('preguntas/buscarAjax')?>");
+  
     var ContenedorSeccionActual=null;
   
     $('.agregarSeccion').click(function(){
@@ -246,45 +249,6 @@
       });
     });
     
-    //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-    $('#buscarPregunta').keydown(function(event){
-      if (event.which==9) return; //ignorar al presionar Tab
-      $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
-    });
-    //realizo la busqueda de usuarios con AJAX
-    $('#buscarPregunta').typeahead({
-      matcher: function (item) {return true},    
-      sorter: function (items) {return items},
-      source: function(query, process){
-        return $.ajax({
-          type: "POST", 
-          url: "<?php echo site_url('preguntas/buscarAjax')?>", 
-          data:{ buscar: query}
-        }).done(function(msg){
-          var filas = msg.split("\n");
-          var items = new Array();
-          for (var i=0; i<filas.length; i++){
-            if (filas[i].length<5) continue;
-            items.push(filas[i]);
-          }
-          return process(items);
-        });
-      },
-      highlighter: function (item) {
-        var cols = item.split("\t");
-        var texto = cols[2]; //texto
-        var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
-        return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
-          return '<strong>' + match + '</strong>'
-        })
-      },
-      updater: function (item) {
-        var cols = item.split("\t");
-        $('#buscarPregunta').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
-        return cols[2];
-      }
-    });
-      
     $('#Aceptar').click(function(){      
       //por cada seccion creada
       $('.Secciones').children().each(function(i){

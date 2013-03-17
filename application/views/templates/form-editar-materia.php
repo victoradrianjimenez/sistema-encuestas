@@ -15,13 +15,6 @@
     <?php echo form_error('codigo'); ?>
   </div>
 </div>
-<div class="control-group">
-  <label class="control-label" for="campoAlumnos">Cantidad de alumnos: </label>
-  <div class="controls">
-    <input class="input-xlarge" id="campoAlumnos" type="number" name="alumnos" min="0" step="1" value="<?php echo $materia->alumnos?>"/>
-    <?php echo form_error('alumnos'); ?>
-  </div>
-</div>
 
 <script>
   //ocultar mensaje de error al escribir

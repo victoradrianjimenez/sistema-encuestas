@@ -122,10 +122,13 @@
             </div>
           </div>
         <?php endforeach?>
-        
-        <div class="span12">
-          <a class="btn btn-primary" href="#modalConfirmarEnvio" role="button" data-toggle="modal">Enviar</a>
+        <h5 class="separador"></h5>
+        <div class="row">
+          <div class="span2 offset5">
+            <a class="btn btn-primary" href="#modalConfirmarEnvio" role="button" data-toggle="modal" style="width: 100%;padding:5px 0">Enviar</a>
+          </div>
         </div>
+        <br/>
         
         <!-- ventana modal para confirmar envio -->
         <div id="modalConfirmarEnvio" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

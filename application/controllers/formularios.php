@@ -141,8 +141,18 @@ class Formularios extends CI_Controller{
    * Muestra el formulario de edicion de formularios
    */
   public function editar(){
-    $this->data['tituloFormulario'] = 'Nuevo Formulario';
-    $this->data['urlFormulario'] = site_url('formularios/nuevo');
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    $this->data['tituloFormulario'] = 'Editar Formulario';
+    $this->data['urlFormulario'] = site_url('formularios/editar');
     $this->load->view('editar_formulario', $this->data);
   }
   
@@ -249,7 +259,9 @@ class Formularios extends CI_Controller{
       $this->load->view('resultado_operacion', $this->data);
     }
     else{
-      $this->editar();
+      $this->data['tituloFormulario'] = 'Nuevo Formulario';
+      $this->data['urlFormulario'] = site_url('formularios/nuevo');
+      $this->load->view('editar_formulario', $this->data);
     }
   }
   

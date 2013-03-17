@@ -346,7 +346,6 @@ class Carreras extends CI_Controller{
    * POST: buscar
    */
   public function buscarAJAX(){
-    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar');
@@ -368,7 +367,6 @@ class Carreras extends CI_Controller{
    * POST: idCarrera, buscar
    */
   public function buscarMateriasAJAX(){
-    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){

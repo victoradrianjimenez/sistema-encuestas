@@ -38,7 +38,6 @@
                 <th>Texto</th>
                 <th>Creacion</th>
                 <th>Tipo</th>
-                <th>Carrera</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($lista as $item): ?>  
@@ -46,7 +45,6 @@
                   <td class="texto"><?php echo $item['pregunta']->texto?></td>
                   <td class="creacion"><?php echo date('d/m/Y G:i:s', strtotime($item['pregunta']->creacion))?></td>
                   <td class="tipo"><?php echo $item['tipo']?></td>
-                  <td class="carrera"><?php echo $item['carrera']->nombre?></td>
                   <td>
                     <a class="modificar" href="<?php echo site_url('preguntas/modificar/'.$item['pregunta']->idPregunta)?>">Modificar</a> /
                     <a class="eliminar" href="#" value="<?php echo $item['pregunta']->idPregunta?>">Eliminar</a>

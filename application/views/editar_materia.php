@@ -49,20 +49,13 @@
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoAlumnos">Cantidad de alumnos: </label>
-              <div class="controls">
-                <input class="input-block-level" id="campoAlumnos" type="number" name="alumnos" min="0" step="1" value="<?php echo (set_value('alumnos'))?set_value('alumnos'):$materia->alumnos?>"/>
-                <?php echo form_error('alumnos'); ?>
-              </div>
-            </div>
-            <div class="control-group">
               <label class="control-label">Opciones: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="publicarInforme" <?php echo (isset($_POST['publicarInforme']) || $materia->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Carrera son Públicos</label>
+                <label class="checkbox"><input type="checkbox" name="publicarInforme" <?php echo (isset($_POST['publicarInforme']) || $materia->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Materia son Públicos</label>
                 <?php echo form_error('publicarInforme')?>
-                <label class="checkbox"><input type="checkbox" name="publicarHistorico" <?php echo (isset($_POST['publicarHistorico']) || $materia->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Carrera son Públicos</label>
+                <label class="checkbox"><input type="checkbox" name="publicarHistorico" <?php echo (isset($_POST['publicarHistorico']) || $materia->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Materia son Públicos</label>
                 <?php echo form_error('publicarHistorico')?>
-                <label class="checkbox"><input type="checkbox" name="publicarDevoluciones" <?php echo (isset($_POST['publicarDevoluciones']) || $materia->publicarDevoluciones=='S')?'checked="checked"':''?> /> Los Planes de Mejoras de la materia son Públicos</label>
+                <label class="checkbox"><input type="checkbox" name="publicarDevoluciones" <?php echo (isset($_POST['publicarDevoluciones']) || $materia->publicarDevoluciones=='S')?'checked="checked"':''?> /> Los Planes de Mejoras de la Materia son Públicos</label>
                 <?php echo form_error('publicarDevoluciones')?>
               </div>
             </div>

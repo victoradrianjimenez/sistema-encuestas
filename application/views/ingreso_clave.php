@@ -24,9 +24,9 @@
           <form action="<?php echo site_url("claves/ingresar")?>" method="post">
             <fieldset>
               <h5 class="text-center">Ingrese la Clave de Acceso que figura en la tarjeta entregada por el representante de la Comisión Académica</h5>
-              <div class="control-group <?php echo ($mensaje)?'error':''?>">
-                <input class="input-block-level text-center <?php echo ($mensaje!='')?'error':''?>" name="clave" type="text" id="clave" maxlength="16" placeholder="Ingrese su clave de acceso" value="<?php echo $clave?>"/>
-                <?php if($mensaje) echo '<span class="label label-important">'.$mensaje.'</span>'?>
+              <div class="control-group">
+                <input class="input-block-level text-center" name="clave" type="text" id="clave" maxlength="16" placeholder="Ingrese su clave de acceso" value="<?php echo set_value('clave')?>"/>
+                <?php echo form_error('clave')?>
               </div>
               <div class="text-center">
                 <input class="btn btn-primary" name="submit" type="submit" id="aceptar" value="   Aceptar   " />

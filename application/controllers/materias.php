@@ -102,7 +102,7 @@ class Materias extends CI_Controller{
 
   /*
    * Recepción del formulario para agregar  materia
-   * POST: nombre, codigo, alumnos, publicarInforme, publicarDevoluciones, publicarHistorico
+   * POST: nombre, codigo, publicarInforme, publicarDevoluciones, publicarHistorico
    */
   public function nueva(){
     //verifico si el usuario tiene permisos para continuar
@@ -117,13 +117,11 @@ class Materias extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
     $this->form_validation->set_rules('codigo','Código','alpha_numeric|required|max_length[5]');
-    $this->form_validation->set_rules('alumnos','Alumnos','is_natural|required');
     if($this->form_validation->run()){
       $this->load->model('Gestor_materias','gm');      
       //agrego materia y cargo vista para mostrar resultado
       $res = $this->gm->alta( $this->input->post('nombre',TRUE), 
                               $this->input->post('codigo',TRUE), 
-                              $this->input->post('alumnos',TRUE),
                               (bool)$this->input->post('publicarInforme'), 
                               (bool)$this->input->post('publicarHistorico'), 
                               (bool)$this->input->post('publicarDevoluciones'));
@@ -180,7 +178,7 @@ class Materias extends CI_Controller{
 
   /*
    * Recepción del formulario para modificar los datos de una materia
-   * POST: idMateria, nombre, codigo, alumnos, publicarInforme, publicarDevoluciones, publicarHistorico
+   * POST: idMateria, nombre, codigo, publicarInforme, publicarDevoluciones, publicarHistorico
    */
   public function modificar($idMateria=null){
     //verifico si el usuario tiene permisos para continuar
@@ -198,14 +196,12 @@ class Materias extends CI_Controller{
     $idMateria = ($this->input->post('idMateria')) ? (int)$this->input->post('idMateria') : (int)$idMateria;
     $this->form_validation->set_rules('idMateria', 'Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
-    $this->form_validation->set_rules('codigo','Código','alpha_numeric|required|max_length[5]');
-    $this->form_validation->set_rules('alumnos','Alumnos','is_natural|required');        
+    $this->form_validation->set_rules('codigo','Código','alpha_numeric|required|max_length[5]');        
     if($this->form_validation->run()){
       //modifico Materia y cargo vista para mostrar resultado
       $res = $this->gm->modificar($idMateria, 
                                   $this->input->post('nombre',TRUE), 
                                   $this->input->post('codigo',TRUE), 
-                                  (int)$this->input->post('alumnos'),
                                   (bool)$this->input->post('publicarInforme'), 
                                   (bool)$this->input->post('publicarHistorico'), 
                                   (bool)$this->input->post('publicarDevoluciones'));
@@ -309,7 +305,6 @@ class Materias extends CI_Controller{
    * POST: buscar
    */
   public function buscarAJAX(){
-    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar');

@@ -37,14 +37,12 @@
               <thead>
                 <th>Nombre</th>
                 <th>Código</th>
-                <th>Alumnos</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
                   <td><a class="nombre" href="<?php echo site_url("materias/ver/".$item->idMateria)?>"><?php echo $item->nombre?></a></td>
                   <td><?php echo $item->codigo?></td>
-                  <td><?php echo $item->alumnos?></td>
                   <td>
                     <a class="modificar" href="<?php echo site_url('materias/modificar/'.$item->idMateria)?>">Modificar</a> /
                     <a class="eliminar" href="#" value="<?php echo $item->idMateria?>">Eliminar</a>

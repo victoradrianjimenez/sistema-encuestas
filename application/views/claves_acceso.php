@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Generar Informe por Materia</title>
+  <title>Claves de Acceso - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
-    .form-horizontal .controls {margin-left: 70px}
-    .form-horizontal .control-label {width: 50px; float: left}
+    .container .form-horizontal .controls {margin-left: 120px}
+    .container .form-horizontal .control-label {width: 100px; float: left}
     #contenedor{padding-top:9px}
   </style>
 </head>
@@ -17,7 +17,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Informes por Encuestas</h3>
+          <h3>Claves de acceso</h3>
           <p>---Descripción---</p>
         </div>
       </div>
@@ -25,15 +25,15 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <?php $item_submenu = 1;
-            include 'templates/submenu-informes.php';
+          <?php $item_submenu = 2;
+            include 'templates/submenu-encuestas.php';
           ?>
         </div>
         
         <!-- Main -->
         <div id="contenedor" class="span9">
-          <h4>Solicitar informe por asignatura</h4>
-          <form class="form-horizontal" action="<?php echo site_url('informes/materia')?>" method="post">
+          <h4>Datos de la Encuesta</h4>
+          <form class="form-horizontal" action="<?php echo site_url('claves/claves_acceso')?>" method="post">
     
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
@@ -52,7 +52,7 @@
               </div>
             </div>
             <div class="control-group">  
-              <label class="control-label" for="buscarEncuesta">Año:</label>
+              <label class="control-label" for="buscarEncuesta">Año/<?php echo PERIODO?>:</label>
               <div class="controls">
                 <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
                 <input type="hidden" name="idEncuesta" required/>
@@ -60,16 +60,9 @@
                 <input type="hidden" name="idFormulario" required/>
               </div>
             </div>
-            <div class="control-group">
-              <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="graficos" checked />Incluir gráficos de barras</label>
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir promedio de índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir promedio de índices para cada docente</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice general</label>
-              </div>
-            </div>
-            <div class="controls btn-group">
-              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+            <div class="controls">
+              <button class="generar btn btn-primary" href="#modalGenerar" role="button" data-toggle="modal">Generar Claves de Acceso</button>
+              <input class="btn btn-primary" type="submit" name="submit" value="Ver Claves generadas " />
             </div>
           </form>
         </div>
@@ -79,17 +72,60 @@
   </div>
   <?php include 'templates/footer.php'?>  
   
+  <!-- ventana modal para asociar materias a la carrera -->
+  <div id="modalGenerar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Generar Claves de Accesos</h3>
+    </div>
+    <form class="form-horizontal" action="<?php echo site_url('carreras/asociarMateria')?>" method="post">
+      <div class="modal-body">
+        
+        <h5></h5>
+        <div class="control-group"> 
+          <label class="control-label" for="campoCantidad">Cantidad de claves: </label>
+          <div class="controls">
+            <input class="input-xlarge" id="campoCantidad" type="number" name="cantidad" value="30" />
+            <?php echo form_error('cantidad')?>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+      </div>
+    </form>
+  </div>
+  
   <!-- Le javascript -->
   <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/formulario.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
     autocompletar_carrera("<?php echo site_url('carreras/buscarAJAX')?>");
     autocompletar_materia("<?php echo site_url('carreras/buscarMateriasAJAX')?>");
     autocompletar_encuesta("<?php echo site_url('encuestas/buscarAJAX')?>");
+    $('.generar').click(function(){
+      idMateria = $('input[name="idMateria"]').val();
+      idCarrera = $('input[name="idCarrera"]').val();
+      idFormulario = $('input[name="idFormulario"]').val();
+      idEncuesta = $('input[name="idEncuesta"]').val();
+      
+      if (idMateria != '' && idCarrera != '' && idFormulario!=''&&idEncuesta!=''){
+        //nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+        //cargo el id de la materia en el formulario
+        //$('#modalGenerar input[name="idMateria"]').val(idMateria);
+        //pongo el nombre de la materia en el dialogo
+        //$("#modalGenerar").find('.nombre').html(nombre);
+        $("#modalGenerar").modal();
+      }
+      return false;
+    });
   </script>
 </body>
 </html>

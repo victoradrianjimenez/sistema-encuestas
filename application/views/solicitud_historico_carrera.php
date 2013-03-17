@@ -43,6 +43,14 @@
                 <?php echo form_error('idCarrera')?>
               </div>
             </div>
+            <div class="control-group">
+              <label class="control-label" for="buscarPregunta">Pregunta:</label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" required>
+                <input type="hidden" name="idMateria" required/>
+                <?php echo form_error('idPregunta')?>
+              </div>
+            </div>
             <div class="row-fluid">
               <div class="span6 control-group">
                 <label class="control-label" for="dpd1">Fecha Inicio:</label>

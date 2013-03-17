@@ -7,7 +7,6 @@ class Materia extends CI_Model{
   var $idMateria;
   var $nombre;
   var $codigo;
-  var $alumnos=0;
   var $publicarInformes='N';
   var $publicarHistoricos='N';
   var $publicarDevoluciones='N';

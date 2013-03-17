@@ -406,7 +406,7 @@ class Usuarios extends CI_Controller{
    * POST: email, captcha
    */
   function recuperarContrasena(){
-    $this->form_validation->set_rules('captcha', 'Código de Verificación', 'callback_verificar_captcha');
+    $this->form_validation->set_rules('captcha', 'Código de Verificación', 'callback_validar_captcha');
     $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required');
     if ($this->form_validation->run()){
       //obtener la identity para el email
@@ -555,7 +555,7 @@ class Usuarios extends CI_Controller{
   /*
    * Verificar captcha
    */
-  function verificar_captcha($texto=null){
+  function validar_captcha($texto=null){
     if ($texto){
       // First, delete old captchas
       $expiration = time() - 7200; // Two hour limit
@@ -569,7 +569,7 @@ class Usuarios extends CI_Controller{
         return TRUE;
       }
     }
-    $this->form_validation->set_message('verificar_captcha', 'El campo %s no coincide con el de la imágen.');
+    $this->form_validation->set_message('validar_captcha', 'El campo %s no coincide con el de la imágen.');
     return FALSE;
   }
   
