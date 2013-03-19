@@ -27,7 +27,6 @@ class Departamento extends CI_Model{
     $query = $this->db->query("call esp_listar_carreras_departamento($idDepartamento)");
     $data = $query->result('Carrera');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }*/  
     
@@ -43,7 +42,6 @@ class Departamento extends CI_Model{
     $query = $this->db->query("call esp_cantidad_carreras_departamento($idDepartamento)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }*/ 
 

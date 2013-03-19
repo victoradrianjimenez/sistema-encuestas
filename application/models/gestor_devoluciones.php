@@ -11,36 +11,35 @@ class Gestor_devoluciones extends CI_Model{
 	}
   
   /**
-   * Obtener el listado de devoluciones de una materia. Devuleve un array de objetos.
+   * Obtener el listado de devoluciones de una carrera. Devuleve un array de objetos.
    *
    * @access public
    * @param item inicial del listado a mostrar
    * @param cantidad de items a mostrar (tamaño de página)
    * @return array
    */
-  public function listar($idMateria, $pagInicio, $pagLongitud){
-    $idMateria = $this->db->escape($idMateria);
+  public function listar($idCarrera, $pagInicio, $pagLongitud){
+    $idCarrera = $this->db->escape($idCarrera);
     $pagInicio = $this->db->escape($pagInicio);
     $pagLongitud = $this->db->escape($pagLongitud);
-    $query = $this->db->query("call esp_listar_devoluciones_materia($idMateria, $pagInicio, $pagLongitud)");
+    $query = $this->db->query("call esp_listar_devoluciones_carrera($idCarrera, $pagInicio, $pagLongitud)");
     $data = $query->result('Devolucion');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
+  
   /**
-   * Obtener la cantidad de devoluciones de una materia
+   * Obtener la cantidad de devoluciones de una Carrera
    *
    * @access public
    * @return int
    */  
-  public function cantidad($idMateria){
-    $idMateria = $this->db->escape($idMateria);
-    $query = $this->db->query("call esp_cantidad_devoluciones_materia($idMateria)");
+  public function cantidad($idCarrera){
+    $idMateria = $this->db->escape($idCarrera);
+    $query = $this->db->query("call esp_cantidad_devoluciones_carrera($idCarrera)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
 
@@ -66,7 +65,6 @@ class Gestor_devoluciones extends CI_Model{
     $query = $this->db->query("call esp_alta_devolucion($idMateria, $idEncuesta, $idFormulario, $fortalezas, $debilidades, $alumnos, $docentes, $mejoras)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -89,7 +87,6 @@ class Gestor_devoluciones extends CI_Model{
     $query = $this->db->query("call esp_dame_devolucion($idDevolucion, $idMateria, $idEncuesta, $idFormulario)");
     $data = $query->result('Devolucion');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
 }

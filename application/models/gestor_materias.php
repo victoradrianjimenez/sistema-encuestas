@@ -21,7 +21,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_dame_materia($idMateria)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
@@ -40,7 +39,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias($pagNumero, $pagLongitud)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -55,7 +53,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_cantidad_materias()");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -73,7 +70,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_buscar_materias($nombre)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -88,15 +84,14 @@ class Gestor_materias extends CI_Model{
    * @return string
    */
   public function modificar($idMateria, $nombre, $codigo, $publicarInformes, $publicarHistoricos, $publicarDevoluciones){
-    $publicarInformes = ($publicarInformes)?'S':'N';
-    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
-    $publicarDevoluciones = ($publicarDevoluciones)?'S':'N';
+    $publicarInformes = $this->db->escape($publicarInformes);
+    $publicarHistoricos = $this->db->escape($publicarHistoricos);
+    $publicarDevoluciones = $this->db->escape($publicarDevoluciones);
     $nombre = $this->db->escape($nombre);
     $codigo = $this->db->escape($codigo);
-    $query = $this->db->query("call esp_modificar_materia($idMateria, $nombre, $codigo, '$publicarInformes', '$publicarHistoricos', '$publicarDevoluciones')");
+    $query = $this->db->query("call esp_modificar_materia($idMateria, $nombre, $codigo, $publicarInformes, $publicarHistoricos, $publicarDevoluciones)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -110,21 +105,20 @@ class Gestor_materias extends CI_Model{
    * @return  string
    */
   public function alta($nombre, $codigo, $publicarInformes, $publicarHistoricos, $publicarDevoluciones){
-    $publicarInformes = ($publicarInformes)?'S':'N';
-    $publicarHistoricos = ($publicarHisticos)?'S':'N';
-    $publicarDevoluciones = ($publicarDevoluciones)?'S':'N';
+    $publicarInformes = $this->db->escape($publicarInformes);
+    $publicarHistoricos = $this->db->escape($publicarHistoricos);
+    $publicarDevoluciones = $this->db->escape($publicarDevoluciones);
     $nombre = $this->db->escape($nombre);
     $codigo = $this->db->escape($codigo);
-    $query = $this->db->query("call esp_alta_materia($nombre, $codigo, '$publicarInformes', '$publicarHistoricos', '$publicarDevoluciones')");
+    $query = $this->db->query("call esp_alta_materia($nombre, $codigo, $publicarInformes, $publicarHistoricos, $publicarDevoluciones)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
   /**
-   * Da de Baja una materia. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Da de Baja una materia. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de la materia
@@ -135,7 +129,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_baja_materia($idMateria)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -152,7 +145,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_docente($id)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   */
@@ -169,7 +161,6 @@ class Gestor_materias extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_director($id)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   */
@@ -185,8 +176,7 @@ class Gestor_materias extends CI_Model{
     $id = $this->db->escape($id);
     $query = $this->db->query("call esp_listar_materias_jefe_departamento($id)");
     $data = $query->result('Materia');
-    $query->free_result();
-    //$this->db->reconnect();
+    $query->free_result();;
     return $data;
   }
   */

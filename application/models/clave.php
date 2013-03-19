@@ -40,12 +40,11 @@ class Clave extends CI_Model{
     $query = $this->db->query("call esp_alta_respuesta($idPregunta, $idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario, $idDocente, $opcion, $texto)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   /**
-   * Registrar que la clave ya fue utilizada, guardando la fecha actual. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Registrar que la clave ya fue utilizada, guardando la fecha actual. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @return string
@@ -59,7 +58,6 @@ class Clave extends CI_Model{
     $query = $this->db->query("call esp_registrar_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -85,7 +83,6 @@ class Clave extends CI_Model{
     $query = $this->db->query("call esp_respuesta_pregunta_clave($idPregunta, $idDocente, $idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   

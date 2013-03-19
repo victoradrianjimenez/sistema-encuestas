@@ -48,6 +48,7 @@ div.modal-body{
   overflow:visible;
 }
 
+/* iconos para la edicion de formularios */
 i.icon-circle-plus{
   width: 26px;
   height: 26px;
@@ -77,13 +78,26 @@ i.icon-circle-remove{
   background-position: -78px 0;
 }
 
-#logout input[type="submit"]{
-  color:#333333;  
+/* convertir el boton submit en un link comun en la barra de menu */
+.dropdown-menu > li > a.form{
+  margin:0;
+  padding:0;
 }
-#logout input[type="submit"]:hover{
+.dropdown-menu > li > a.form > form{
+  margin:0;
+}
+.dropdown-menu>li>a.form>form .btn-link{
+  width:100%;
+  margin:0;
+  padding:0px 20px;
+  text-align:left;
+  color:#333333;
+}
+.dropdown-menu>li>a.form>form .btn-link:hover{
   color:#FFFFFF;
   text-decoration:none;
 }
+
 
 /* Artfully masterminded by ZURB  */
 

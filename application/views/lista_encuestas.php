@@ -3,19 +3,15 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Encuestas - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
-    
     <?php include 'templates/menu-nav.php'?>
-    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Gestión de Encuestas</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-encuestas.php'?>
         </div>
       </div>
       
@@ -43,10 +39,11 @@
               <?php foreach($lista as $item): ?>  
                 <tr>
                   <td class="anio"><?php echo $item->año.' / '.PERIODO.' '.$item->cuatrimestre?></td>
-                  <td><?php echo date('d/m/Y G:i:s', strtotime($item->fechaInicio))?></td>
-                  <td><?php echo date('d/m/Y G:i:s', strtotime($item->fechaFin))?></td>
+                  <td><?php if($item->fechaInicio) echo date('d/m/Y G:i:s', strtotime($item->fechaInicio))?></td>
+                  <td><?php if($item->fechaFin) echo date('d/m/Y G:i:s', strtotime($item->fechaFin))?></td>
                   <td>
-                    <a class="finalizar" href="#modalFinalizar" role="button" data-toggle="modal" value="<?php echo $item->idEncuesta.'_'.$item->idFormulario?>" title="Cerrar período de encuesta">Finalizar</a>
+                    <a class="finalizar" href="#modalFinalizar" role="button" data-toggle="modal" value="<?php echo $item->idEncuesta.'_'.$item->idFormulario?>" title="Cerrar período de encuesta">Finalizar</a> / 
+                    <a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item->idEncuesta.'_'.$item->idFormulario?>" title="Eliminar período de encuesta">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -63,7 +60,27 @@
     </div>
     <div id="push"></div><br />
   </div>
-  <?php include 'templates/footer.php'?>  
+  <?php include 'templates/footer.php'?> 
+   
+  <!-- ventana modal para eliminar una encuesta -->
+  <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Eliminar encuesta</h3>
+    </div>
+    <form action="<?php echo site_url('encuestas/eliminar')?>" method="post">
+      <div class="modal-body">
+        <input type="hidden" name="idEncuesta" value="" />
+        <input type="hidden" name="idFormulario" value="" />
+        <h5 class="nombre"></h5>
+        <p>¿Desea continuar?</p>      
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+      </div>
+    </form>
+  </div>
   
   <!-- ventana modal para finalizar un periodo de encuestas -->
   <div id="modalFinalizar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -104,9 +121,18 @@
       $("#modalFinalizar").modal();
       return false;
     });
-  
-    //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('span.label-important').parentsUntil('.modal').parent().first().modal();
+    $('.eliminar').click(function(){
+      id = $(this).attr('value').split("_");
+      idEncuesta = id[0];
+      idFormulario = id[1];
+      nombre = $(this).parentsUntil('tr').parent().find('.anio').text();
+      $('#modalEliminar input[name="idEncuesta"]').val(idEncuesta);
+      $('#modalEliminar input[name="idFormulario"]').val(idFormulario);
+      //pongo la fecha de la encuesta en el dialogo
+      $("#modalEliminar").find('.nombre').html(nombre);
+      $("#modalEliminar").modal();
+      return false;
+    });
   </script>
 </body>
 </html>

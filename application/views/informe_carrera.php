@@ -17,16 +17,8 @@
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
   
-  <!-- Fav and touch icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-  <link rel="shortcut icon" href="ico/favicon.png">
-
-  <title>Informe Carrera</title>
+  <title>Informe Carrera - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-    #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
     ul.respuestas{list-style-position:inside;}
     .row-fluid [class*="span"]{margin-left:0;}
@@ -45,26 +37,22 @@
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li>
-                  <a href="#">
-                    <form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
-                      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
-                      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
-                      <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
-                      <input type="hidden" name="tipo" value="xlsx" />
-                      <input type="submit" name="submit" value="Libro de Excel 2007-2010 (.xlsx)..." />
-                    </form>
-                  </a>
+                  <a class="form"><form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
+                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                    <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                    <input type="hidden" name="tipo" value="xlsx" />
+                    <input type="submit" name="submit" value="Libro de Excel 2007-2010 (.xlsx)..." />
+                  </form></a>
                 </li>
                 <li>
-                  <a href="#">
-                    <form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
-                      <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
-                      <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
-                      <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
-                      <input type="hidden" name="tipo" value="xls" />
-                      <input type="submit" name="submit" value="Libro de Excel 97-2003 (.xls)..." />
-                    </form>
-                  </a>
+                  <a class="form"><form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
+                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                    <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                    <input type="hidden" name="tipo" value="xls" />
+                    <input type="submit" name="submit" value="Libro de Excel 97-2003 (.xls)..." />
+                  </form></a>
                 </li>
               </ul>
             </li>
@@ -77,10 +65,10 @@
   <div class="container">
     <div id="header" class="row">
       <div class="span12">
-        <h2><?php echo $formulario->titulo?></h2>
-        <h4><?php echo $formulario->descripcion?></h4>
-        <h4><?php echo $departamento->nombre?></h4>
-        <h5><?php echo $carrera->nombre?></h5>
+        <h2 class="text-center"><?php echo $formulario->titulo?></h2>
+        <h4 class="text-center"><?php echo $formulario->descripcion?></h4>
+        <h4 class="text-center"><?php echo $departamento->nombre?></h4>
+        <h5 class="text-center"><?php echo $carrera->nombre?></h5>
       </div>
     </div>
     <div class="row">
@@ -90,17 +78,17 @@
           <div class="span6">
             <?php
             echo '<p>Año: '.$encuesta->año.'</p>';
-            echo '<p>Cuatrimestre / período: '.$encuesta->cuatrimestre.'</p>';
-            echo '<p>Fecha de inicio de las encuestas: '.$encuesta->fechaInicio.'</p>';
-            echo '<p>Fecha de finalización de las encuestas: '.$encuesta->fechaFin.'</p>';
+            echo '<p>'.PERIODO.': '.$encuesta->cuatrimestre.'</p>';
+            echo '<p>Fecha de inicio de las encuestas: '.date('d/m/Y G:i:s', strtotime($encuesta->fechaInicio)).'</p>';
+            echo '<p>Fecha de finalización de las encuestas: '.date('d/m/Y G:i:s', strtotime($encuesta->fechaFin)).'</p>';
             ?>
           </div>
           <div class="span6">
             <?php
             echo '<p>Claves generadas: '.$claves['generadas'].'</p>';
             echo '<p>Claves utilizadas: '.$claves['utilizadas'].'</p>';
-            echo '<p>Primer acceso: '.$claves['primerAcceso'].'</p>';
-            echo '<p>Último acceso: '.$claves['ultimoAcceso'].'</p>';
+            echo '<p>Primer acceso: '.date('d/m/Y G:i:s', strtotime($claves['primerAcceso'])).'</p>';
+            echo '<p>Último acceso: '.date('d/m/Y G:i:s', strtotime($claves['ultimoAcceso'])).'</p>';
             ?>
           </div>
         </div>
@@ -112,44 +100,43 @@
         foreach ($secciones as $i => $seccion){
           echo '
           <h5 class="separador">'.$seccion['seccion']->texto.'</h5>';
+          //por cada item de la sección
           foreach ($seccion['items'] as $pregunta){
-            echo '
-            <div class="row">
-              <div class="span12">';
-                switch($pregunta['item']->tipo){
-                //preguntas con opciones
-                case 'S':case 'N':
+            switch($pregunta['item']->tipo){
+            //preguntas con opciones
+            case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+              echo '
+              <div class="row">';
+                echo ($graficos)?'<div class="span8">':'<div class="span12">';
+                  echo'
+                  <p>'.$pregunta['item']->texto.'</p>
+                  <div class="row-fluid">';
+                    foreach ($pregunta['respuestas'] as $k => $respuesta){   
+                      echo '
+                      <div class="span3">'.
+                        (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
+                        ': <b>'.$respuesta['cantidad'].'</b>
+                      </div>';
+                    }
+                    echo '
+                  </div>
+                </div>';
+                if ($graficos){
                   echo '
-                  <div class="row">
-                    <div class="span9">
-                      <p>'.$pregunta['item']->texto.'</p>
-                      <div class="row-fluid">';
-                        foreach ($pregunta['respuestas'] as $k => $respuesta){   
-                          echo '
-                          <div class="span3">'.
-                            (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
-                            ': <b>'.$respuesta['cantidad'].'</b>
-                          </div>';
-                        }
-                        echo '
-                      </div>
-                    </div>
-                    <div class="span3">
-                      <img src="'.site_url("pcharts/graficoPreguntaCarrera/".
-                      $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$carrera->idCarrera).
-                      '" width="400" height="160" />
-                    </div>
+                  <div class="span4">
+                    <img src="'.site_url("pcharts/graficoPreguntaCarrera/".
+                    $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$carrera->idCarrera).
+                    '" width="350" height="105" />
                   </div>';
-                  break;
-                }//switch
-                echo'
-              </div>
-            </div>';
+                }
+              echo '</div>';
+              break;
+            }//switch
           }//foreach preguntas
           if($seccion['indice']) echo '<h4>Índice de la Sección: '.$seccion['indice'].'</h4>'; 
         }//foreach secciones
+        if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.$indice.'</h4>';
         ?>
-        <?php if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.$indice?>
       </div>
     </div>
   </div>

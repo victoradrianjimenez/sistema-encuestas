@@ -17,8 +17,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Claves de acceso</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-encuestas.php'?>
         </div>
       </div>
       
@@ -38,26 +37,26 @@
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
               <div class="controls">
-                <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
-                <input type="hidden" name="idCarrera" required/>
+                <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo ($carrera->nombre)?$carrera->nombre.' / '.$carrera->plan:''?>">
+                <input type="hidden" name="idCarrera" required value="<?php echo $carrera->idCarrera?>"/>
                 <?php echo form_error('idCarrera')?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="buscarMateria">Materia:</label>
               <div class="controls">
-                <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
-                <input type="hidden" name="idMateria" required/>
+                <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo ($materia->nombre)?$materia->nombre.' / '.$materia->codigo:''?>">
+                <input type="hidden" name="idMateria" required value="<?php echo $materia->idMateria?>"/>
                 <?php echo form_error('idMateria')?>
               </div>
             </div>
             <div class="control-group">  
               <label class="control-label" for="buscarEncuesta">Año/<?php echo PERIODO?>:</label>
               <div class="controls">
-                <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required>
-                <input type="hidden" name="idEncuesta" required/>
+                <input class="input-block-level" id="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo ($encuesta->año)?$encuesta->año.'/'.$encuesta->cuatrimestre.' '.PERIODO:''?>">
+                <input type="hidden" name="idEncuesta" required value="<?php echo $encuesta->idEncuesta?>"/>
                 <?php echo form_error('idEncuesta')?>
-                <input type="hidden" name="idFormulario" required/>
+                <input type="hidden" name="idFormulario" required value="<?php echo $encuesta->idFormulario?>"/>
               </div>
             </div>
             <div class="controls">
@@ -78,18 +77,23 @@
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel">Generar Claves de Accesos</h3>
     </div>
-    <form class="form-horizontal" action="<?php echo site_url('carreras/asociarMateria')?>" method="post">
+    <form class="form-horizontal" action="<?php echo site_url('claves/generar')?>" method="post">
       <div class="modal-body">
-        
         <h5></h5>
         <div class="control-group"> 
+          <input type="hidden" name="idMateria" value="" required/>
+          <input type="hidden" name="idCarrera" value="" required/>
+          <input type="hidden" name="idFormulario" value="" required/>
+          <input type="hidden" name="idEncuesta" value="" required/>
           <label class="control-label" for="campoCantidad">Cantidad de claves: </label>
           <div class="controls">
             <input class="input-xlarge" id="campoCantidad" type="number" name="cantidad" value="30" />
             <?php echo form_error('cantidad')?>
           </div>
+          <div class="controls">
+            <label class="checkbox"><input type="checkbox" name="guardarCantidad" value="1" checked />Guardar valor para futuras consultas</label>
+          </div>
         </div>
-
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -111,17 +115,23 @@
     autocompletar_materia("<?php echo site_url('carreras/buscarMateriasAJAX')?>");
     autocompletar_encuesta("<?php echo site_url('encuestas/buscarAJAX')?>");
     $('.generar').click(function(){
-      idMateria = $('input[name="idMateria"]').val();
-      idCarrera = $('input[name="idCarrera"]').val();
-      idFormulario = $('input[name="idFormulario"]').val();
-      idEncuesta = $('input[name="idEncuesta"]').val();
-      
+      idMateria = $('#contenedor input[name="idMateria"]').val();
+      idCarrera = $('#contenedor input[name="idCarrera"]').val();
+      idFormulario = $('#contenedor input[name="idFormulario"]').val();
+      idEncuesta = $('#contenedor input[name="idEncuesta"]').val();
       if (idMateria != '' && idCarrera != '' && idFormulario!=''&&idEncuesta!=''){
-        //nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
         //cargo el id de la materia en el formulario
-        //$('#modalGenerar input[name="idMateria"]').val(idMateria);
-        //pongo el nombre de la materia en el dialogo
-        //$("#modalGenerar").find('.nombre').html(nombre);
+        $('#modalGenerar input[name="idMateria"]').val(idMateria);
+        $('#modalGenerar input[name="idCarrera"]').val(idCarrera);
+        $('#modalGenerar input[name="idFormulario"]').val(idFormulario);
+        $('#modalGenerar input[name="idEncuesta"]').val(idEncuesta);
+        $.ajax({
+          type: "POST", 
+          url: "<?php echo site_url('materias/cantidadClavesAJAX')?>", 
+          data: {idMateria: idMateria, idCarrera: idCarrera}
+        }).done(function(msg){
+          $('#modalGenerar input[name="cantidad"]').attr('value', msg.replace(/^\s+/g,'').replace(/\s+$/g,'')); //trim
+        });
         $("#modalGenerar").modal();
       }
       return false;

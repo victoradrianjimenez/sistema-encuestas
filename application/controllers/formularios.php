@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * Controlador para la gestión de formularios
  */
 class Formularios extends CI_Controller{
 
@@ -13,21 +13,21 @@ class Formularios extends CI_Controller{
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-    $this->data['resultadoTipo'] = ALERT_ERROR;
-    $this->data['resultadoOperacion'] = null;
+    $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
+    $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
-
 
   public function index(){
     $this->listar();
   }
-
   
   /*
    * Muestra el listado de formularios
    */
   public function listar($PagInicio=0){
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     //chequeo parámetros de entrada
@@ -75,6 +75,8 @@ class Formularios extends CI_Controller{
    */
   public function ver(){
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     $this->load->model('Usuario');
@@ -163,6 +165,8 @@ class Formularios extends CI_Controller{
   public function nuevo(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
@@ -241,7 +245,7 @@ class Formularios extends CI_Controller{
           foreach ($seccion['preguntas'] as $j => $pregunta) {
             $res = $this->Seccion->altaItem($pregunta, NULL, $j);
             echo $pregunta.' '.NULL.' '.$j;
-            if ($res != 'ok'){
+            if ($res != PROCEDURE_SUCCESS){
               $error = true;
               break;
             }
@@ -256,7 +260,7 @@ class Formularios extends CI_Controller{
       //cargo vista para mostrar resultado
       $this->data['mensaje'] = (!$error)?"La operación se realizó con éxito. El ID del nuevo formulario es ".$this->Formulario->idFormulario.".":$res;
       $this->data['link'] = site_url("formularios/listar"); //hacia donde redirigirse
-      $this->load->view('resultado_operacion', $this->data);
+      /////////////////////////////////////$this->load->view('resultado_operacion', $this->data);
     }
     else{
       $this->data['tituloFormulario'] = 'Nuevo Formulario';
@@ -273,6 +277,8 @@ class Formularios extends CI_Controller{
   public function eliminar(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->is_admin()){
@@ -287,7 +293,7 @@ class Formularios extends CI_Controller{
 
       //doy de baja y cargo vista para mostrar resultado
       $res = $this->gf->baja($this->input->post('idFormulario',TRUE));
-      if (strcmp($res, 'ok')==0){
+      if ($res == PROCEDURE_SUCCESS){
         $this->session->set_flashdata('resultadoOperacion', 'El formulario se eliminó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
       }

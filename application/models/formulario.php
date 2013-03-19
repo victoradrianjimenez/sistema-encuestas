@@ -26,7 +26,6 @@ class Formulario extends CI_Model{
     $query = $this->db->query("call esp_listar_secciones($idFormulario)");
     $data = $query->result('Seccion');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   /**
@@ -42,7 +41,6 @@ class Formulario extends CI_Model{
     $query = $this->db->query("call esp_listar_secciones_carrera($idFormulario, $idCarrera)");
     $data = $query->result('Seccion');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
  
@@ -65,7 +63,6 @@ class Formulario extends CI_Model{
     $query = $this->db->query("call esp_alta_seccion($idFormulario, $idCarrera, $texto, $descripcion, $tipo)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   

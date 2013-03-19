@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Editar datos de usuario</title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <title>Editar datos de usuario - <?php echo NOMBRE_SISTEMA?></title>
 </head>
 <body>
   <div id="wrapper">
@@ -31,14 +30,14 @@
             <div class="control-group">  
               <label class="control-label" for="campoEmail">E-mail: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoEmail" type="text" name="email" required value="<?php echo $usuarioLogin->email?>"/>
+                <input class="input-block-level" id="campoEmail" type="text" name="email" maxlength="100" required value="<?php echo $usuarioLogin->email?>"/>
                 <?php echo form_error('email'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoUsuario" type="text" name="username" required value="<?php echo $usuarioLogin->username?>"/>
+                <input class="input-block-level" id="campoUsuario" type="text" name="username" maxlength="100" required value="<?php echo $usuarioLogin->username?>"/>
                 <?php echo form_error('username'); ?>
               </div>
             </div>
@@ -61,6 +60,7 @@
               <div class="controls">
                 <input id="campoImagen" type="file" name="imagen"/>
                 <?php echo form_error('imagen'); ?>
+                <label class="checkbox"><input type="checkbox" name="noImagen" value="1"  />Eliminar imagen actual</label>
               </div>
             </div>
             <div class="control-group">
@@ -81,10 +81,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script>
-    $('input[type="text"], input[type="password"]').keyup(function(){
-      $(this).siblings('span.label').hide('fast');
-    });
-  </script>
+  <script src="<?php echo base_url('js/alert.js')?>"></script>
+  <script src="<?php echo base_url('js/formularios.js')?>"></script>
 </body>
 </html>  

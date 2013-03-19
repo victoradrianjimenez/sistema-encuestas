@@ -3,17 +3,15 @@
 <head>
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
     <?php include 'templates/menu-nav.php'?>
     <div class="container">
       <div class="row">
-        <!-- Titulo -->
+        <!-- Title -->
         <div class="span12">
-          <h3>Gestión de Departamentos, Carreras y Materias</h3>
-          <p>---Descripción---</p>
+            <?php include 'templates/descripcion-departamentos.php'?>
         </div>
       </div>
       
@@ -37,7 +35,7 @@
             <div class="control-group">
               <label class="control-label" for="campoNombre">Nombre: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" type="text" id="campoNombre" name="nombre" value="<?php echo (set_value('nombre'))?set_value('nombre'):$departamento->nombre?>" required />
+                <input class="input-block-level" type="text" id="campoNombre" name="nombre" maxlength="60" value="<?php echo $departamento->nombre?>" required/>
                 <?php echo form_error('nombre')?>
               </div>
             </div>
@@ -49,14 +47,13 @@
                 <input type="hidden" name="idJefeDepartamento" value="<?php echo $departamento->idJefeDepartamento?>"/>
               </div>
             </div>
-            
             <div class="control-group">
               <label class="control-label">Opciones: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="publicarInforme" <?php echo (isset($_POST['publicarInforme']) || $departamento->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Departamento son Públicos</label>
-                <?php echo form_error('publicarInforme')?>
-                <label class="checkbox"><input type="checkbox" name="publicarHistorico" <?php echo (isset($_POST['publicarHistorico']) || $departamento->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Departamento son Públicos</label>
-                <?php echo form_error('publicarHistorico')?>
+                <label class="checkbox"><input type="checkbox" name="publicarInformes" value="1" <?php echo ($departamento->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Departamento son Públicos</label>
+                <?php echo form_error('publicarInformes')?>
+                <label class="checkbox"><input type="checkbox" name="publicarHistoricos" value="1" <?php echo ($departamento->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Departamento son Públicos</label>
+                <?php echo form_error('publicarHistoricos')?>
               </div>
             </div>
             <!-- Botones -->
@@ -69,7 +66,7 @@
         </div>
       </div>
     </div>
-    <div id="push"></div><br />
+    <div id="push"></div><br/>
   </div>
   <?php include 'templates/footer.php'?>
   
@@ -77,6 +74,8 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>

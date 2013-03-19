@@ -27,7 +27,6 @@ class Seccion extends CI_Model{
     $query = $this->db->query("call esp_listar_items_seccion($idSeccion, $idFormulario)");
     $data = $query->result('Item');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -44,7 +43,6 @@ class Seccion extends CI_Model{
     $query = $this->db->query("call esp_listar_items_seccion_carrera($idSeccion, $idFormulario, $idCarrera)");
     $data = $query->result('Item');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -67,7 +65,6 @@ class Seccion extends CI_Model{
     $query = $this->db->query("call esp_alta_item($idSeccion, $idFormulario, $idPregunta, $idCarrera, $posicion)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -81,7 +78,6 @@ class Seccion extends CI_Model{
     $query = $this->db->query("call esp_baja_item($idSeccion, $idFormulario, $idPregunta)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -96,7 +92,6 @@ class Seccion extends CI_Model{
     $query = $this->db->query("call esp_baja_item_carrera($idSeccion, $idFormulario, $idPregunta, $idCarrera)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   

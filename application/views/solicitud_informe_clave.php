@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Generar Informe por Clave de acceso</title>
+  <title>Generar Informe por Clave de acceso - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     .form-horizontal .controls {
@@ -22,13 +22,12 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Informes por Claves de Acceso</h3>
+          <h3>Respuestas por clave de acceso</h3>
           <p>---Descripción---</p>
         </div>
       </div>
       
       <div class="row">
-        
         <!-- Main -->
         <div id="contenedor" class="span12">
           <h4>Solicitar informe por clave de acceso</h4>
@@ -69,9 +68,9 @@
             </div>
             <div class="control-group">
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir índices para cada docente</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice global</label>
+                <label class="checkbox"><input type="checkbox" name="indicesSecciones" value="1" checked />Incluir índices de secciones</label>
+                <label class="checkbox"><input type="checkbox" name="indicesDocentes" value="1" checked />Incluir índices para cada docente</label>
+                <label class="checkbox"><input type="checkbox" name="indiceGlobal" value="1" checked />Incluir indice global</label>
               </div>
             </div>
             <div class="controls btn-group">
@@ -90,14 +89,16 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-tooltip.js')?>"></script>
   <script src="<?php echo base_url('js/formulario.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
     autocompletar_carrera("<?php echo site_url('carreras/buscarAJAX')?>");
     autocompletar_encuesta("<?php echo site_url('encuestas/buscarAJAX')?>");
     autocompletar_materia("<?php echo site_url('carreras/buscarMateriasAJAX')?>");
+    
     //listar claves de acceso al elegir la encuesta
-    listarClaves = function(){
+    $('#buscarEncuesta').change(function(){
       $('#listaClaves').empty();
       var idEncuesta = $('#buscarEncuesta').siblings('input[name="idEncuesta"]').val();
       var idFormulario = $('#buscarEncuesta').siblings('input[name="idFormulario"]').val();
@@ -112,7 +113,7 @@
           idEncuesta: idEncuesta,
           idFormulario: idFormulario,
           idMateria: idMateria,
-          idCarrera: idCarrera,
+          idCarrera: idCarrera
         }
       }).done(function(msg){
         var filas = msg.split("\n");
@@ -121,13 +122,13 @@
           //separo datos en columnas
           var columnas = filas[i].split("\t");
           var id = columnas[0];
-          var datos = columnas[1]+" / "+columnas[3];
+          var datos = columnas[1]+" - "+columnas[3];
           //agregar fila a la lista desplegable
           $('#listaClaves').append('<option value="'+id+'">'+datos+'</option>');
         }
         $('#listaClaves').children().first().attr('selected','');
       });
-    };
+    });
   </script>
 </body>
 </html>

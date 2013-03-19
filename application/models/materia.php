@@ -31,7 +31,6 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_listar_docentes_materia($idMateria, $pagNumero, $pagLongitud)");
     $data = $query->result('Usuario');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -48,7 +47,6 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_listar_carreras_materia($idMateria)");
     $data = $query->result('Carrera');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   */
@@ -64,13 +62,12 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_cantidad_docentes_materia($idMateria)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
   
   /**
-   * Asocia un docente a la materia. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Asocia un docente a la materia. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de usuario
@@ -84,13 +81,12 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_asociar_docente_materia($id, $idMateria, $ordenFormulario, $cargo)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
   /**
-   * Elimina la asociación de un docente con la materia. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Elimina la asociación de un docente con la materia. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de usuario
@@ -102,8 +98,43 @@ class Materia extends CI_Model{
     $query = $this->db->query("call esp_desasociar_docente_materia($id, $idMateria)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  } 
+  
+  
+  /**
+   * Guarda la cantidad de claves de acceso generadas en una materia y carrera (representa la cantidad de alumnos)
+   *
+   * @access public
+   * @param identificador de carrera
+   * @param cantidad de claves generadas, que se quiere guardar para futuras consultas
+   * @return string
+   */
+  public function asignarCantidadClaves($idCarrera, $cantidad){
+    $idMateria = $this->db->escape($this->idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $cantidad = $this->db->escape($cantidad);
+    $query = $this->db->query("call esp_asignar_cantidad_claves($idCarrera, $idMateria, $cantidad)");
+    $data = $query->row();
+    $query->free_result();
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  } 
+
+  
+  /**
+   * Lee la cantidad de claves de acceso generadas en una materia y carrera (representa la cantidad de alumnos)
+   *
+   * @access public
+   * @param identificador de carrera
+   * @return int
+   */
+  public function dameCantidadClaves($idCarrera){
+    $idMateria = $this->db->escape($this->idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $query = $this->db->query("call esp_dame_cantidad_claves($idCarrera, $idMateria)");
+    $data = $query->row();
+    $query->free_result();
+    return ($data)?$data->cantidad:0;
   } 
 }
 

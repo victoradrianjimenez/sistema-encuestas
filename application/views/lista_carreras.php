@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Carreras - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
@@ -12,10 +11,9 @@
     
     <div class="container">
       <div class="row">
-        <!-- Titulo -->
+        <!-- Title -->
         <div class="span12">
-          <h3>Gestión de Departamentos, Carreras y Materias</h3>
-          <p>---Descripción---</p>
+            <?php include 'templates/descripcion-departamentos.php'?>
         </div>
       </div>
       
@@ -93,6 +91,7 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       idCarrera = $(this).attr('value');
@@ -104,8 +103,6 @@
       $("#modalEliminar").modal();
       return false;
     });
-    //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

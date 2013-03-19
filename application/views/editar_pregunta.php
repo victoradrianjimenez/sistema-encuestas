@@ -3,23 +3,11 @@
 <head>
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
-    .Opciones{
-      margin:0;
-    }
-    .Opciones li{
-      border: 1px solid #CCCCCC;
-      padding: 5px;
-      margin: 5px 0;
-    }
-    li{
-      list-style: none;
-    }
-    .btn-group{
-      float:right;
-      line-height:0;
-    }
+    .Opciones{margin:0;}
+    .Opciones li{border: 1px solid #CCCCCC; padding: 5px; margin: 5px 0;}
+    li{list-style: none;}
+    .btn-group{float:right; line-height:0;}
   </style>
 </head>
 <body>
@@ -29,8 +17,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Gestión de Formularios</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-formularios.php'?>
         </div>
       </div>
       
@@ -49,30 +36,30 @@
             <input type="hidden" name="idPregunta" value="<?php echo $pregunta->idPregunta?>"/>
             
             <label for="campoTexto">Texto: <span class="opcional">*</span></label>
-            <input class="input-block-level" id="campoTexto" type="text" name="texto" value="<?php echo $pregunta->texto?>" />
+            <input class="input-block-level" id="campoTexto" type="text" name="texto" maxlength="250" value="<?php echo $pregunta->texto?>" />
             <?php echo form_error('texto')?>
             
             <label for="campoDescripcion">Descripción: </label>
-            <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" value="<?php echo $pregunta->descripcion?>" />
+            <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" maxlength="250" value="<?php echo $pregunta->descripcion?>" />
             <?php echo form_error('descripcion')?>
 
             <?php if (!isset($disabled)):?>
               
               <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
               <select id="campoTipo" name="tipo" required>
-                <option value="S" <?php echo set_select('tipo', 'S', TRUE)?>>Selección simple</option>
-                <option value="N" <?php echo set_select('tipo', 'N')?>>Numérica</option>
-                <option value="T" <?php echo set_select('tipo', 'T')?>>Texto simple</option>
-                <option value="X" <?php echo set_select('tipo', 'X')?>>Texto multilínea</option>
+                <option value="<?php echo TIPO_SELECCION_SIMPLE?>" <?php echo set_select('tipo', TIPO_SELECCION_SIMPLE, TRUE)?>>Selección simple</option>
+                <option value="<?php echo TIPO_NUMERICA?>" <?php echo set_select('tipo', TIPO_NUMERICA)?>>Numérica</option>
+                <option value="<?php echo TIPO_TEXTO_SIMPLE?>" <?php echo set_select('tipo', TIPO_TEXTO_SIMPLE)?>>Texto simple</option>
+                <option value="<?php echo TIPO_TEXTO_MULTILINEA?>" <?php echo set_select('tipo', TIPO_TEXTO_MULTILINEA)?>>Texto multilínea</option>
               </select>
               <?php echo form_error('tipo')?>
               
               <label class="checkbox">
-                <input type="checkbox" name="ordenInverso" <?php echo ($pregunta->ordenInverso=='S')?'checked="checked"':''?> /> Orden Inverso
+                <input type="checkbox" name="ordenInverso" value="1" <?php echo ($pregunta->ordenInverso=='S')?'checked="checked"':''?> /> Orden Inverso
               </label>
               
               <label for="campoUnidad">Unidad: </label>
-              <input id="campoUnidad" type="text" name="unidad" value="<?php echo $pregunta->unidad?>"/>
+              <input id="campoUnidad" type="text" name="unidad" maxlength="10" value="<?php echo $pregunta->unidad?>"/>
               <?php echo form_error('unidad')?>
   
               <div id="OpcionesNumerico" class="hide">
@@ -147,8 +134,8 @@
       <h3 id="myModalLabel">Agregar opción</h3>
     </div>
     <div class="modal-body">
-      <label>Texto:
-        <input type="text" name="texto" required />
+      <label class="control-label" for="campoTextoOpcion">Texto: 
+        <input id="campoTextoOpcion" type="text" name="texto" maxlength="40" required />
       </label>
     </div>
     <div class="modal-footer">
@@ -163,6 +150,8 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/formularios.js')?>"></script>
+  <script src="<?php echo base_url('js/preguntas.js')?>"></script>
   <script>
     $('select[name="tipo"]').change(function(){
       switch($(this).val()){
@@ -178,46 +167,6 @@
         $('#OpcionesSeleccion').hide('fast');
         $('#OpcionesNumerico').hide('fast');
       }
-    });
-  
-    $('.agregarOpcion').click(function(){
-      //busco el contenedor del formulario de agregar opcion
-      contFormulario = $('#modalAgregarOpcion');
-      
-      //leo los datos ingresados
-      pTexto = contFormulario.find('input[name="texto"]').val();
-      if (pTexto=='') return;
-      
-      //tomo la plantilla de la opcion y la agrego al formulario creado
-      HTMLOpcion = $('#HTMLOpcion').html();
-      $('.Opciones').append(HTMLOpcion);
-      nuevaOpcion = $('.Opciones').children().last();
-      
-      //actualizo valores la plantilla
-      nuevaOpcion.find('.texto').html(pTexto);
-      nuevaOpcion.find('input[name="textoOpcion[]"]').val(pTexto);
-      
-      //agrego gestor de eventos de los nuevos botones
-      nuevaOpcion.find('.subirOpcion').click(function(){
-        Contenedor = $(this).parentsUntil('li.Opcion').parent();
-        Contenedor.prev().before(Contenedor);
-        return false;
-      });
-      nuevaOpcion.find('.bajarOpcion').click(function(){
-        Contenedor = $(this).parentsUntil('li.Opcion').parent();
-        Contenedor.next().after(Contenedor);
-        return false;
-      });
-      nuevaOpcion.find('.eliminarOpcion').click(function(){
-        Contenedor = $(this).parentsUntil('li.Opcion').parent();
-        Contenedor.hide('fast', function(){$(this).remove();});
-        return false;
-      });
-      
-      //ocultar ventana
-      $('#modalAgregarOpcion').modal('hide'); //cerrar ventana
-      //borro los campos del modal para la proxima
-      contFormulario.find('input[name="texto"]').val('');       
     });
   </script>
 </body>

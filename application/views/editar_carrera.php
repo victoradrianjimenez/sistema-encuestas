@@ -3,17 +3,15 @@
 <head>
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
     <?php include 'templates/menu-nav.php'?>
     <div class="container">
       <div class="row">
-        <!-- Titulo -->
+        <!-- Title -->
         <div class="span12">
-          <h3>Gestión de Departamentos, Carreras y Materias</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-departamentos.php'?>
         </div>
       </div>
       
@@ -45,14 +43,14 @@
             <div class="control-group">
               <label class="control-label" for="campoNombre">Nombre: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoNombre" type="text" name="nombre" value="<?php echo (set_value('nombre'))?set_value('nombre'):$carrera->nombre?>" required />
+                <input class="input-block-level" id="campoNombre" type="text" name="nombre" maxlength="60" value="<?php echo $carrera->nombre?>" required />
                 <?php echo form_error('nombre'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoPlan">Plan: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoPlan" type="number" min="1900" max="2100" name="plan" value="<?php echo (set_value('plan'))?set_value('plan'):$carrera->plan?>" required />
+                <input class="input-block-level" id="campoPlan" type="number" min="1900" max="2100" name="plan" value="<?php echo $carrera->plan?>" required />
                 <?php echo form_error('plan'); ?>
               </div>
             </div>
@@ -67,10 +65,10 @@
             <div class="control-group">
               <label class="control-label">Opciones: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="publicarInforme" <?php echo (isset($_POST['publicarInforme']) || $carrera->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Carrera son Públicos</label>
-                <?php echo form_error('publicarInforme')?>
-                <label class="checkbox"><input type="checkbox" name="publicarHistorico" <?php echo (isset($_POST['publicarHistorico']) || $carrera->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Carrera son Públicos</label>
-                <?php echo form_error('publicarHistorico')?>
+                <label class="checkbox"><input type="checkbox" name="publicarInformes" value="1" <?php echo ($carrera->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Carrera son Públicos</label>
+                <?php echo form_error('publicarInformes')?>
+                <label class="checkbox"><input type="checkbox" name="publicarHistoricos" value="1" <?php echo ($carrera->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Carrera son Públicos</label>
+                <?php echo form_error('publicarHistoricos')?>
               </div>
             </div>
             <!-- Botones -->
@@ -92,6 +90,7 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>

@@ -32,7 +32,6 @@ class Usuario extends CI_Model{
     $query = $this->db->query("call esp_dame_docente_materia($id, $idMateria)");
     $data = $query->row_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
 

@@ -28,7 +28,6 @@ class Gestor_formularios extends CI_Model{
     $query = $this->db->query("call esp_alta_formulario($nombre, $titulo, $descripcion, $preguntasAdicionales)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -44,12 +43,11 @@ class Gestor_formularios extends CI_Model{
     $query = $this->db->query("call esp_dame_formulario($idFormulario)");
     $data = $query->result('Formulario');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
   /**
-   * Da de Baja un formulario. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Da de Baja un formulario. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de formulario
@@ -60,7 +58,6 @@ class Gestor_formularios extends CI_Model{
     $query = $this->db->query("call esp_baja_formulario($idFormulario)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -76,7 +73,6 @@ class Gestor_formularios extends CI_Model{
     $query = $this->db->query("call esp_buscar_formularios($nombre)");
     $data = $query->result('Formularios');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -94,7 +90,6 @@ class Gestor_formularios extends CI_Model{
     $query = $this->db->query("call esp_listar_formularios($pagNumero, $pagLongitud)");
     $data = $query->result('Formulario');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -108,7 +103,6 @@ class Gestor_formularios extends CI_Model{
     $query = $this->db->query("call esp_cantidad_formularios()");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   

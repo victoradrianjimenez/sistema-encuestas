@@ -32,7 +32,6 @@ class Pregunta extends CI_Model{
     $query = $this->db->query("call esp_alta_opcion($idPregunta, $texto)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -47,7 +46,6 @@ class Pregunta extends CI_Model{
     $query = $this->db->query("call esp_listar_opciones($idPregunta)");
     $data = $query->result('Opcion');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -62,9 +60,67 @@ class Pregunta extends CI_Model{
     $query = $this->db->query("call esp_tipo_pregunta($idPregunta)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->tipo:'';
   }
+  
+  
+  
+  /**
+   * Historicos por pregunta
+   */
+  
+  public function historicoMateria($idMateria, $idCarrera, $fechaInicio, $fechaFin){
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $fechaInicio = $this->db->escape($fechaInicio);
+    $fechaFin = $this->db->escape($fechaFin);
+    $idPregunta = $this->db->escape($this->idPregunta);
+    $query = $this->db->query("call esp_historico_pregunta_materia($idMateria, $idCarrera, $idPregunta, $fechaInicio, $fechaFin)");
+    $data=$query->result_array();
+    $query->free_result();
+    return $data;
+  }
+  
+  public function historicoCarrera($idCarrera, $fechaInicio, $fechaFin){
+    $idCarrera = $this->db->escape($idCarrera);
+    $fechaInicio = $this->db->escape($fechaInicio);
+    $fechaFin = $this->db->escape($fechaFin);
+    $idPregunta = $this->db->escape($this->idPregunta);
+    $query = $this->db->query("call esp_historico_pregunta_carrera($idCarrera, $idPregunta, $fechaInicio, $fechaFin)");
+    $data=$query->result_array();
+    $query->free_result();
+    return $data;
+  }
+  
+  public function historicoDepartamento($idDepartamento, $fechaInicio, $fechaFin){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $fechaInicio = $this->db->escape($fechaInicio);
+    $fechaFin = $this->db->escape($fechaFin);
+    $idPregunta = $this->db->escape($this->idPregunta);
+    $query = $this->db->query("call esp_historico_pregunta_departamento($idDepartamento, $idPregunta, $fechaInicio, $fechaFin)");
+    $data=$query->result_array();
+    $query->free_result();
+    return $data;
+  }
+  
+  public function historicoFacultad($fechaInicio, $fechaFin){
+    $fechaInicio = $this->db->escape($fechaInicio);
+    $fechaFin = $this->db->escape($fechaFin);
+    $idPregunta = $this->db->escape($this->idPregunta);
+    $query = $this->db->query("call esp_historico_pregunta_facultad($idPregunta, $fechaInicio, $fechaFin)");
+    $data=$query->result_array();
+    $query->free_result();
+    return $data;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
 
 ?>

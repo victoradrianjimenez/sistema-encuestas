@@ -16,7 +16,6 @@ class Encuesta extends CI_Model{
     parent::__construct();
   }
   
-  
   /**
    * Buscar una clave (usada o no). Devuleve un objeto en caso de éxito, o FALSE en caso de error.
    *
@@ -29,7 +28,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_buscar_clave($clave)");
     $data = $query->result('Clave');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
 
@@ -52,12 +50,11 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_listar_claves_encuesta_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Clave');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
   /**
-   * Cerrar o finalizar una encuesta. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Cerrar o finalizar una encuesta. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @return string
@@ -68,7 +65,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_finalizar_encuesta($idEncuesta, $idFormulario)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -88,7 +84,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_cantidad_claves_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data; //devuelve dos elementos: Generadas y Utilizadas
   }
   
@@ -106,7 +101,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_cantidad_claves_carrera($idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data; //devuelve dos elementos: Generadas y Utilizadas
   }
   
@@ -124,7 +118,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_cantidad_claves_departamento($idDepartamento, $idEncuesta, $idFormulario)");
     $data=$query->row_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data; //devuelve dos elementos: Generadas y Utilizadas
   }
   
@@ -140,7 +133,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_cantidad_claves_facultad($idEncuesta, $idFormulario)");
     $data=$query->row_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data; //devuelve dos elementos: Generadas y Utilizadas
   }
   /**
@@ -157,7 +149,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_pregunta_facultad($idPregunta, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -177,7 +168,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_pregunta_departamento($idPregunta, $idDepartamento, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -197,7 +187,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_pregunta_carrera($idPregunta, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -221,7 +210,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_pregunta_materia($idPregunta, $idDocente, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -244,7 +232,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_textos_pregunta_materia($idPregunta, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -266,7 +253,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_listar_docentes_encuesta($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Usuario');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -288,7 +274,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_alta_clave($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -315,7 +300,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_docente_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion, $idDocente)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -339,7 +323,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_docente_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion, $idDocente)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -363,7 +346,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_seccion_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
 
@@ -385,7 +367,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_seccion_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario, $idSeccion)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -405,7 +386,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_seccion_carrera($idCarrera, $idEncuesta, $idFormulario, $idSeccion)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -427,7 +407,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_global_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -447,7 +426,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_global_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -465,7 +443,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_indice_global_carrera($idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->indice:0;
   }
   
@@ -487,7 +464,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_dame_clave($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Clave');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
@@ -508,7 +484,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_materia($idCarrera, $idMateria, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
 
@@ -527,7 +502,6 @@ class Encuesta extends CI_Model{
     $query = $this->db->query("call esp_respuestas_carrera($idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   

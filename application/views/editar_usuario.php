@@ -2,18 +2,16 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Editar usuario</title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
 </head>
 <body>
   <div id="wrapper">
     <?php include 'templates/menu-nav.php'?>
     <div class="container">
       <div class="row">
-        <!-- Titulo -->
+        <!-- Title -->
         <div class="span12">
-          <h3>Gestión de Docentes y Autoridades</h3>
-          <p>---Descripción---</p>
+            <?php include 'templates/descripcion-usuarios.php'?>
         </div>
       </div>
       
@@ -37,49 +35,49 @@
             
             <div class="control-group">
               <div class="controls">
-                <h4>Editar Usuario</h4>
+                <h4><?php echo $tituloFormulario?></h4>
                 <img src="<?php echo site_url('usuarios/imagen/'.$usuario->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>               
               </div>
             </div>
             <div class="control-group">
               <label class="control-label"  for="campoNombre">Nombre: </label>
               <div class="controls">
-                <input class="input-block-level" id="campoNombre" type="text" name="nombre" value="<?php echo (set_value('nombre'))?set_value('nombre'):$usuario->nombre?>"/>
+                <input class="input-block-level" id="campoNombre" type="text" name="nombre" maxlength="40" value="<?php echo $usuario->nombre?>"/>
                 <?php echo form_error('nombre'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label"  for="campoApellido">Apellido: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoApellido" type="text" name="apellido" required value="<?php echo (set_value('apellido'))?set_value('apellido'):$usuario->apellido?>"/>
+                <input class="input-block-level" id="campoApellido" type="text" name="apellido" maxlength="40" required value="<?php echo $usuario->apellido?>"/>
                 <?php echo form_error('apellido'); ?>
               </div>
             </div>
             <div class="control-group">  
               <label class="control-label" for="campoEmail">E-mail: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoEmail" type="text" name="email" required value="<?php echo (set_value('email'))?set_value('email'):$usuario->email?>"/>
+                <input class="input-block-level" id="campoEmail" type="text" name="email" maxlength="100" required value="<?php echo $usuario->email?>"/>
                 <?php echo form_error('email'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoUsuario" type="text" name="username" required value="<?php echo (set_value('username'))?set_value('username'):$usuario->username?>"/>
+                <input class="input-block-level" id="campoUsuario" type="text" name="username" maxlength="100" required value="<?php echo $usuario->username?>"/>
                 <?php echo form_error('username'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoContraseña">Contraseña: </label>
               <div class="controls">
-                <input class="input-block-level" id="campoContraseña" type="password" name="password" value="<?php echo set_value('password')?>"/>
+                <input class="input-block-level" id="campoContraseña" type="password" name="password" value=""/>
                 <?php echo form_error('password'); ?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoContraseña2">Confirmar contraseña: </label>
               <div class="controls">
-                <input class="input-block-level" id="campoContraseña2" type="password" name="password2" value="<?php echo set_value('password2')?>"/>
+                <input class="input-block-level" id="campoContraseña2" type="password" name="password2" value=""/>
                 <?php echo form_error('password2'); ?>
               </div>
             </div>
@@ -88,12 +86,13 @@
               <div class="controls">
                 <input id="campoImagen" type="file" name="imagen"/>
                 <?php echo form_error('imagen'); ?>
+                <label class="checkbox"><input type="checkbox" name="noImagen" value="1"  />Eliminar imagen actual</label>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Estado: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="active" <?php echo (isset($_POST['active']) || $usuario->active)?'checked="checked"':''?> />Cuenta de usuario Activa</label>
+                <label class="checkbox"><input type="checkbox" name="active" value="1" <?php echo (isset($_POST['active']) || $usuario->active)?'checked="checked"':''?> />Cuenta de usuario Activa</label>
                 <?php echo form_error('active')?>
               </div>
             </div>

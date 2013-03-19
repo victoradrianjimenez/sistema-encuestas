@@ -23,11 +23,27 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_dame_encuesta($idEncuesta, $idFormulario)");
     $data = $query->result('Encuesta');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
 
+  /**
+   * Da de Baja una encuesta. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
+   *
+   * @access public
+   * @param identificador de la carrera
+   * @return string
+   */
+  public function baja($idEncuesta, $idFormulario){
+    $idEncuesta = $this->db->escape($idEncuesta);
+    $idFormulario = $this->db->escape($idFormulario);
+    $query = $this->db->query("call esp_baja_encuesta($idEncuesta, $idFormulario)");
+    $data = $query->row();
+    $query->free_result();
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
+  
   /**
    * Da de Alta una periodo de encuestas. Devuleve el id en caso de éxito o un mensaje en caso de error.
    *
@@ -45,7 +61,6 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_alta_encuesta($idFormulario, $tipo, $año, $cuatrimestre)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 
@@ -64,7 +79,6 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_listar_encuestas($pagNumero, $pagLongitud)");
     $data = $query->result('Encuesta');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -79,7 +93,6 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_cantidad_encuestas()");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -95,7 +108,6 @@ class Gestor_encuestas extends CI_Model{
     $query = $this->db->query("call esp_buscar_encuestas($año)");
     $data = $query->result('Encuesta');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }  
       

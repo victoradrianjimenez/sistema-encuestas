@@ -6,7 +6,6 @@
   </div>
   <form id="login" class="form-horizontal" action="<?php echo site_url("usuarios/login")?>" method="post"> 
     <div class="modal-body">
-      <input type="hidden" name="redirect" value="<?php if(isset($redirectLogin)) echo $redirectLogin?>" />
       <div class="control-group">
         <label class="control-label" for="loginUsuario">Usuario</label>
         <div class="controls">
@@ -24,21 +23,16 @@
       <div class="control-group">
         <div class="controls">
           <label class="checkbox">
-            <input type="checkbox" name="recordarme" />Recordarme   
+            <input type="checkbox" name="recordarme" value="1" checked/>Recordarme   
           </label>
           <a href="<?php echo site_url("usuarios/recuperarContrasena")?>">¿Olvidó la contraseña?</a>
         </div>
       </div>
-      <?php if(isset($mensajeLogin)):?>
-        <div class="alert-box alert")>
-          <?php echo $mensajeLogin ?>
-          <a href="#" class="close">&times;</a>
-        </div>
-      <?php endif ?>  
     </div>
     <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
       <input type="submit" name="submit" value="Aceptar" class="btn btn-primary" />
     </div>
   </form>
-</div>  
+</div>
+<?php if(isset($showLogin)) echo'<script>window.onload=function(){$("#LoginModal").modal();}</script>'//abrir ventana de login?>

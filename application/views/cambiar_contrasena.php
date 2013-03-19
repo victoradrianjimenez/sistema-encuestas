@@ -23,7 +23,7 @@
             <div class="control-group">
               <label class="control-label" for="campoContraseña">Nueva contraseña: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoContraseña" type="password" name="nuevaContrasena" value="<?php echo set_value('nuevaContrasena', '')?>" required />
+                <input class="input-block-level" id="campoContraseña" type="password" name="nuevaContrasena" required />
                 <?php echo form_error('nuevaContrasena')?>
               </div>
             </div>
@@ -44,7 +44,7 @@
         </form>
       </div>
     </div>
-
+    <div id="push"></div><br />
   </div>
   <?php include 'templates/footer.php'?>
   
@@ -53,7 +53,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
 </body>
 </html>

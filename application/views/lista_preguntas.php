@@ -3,19 +3,15 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Preguntas - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
-    
     <?php include 'templates/menu-nav.php'?>
-    
     <div class="container">
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Gestión de Formularios</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-formularios.php'?>
         </div>
       </div>
       
@@ -102,8 +98,6 @@
       $("#modalEliminar").modal();
       return false;
     });
-    //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

@@ -30,7 +30,6 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_buscar_materias_carrera($idCarrera, $nombre)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -48,7 +47,6 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_listar_materias_carrera($idCarrera, $pagInicio, $pagLongitud)");
     $data = $query->result('Materia');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -64,13 +62,12 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_cantidad_materias_carrera($idCarrera)");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
   
   /**
-   * Asocia una materia a la carrera. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Asocia una materia a la carrera. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de materia
@@ -82,13 +79,12 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_asociar_materia_carrera($idMateria, $idCarrera)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
   /**
-   * Elimina la asociación de una materia a la carrera. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Elimina la asociación de una materia a la carrera. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de materia
@@ -100,7 +96,6 @@ class Carrera extends CI_Model{
     $query = $this->db->query("call esp_desasociar_materia_carrera($idMateria, $idCarrera)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   

@@ -21,22 +21,21 @@ class Gestor_carreras extends CI_Model{
    * @return  string
    */
   public function alta($idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos){
-    $publicarInformes = ($publicarInformes)?'S':'N';
-    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
+    $publicarInformes = $this->db->escape($publicarInformes);
+    $publicarHistoricos = $this->db->escape($publicarHistoricos);
     $idDepartamento = $this->db->escape($idDepartamento);
     $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
     $nombre = $this->db->escape($nombre);
     $plan = $this->db->escape($plan);
-    $query = $this->db->query("call esp_alta_carrera($idDepartamento, $idDirectorCarrera, $nombre, $plan, '$publicarInformes', '$publicarHistoricos')");
+    $query = $this->db->query("call esp_alta_carrera($idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 
 
   /**
-   * Da de Baja una carrera. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Da de Baja una carrera. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de la carrera
@@ -47,7 +46,6 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_baja_carrera($idCarrera)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -64,17 +62,16 @@ class Gestor_carreras extends CI_Model{
    * @return string
    */
   public function modificar($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos){
-    $publicarInformes = ($publicarInformes)?'S':'N';
-    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
+    $publicarInformes = $this->db->escape($publicarInformes);
+    $publicarHistoricos = $this->db->escape($publicarHistoricos);
     $idDepartamento = $this->db->escape($idDepartamento);
     $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
     $idCarrera = $this->db->escape($idCarrera);
     $nombre = $this->db->escape($nombre);
     $plan = $this->db->escape($plan);
-    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, '$publicarInformes', '$publicarHistoricos')");
+    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -91,7 +88,6 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_dame_carrera($idCarrera)");
     $data = $query->result('Carrera');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
   
@@ -110,7 +106,6 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_listar_carreras($pagNumero, $pagLongitud)");
     $data = $query->result('Carrera');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   
@@ -125,7 +120,6 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_cantidad_carreras()");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
   
@@ -142,7 +136,6 @@ class Gestor_carreras extends CI_Model{
     $query = $this->db->query("call esp_buscar_carreras($nombre)");
     $data = $query->result('Carrera');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   

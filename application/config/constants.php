@@ -95,10 +95,14 @@ unset($base_uri, $base_url);
 */
 
 //delimitadores de los errores de validación de formularios
+define('NOMBRE_FACULTAD', 'Facultad de Ciencias Exactas y Tecnología');
+define('NOMBRE_UNIVERSIDAD', 'Universidad Nacional de Tucumán');
+
+//delimitadores de los errores de validación de formularios
 define('ERROR_DELIMITER_START', '<span class="label label-important">');
 define('ERROR_DELIMITER_END', '</span>');
 //cuantos items se mostraran por pagina en un listado
-define('PER_PAGE', 10);
+define('PER_PAGE', 3);
 //periodos cada cuanto se toma una encuesta
 define('PERIODO', 'Cuatrimestre');
 define('NOMBRE_SISTEMA', 'Sistema Encuestas');
@@ -124,4 +128,4 @@ define('SECCION_TIPO_DOCENTE', 'D');
 define('TIPO_ACCESO_DOCENTE', 'D');
 define('TIPO_ACCESO_JEFE_CATEDRA', 'J');
 
-
+define('PROCEDURE_SUCCESS', 'ok');

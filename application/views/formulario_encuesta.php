@@ -1,7 +1,4 @@
 <!DOCTYPE html>
-<!-- Última revisión: 2012-02-03 4:33 p.m. -->
-
-<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -11,6 +8,7 @@
   
   <!-- Le styles -->
   <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  
   <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
   <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
   <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
@@ -43,30 +41,21 @@
               <h5 class="separador"><?php echo $itemSeccion['seccion']->texto?></h5>
               <h6><?php echo $itemSeccion['seccion']->descripcion?></h6>
               <?php 
-              
-              //SUBSECCIONES
-              
               foreach ($itemSeccion['subsecciones'] as $subseccion){
                 $docente = $subseccion['docente'];
                 printf('
                 <h3>%s %s</h3>', $docente->nombre, $docente->apellido);
-                
-                //ITEMS
-                
                 echo '
                 <div class="row preguntas">';
+                $col = 0;
                 foreach ($subseccion['items'] as $k => $i){
                   $item = &$i['item'];
                   $opciones = &$i['opciones'];
-                  if ($k%2==0){
-                    echo'
-                    </div>
-                    <div class="row">';
-                  }
                   //genero el html de la ayuda contextual
                   $tip = ($item->descripcion!='')?'<span class="badge badge-info" data-toggle="tooltip" title="'.$item->descripcion.'">!</span>':'';
                   //para las preguntas con opciones
-                  if($item->tipo == 'S'){
+                  switch($item->tipo){
+                  case TIPO_SELECCION_SIMPLE:
                     $html_opciones = '';
                     foreach($opciones as $opcion){
                       $html_opciones .= '<option value="'.$opcion->idOpcion.'">'.$opcion->texto.'</option>';
@@ -84,9 +73,9 @@
                         </div>
                       </div>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, $html_opciones);
-                  }
-                  //para las preguntas numericas
-                  elseif($item->tipo == 'N'){
+                    $col = $col+1;
+                    break;
+                  case TIPO_NUMERICA:
                     printf ('
                     <div class="item span6">
                       <div class="row-fluid">
@@ -99,22 +88,25 @@
                       </div>
                     </div>',  $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, 
                               $item->limiteInferior, $item->limiteSuperior, $item->paso);
-                  }
-                  //texto de una linea
-                  elseif($i['item']->tipo == 'T'){
+                    $col = $col+1;
+                    break;
+                  case TIPO_TEXTO_SIMPLE:
                     printf ('
                     <div class="item span6">
                       <p>%s %s<input class="input-block-level" type="text" name="idPregunta_%d_%s_%d"/></p>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
-                  }
-                  //texto multilinea
-                  elseif($item->tipo == 'X'){
+                    $col = $col+1;
+                    break;
+                  case TIPO_TEXTO_MULTILINEA:
+                    if ($col%2 == 1) echo'</div><div class="row preguntas">';
                     printf ('
                     <div class="item span12">
                       <p>%s %s</p>
                       <textarea class="input-block-level" name="idPregunta_%d_%s_%d"></textarea>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
+                    $col = 0;
                   }
+                  if ($col%2 == 0) echo'</div><div class="row preguntas">';
                 }//foreach items
                 echo '</div>';
               }//foreach subsecciones
@@ -149,7 +141,8 @@
     </div>
   </div>
   <?php //include 'templates/footer2.php'?>
-
+  
+  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>

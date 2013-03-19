@@ -19,20 +19,19 @@ class Gestor_departamentos extends CI_Model{
    * @return  string
    */
   public function alta($idJefeDepartamento, $nombre, $publicarInformes, $publicarHistoricos){
-    $publicarInformes = ($publicarInformes)?'S':'N';
-    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
+    $publicarInformes = $this->db->escape($publicarInformes);
+    $publicarHistoricos = $this->db->escape($publicarHistoricos);
     $nombre = $this->db->escape($nombre);
     $idJefeDepartamento = $this->db->escape($idJefeDepartamento);
-    $query = $this->db->query("call esp_alta_departamento($idJefeDepartamento, $nombre, '$publicarInformes', '$publicarHistoricos')");
+    $query = $this->db->query("call esp_alta_departamento($idJefeDepartamento, $nombre, $publicarInformes, $publicarHistoricos)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
   /**
-   * Da de Baja un departamento. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Da de Baja un departamento. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de departamento
@@ -43,28 +42,26 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_baja_departamento($idDepartamento)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
   /**
-   * Modificar los datos de un departamento. Devuleve el 'ok' en caso de éxito o un mensaje en caso de error.
+   * Modificar los datos de un departamento. Devuleve el PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access  public
    * @param nombre del departamento
    * @return  string
    */
   public function modificar($idDepartamento, $idJefeDepartamento, $nombre, $publicarInformes, $publicarHistoricos){
-    $publicarInformes = ($publicarInformes)?'S':'N';
-    $publicarHistoricos = ($publicarHistoricos)?'S':'N';
+    $publicarInformes = $this->db->escape($publicarInformes);
+    $publicarHistoricos = $this->db->escape($publicarHistoricos);
     $nombre = $this->db->escape($nombre);
     $idJefeDepartamento = $this->db->escape($idJefeDepartamento);
     $idDepartamento = $this->db->escape($idDepartamento);
-    $query = $this->db->query("call esp_modificar_departamento($idDepartamento, $idJefeDepartamento, $nombre, '$publicarInformes', '$publicarHistoricos')");
+    $query = $this->db->query("call esp_modificar_departamento($idDepartamento, $idJefeDepartamento, $nombre, $publicarInformes, $publicarHistoricos)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -81,7 +78,6 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_dame_departamento($idDepartamento)");
     $data = $query->result('Departamento');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
 
@@ -100,7 +96,6 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_listar_departamentos($pagInicio, $pagLongitud)");
     $data = $query->result('Departamento');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
 
@@ -115,7 +110,6 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_cantidad_departamentos()");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
 
@@ -132,7 +126,6 @@ class Gestor_departamentos extends CI_Model{
     $query = $this->db->query("call esp_buscar_departamentos($nombre)");
     $data = $query->result('Departamento');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
   

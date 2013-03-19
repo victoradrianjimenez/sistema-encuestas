@@ -22,7 +22,6 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_dame_pregunta($idPregunta)");
     $data = $query->result('Pregunta');
     $query->free_result();
-    //$this->db->reconnect();
     return ($data != FALSE)?$data[0]:FALSE;
   }
 
@@ -41,7 +40,6 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_listar_preguntas($pagInicio, $pagLongitud)");
     $data = $query->result('Pregunta');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
 
@@ -56,7 +54,6 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_cantidad_preguntas()");
     $data=$query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->cantidad:0;
   }
 
@@ -87,13 +84,12 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_alta_pregunta($texto, $descripcion, $tipo, $ordenInverso, $limiteInferior, $limiteSuperior, $paso, $unidad)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
   
   /**
-   * Da de Baja una pregunta. Devuleve 'ok' en caso de éxito o un mensaje en caso de error.
+   * Da de Baja una pregunta. Devuleve PROCEDURE_SUCCESS en caso de éxito o un mensaje en caso de error.
    *
    * @access public
    * @param identificador de pregunta
@@ -104,7 +100,6 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_baja_pregunta($idPregunta)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
   
@@ -121,7 +116,6 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_buscar_preguntas($texto)");
     $data = $query->result('Pregunta');
     $query->free_result();
-    //$this->db->reconnect();
     return $data;
   }
 
@@ -142,7 +136,6 @@ class Gestor_preguntas extends CI_Model{
     $query = $this->db->query("call esp_modificar_pregunta($idPregunta, $texto, $descripcion)");
     $data = $query->row();
     $query->free_result();
-    //$this->db->reconnect();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
   }
 }

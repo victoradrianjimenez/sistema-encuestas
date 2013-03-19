@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Generar Informe por Materia</title>
+  <title>Generar Informe por Materia - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     .form-horizontal .controls {margin-left: 70px}
@@ -17,8 +17,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Informes por Encuestas</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-informes.php'?>
         </div>
       </div>
       
@@ -62,10 +61,10 @@
             </div>
             <div class="control-group">
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="graficos" checked />Incluir gráficos de barras</label>
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" checked />Incluir promedio de índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indicesDocentes" checked />Incluir promedio de índices para cada docente</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" checked />Incluir indice general</label>
+                <label class="checkbox"><input type="checkbox" name="graficos" value="1" checked />Incluir gráficos de barras</label>
+                <label class="checkbox"><input type="checkbox" name="indicesSecciones" value="1" checked />Incluir promedio de índices de secciones</label>
+                <label class="checkbox"><input type="checkbox" name="indicesDocentes" value="1" checked />Incluir promedio de índices para cada docente</label>
+                <label class="checkbox"><input type="checkbox" name="indiceGlobal" value="1" checked />Incluir indice general</label>
               </div>
             </div>
             <div class="controls btn-group">

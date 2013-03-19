@@ -17,9 +17,8 @@
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
 
-  <title>Informe Materia</title>
+  <title>Informe Materia - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-  
     .container h3, .container h5{
       text-align: center;
       margin:0;
@@ -66,8 +65,8 @@
         </div>      
         <div class="row">
           <div class="span12">
-            <p>Esta clave es necesaria para completar la encuesta desarrollada por la Facultad de Ciencias Exactas y Tecnología - Universidad Nacional de Tucumán, destinada a mejorar la calidad de la enseñanza.<br/> 
-            Para utilizarla deberá acceder a la dirección web http://www.herrera.unt.edu.ar/encuestas<br/>
+            <p>Esta clave es necesaria para completar la encuesta desarrollada por la <?php echo NOMBRE_FACULTAD?> - <?php echo NOMBRE_UNIVERSIDAD?>, destinada a mejorar la calidad de la enseñanza. 
+            Para utilizarla deberá acceder a la dirección web <?php echo base_url()?><br/>
             Esta clave sirve para responder sobre una asignatura en particular y dejará de tener validez al completar el formulario.<br/>
             Usted debería solicitar una clave distinta por cada asignatura que esté cursando en forma regular.</p>
           </div>

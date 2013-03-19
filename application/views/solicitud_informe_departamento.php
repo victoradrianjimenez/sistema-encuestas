@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Generar Informe por Departamento</title>
+  <title>Generar Informe por Departamento - <?php echo NOMBRE_SISTEMA?></title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     .form-horizontal .controls {margin-left: 110px}
@@ -17,8 +17,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Informes por Encuestas</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-informes.php'?>
         </div>
       </div>
       
@@ -53,7 +52,7 @@
             </div>
             <div class="control-group">
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="graficos" checked />Incluir gráficos de barras</label>
+                <label class="checkbox"><input type="checkbox" name="graficos" value="1" checked />Incluir gráficos de barras</label>
               </div>
             </div>
             <div class="controls btn-group">

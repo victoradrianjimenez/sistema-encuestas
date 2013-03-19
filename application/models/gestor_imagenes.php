@@ -50,7 +50,7 @@ class Gestor_imagenes extends CI_Model{
   
   
   /**
-   * Dar de baja una imagen. Devuleve un 'ok' en caso de éxito, o FALSE en caso de error.
+   * Dar de baja una imagen. Devuleve un PROCEDURE_SUCCESS en caso de éxito, o FALSE en caso de error.
    *
    * @access public
    * @param identificador de imagen

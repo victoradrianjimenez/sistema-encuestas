@@ -8,35 +8,66 @@
   
   <!-- Le styles -->
   <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  <style>body{padding-top:40px;}</style>
   <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
   <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
   
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
-  
-  <!-- Fav and touch icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-  <link rel="shortcut icon" href="ico/favicon.png">
 
-  <title>Informe Departamento</title>
+  <title>Informe Departamento - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-    #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
     ul.respuestas{list-style-position:inside;}
     .row-fluid [class*="span"]{margin-left:0;}
   </style>
 </head>
 <body>
+  <!-- Menu de opciones -->
+  <div id="barra-herramientas">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
+          <ul class="nav">
+            <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="form"><form action="<?php echo site_url('informes/archivoDepartamento')?>" method="post">
+                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                    <input type="hidden" name="idDepartamento" value="<?php echo $departamento->idDepartamento?>" />
+                    <input type="hidden" name="tipo" value="xlsx" />
+                    <input type="submit" name="submit" class="btn btn-link" value="Libro de Excel 2007-2010 (.xlsx)..." />
+                  </form></a>
+                </li>
+                <li>
+                  <a class="form"><form action="<?php echo site_url('informes/archivoMateria')?>" method="post"
+                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                    <input type="hidden" name="idDepartamento" value="<?php echo $departamento->idDepartamento?>" />
+                    <input type="hidden" name="tipo" value="xls" />
+                    <input type="submit" name="submit" class="btn btn-link" value="Libro de Excel 97-2003 (.xls)..."/>
+                  </form></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Informe -->
   <div class="container">
     <div id="header" class="row">
       <div class="span12">
-        <h2><?php echo $formulario->titulo?></h2>
-        <h4><?php echo $formulario->descripcion?></h4>
-        <h4><?php echo $departamento->nombre?></h4>
+        <h2 class="text-center"><?php echo $formulario->titulo?></h2>
+        <h4 class="text-center"><?php echo $formulario->descripcion?></h4>
+        <h4 class="text-center"><?php echo $departamento->nombre?></h4>
       </div>
     </div>
     <div class="row">
@@ -46,17 +77,17 @@
           <div class="span6">
             <?php
             echo '<p>Año: '.$encuesta->año.'</p>';
-            echo '<p>Cuatrimestre / período: '.$encuesta->cuatrimestre.'</p>';
-            echo '<p>Fecha de inicio de las encuestas: '.date('d-m-Y g:i:s a',strtotime($encuesta->fechaInicio)).'</p>';
-            echo '<p>Fecha de finalización de las encuestas: '.date('d-m-Y g:i:s a',strtotime($encuesta->fechaFin)).'</p>';
+            echo '<p>'.PERIODO.': '.$encuesta->cuatrimestre.'</p>';
+            echo '<p>Fecha de inicio de las encuestas: '.date('d/m/Y G:i:s', strtotime($encuesta->fechaInicio)).'</p>';
+            echo '<p>Fecha de finalización de las encuestas: '.date('d/m/Y G:i:s', strtotime($encuesta->fechaFin)).'</p>';
             ?>
           </div>
           <div class="span6">
             <?php
             echo '<p>Claves generadas: '.$claves['generadas'].'</p>';
             echo '<p>Claves utilizadas: '.$claves['utilizadas'].'</p>';
-            echo '<p>Primer acceso: '.$claves['primerAcceso'].'</p>';
-            echo '<p>Último acceso: '.$claves['ultimoAcceso'].'</p>';
+            echo '<p>Primer acceso: '.date('d/m/Y G:i:s', strtotime($claves['primerAcceso'])).'</p>';
+            echo '<p>Último acceso: '.date('d/m/Y G:i:s', strtotime($claves['ultimoAcceso'])).'</p>';
             ?>
           </div>
         </div>
@@ -69,38 +100,36 @@
           echo'
           <h5 class="separador">'.$seccion['seccion']->texto.'</h5>';
           foreach ($seccion['items'] as $pregunta){
-            echo '
-            <div class="row">
-              <div class="span12">';
-                switch($pregunta['item']->tipo){
-                //pregunta con opciones
-                case 'S':case 'N': 
+            switch($pregunta['item']->tipo){
+            //pregunta con opciones
+            case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+              echo '
+              <div class="row">';
+                echo ($graficos)?'<div class="span8">':'<div class="span12">';
                   echo '
-                  <div class="row">
-                    <div class="span9">
-                      <p>'.$pregunta['item']->texto.'</p>
-                      <div class="row-fluid">';
-                        foreach ($pregunta['respuestas'] as $k => $respuesta){   
-                          echo '
-                          <div class="span3">'.
-                            (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
-                            ': <b>'.$respuesta['cantidad'].'</b>
-                          </div>';
-                        }
-                        echo '
-                      </div>
-                    </div>
-                    <div class="span3">
-                      <img src="'.site_url("pcharts/graficoPreguntaDepartamento/".
-                        $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$departamento->idDepartamento).
-                        '" width="400" height="160" />
-                    </div>
+                  <p>'.$pregunta['item']->texto.'</p>
+                  <div class="row-fluid">';
+                    foreach ($pregunta['respuestas'] as $k => $respuesta){   
+                      echo '
+                      <div class="span3">'.
+                        (($respuesta['texto']!='')?$respuesta['texto']:'No Contesta').
+                        ': <b>'.$respuesta['cantidad'].'</b>
+                      </div>';
+                    }
+                    echo '
+                  </div>
+                </div>';
+                if ($graficos){
+                  echo '
+                  <div class="span4">
+                    <img src="'.site_url("pcharts/graficoPreguntaDepartamento/".
+                      $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$departamento->idDepartamento).
+                      '" width="350" height="105" />
                   </div>';
-                  break;
-                }//switch
-                echo'
-              </div>
-            </div>';
+                }
+              echo '</div>';
+              break;
+            }//switch
           }//foreach preguntas
         }//foreach secciones
         ?>
@@ -108,5 +137,9 @@
     </div>
   </div>
   <?php //include 'templates/footer2.php'?>
+
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
 </body>
 </html>

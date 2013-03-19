@@ -1,0 +1,10 @@
+#barra-herramientas{
+  display:none;
+}
+body{
+  padding:0;
+}
+
+@page {
+  size: A4;
+}

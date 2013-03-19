@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Datos Materia - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
@@ -12,10 +11,9 @@
     
     <div class="container">
       <div class="row">
-        <!-- Titulo -->
+        <!-- Title -->
         <div class="span12">
-          <h3>Gestión de Departamentos, Carreras y Materias</h3>
-          <p>---Descripción---</p>
+            <?php include 'templates/descripcion-departamentos.php'?>
         </div>
       </div>
       
@@ -42,11 +40,11 @@
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td class="nombre"><?php echo $item->apellido?></td>
-                  <td class="apellido"><?php echo $item->nombre?></td>
-                  <td class="cargo"><?php //echo $item['cargo']?></td>
+                  <td class="nombre"><?php echo $item['docente']->apellido?></td>
+                  <td class="apellido"><?php echo $item['docente']->nombre?></td>
+                  <td class="cargo"><?php echo (isset($item['datos']['cargo'])) ? $item['datos']['cargo'] : ''?></td>
                   <td>
-                    <a class="quitar" href="#" title="Quitar asociación del docente con la materia" value="<?php echo $item->id?>">Quitar</a>
+                    <a class="quitar" href="#" title="Quitar asociación del docente con la materia" value="<?php echo $item['docente']->id?>">Quitar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -108,6 +106,8 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('.quitar').click(function(){
       idDocente = $(this).attr('value');
@@ -120,8 +120,6 @@
       $("#modalDesasociar").modal();
       return false;
     });
-    //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('span.label-important').parentsUntil('.modal').parent().first().modal();
   </script>
 </body>
 </html>

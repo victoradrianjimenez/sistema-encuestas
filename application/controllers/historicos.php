@@ -13,8 +13,8 @@ class Historicos extends CI_Controller{
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-    $this->data['resultadoTipo'] = ALERT_ERROR;
-    $this->data['resultadoOperacion'] = null;
+    $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
+    $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
   
   /*
@@ -48,6 +48,8 @@ class Historicos extends CI_Controller{
   public function materia(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
@@ -57,13 +59,15 @@ class Historicos extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
     $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    if($this->form_validation->run() && sscanf($this->input->post('encuesta'),"%d_%d",$idEncuesta,$idFormulario)==2){
+    $this->form_validation->set_rules('idPregunta','Pregunta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('fechaInicio','Fecha Inicio','required');
+    $this->form_validation->set_rules('fechaFin','Fecha Fin','required');
+    if($this->form_validation->run()){
       $idMateria = (int)$this->input->post('idMateria');
       $idCarrera = (int)$this->input->post('idCarrera');
-      $indicesDocentes = (bool)$this->input->post('indicesDocentes');
-      $indicesSecciones = (bool)$this->input->post('indicesSecciones');
-      $indiceGlobal = (bool)$this->input->post('indiceGlobal');
+      $idPregunta = (int)$this->input->post('idPregunta');
+      $fechaInicio = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaInicio'))));
+      $fechaFin = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaFin'))));
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
@@ -83,68 +87,34 @@ class Historicos extends CI_Controller{
       $this->load->model('Gestor_departamentos','gd');
       $this->load->model('Gestor_usuarios','gu');
 
-      //obtener la lista de docentes que participa en la encuesta, y el datos del usuario actual
-      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-      $listaDocentes = $encuesta->listarDocentes($idMateria, $idCarrera);
-      $usuario = $this->gu->dame($this->data['usuarioLogin']->id);
-      $datosDocente = $usuario->dameDatosDocente($idMateria);
-      //si el usuario no es docente o tiene acceso como jefe de cátedra
-      if (!$this->ion_auth->in_group('docentes') || (count($datosDocente)>0 && $datosDocente['tipoAcceso']=='J')){
-        //mostrar resultados para todos los docentes
-        $docentes = &$listaDocentes;
-      }
-      else{
-        //sino, mostrar solo resultado del usuario logueado
-        $docentes = array();
-        foreach ($listaDocentes as $docente) {
-          if ($docente->id == $usuario->id){$docentes[0] = $docente;break;} 
-        }
-      }
-      //obtener datos de la encuesta
-      $formulario = $this->gf->dame($idFormulario);
-      $carrera = $this->gc->dame($idCarrera);
-      $materia = $this->gm->dame($idMateria);
-      $departamento = $this->gd->dame($carrera->idDepartamento);
-      $secciones = $formulario->listarSeccionesCarrera($idCarrera);
-      $this->Usuario->id = 0; //importante. Es el id de un docente no existente.
+      $this->load->model('Pregunta');
+      $this->load->model('Gestor_preguntas','gp');
       
-      //recorrer secciones, docentes, y preguntas obteniendo resultados
-      $datos_secciones = array();
-      foreach ($secciones as $i => $seccion) {
-        $datos_secciones[$i]['seccion'] = $seccion;
-        $datos_secciones[$i]['subsecciones'] = array();
-        $datos_secciones[$i]['indice'] = ($indicesSecciones)?$encuesta->indiceSeccionMateria($idMateria, $idCarrera, $seccion->idSeccion):null;
-        switch ($seccion->tipo){
-        //si la sección es referida a docentes
-        case 'D':
-          foreach ($docentes as $j => $docente) {
-            $datos_secciones[$i]['subsecciones'][$j] = array(
-              'docente' => $docente,
-              'preguntas' => $this->_dameDatosSeccionMateria($seccion, $encuesta, $docente->id, $materia->idMateria, $carrera->idCarrera),
-              'indice' => ($indicesDocentes)?$encuesta->indiceDocenteMateria($idMateria, $idCarrera, $seccion->idSeccion, $docente->id):null
-            );
-          }
-          break;
-        //si la sección es referida a la materia (sección comun)
-        case 'N':
-          $datos_secciones[$i]['subsecciones'][0] =  array(
-            'docente' => $this->Usuario,
-            'preguntas' => $this->_dameDatosSeccionMateria($seccion, $encuesta, 0, $materia->idMateria, $carrera->idCarrera),
-            'indice' => null
-          );
-          break;
-        }
+      $pregunta = $this->gp->dame($idPregunta);
+      $materia = $this->gm->dame($idMateria);
+      $carrera = $this->gc->dame($idCarrera);
+      if (!$pregunta || !$materia || !$carrera){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('historicos/materia');
+      }
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      $historico = $pregunta->historicoMateria($idMateria, $idCarrera, $fechaInicio, $fechaFin);
+      if (empty($historico)){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('historicos/materia');
       }
       //datos para enviar a la vista
       $datos = array(
-        'encuesta' => &$encuesta,
-        'formulario' => &$formulario,
+        'datos' => &$historico,
+        'pregunta' => &$pregunta,
         'carrera' => &$carrera,
-        'departamento' => &$departamento,
         'materia' => &$materia,
-        'claves' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
-        'indice' => ($indiceGlobal)?$encuesta->indiceGlobalMateria($idMateria, $idCarrera):null,
-        'secciones' => &$datos_secciones
+        'opciones' => $pregunta->listarOpciones(),
+        'departamento' => &$departamento,
+        'fechaInicio' => &$fechaInicio,
+        'fechaFin' => &$fechaFin
       );
       $this->load->view('historico_materia', $datos);
     }
@@ -160,6 +130,8 @@ class Historicos extends CI_Controller{
   public function carrera(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
@@ -240,6 +212,8 @@ class Historicos extends CI_Controller{
   public function departamento(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
@@ -314,6 +288,8 @@ class Historicos extends CI_Controller{
   public function facultad(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     elseif (!$this->ion_auth->in_group(array('admin','decanos'))){

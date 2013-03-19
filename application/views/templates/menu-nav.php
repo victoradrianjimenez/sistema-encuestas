@@ -26,7 +26,7 @@
               <li><a href="<?php echo site_url('historicos/materia')?>">Informes históricos</a></li>
               <li><a href="<?php echo site_url('informes/clave')?>">Respuestas individuales</a></li>
               <li class="divider"></li>
-              <li><a href="<?php echo site_url('devoluciones')?>">Devoluciones</a></li>
+              <li><a href="<?php echo site_url('devoluciones')?>">Planes de mejora</a></li>
             </ul>
           </li>
           <!-- <li><a href="#">Enlaces</a></li> -->
@@ -41,8 +41,8 @@
                 <li><a href="<?php echo site_url('usuarios/modificarCuenta')?>">Datos de usuario</a></li>
                 <li class="divider"></li>
                 <li>
-                  <a style="padding:0"><form id="logout" action="<?php echo site_url("usuarios/logout")?>" method="post" style="margin:0">
-                    <input class="btn btn-link" type="submit" name="submit" value="Cerrar sesión" style=":hover{color:red} width:100%;margin:0;padding:0px 20px;text-align:left"/>
+                  <a class="form"><form id="logout" action="<?php echo site_url("usuarios/logout")?>" method="post">
+                    <input class="btn btn-link" type="submit" name="submit" value="Cerrar sesión"/>
                   </form></a>
                 </li>
               </ul>

@@ -13,8 +13,8 @@ class Informes extends CI_Controller{
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
-    $this->data['resultadoTipo'] = ALERT_ERROR;
-    $this->data['resultadoOperacion'] = null;
+    $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
+    $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
 
   private function _filtrarListaDocentes($materia, $listaDocentes){
@@ -135,7 +135,7 @@ class Informes extends CI_Controller{
 
   private function _verificarPermisosFacultad(){
     //verifico si el usuario tiene permisos para continuar
-    if ( $this->config->item('publicarInformes', 'facultad') ){
+    if ( $this->config->config['publicarInformes'] ){
       //si la facultad tiene informes como públicos
       if ($this->ion_auth->logged_in()){
         //si el usuario esta logueado
@@ -305,7 +305,7 @@ class Informes extends CI_Controller{
       $idCarrera = (int)$this->input->post('idCarrera');
       $indicesSecciones = (bool)$this->input->post('indicesSecciones');
       $indiceGlobal = (bool)$this->input->post('indiceGlobal');
-      
+      $graficos = (bool)$this->input->post('graficos');
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
@@ -368,6 +368,7 @@ class Informes extends CI_Controller{
         'departamento' => $this->gd->dame($carrera->idDepartamento),
         'claves' => $encuesta->cantidadClavesCarrera($idCarrera),
         'indice' => ($indiceGlobal)?$encuesta->indiceGlobalCarrera($idCarrera):null,
+        'graficos' => &$graficos,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_carrera', $datos);
@@ -392,6 +393,7 @@ class Informes extends CI_Controller{
       $idDepartamento = (int)$this->input->post('idDepartamento');
       $idEncuesta = (int)$this->input->post('idEncuesta');
       $idFormulario = (int)$this->input->post('idFormulario');
+      $graficos = (bool)$this->input->post('graficos');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -450,6 +452,7 @@ class Informes extends CI_Controller{
         'formulario' => &$formulario,
         'departamento' => &$departamento,
         'claves' => $encuesta->cantidadClavesDepartamento($idDepartamento),
+        'graficos' => &$graficos,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_departamento', $datos);
@@ -471,6 +474,7 @@ class Informes extends CI_Controller{
     if($this->form_validation->run()){
       $idEncuesta = (int)$this->input->post('idEncuesta');
       $idFormulario = (int)$this->input->post('idFormulario');
+      $graficos = (bool)$this->input->post('graficos');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -523,6 +527,8 @@ class Informes extends CI_Controller{
       $datos = array(
         'encuesta' => &$encuesta,
         'formulario' => &$formulario,
+        'claves' => $encuesta->cantidadClavesFacultad(),
+        'graficos' => &$graficos,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_facultad', $datos);
@@ -572,6 +578,7 @@ class Informes extends CI_Controller{
       $this->load->model('Gestor_carreras','gc');
       $this->load->model('Gestor_encuestas','ge');
       $this->load->model('Gestor_departamentos','gd');
+$idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
 
       //verifico que los datos enviados son correctos
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
@@ -579,6 +586,7 @@ class Informes extends CI_Controller{
       $carrera = $this->gc->dame($idCarrera);
       $materia = $this->gm->dame($idMateria);
       $clave = $encuesta->dameClave($idClave, $idMateria, $idCarrera);
+      
       if (!$encuesta || !$formulario || !$carrera || !$materia || !$clave){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
@@ -668,6 +676,8 @@ class Informes extends CI_Controller{
   public function archivoMateria(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     //verifico datos POST
@@ -813,6 +823,8 @@ class Informes extends CI_Controller{
   public function archivoCarrera(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
     //verifico datos POST

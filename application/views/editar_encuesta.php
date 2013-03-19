@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
@@ -12,8 +11,7 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Gestión de Encuestas</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-encuestas.php'?>
         </div>
       </div>
       
@@ -45,7 +43,7 @@
             <div class="control-group">
               <label class="control-label" for="buscarFormulario">Formulario: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="buscarFormulario" type="text" autocomplete="off" value="<?php echo $formulario->nombre?>" />
+                <input class="input-block-level" id="buscarFormulario" type="text" autocomplete="off" name="nombreFormulario" value="<?php echo $formulario->nombre?>" />
                 <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>"/>
                 <?php echo form_error('idFormulario')?>
               </div>
@@ -53,14 +51,14 @@
             <div class="control-group">
               <label class="control-label" for="campoAnio">Año: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoAnio" type="number" name="anio" min="1900" max="2100" step="1" value="<?php echo (set_value('anio'))?set_value('anio'):$encuesta->año?>"/>
+                <input class="input-block-level" id="campoAnio" type="number" name="anio" min="1900" max="2100" step="1" value="<?php echo $encuesta->año?>"/>
                 <?php echo form_error('anio')?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="campoCuatrimestre" title="Período/Cuatrimestre"><?php echo PERIODO?>: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="campoCuatrimestre" type="number" name="cuatrimestre" min="1" step="1" value="<?php echo (set_value('cuatrimestre'))?set_value('cuatrimestre'):$encuesta->cuatrimestre?>" />
+                <input class="input-block-level" id="campoCuatrimestre" type="number" name="cuatrimestre" min="1" step="1" value="<?php echo $encuesta->cuatrimestre?>" />
                 <?php echo form_error('cuatrimestre')?>
               </div>
             </div>
@@ -82,6 +80,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>

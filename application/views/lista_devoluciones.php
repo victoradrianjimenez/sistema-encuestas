@@ -12,47 +12,38 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <h3>Devoluciones</h3>
-          <p>---Descripción---</p>
+          <?php include 'templates/descripcion-devoluciones.php'?>
         </div>
       </div>
       
       <div class="row">
         <!-- Main -->
         <div class="span12">
-          <h4>Devoluciones</h4>
-          <p>Asignatura: <?php echo $materia->nombre.' / '.$materia->codigo?></p>
+          <h4>Planes de Mejoras</h4>
+          <p>Carrera: <?php echo $carrera->nombre?></p>
           <?php if(count($lista)== 0):?>
-            <p>No se encontraron devoluciones.</p>
+            <p>No se encontraron planes de mejoras.</p>
           <?php else:?>
             <table class="table table-bordered table-striped">
               <thead>
                 <th>Fecha</th>
                 <th>Encuesta</th>
+                <th>Materia</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td class="fecha"><?php echo $item['devolucion']->fecha?></td>
+                  <td class="fecha"><?php echo date('d/m/Y G:i:s', strtotime($item['devolucion']->fecha))?></td>
                   <td><?php echo $item['encuesta']->año.' / '.$item['encuesta']->cuatrimestre?></td>
+                  <td><?php echo $item['materia']->nombre.' ('.$item['materia']->codigo.')'?></td>
                   <td>
-                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a> /
-                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Nueva</a>
+                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a>
                   </td>
-                  
                 </tr>
               <?php endforeach ?>
             </table>
           <?php endif ?>
           <?php echo $paginacion ?>
-  
-          <!-- Botones -->
-          <div class="btn-group">
-            <form action="<?php echo site_url('devoluciones/nueva')?>" method="post">
-              <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
-              <input type="submit" name="submit" class="btn btn-primary" value="Agregar devolución" />
-            </form>
-          </div>
         </div>
       </div>
     </div>
@@ -60,43 +51,11 @@
   </div>
   <?php include 'templates/footer.php'?>  
   
-  <!-- ventana modal para eliminar devoluciones -->
-  <div id="modalEliminar" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Eliminar devolución</h3>
-    </div>
-    <form action="<?php echo site_url('devoluciones/eliminar')?>" method="post">
-      <div class="modal-body">
-        <input type="hidden" name="idDevolucion" value="" />
-        <h5 class="nombre"></h5>
-        <p>¿Desea continuar?</p>      
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
-      </div>
-    </form>
-  </div>
-  
   <!-- Le javascript -->
   <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script>
-    $('.eliminar').click(function(){
-      idDevolucion = $(this).attr('value');
-      fecha = $(this).parentsUntil('tr').parent().find('.fecha').text();
-      //cargo el id de la devolucion en el formulario
-      $('#modalEliminar input[name="idDevolucion"]').val(idDevolucion);
-      //pongo la fecha de la devolucion en el dialogo
-      $("#modalEliminar").find('.nombre').html(fecha);
-      $("#modalEliminar").modal();
-      return false;
-    });
-    //abrir automaticamente la ventana modal que contenga entradas con errores
-    $('span.label-important').parentsUntil('.modal').parent().first().modal();
-  </script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
 </body>
 </html>
