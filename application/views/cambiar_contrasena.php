@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Cambiar contraseña - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">

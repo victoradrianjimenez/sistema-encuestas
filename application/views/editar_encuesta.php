@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-encuestas.php'?>
+          <h3>Gestión de Encuestas</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de las encuestas y claves de acceso.</p>
         </div>
       </div>
       
@@ -35,7 +36,7 @@
               <label class="control-label" for="campoTipo">Tipo de acceso: <span class="opcional">*</span></label>
               <div class="controls">
                 <select id="campoTipo" name="tipo" required>
-                  <option value="<?php echo TIPO_ANONIMA?>">Anónima</option>
+                  <option value="<?php echo TIPO_ANONIMA?>" <?php echo ($encuesta->tipo==TIPO_ANONIMA)?'selected':''?> >Anónima</option>
                 </select>
                 <?php echo form_error('tipo')?>
               </div>
@@ -43,7 +44,7 @@
             <div class="control-group">
               <label class="control-label" for="buscarFormulario">Formulario: <span class="opcional">*</span></label>
               <div class="controls">
-                <input class="input-block-level" id="buscarFormulario" type="text" autocomplete="off" name="nombreFormulario" value="<?php echo $formulario->nombre?>" />
+                <input class="input-block-level" id="buscarFormulario" name="buscarFormulario" type="text" autocomplete="off" name="nombreFormulario" value="<?php echo set_value('buscarFormulario')?>" />
                 <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>"/>
                 <?php echo form_error('idFormulario')?>
               </div>
@@ -81,6 +82,7 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>

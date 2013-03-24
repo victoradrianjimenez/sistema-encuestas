@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Title -->
         <div class="span12">
-            <?php include 'templates/descripcion-usuarios.php'?>
+          <h3>Gestión de Docentes y Autoridades</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los usuarios registrados en el sistema (Docentes y Autoridades).</p>
         </div>
       </div>
       
@@ -86,13 +87,13 @@
               <div class="controls">
                 <input id="campoImagen" type="file" name="imagen"/>
                 <?php echo form_error('imagen'); ?>
-                <label class="checkbox"><input type="checkbox" name="noImagen" value="1"  />Eliminar imagen actual</label>
+                <label class="checkbox"><input type="checkbox" name="noImagen" value="1" <?php echo ($noImagen)?'checked="checked"':''?> />Eliminar imagen actual</label>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Estado: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="active" value="1" <?php echo (isset($_POST['active']) || $usuario->active)?'checked="checked"':''?> />Cuenta de usuario Activa</label>
+                <label class="checkbox"><input type="checkbox" name="active" value="1" <?php echo set_checkbox('active', '1', TRUE)?> />Cuenta de usuario Activa</label>
                 <?php echo form_error('active')?>
               </div>
             </div>
@@ -106,14 +107,14 @@
                       //verifico si el el usuario pertenece al grupo actual
                       foreach ($usuario_grupos as $g) {
                         if ($grupo->id == $g->id){
-                          $selected = 'checked';
+                          $selected = 'checked="checked"';
                           break;
                         }
                       }
                       if(isset($_POST['grupos'])){
                         foreach ($_POST['grupos'] as $g) {
                           if ($grupo->id == $g){
-                            $selected = 'checked';
+                            $selected = 'checked="checked"';
                             break;
                           }
                         }

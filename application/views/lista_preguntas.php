@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-formularios.php'?>
+          <h3>Gestión de Formularios</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los formularios utilizados para la toma de encuestas.</p>
         </div>
       </div>
       

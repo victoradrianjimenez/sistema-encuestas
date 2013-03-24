@@ -102,7 +102,7 @@ define('NOMBRE_UNIVERSIDAD', 'Universidad Nacional de Tucumán');
 define('ERROR_DELIMITER_START', '<span class="label label-important">');
 define('ERROR_DELIMITER_END', '</span>');
 //cuantos items se mostraran por pagina en un listado
-define('PER_PAGE', 3);
+define('PER_PAGE', 10);
 //periodos cada cuanto se toma una encuesta
 define('PERIODO', 'Cuatrimestre');
 define('NOMBRE_SISTEMA', 'Sistema Encuestas');
@@ -129,3 +129,6 @@ define('TIPO_ACCESO_DOCENTE', 'D');
 define('TIPO_ACCESO_JEFE_CATEDRA', 'J');
 
 define('PROCEDURE_SUCCESS', 'ok');
+
+define('RESPUESTA_SI', 'S');
+define('RESPUESTA_NO', 'N');

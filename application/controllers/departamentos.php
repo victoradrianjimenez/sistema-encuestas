@@ -28,14 +28,17 @@ class Departamentos extends CI_Controller{
    * Muestra el listado de departamentos.
    */
   public function listar($pagInicio=0){
+    //verifico si el usuario tiene permisos
     if (!$this->ion_auth->logged_in()){
       $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-
-    //chequeo parámetros de entrada
-    $pagInicio = (int)$pagInicio;
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('/');
+    }
 
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
@@ -43,6 +46,9 @@ class Departamentos extends CI_Controller{
     $this->load->model('Departamento');
     $this->load->model('Gestor_usuarios','gu');
     $this->load->model('Gestor_departamentos','gd');
+
+    //chequeo parámetros de entrada
+    $pagInicio = (int)$pagInicio;
 
     //obtengo lista de departamentos
     $departamentos = $this->gd->listar($pagInicio, PER_PAGE);
@@ -92,10 +98,10 @@ class Departamentos extends CI_Controller{
     
     //leo los datos POST
     $this->Departamento->idDepartamento = null;
-    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')=='') ? NULL : (int)$this->input->post('idJefeDepartamento'); 
+    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')) ? NULL : (int)$this->input->post('idJefeDepartamento'); 
     $this->Departamento->nombre = $this->input->post('nombre',TRUE);
-    $this->Departamento->publicarInformes = ($this->input->post('publicarInformes')) ? 'S' : 'N';
-    $this->Departamento->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? 'S' : 'N';
+    $this->Departamento->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
+    $this->Departamento->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? RESPUESTA_SI : RESPUESTA_NO;
     
     //verifico datos POST
     $this->form_validation->set_rules('idJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
@@ -106,8 +112,9 @@ class Departamentos extends CI_Controller{
                               $this->Departamento->nombre,
                               $this->Departamento->publicarInformes,
                               $this->Departamento->publicarHistoricos);
+      //si la operación se realizó con éxito
       if (is_numeric($res)){
-        $this->session->set_flashdata('resultadoOperacion', "El nuevo departamento se agregó con éxito (el ID del nuevo departamento es $res).");
+        $this->session->set_flashdata('resultadoOperacion', 'El nuevo departamento se agregó con éxito');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
         redirect('departamentos/listar');
       }
@@ -139,6 +146,7 @@ class Departamentos extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('departamentos/listar');
     }
+    
     //cargo modelos, librerias, etc.
     $this->load->model('Usuario');
     $this->load->model('Departamento');
@@ -147,11 +155,11 @@ class Departamentos extends CI_Controller{
     
     //leo los datos POST
     $this->Departamento->idDepartamento = (int)$this->input->post('idDepartamento');
-    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')=='') ? NULL : (int)$this->input->post('idJefeDepartamento');
+    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')) ? NULL : (int)$this->input->post('idJefeDepartamento');
     $this->Departamento->nombre = $this->input->post('nombre',TRUE);
-    $this->Departamento->publicarInformes = ($this->input->post('publicarInformes')) ? 'S' : 'N';
-    $this->Departamento->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? 'S' : 'N';
-
+    $this->Departamento->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
+    $this->Departamento->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? RESPUESTA_SI : RESPUESTA_NO;
+    
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idJefeDepartamento','Jefe de Departamento','is_natural_no_zero');
@@ -163,6 +171,7 @@ class Departamentos extends CI_Controller{
                                     $this->Departamento->nombre,
                                     $this->Departamento->publicarInformes,
                                     $this->Departamento->publicarHistoricos);
+      //si la operación se realizó con éxito
       if (strcmp($res, PROCEDURE_SUCCESS)==0){
         $this->session->set_flashdata('resultadoOperacion', 'La modificación del departamento se realizó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
@@ -172,12 +181,12 @@ class Departamentos extends CI_Controller{
       $this->data['resultadoTipo'] = ALERT_ERROR;
     }
     //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-    if ($idDepartamento == null) redirect('departamentos/nuevo');
+    if (!$idDepartamento) redirect('departamentos/nuevo');
     $this->Departamento = $this->gd->dame((int)$idDepartamento);
     if (!$this->Departamento){
-        $this->session->set_flashdata('resultadoOperacion', "No existe el departamento con ID=$idDepartamento.");
-        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-        redirect('departamentos/listar');
+      $this->session->set_flashdata('resultadoOperacion', 'No existe el departamento seleccionado.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      redirect('departamentos/listar');
     }
     if ($this->Departamento->idJefeDepartamento) $this->Usuario = $this->gu->dame($this->Departamento->idJefeDepartamento);
     $this->data['departamento'] = &$this->Departamento;
@@ -226,7 +235,6 @@ class Departamentos extends CI_Controller{
    * POST: buscar
    */
   public function buscarAjax(){
-    //if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar', TRUE);

@@ -47,7 +47,7 @@
                   </form></a>
                 </li>
                 <li>
-                  <a class="form"><form action="<?php echo site_url('informes/archivoMateria')?>" method="post"
+                  <a class="form"><form action="<?php echo site_url('informes/archivoMateria')?>" method="post">
                     <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
                     <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
                     <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />

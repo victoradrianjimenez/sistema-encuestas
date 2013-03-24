@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Usuarios - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
@@ -15,7 +14,7 @@
         <!-- Titulo -->
         <div class="span12">
           <h3>Gestión de Docentes y Autoridades</h3>
-          <p>---Descripción---</p>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los usuarios registrados en el sistema (Docentes y Autoridades).</p>
         </div>
       </div>
       

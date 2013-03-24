@@ -18,146 +18,29 @@ class Informes extends CI_Controller{
   }
 
   private function _filtrarListaDocentes($materia, $listaDocentes){
-    $this->Usuario->id = ($this->data['usuarioLogin']) ? $this->data['usuarioLogin']->id : null;
-    $datosDocente = $this->Usuario->dameDatosDocente($materia->idMateria);
-    if ($materia->publicarInformes == "S"){
-      return $listaDocentes; //mostrar resultados para todos los docentes
-    }
-    elseif ($this->ion_auth->in_group('admin','decanos','jefes_departamentos','directores') || (isset($datosDocente['tipoAcceso']) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA)){
-      //si el usuario es una autoridad o tiene acceso como jefe de cátedra
-      return $listaDocentes; //mostrar resultados para todos los docentes
-    }
-    else{
-      //sino, mostrar solo resultado del usuario logueado
-      $docentes = array();
-      if ($this->data['usuarioLogin']){
-        //si hay un usuario logueado, buscar entre los docentes de la encuesta
-        foreach ($listaDocentes as $docente) {
-          if ($docente->id == $this->data['usuarioLogin']->id){$docentes[0] = $docente; break;} 
+    //verifico si el usuario tiene permisos para la materia
+    $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
+    if ($materia->publicarInformes != 'S'){
+      if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('docentes') && !isempty($datosDocente) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) )){    
+        //mostrar solo resultado del usuario logueado
+        $docentes = array();
+        if ($this->data['usuarioLogin']){
+          //si hay un usuario logueado, buscar entre los docentes de la encuesta
+          foreach ($listaDocentes as $docente) {
+            if ($docente->id == $this->data['usuarioLogin']->id){$docentes[0] = $docente; break;} 
+          }
         }
+        return $docentes;
       }
-      return $docentes;
     }
+    return $listaDocentes; //mostrar resultados para todos los docentes
   }
 
-  private function _verificarPermisosMateria($materia){
-    $this->Usuario->id = ($this->data['usuarioLogin']) ? $this->data['usuarioLogin']->id : null;
-    //verifico si el usuario tiene permisos para continuar
-    if ($materia->publicarInformes != "S"){
-      //si la materia no tiene informes como públicos
-      if ($this->ion_auth->logged_in() && $this->Usuario->id){
-        //si el usuario esta logueado
-        if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores', 'docentes'))){
-          //si el usuario no es una autoridad
-          if (!$this->ion_auth->in_group('docentes')){
-            //si el usuario no es un docente
-            $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por materia.');
-            $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-            return false;
-          }
-          elseif(count($this->Usuario->dameDatosDocente($idMateria)) == 0){
-            //si el usuario es un docente, pero no de la materia que se quiere ver un informe
-            $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes de esta asignatura.');
-            $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-            return false;
-          }
-        }
-      }
-      else {
-        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private function _verificarPermisosCarrera($carrera){
-    //verifico si el usuario tiene permisos para continuar
-    if ($carrera->publicarInformes != "S"){
-      //si la carrera no tiene informes como públicos
-      if ($this->ion_auth->logged_in() && $this->data['usuarioLogin']){
-        //si el usuario esta logueado
-        if (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
-          //si el usuario no es una autoridad
-          if (!$this->ion_auth->in_group('directores')){
-            //si el usuario no es un director
-            $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera.');
-            $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-            return false;
-          }
-          elseif($carrera->idDirectorCarrera != $this->data['usuarioLogin']->id){
-            //si el usuario es un director, pero no de la carrera que se quiere ver un informe
-            $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes de esta carrera.');
-            $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-            return false;
-          }
-        }
-      }
-      else {
-        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-        return false;
-      }
-    }
-    return true;
-  }
-  
-  private function _verificarPermisosDepartamento($departamento){
-    if ($departamento->publicarInformes != "S"){
-      //si el departamento no tiene informes como públicos
-      if ($this->ion_auth->logged_in() && $this->data['usuarioLogin']){
-        //si el usuario esta logueado
-        if (!$this->ion_auth->in_group(array('admin','decanos'))){
-          //si el usuario no es una autoridad superior
-          if (!$this->ion_auth->in_group('jefes_departamentos')){
-            //si el usuario no es un jefe de departamento
-            $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por departamento.');
-            $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-            return false;
-          }
-          elseif($departamento->idJefeDepartamento != $this->data['usuarioLogin']->id){
-            //si el usuario es un jefe de departamento, pero no del departamento que se quiere ver un informe
-            $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes de esta departamento.');
-            $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-            return false;
-          }
-        }
-      }
-      else {
-        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private function _verificarPermisosFacultad(){
-    //verifico si el usuario tiene permisos para continuar
-    if ( $this->config->config['publicarInformes'] ){
-      //si la facultad tiene informes como públicos
-      if ($this->ion_auth->logged_in()){
-        //si el usuario esta logueado
-        if (!$this->ion_auth->in_group(array('admin','decanos'))){
-          //si el usuario no es una autoridad superior
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por facultad.');
-          $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-          return false;
-        }
-      }
-      else {
-        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-        return false;
-      }
-    }
-    return true;
-  }
-    
-    
   /*
-   * Obtener datos de una seccion para mostrar en el informe por materia (funcion auxiliar)
+   * Auxiliar. Obtener datos de una seccion para mostrar en el informe por materia (funcion auxiliar)
    */
   private function _dameDatosSeccionMateria($seccion, $encuesta, $idDocente, $idMateria, $idCarrera){
       $items = $seccion->listarItemsCarrera($idCarrera);
@@ -166,6 +49,14 @@ class Informes extends CI_Controller{
         switch ($item->tipo) {
         case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
           $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
+          //transformo a valores promedios
+          $cnt = 0;
+          foreach ($datos_respuestas as $r) {
+            $cnt += (int)$r['cantidad'];
+          }
+          foreach ($datos_respuestas as $pos => $r) {
+            $datos_respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'';
+          }
           break;
         case TIPO_TEXTO_SIMPLE: case TIPO_TEXTO_MULTILINEA:
           $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idMateria, $idCarrera);
@@ -178,7 +69,6 @@ class Informes extends CI_Controller{
       }
       return $datos_items;
   }
-
 
   /*
    * Solicitar y mostrar un informe por materia
@@ -222,7 +112,8 @@ class Informes extends CI_Controller{
       $formulario = $this->gf->dame($idFormulario);
       $carrera = $this->gc->dame($idCarrera);
       $materia = $this->gm->dame($idMateria);
-      if (!$encuesta || !$formulario || !$carrera || !$materia){
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      if (!$encuesta || !$formulario || !$carrera || !$materia || !$departamento){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/materia');
@@ -230,9 +121,19 @@ class Informes extends CI_Controller{
 
       //obtener la lista de docentes que participa en la encuesta, y el datos del usuario actual
       $listaDocentes = $encuesta->listarDocentes($idMateria, $idCarrera);
-
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosMateria($materia)) redirect('informes/materia');
+      $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
+      
+      //verifico si el usuario tiene permisos para la materia
+      if ($materia->publicarInformes != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por materia.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('informes/materia');
+        }
+      }
       
       //obtengo lista de docentes, que depende de que permisos tenga el usuario logueado
       $docentes = $this->_filtrarListaDocentes($materia, $listaDocentes);
@@ -274,7 +175,7 @@ class Informes extends CI_Controller{
         'encuesta' => &$encuesta,
         'formulario' => &$formulario,
         'carrera' => &$carrera,
-        'departamento' => $this->gd->dame($carrera->idDepartamento),
+        'departamento' => &$departamento,
         'materia' => &$materia,
         'claves' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
         'indice' => ($indiceGlobal)?$encuesta->indiceGlobalMateria($idMateria, $idCarrera):null,
@@ -284,8 +185,6 @@ class Informes extends CI_Controller{
       $this->load->view('informe_materia', $datos);
     }
     else{
-      $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
-      $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
       $this->load->view('solicitud_informe_materia', $this->data);
     }
   }
@@ -324,15 +223,22 @@ class Informes extends CI_Controller{
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
       $formulario = $this->gf->dame($idFormulario);
       $carrera = $this->gc->dame($idCarrera);
-      if (!$encuesta || !$formulario || !$carrera){
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      if (!$encuesta || !$formulario || !$carrera || !$departamento){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/carrera');
       }
-
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosCarrera($carrera)) redirect('informes/carrera');
-      
+      //verifico si el usuario tiene permisos para la carrera
+      if ($carrera->publicarInformes != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('informes/carrera');
+        }
+      }
       //obtener datos del formulario usado en la encuesta
       $secciones = $formulario->listarSeccionesCarrera($idCarrera);
       $datos_secciones = array();
@@ -346,9 +252,18 @@ class Informes extends CI_Controller{
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+            $respuestas = $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera);
+            //transformo a valores promedios
+            $cnt = 0;
+            foreach ($respuestas as $r) {
+              $cnt += (int)$r['cantidad'];
+            }
+            foreach ($respuestas as $pos => $r) {
+              $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'';
+            }
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera)
+              'respuestas' => $respuestas
             );
             break;
           default:
@@ -365,7 +280,7 @@ class Informes extends CI_Controller{
         'encuesta' => &$encuesta,
         'formulario' => &$formulario,
         'carrera' => &$carrera,
-        'departamento' => $this->gd->dame($carrera->idDepartamento),
+        'departamento' => &$departamento,
         'claves' => $encuesta->cantidadClavesCarrera($idCarrera),
         'indice' => ($indiceGlobal)?$encuesta->indiceGlobalCarrera($idCarrera):null,
         'graficos' => &$graficos,
@@ -374,8 +289,6 @@ class Informes extends CI_Controller{
       $this->load->view('informe_carrera', $datos);
     }
     else{
-      $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
-      $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
       $this->load->view('solicitud_informe_carrera', $this->data);
     }
   }
@@ -419,9 +332,16 @@ class Informes extends CI_Controller{
         redirect('informes/departamento');
       }
 
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosDepartamento($departamento)) redirect('informes/departamento');
-
+      //verifico si el usuario tiene permisos para el departamento
+      if ($departamento->publicarInformes != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por departamento.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('informes/departamento');
+        }
+      }
+      
       //obtener datos del formulario usado en la encuesta
       $secciones = $formulario->listarSecciones();
       $datos_secciones = array();
@@ -432,9 +352,18 @@ class Informes extends CI_Controller{
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+            $respuestas = $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento);
+            //transformo a valores promedios
+            $cnt = 0;
+            foreach ($respuestas as $r) {
+              $cnt += (int)$r['cantidad'];
+            }
+            foreach ($respuestas as $pos => $r) {
+              $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'';
+            }
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento)
+              'respuestas' => $respuestas
             );
             break;
           default:
@@ -458,8 +387,6 @@ class Informes extends CI_Controller{
       $this->load->view('informe_departamento', $datos);
     }
     else{
-      $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
-      $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
       $this->load->view('solicitud_informe_departamento', $this->data);
     }
   }
@@ -495,8 +422,14 @@ class Informes extends CI_Controller{
         redirect('informes/facultad');
       }
       
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosFacultad()) redirect('informes/facultad');;
+      //verifico si el usuario tiene permisos para la facultad
+      if ($this->config->config['publicarInformes']){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por facultad.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('informes/facultad');
+        }
+      }
 
       $secciones = $formulario->listarSecciones();
       $datos_secciones = array();
@@ -509,9 +442,18 @@ class Informes extends CI_Controller{
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
           case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+            $respuestas = $encuesta->respuestasPreguntaFacultad($item->idPregunta);
+            //transformo a valores promedios
+            $cnt = 0;
+            foreach ($respuestas as $r) {
+              $cnt += (int)$r['cantidad'];
+            }
+            foreach ($respuestas as $pos => $r) {
+              $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'';
+            }
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $encuesta->respuestasPreguntaFacultad($item->idPregunta)
+              'respuestas' => $respuestas
             );
             break;
           default:
@@ -534,12 +476,9 @@ class Informes extends CI_Controller{
       $this->load->view('informe_facultad', $datos);
     }
     else{
-      $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
-      $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
       $this->load->view('solicitud_informe_facultad', $this->data);
     }
   }
-
 
   /*
    * Solicitar y mostrar un informe por clave (es decir, por alumno)
@@ -551,6 +490,7 @@ class Informes extends CI_Controller{
     $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
     $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
     $this->form_validation->set_rules('idClave','Clave','required|is_natural_no_zero');
+    
     if($this->form_validation->run()){
       $idEncuesta = (int)$this->input->post('idEncuesta');
       $idFormulario = (int)$this->input->post('idFormulario');
@@ -578,7 +518,6 @@ class Informes extends CI_Controller{
       $this->load->model('Gestor_carreras','gc');
       $this->load->model('Gestor_encuestas','ge');
       $this->load->model('Gestor_departamentos','gd');
-$idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
 
       //verifico que los datos enviados son correctos
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
@@ -586,8 +525,8 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       $carrera = $this->gc->dame($idCarrera);
       $materia = $this->gm->dame($idMateria);
       $clave = $encuesta->dameClave($idClave, $idMateria, $idCarrera);
-      
-      if (!$encuesta || !$formulario || !$carrera || !$materia || !$clave){
+      $departamento = ($carrera)?$this->gd->dame($carrera->idDepartamento):FALSE;
+      if (!$encuesta || !$formulario || !$carrera || !$materia || !$clave || !$departamento){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/clave');
@@ -595,9 +534,17 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       //obtener la lista de docentes que participa en la encuesta, y el datos del usuario actual
       $listaDocentes = $encuesta->listarDocentes($idMateria, $idCarrera);
+      $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
 
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosMateria($materia)) redirect('informes/clave');
+      //verifico si el usuario tiene permisos para la materia
+      if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por clave de acceso.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('informes/clave');
+      }
 
       //obtengo lista de docentes, que depende de que permisos tenga el usuario logueado
       $docentes = $this->_filtrarListaDocentes($materia, $listaDocentes);
@@ -654,7 +601,7 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         'encuesta' => &$encuesta,
         'formulario' => &$formulario,
         'carrera' => &$carrera,
-        'departamento' => $this->gd->dame($carrera->idDepartamento),
+        'departamento' => &$departamento,
         'materia' => &$materia,
         'indice' => ($indiceGlobal)?$encuesta->indiceGlobalClave($idClave, $idMateria, $idCarrera):null,
         'clave' => &$clave,
@@ -663,8 +610,6 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       $this->load->view('informe_clave', $datos);
     }
     else{
-      $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
-      $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
       $this->load->view('solicitud_informe_clave', $this->data);
     }
   }
@@ -674,12 +619,6 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    * Solicitar y mostrar un informe por facultad
    */
   public function archivoMateria(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->logged_in()){
-      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('usuarios/login');
-    }
     //verifico datos POST
     $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
     $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
@@ -703,10 +642,12 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       $this->load->model('Encuesta');
       $this->load->model('Carrera');
       $this->load->model('Materia');
+      $this->load->model('Departamento');
       $this->load->model('Gestor_materias','gm');
       $this->load->model('Gestor_carreras','gc');
       $this->load->model('Gestor_formularios','gf');
       $this->load->model('Gestor_encuestas','ge');
+      $this->load->model('Gestor_departamentos','gd');
       $this->load->library('PHPExcel/PHPExcel');
 
       //verifico que los datos enviados son correctos
@@ -714,15 +655,23 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       $formulario = $this->gf->dame($idFormulario);
       $carrera = $this->gc->dame($idCarrera);
       $materia = $this->gm->dame($idMateria);
-      if (!$encuesta || !$formulario || !$carrera || !$materia){
+      $departamento = ($carrera)?$this->gd->dame($carrera->idDepartamento):FALSE;
+      if (!$encuesta || !$formulario || !$carrera || !$materia || !$departamento){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/materia');
       }
       
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosMateria($materia)) redirect('informes/materia');
-      
+      //verifico si el usuario tiene permisos para la materia
+      if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por clave de acceso.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('informes/materia');
+      }
+          
       //obtengo lista de docentes, que depende de que permisos tenga el usuario logueado
       $listaDocentes = $encuesta->listarDocentes($idMateria, $idCarrera);
       $docentes = $this->_filtrarListaDocentes($materia, $listaDocentes);
@@ -847,7 +796,9 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       $this->load->model('Formulario');
       $this->load->model('Encuesta');
       $this->load->model('Carrera');
+      $this->load->model('Departamentos');
       $this->load->model('Gestor_carreras','gc');
+      $this->load->model('Gestor_departamentos','gd');
       $this->load->model('Gestor_formularios','gf');
       $this->load->model('Gestor_encuestas','ge');
       $this->load->library('PHPExcel/PHPExcel');
@@ -856,15 +807,22 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
       $formulario = $this->gf->dame($idFormulario);
       $carrera = $this->gc->dame($idCarrera);
-      if (!$encuesta || !$formulario || !$carrera){
+      $departamento = $this->gd->dame($idDepartamento);
+      if (!$encuesta || !$formulario || !$carrera || !$departamento){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-        redirect('informes/materia');
+        redirect('informes/carrera');
       }
-      
-      //verifico si el usuario tiene permisos para continuar
-      if (!$this->_verificarPermisosCarrera($carrera)) redirect('informes/carrera');
-      
+      //verifico si el usuario tiene permisos para la carrera
+      if ($carrera->publicarInformes != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('informes/carrera');
+        }
+      }
       //Iniciar la planilla de cálculo
       $this->phpexcel->getProperties()->setCreator("Sistema Encuestas Vía Web")
                      ->setLastModifiedBy("Sistema Encuestas Vía Web")
@@ -908,7 +866,7 @@ $idClave = 593;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
     //si no pasa la validación
     else{
-      redirect('informes/materia');
+      redirect('informes/carrera');
     }
   }
 

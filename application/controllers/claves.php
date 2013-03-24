@@ -25,12 +25,73 @@ class Claves extends CI_Controller{
   /*
    * Gestion de claves de acceso. Aqui el usuario elige la carrera, materia y encuesta para ver listado de claves a imprimir
    */
-  public function claves_acceso(){
+  public function ver(){
     //verifico si el usuario tiene permisos para continuar
     if (!$this->ion_auth->logged_in()){
       $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('/');
+    }
+    //cargo librerias y modelos
+    $this->load->model('Clave');
+    $this->load->model('Encuesta');
+    $this->load->model('Materia');
+    $this->load->model('Carrera');
+    $this->load->model('Departamento');
+    $this->load->model('Gestor_encuestas','ge');
+    $this->load->model('Gestor_materias','gm');
+    $this->load->model('Gestor_carreras','gc');
+    $this->load->model('Gestor_departamentos','gd');
+
+    //verifico datos POST
+    $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idMateria = (int)$this->input->post('idMateria');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $materia = $this->gm->dame($idMateria);
+      $carrera = $this->gc->dame($idCarrera);
+      if (!$encuesta || !$materia || !$carrera){
+        $this->session->set_flashdata('resultadoOperacion', "Los datos ingresados son inválidos.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
+        redirect('claves/ver');
+      }
+      $this->data['encuesta'] = &$encuesta;
+      $this->data['materia'] = &$materia;
+      $this->data['carrera'] = &$carrera;
+      $this->data['departamento'] = $this->gd->dame($carrera->idDepartamento);
+      $this->data['claves'] = &$encuesta->cantidadClavesMateria($idMateria, $idCarrera);
+      $this->load->view('ver_claves', $this->data);
+      return; 
+    }
+    $this->load->view('claves_acceso', $this->data);
+  }
+  
+  /*
+   * Gestion de claves de acceso. Aqui el usuario elige la carrera, materia y encuesta para ver listado de claves a imprimir
+   */
+  public function listar(){
+    //verifico si el usuario tiene permisos para continuar
+    if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('/');
     }
     $this->load->model('Clave');
     $this->load->model('Encuesta');
@@ -41,24 +102,35 @@ class Claves extends CI_Controller{
     $this->load->model('Gestor_materias','gm');
     $this->load->model('Gestor_carreras','gc');
     $this->load->model('Gestor_departamentos','gd');
-    
-    $idEncuesta = (int)$this->input->post('idEncuesta');
-    $idFormulario = (int)$this->input->post('idFormulario');
-    $idMateria = (int)$this->input->post('idMateria');
-    $idCarrera = (int)$this->input->post('idCarrera');
-    
+
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
     $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
     $this->form_validation->set_rules('idEncuesta','Encuesta','required|is_natural_no_zero');
     $this->form_validation->set_rules('idFormulario','Formulario','required|is_natural_no_zero');
     if($this->form_validation->run()){
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idMateria = (int)$this->input->post('idMateria');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      
       //cargo librerias y modelos
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
       $materia = $this->gm->dame($idMateria);
       $carrera = $this->gc->dame($idCarrera);
+      if (!$encuesta || !$materia || !$carrera){
+        $this->session->set_flashdata('resultadoOperacion', "Los datos ingresados son inválidos.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
+        redirect('claves/ver');
+      }
+      
       $departamento =  $this->gd->dame($carrera->idDepartamento);
       $claves = $encuesta->listarClavesMateria($idMateria, $idCarrera);
+      if (count($claves)==0){
+        $this->session->set_flashdata('resultadoOperacion', 'No se encontraron claves de accesos para ver/imprimir.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING); 
+        redirect('claves/ver');
+      }
       $lista = array();
       foreach ($claves as $i => $clave) {
         $lista[$i] = array(
@@ -72,86 +144,11 @@ class Claves extends CI_Controller{
       $this->load->view('vista_claves', $this->data);
       return; 
     }
-    if ($idEncuesta && $idFormulario) $this->Encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-    if ($idMateria) $this->Materia = $this->gm->dame($idMateria);
-    if ($idCarrera) $this->Carrera = $this->gc->dame($idCarrera);
-    $this->data['encuesta'] = &$this->Encuesta;
-    $this->data['materia'] = &$this->Materia;
-    $this->data['carrera'] = &$this->Carrera;
-    $this->load->view('claves_acceso', $this->data);
-  }
-
-  /* 
-   * Mostrar el formulario al alumno para que llene la encuesta.
-   * Nota: El formulario de encuestas se compone de: secciones/subsecciones/items/opciones
-   */
-  public function encuesta($clave=null){
-    $this->load->model('Usuario');
-    $this->load->model('Opcion');
-    $this->load->model('Pregunta');
-    $this->load->model('Item');
-    $this->load->model('Seccion');
-    $this->load->model('Materia');
-    $this->load->model('Carrera');
-    $this->load->model('Clave');
-    $this->load->model('Formulario');
-    $this->load->model('Encuesta');
-    $this->load->model('Gestor_usuarios', 'gu');
-    $this->load->model('Gestor_materias', 'gm');
-    $this->load->model('Gestor_carreras', 'gc');
-    $this->load->model('Gestor_formularios', 'gf');
-    $this->load->model('Gestor_encuestas', 'ge');
-    
-    $formulario = $this->gf->dame($clave->idFormulario);
-    $encuesta = $this->ge->dame($clave->idEncuesta, $clave->idFormulario);
-    $carrera = $this->gc->dame($clave->idCarrera);
-    $materia = $this->gm->dame($clave->idMateria);  
-    $docentes = $materia->listarDocentes();
-    $secciones = $formulario->listarSeccionesCarrera($clave->idCarrera);
-    //por cada seccion
-    $datos_secciones = array();
-    foreach ($secciones as $i => $seccion) {
-      $datos_subsecciones = array();
-      //si la pregunta es referida a docentes
-      if($seccion->tipo == SECCION_TIPO_DOCENTE){
-        //por cada docente
-        foreach ($docentes as $j => $docente) {
-          $items = $seccion->listarItems();
-          $datos_items = array();
-          foreach ($items as $k => $item) {
-            $datos_items[$k]['item'] = $item;
-            $datos_items[$k]['opciones'] = $item->listarOpciones();
-          }
-          //guardo los datos de la subsección
-          $datos_subsecciones[$j]['docente'] = $docente;
-          $datos_subsecciones[$j]['items'] = $datos_items;
-        }
-      }
-      else{
-        $items = $seccion->listarItems();
-        $datos_items = array();
-        foreach ($items as $k => $item) {
-          $datos_items[$k]['item'] = $item;
-          $datos_items[$k]['opciones'] = $item->listarOpciones();
-        }
-        //si la sección es común, habrá una única subsección
-        $datos_subsecciones[0]['docente'] = $this->Usuario;
-        $datos_subsecciones[0]['items'] = $datos_items;
-      }
-      //guardo los datos de la sección
-      $datos_secciones[$i]['seccion'] = $seccion;
-      $datos_secciones[$i]['subsecciones'] = $datos_subsecciones;
-    }
-    $this->data['clave'] = &$clave;
-    $this->data['formulario'] = &$formulario;
-    $this->data['carrera'] = &$carrera;
-    $this->data['materia'] = &$materia;
-    $this->data['secciones'] = &$datos_secciones;
-    $this->load->view('formulario_encuesta', $this->data);
+    $this->ver();
   }
 
   /*
-   * Ingresar la clave de acceso para llenar la encuesta
+   * Ingresar la clave de acceso y mostrar el formulario al alumno para que llene la encuesta.
    * Nota: El formulario de encuestas se compone de: secciones/subsecciones/items/opciones
    */
   public function ingresar(){
@@ -161,13 +158,74 @@ class Claves extends CI_Controller{
     $this->form_validation->set_rules('clave', 'Clave de Acceso', 'callback_validar_clave_acceso');
     if ($this->form_validation->run()){
       $clave = $this->Encuesta->buscarClave($this->input->post('clave'));
-      if ($clave){
-        $this->encuesta($clave);
-        return;
+      if (!$clave){
+        $this->session->set_flashdata('resultadoOperacion', "Los datos ingresados son inválidos.");
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
+        redirect('claves/ver');
       }
-      $this->session->set_flashdata('resultadoOperacion', 'Sus respuestas fueron guardados correctamente. Muchas gracias por participar de nuestra encuesta.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS); 
-      redirect('/');
+
+      $this->load->model('Usuario');
+      $this->load->model('Opcion');
+      $this->load->model('Pregunta');
+      $this->load->model('Item');
+      $this->load->model('Seccion');
+      $this->load->model('Materia');
+      $this->load->model('Carrera');
+      $this->load->model('Formulario');
+      $this->load->model('Gestor_usuarios', 'gu');
+      $this->load->model('Gestor_materias', 'gm');
+      $this->load->model('Gestor_carreras', 'gc');
+      $this->load->model('Gestor_formularios', 'gf');
+      $this->load->model('Gestor_encuestas', 'ge');
+      
+      $formulario = $this->gf->dame($clave->idFormulario);
+      $encuesta = $this->ge->dame($clave->idEncuesta, $clave->idFormulario);
+      $carrera = $this->gc->dame($clave->idCarrera);
+      $materia = $this->gm->dame($clave->idMateria);  
+      $docentes = $materia->listarDocentes();
+      $secciones = $formulario->listarSeccionesCarrera($clave->idCarrera);
+      //por cada seccion
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $datos_subsecciones = array();
+        //si la pregunta es referida a docentes
+        if($seccion->tipo == SECCION_TIPO_DOCENTE){
+          //por cada docente
+          foreach ($docentes as $j => $docente) {
+            $items = $seccion->listarItems();
+            $datos_items = array();
+            foreach ($items as $k => $item) {
+              $datos_items[$k]['item'] = $item;
+              $datos_items[$k]['opciones'] = $item->listarOpciones();
+            }
+            //guardo los datos de la subsección
+            $datos_subsecciones[$j]['docente'] = $docente;
+            $datos_subsecciones[$j]['items'] = $datos_items;
+          }
+        }
+        else{
+          $items = $seccion->listarItems();
+          $datos_items = array();
+          foreach ($items as $k => $item) {
+            $datos_items[$k]['item'] = $item;
+            $datos_items[$k]['opciones'] = $item->listarOpciones();
+          }
+          //si la sección es común, habrá una única subsección
+          $datos_subsecciones[0]['docente'] = $this->Usuario;
+          $datos_subsecciones[0]['items'] = $datos_items;
+        }
+        //guardo los datos de la sección
+        $datos_secciones[$i]['seccion'] = $seccion;
+        $datos_secciones[$i]['subsecciones'] = $datos_subsecciones;
+      }
+      $this->data['clave'] = &$clave;
+      $this->data['formulario'] = &$formulario;
+      $this->data['carrera'] = &$carrera;
+      $this->data['materia'] = &$materia;
+      $this->data['secciones'] = &$datos_secciones;
+      $this->load->view('formulario_encuesta', $this->data);
+      return;
+
     }
     $this->load->view('ingreso_clave', $this->data);
   }
@@ -244,10 +302,17 @@ class Claves extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
+    elseif (!$this->ion_auth->is_admin()){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('claves/ver');
+    }
     $this->load->model('Encuesta');
     $this->load->model('Materia');
     $this->load->model('Carrera');
     $this->load->model('Gestor_materias','gm');
+    $this->load->model('Gestor_encuestas','ge');
+    $this->load->model('Gestor_carreras','gc');
     //chequeo parámetros de entrada
     $this->form_validation->set_rules('idEncuesta','Encuesta','is_natural_no_zero|required');
     $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
@@ -257,20 +322,26 @@ class Claves extends CI_Controller{
     if($this->form_validation->run()){
       $idMateria = (int)$this->input->post('idMateria');
       $idCarrera = (int)$this->input->post('idCarrera');
+      $idEncuesta = (int)$this->input->post('idEncuesta');
+      $idFormulario = (int)$this->input->post('idFormulario');
       $cantidad = (int)$this->input->post('cantidad');
       $guardarCantidad = (bool)$this->input->post('guardarCantidad');
       $materia = $this->gm->dame($idMateria);
       $carrera = $this->gc->dame($idCarrera);
-      if (!$materia || !$carrera){
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      if (!$materia || !$carrera || !$encuesta){
         $this->session->set_flashdata('resultadoOperacion', "Los datos ingresados son inválidos.");
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
-        redirect('claves/claves_acceso');
+        redirect('claves/ver');
+      }
+      if ($encuesta->fechaFin){
+        $this->session->set_flashdata('resultadoOperacion', 'El periodo de encuesta ya esta finalizado, por lo que no se pueden generar mas claves de acceso.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('claves/ver');
       }
       $cnt = 0;
-      $this->Encuesta->idEncuesta = (int)$this->input->post('idEncuesta');
-      $this->Encuesta->idFormulario = (int)$this->input->post('idFormulario');
       for ($i=0; $i<$cantidad; $i++){
-        $clave = $this->Encuesta->altaClave($idMateria, $idCarrera);
+        $clave = $encuesta->altaClave($idMateria, $idCarrera);
         if (is_numeric($clave)){$cnt++;}
       }
       if ($cnt == $cantidad){
@@ -286,11 +357,8 @@ class Claves extends CI_Controller{
         $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con problemas. Se generaron $cnt claves.");
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       }
-      redirect('claves/claves_acceso');
+      redirect('claves/ver');
     }
-    $this->data['encuesta'] = &$this->Encuesta;
-    $this->data['materia'] = &$this->Materia;
-    $this->data['carrera'] = &$this->Carrera;
     $this->load->view('claves_acceso', $this->data);
   }
    

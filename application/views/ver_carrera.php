@@ -13,7 +13,8 @@
       <div class="row">
         <!-- Title -->
         <div class="span12">
-            <?php include 'templates/descripcion-departamentos.php'?>
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de las carreras pertenecientes a la facultad para la toma de encuestas.</p>
         </div>
       </div>
       
@@ -71,7 +72,16 @@
     </div>
     <form class="form-horizontal" action="<?php echo site_url('carreras/asociarMateria')?>" method="post">
       <div class="modal-body">
-        <?php include 'templates/form-asociar-materia.php'?>      
+        <h5><?php echo $carrera->nombre.' - Plan '.$carrera->plan?></h5>
+        <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+        <div class="control-group"> 
+          <label class="control-label" for="buscarMateria">Buscar materia: </label>
+          <div class="controls">
+            <input class="input-xlarge" id="buscarMateria" type="text" data-provide="typeahead" autocomplete="off">
+            <input type="hidden" name="idMateria" value=""/>
+            <?php echo form_error('idMateria')?>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -107,7 +117,9 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
+    autocompletar_materia("<?php echo site_url('materias/buscarAJAX')?>");
     $('.quitar').click(function(){
       idMateria = $(this).attr('value');
       nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();

@@ -33,29 +33,6 @@
           <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
           <ul class="nav">
             <li><a href="#" onclick="window.print()">Imprimir...</a></li>
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li>
-                  <a class="form"><form action="<?php echo site_url('informes/archivoDepartamento')?>" method="post">
-                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
-                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
-                    <input type="hidden" name="idDepartamento" value="<?php echo $departamento->idDepartamento?>" />
-                    <input type="hidden" name="tipo" value="xlsx" />
-                    <input type="submit" name="submit" class="btn btn-link" value="Libro de Excel 2007-2010 (.xlsx)..." />
-                  </form></a>
-                </li>
-                <li>
-                  <a class="form"><form action="<?php echo site_url('informes/archivoMateria')?>" method="post"
-                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
-                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
-                    <input type="hidden" name="idDepartamento" value="<?php echo $departamento->idDepartamento?>" />
-                    <input type="hidden" name="tipo" value="xls" />
-                    <input type="submit" name="submit" class="btn btn-link" value="Libro de Excel 97-2003 (.xls)..."/>
-                  </form></a>
-                </li>
-              </ul>
-            </li>
           </ul>
         </div>
       </div>

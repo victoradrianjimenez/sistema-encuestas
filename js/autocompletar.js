@@ -79,10 +79,6 @@ function autocompletar_departamento(url){
     }
   });
 
-  //ocultar mensaje de error al escribir
-  $('input[type="text"], input[type="number"]').keyup(function(){
-    $(this).siblings('span.label').hide('fast');
-  });
 }
 
 function autocompletar_formulario(url){
@@ -128,12 +124,12 @@ function autocompletar_formulario(url){
 
 function autocompletar_carrera(url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarCarrera').keydown(function(event){
+  $('#buscarCarrera, input[name="buscarCarrera"]').keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
     $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarCarrera').typeahead({
+  $('#buscarCarrera, input[name="buscarCarrera"]').typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -161,7 +157,7 @@ function autocompletar_carrera(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarCarrera').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      $('#buscarCarrera, input[name="buscarCarrera"]').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1]+" / "+cols[2];
     }
   });

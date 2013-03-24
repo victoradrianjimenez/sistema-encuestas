@@ -41,7 +41,7 @@ class Materia extends CI_Model{
    *
    * @access  public
    * @return  array
-   
+   */ 
   public function listarCarreras(){
     $idMateria = $this->db->escape($this->idMateria);
     $query = $this->db->query("call esp_listar_carreras_materia($idMateria)");
@@ -49,7 +49,7 @@ class Materia extends CI_Model{
     $query->free_result();
     return $data;
   }
-  */
+  
   
   /**
    * Obtener la cantidad de docentes relacionados a la materia.
@@ -136,6 +136,23 @@ class Materia extends CI_Model{
     $query->free_result();
     return ($data)?$data->cantidad:0;
   } 
+  
+  
+  /**
+   * Obtener datos de un docente en su relacion con una materia. Devuleve un array.
+   *
+   * @access public
+   * @param identificador de la materia
+   * @return object
+   */
+  public function dameDatosDocente($idDocente){
+    $idDocente = $this->db->escape($idDocente);
+    $idMateria = $this->db->escape($this->idMateria);
+    $query = $this->db->query("call esp_dame_docente_materia($idDocente, $idMateria)");
+    $data = $query->row_array();
+    $query->free_result();
+    return $data;
+  }
 }
 
 ?>

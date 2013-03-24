@@ -13,7 +13,8 @@
       <div class="row">
         <!-- Title -->
         <div class="span12">
-            <?php include 'templates/descripcion-departamentos.php'?>
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de las materias pertenecientes a la facultad para la toma de encuestas.</p>
         </div>
       </div>
       
@@ -72,7 +73,30 @@
     </div>
     <form class="form-horizontal" action="<?php echo site_url('materias/asociarDocente')?>" method="post">
       <div class="modal-body">
-        <?php include 'templates/form-asociar-docente.php'?>      
+        <h5><?php echo $materia->nombre.' - Código '.$materia->codigo?></h5>
+        <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
+        <div class="control-group"> 
+          <label class="control-label" for="buscarUsuario">Buscar docente: <span class="opcional">*</span></label>
+          <div class="controls">
+            <input class="input-xlarge" id="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off">
+            <input type="hidden" name="idDocente" value=""/>
+            <?php echo form_error('idDocente')?>
+          </div>
+        </div>
+        <div class="control-group"> 
+          <label class="control-label" for="campoOrdenFormulario">Posición en formulario: <span class="opcional">*</span></label>
+          <div class="controls">
+            <input class="input-xlarge" id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="ordenFormulario" value="1" required/>
+            <?php echo form_error('ordenFormulario')?>
+          </div>
+        </div>
+        <div class="control-group"> 
+          <label class="control-label" for="campoCargo">Cargo:</label>
+          <div class="controls">
+            <input class="input-xlarge" id="campoCargo" type="text" name="cargo" />
+            <?php echo form_error('cargo')?>
+          </div>
+        </div>   
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -108,6 +132,7 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
     $('.quitar').click(function(){
       idDocente = $(this).attr('value');
@@ -120,6 +145,7 @@
       $("#modalDesasociar").modal();
       return false;
     });
+    autocompletar_usuario("<?php echo site_url('usuarios/buscarAJAX')?>");
   </script>
 </body>
 </html>

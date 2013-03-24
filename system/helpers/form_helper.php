@@ -674,7 +674,7 @@ if ( ! function_exists('set_value'))
 {
 	function set_value($field = '', $default = '')
 	{
-		if (FALSE === ($OBJ =& _get_validation_object()))
+		//if (FALSE === ($OBJ =& _get_validation_object()))
 		{
 			if ( ! isset($_POST[$field]))
 			{
@@ -708,7 +708,7 @@ if ( ! function_exists('set_select'))
 	{
 		$OBJ =& _get_validation_object();
 
-		if ($OBJ === FALSE)
+		//if ($OBJ === FALSE)
 		{
 			if ( ! isset($_POST[$field]))
 			{
@@ -763,7 +763,7 @@ if ( ! function_exists('set_checkbox'))
 	{
 		$OBJ =& _get_validation_object();
 
-		if ($OBJ === FALSE)
+		//if ($OBJ === FALSE)
 		{
 			if ( ! isset($_POST[$field]))
 			{
@@ -816,7 +816,7 @@ if ( ! function_exists('set_radio'))
 {
 	function set_radio($field = '', $value = '', $default = FALSE)
 	{
-		$OBJ =& _get_validation_object();
+		//$OBJ =& _get_validation_object();
 
 		if ($OBJ === FALSE)
 		{

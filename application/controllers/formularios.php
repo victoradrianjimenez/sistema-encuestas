@@ -143,22 +143,130 @@ class Formularios extends CI_Controller{
    * Muestra el formulario de edicion de formularios
    */
   public function editar(){
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    $this->data['tituloFormulario'] = 'Editar Formulario';
-    $this->data['urlFormulario'] = site_url('formularios/editar');
-    $this->load->view('editar_formulario', $this->data);
+    if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('formularios/listar');
+    }
+    $this->load->model('Usuario');
+    $this->load->model('Pregunta');
+    $this->load->model('Item');
+    $this->load->model('Seccion');
+    $this->load->model('Carrera');
+    $this->load->model('Formulario');
+    $this->load->model('Gestor_carreras', 'gc');
+    $this->load->model('Gestor_formularios', 'gf');
+    $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      $formulario = $this->gf->dame($idFormulario);
+      if($idCarrera){
+        $carrera = $this->gc->dame($idCarrera);
+        $secciones = $formulario->listarSeccionesCarrera($idCarrera);
+      }
+      else{
+        $carrera = $this->Carrera;
+        $secciones = $formulario->listarSecciones();
+        $idCarrera = false;
+      }
+      $docentes = array($this->Usuario);  
+      //por cada seccion
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $datos_subsecciones = array();
+        $items = ($idCarrera) ? $seccion->listarItemsCarrera($idCarrera) : $seccion->listarItems();
+        //por cada item
+        $datos_items = array();
+        foreach ($items as $k => $item) {
+          $datos_items[$k]['item'] = $item;
+        }
+        //si la sección es común, habrá una única subsección
+        $datos_subsecciones[0]['docente'] = $this->Usuario;
+        $datos_subsecciones[0]['items'] = $datos_items;
+        //guardo los datos de la sección
+        $datos_secciones[$i]['seccion'] = $seccion;
+        $datos_secciones[$i]['subsecciones'] = $datos_subsecciones;
+      }
+      $this->data['formulario'] = &$formulario;
+      $this->data['carrera'] = ($carrera)?$carrera:$this->Carrera;
+      $this->data['secciones'] = &$datos_secciones;
+
+      $this->data['tituloFormulario'] = 'Personalizar Formulario';
+      $this->data['urlFormulario'] = site_url('formularios/agregar_preguntas');
+      $this->load->view('personalizar_formulario', $this->data);
+    }
+    else {
+      $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      redirect('formularios/listar');
+    }
   }
-  
-  
+
+  /*
+   * Agregar preguntas adicionales para una carrera
+   */
+  public function agregar_preguntas(){
+    $this->load->model('Clave');
+    $this->load->model('Encuesta');
+    $this->load->model('Seccion');
+    $this->load->model('Carrera');
+    $this->load->model('Formulario');
+    $this->load->model('Gestor_carreras', 'gc');
+    $this->load->model('Gestor_formularios', 'gf');
+    
+    //verifico los datos del POST
+    $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero');
+    if ($this->form_validation->run()){
+      $idCarrera = (int)$this->input->post('idCarrera');
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $formulario = $this->gf->dame($idFormulario);
+      $carrera = $this->gc->dame($idCarrera);
+      if (!$formulario || !$carrera){
+        $this->data['resultadoOperacion'] = 'Los datos ingresados son incorrectos.';
+        $this->data['resultadoTipo'] = ALERT_ERROR;
+        $this->editar();
+        return;
+      }
+      
+      $error = false;
+      //leo todos los datos enviados
+      $inputs = $this->input->post(NULL, TRUE);
+      //verifico integridad de los datos
+      foreach ($inputs as $var => $pregunta) {
+        //si el dato es una respuesta
+        if (strpos($var,'idPregunta') !== false){
+          //verifico que haya mandado ID de la pregunta, el tipo y el ID del docente (es opcional)
+          if (sscanf($var, "idPregunta_%u_%u", $idSeccion, $posicion)>1){
+            $seccion = $formulario->dameSeccion($idSeccion);
+            $res = $seccion->altaItem($pregunta, $idCarrera, 0);
+            if($res != PROCEDURE_SUCCESS){
+              $error = true;
+            }
+          }
+        }
+      }
+
+      if ($error){
+        $this->session->set_flashdata('resultadoOperacion', 'Algunas preguntas no pudieron agregarse al formulario.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);  
+      }
+      else{
+        $this->session->set_flashdata('resultadoOperacion', 'Las preguntas fueron guardados correctamente.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+      } 
+    }
+    redirect('formularios/listar');
+  }
+
+
   /*
    * Recepción del formulario para agregar nuevo formulario con sus secciones y preguntas
    */
@@ -244,7 +352,6 @@ class Formularios extends CI_Controller{
           $this->Seccion->idFormulario = $this->Formulario->idFormulario;
           foreach ($seccion['preguntas'] as $j => $pregunta) {
             $res = $this->Seccion->altaItem($pregunta, NULL, $j);
-            echo $pregunta.' '.NULL.' '.$j;
             if ($res != PROCEDURE_SUCCESS){
               $error = true;
               break;
@@ -254,13 +361,17 @@ class Formularios extends CI_Controller{
         }
       }
       if($error){
-        
         $this->gf->baja($this->Formulario->idFormulario);
       }
-      //cargo vista para mostrar resultado
-      $this->data['mensaje'] = (!$error)?"La operación se realizó con éxito. El ID del nuevo formulario es ".$this->Formulario->idFormulario.".":$res;
-      $this->data['link'] = site_url("formularios/listar"); //hacia donde redirigirse
-      /////////////////////////////////////$this->load->view('resultado_operacion', $this->data);
+      if (!$error){
+        $this->session->set_flashdata('resultadoOperacion', 'El formulario se creó con éxito.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+        redirect("formularios/listar");
+      }
+      else{
+        $this->data['resultadoTipo'] = $res;
+        $this->data['resultadoOperacion'] = ALERT_ERROR;
+      }
     }
     else{
       $this->data['tituloFormulario'] = 'Nuevo Formulario';

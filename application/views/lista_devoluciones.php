@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Lista Devoluciones</title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
@@ -12,7 +11,8 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-devoluciones.php'?>
+          <h3>Planes de mejora</h3>
+          <p>En esta sección se permite acceder a un informe de plan de mejoras creados hasta el momento por una materia de una carrera en particular.</p>
         </div>
       </div>
       

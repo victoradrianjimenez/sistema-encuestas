@@ -1,11 +1,11 @@
 <?php
 
 /**
- * 
+ * Controlador para la Gestión de Informes Históricos
  */
 class Historicos extends CI_Controller{
   
-  var $data=array(); //datos para mandar a las vistas
+  var $data = array(); //datos para mandar a las vistas
   
   function __construct() {
     parent::__construct();
@@ -16,46 +16,11 @@ class Historicos extends CI_Controller{
     $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
-  
-  /*
-   * Obtener datos de una seccion para mostrar en el informe historico por materia
-   * Última revisión: 2012-02-09 7:32 p.m.
-   */
-  private function _dameDatosSeccionMateria($seccion, $encuesta, $idDocente, $idMateria, $idCarrera){
-      $items = $seccion->listarItemsCarrera($idCarrera);
-      $datos_items = array();
-      foreach ($items as $k => $item) {
-        switch ($item->tipo) {
-        case 'S': case 'M': case 'N':
-          $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
-          break;
-        case 'T': case 'X':
-          $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idMateria, $idCarrera);
-          break;
-        }
-        $datos_items[$k] = array(
-          'item' => $item,
-          'respuestas' => $datos_respuestas
-        );
-      }
-      return $datos_items;
-  }
-  
+
   /*
    * Solicitar y mostrar un informe historico por materia
-   * Última revisión: 2012-02-09 7:39 p.m.
    */
   public function materia(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->logged_in()){
-      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('usuarios/login');
-    }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
-    }
     //verifico datos POST
     $this->form_validation->set_rules('idMateria','Materia','required|is_natural_no_zero');
     $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
@@ -71,34 +36,34 @@ class Historicos extends CI_Controller{
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
-      $this->load->model('Item');
-      $this->load->model('Seccion');
-      $this->load->model('Usuario');
       $this->load->model('Materia');
       $this->load->model('Carrera');
       $this->load->model('Departamento');
-      $this->load->model('Formulario');
-      $this->load->model('Encuesta');
-      $this->load->model('Usuario');
-      $this->load->model('Gestor_formularios','gf');
       $this->load->model('Gestor_materias','gm');
       $this->load->model('Gestor_carreras','gc');
-      $this->load->model('Gestor_encuestas','ge');
       $this->load->model('Gestor_departamentos','gd');
-      $this->load->model('Gestor_usuarios','gu');
-
-      $this->load->model('Pregunta');
       $this->load->model('Gestor_preguntas','gp');
       
       $pregunta = $this->gp->dame($idPregunta);
       $materia = $this->gm->dame($idMateria);
       $carrera = $this->gc->dame($idCarrera);
-      if (!$pregunta || !$materia || !$carrera){
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      if (!$pregunta || !$materia || !$carrera || !$departamento){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('historicos/materia');
       }
-      $departamento = $this->gd->dame($carrera->idDepartamento);
+      //verifico si el usuario tiene permisos para la materia
+      if ($materia->publicarHistoricos != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('docentes') && !isempty($materia->dameDatosDocente($this->data['usuarioLogin']->id))) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por materia.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('historicos/materia');
+        }
+      }
       $historico = $pregunta->historicoMateria($idMateria, $idCarrera, $fechaInicio, $fechaFin);
       if (empty($historico)){
         $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
@@ -125,79 +90,62 @@ class Historicos extends CI_Controller{
 
   /*
    * Solicitar y mostrar un informe historico por carrera
-   * Última revisión: 2012-02-09 8:17 p.m.
    */
   public function carrera(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->logged_in()){
-      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('usuarios/login');
-    }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
-    }
     //verifico datos POST
     $this->form_validation->set_rules('idCarrera','Carrera','required|is_natural_no_zero');
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    if($this->form_validation->run() && sscanf($this->input->post('encuesta'), "%d_%d",$idEncuesta, $idFormulario) == 2){
+    $this->form_validation->set_rules('idPregunta','Pregunta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('fechaInicio','Fecha Inicio','required');
+    $this->form_validation->set_rules('fechaFin','Fecha Fin','required');
+    if($this->form_validation->run()){
       $idCarrera = (int)$this->input->post('idCarrera');
-      $indicesSecciones = (bool)$this->input->post('indicesSecciones');
-      $indiceGlobal = (bool)$this->input->post('indiceGlobal');
+      $idPregunta = (int)$this->input->post('idPregunta');
+      $fechaInicio = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaInicio'))));
+      $fechaFin = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaFin'))));
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
-      $this->load->model('Item');
-      $this->load->model('Seccion');
       $this->load->model('Carrera');
-      $this->load->model('Formulario');
       $this->load->model('Departamento');
-      $this->load->model('Encuesta');
-      $this->load->model('Gestor_formularios','gf');
       $this->load->model('Gestor_carreras','gc');
       $this->load->model('Gestor_departamentos','gd');
-      $this->load->model('Gestor_encuestas','ge');
-      //obtener datos de la encuesta
-      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-      $formulario = $this->gf->dame($idFormulario);
+      $this->load->model('Gestor_preguntas','gp');
+      
+      $pregunta = $this->gp->dame($idPregunta);
       $carrera = $this->gc->dame($idCarrera);
       $departamento = $this->gd->dame($carrera->idDepartamento);
-      $secciones = $formulario->listarSeccionesCarrera($idCarrera);
-
-      $datos_secciones = array();
-      foreach ($secciones as $i => $seccion) {
-        $datos_secciones[$i]['seccion'] = $seccion;
-        $datos_secciones[$i]['items'] = array();
-        $datos_secciones[$i]['indice'] = ($indicesSecciones)?$encuesta->indiceSeccionCarrera($idCarrera, $seccion->idSeccion):null;        
-        $items = $seccion->listarItemsCarrera($idCarrera);
-        foreach ($items as $k => $item) {
-          switch ($item->tipo) {
-          case 'S': case 'M': case 'N':
-            $datos_secciones[$i]['items'][$k] = array(
-              'item' => $item,
-              'respuestas' => $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera)
-            );
-            break;
-          default:
-            $datos_secciones[$i]['items'][$k] = array(
-              'item' => $item,
-              'respuestas' => null
-            );
-            break;
-          }
+      if (!$pregunta || !$carrera){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('historicos/carrera');
+      }
+      //verifico si el usuario tiene permisos para la carrera
+      if ($carrera->publicarHistoricos != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por carrera.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('historicos/carrera');
         }
+      }
+      $historico = $pregunta->historicoCarrera($idCarrera, $fechaInicio, $fechaFin);
+      if (empty($historico)){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('historicos/carrera');
       }
       //datos para enviar a la vista
       $datos = array(
-        'encuesta' => &$encuesta,
-        'formulario' => &$formulario,
+        'datos' => &$historico,
+        'pregunta' => &$pregunta,
         'carrera' => &$carrera,
+        'opciones' => $pregunta->listarOpciones(),
         'departamento' => &$departamento,
-        'claves' => $encuesta->cantidadClavesCarrera($idCarrera),
-        'indice' => ($indiceGlobal)?$encuesta->indiceGlobalCarrera($idCarrera):null,
-        'secciones' => &$datos_secciones
+        'fechaInicio' => &$fechaInicio,
+        'fechaFin' => &$fechaFin
       );
+      
       $this->load->view('historico_carrera', $datos);
     }
     else{
@@ -207,73 +155,57 @@ class Historicos extends CI_Controller{
 
   /*
    * Solicitar y mostrar un informe historico por departamento
-   * Última revisión: 2012-02-09 8:17 p.m.
    */
   public function departamento(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->logged_in()){
-      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('usuarios/login');
-    }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos'))){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
-    }
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','required|is_natural_no_zero');
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    $tmp = $this->input->post('encuesta');
-    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+    $this->form_validation->set_rules('idPregunta','Pregunta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('fechaInicio','Fecha Inicio','required');
+    $this->form_validation->set_rules('fechaFin','Fecha Fin','required');
+    if($this->form_validation->run()){
       $idDepartamento = (int)$this->input->post('idDepartamento');
-      
+      $idPregunta = (int)$this->input->post('idPregunta');
+      $fechaInicio = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaInicio'))));
+      $fechaFin = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaFin'))));
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
-      $this->load->model('Item');
-      $this->load->model('Seccion');
       $this->load->model('Departamento');
-      $this->load->model('Formulario');
-      $this->load->model('Encuesta');
-      $this->load->model('Gestor_formularios','gf');
       $this->load->model('Gestor_departamentos','gd');
-      $this->load->model('Gestor_encuestas','ge');
-      //obtener datos de la encuesta
-      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-      $formulario = $this->gf->dame($idFormulario);
-      $departamento= $this->gd->dame($idDepartamento);
-      $secciones = $formulario->listarSecciones();
+      $this->load->model('Gestor_preguntas','gp');
       
-      $datos_secciones = array();
-      foreach ($secciones as $i => $seccion) {
-        $datos_secciones[$i]['seccion'] = $seccion;
-        $datos_secciones[$i]['items'] = array();
-        $items = $seccion->listarItems();
-        foreach ($items as $k => $item) {
-          switch ($item->tipo) {
-          case 'S': case 'M': case 'N':
-            $datos_secciones[$i]['items'][$k] = array(
-              'item' => $item,
-              'respuestas' => $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento)
-            );
-            break;
-          default:
-            $datos_secciones[$i]['items'][$k] = array(
-              'item' => $item,
-              'respuestas' => null
-            );
-            break;
-          }
+      $pregunta = $this->gp->dame($idPregunta);
+      $departamento = $this->gd->dame($idDepartamento);
+      if (!$pregunta || !$departamento){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('historicos/departamento');
+      }
+      //verifico si el usuario tiene permisos para el departamento
+      if ($departamento->publicarHistoricos != 'S'){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por departamento.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('historicos/departamento');
         }
+      }
+      $historico = $pregunta->historicoDepartamento($idDepartamento, $fechaInicio, $fechaFin);
+      if (empty($historico)){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('historicos/departamento');
       }
       //datos para enviar a la vista
       $datos = array(
-        'encuesta' => &$encuesta,
-        'formulario' => &$formulario,
+        'datos' => &$historico,
+        'pregunta' => &$pregunta,
+        'opciones' => $pregunta->listarOpciones(),
         'departamento' => &$departamento,
-        'claves' => $encuesta->cantidadClavesDepartamento($idDepartamento),
-        'secciones' => &$datos_secciones
+        'fechaInicio' => &$fechaInicio,
+        'fechaFin' => &$fechaFin
       );
+      
       $this->load->view('historico_departamento', $datos);
     }
     else{
@@ -283,71 +215,57 @@ class Historicos extends CI_Controller{
 
   /*
    * Solicitar y mostrar un informe historico por facultad
-   * Última revisión: 2012-02-10 1:42 p.m.
    */
   public function facultad(){
-    //verifico si el usuario tiene permisos para continuar
-    if (!$this->ion_auth->logged_in()){
-      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('usuarios/login');
-    }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos'))){
-      show_error('No tiene permisos para realizar esta operación.');
-      return;
-    }
     //verifico datos POST
-    $this->form_validation->set_rules('encuesta','Encuesta','required|alpha_dash');
-    $tmp = $this->input->post('encuesta');
-    if($this->form_validation->run() && sscanf($tmp, "%d_%d",$idEncuesta, $idFormulario) == 2){
+    $this->form_validation->set_rules('idPregunta','Pregunta','required|is_natural_no_zero');
+    $this->form_validation->set_rules('fechaInicio','Fecha Inicio','required');
+    $this->form_validation->set_rules('fechaFin','Fecha Fin','required');
+    if($this->form_validation->run()){
+      $idPregunta = (int)$this->input->post('idPregunta');
+      $fechaInicio = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaInicio'))));
+      $fechaFin = date('Y-m-d', strtotime(str_replace('/','-',$this->input->post('fechaFin'))));
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
-      $this->load->model('Item');
-      $this->load->model('Seccion');
-      $this->load->model('Formulario');
-      $this->load->model('Encuesta');
-      $this->load->model('Gestor_formularios','gf');
-      $this->load->model('Gestor_encuestas','ge');
-  
-      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
-      $formulario = $this->gf->dame($idFormulario);
-      $secciones = $formulario->listarSecciones();
+      $this->load->model('Gestor_preguntas','gp');
       
-      $datos_secciones = array();
-      foreach ($secciones as $i => $seccion) {
-        $datos_secciones[$i]['seccion'] = $seccion;
-        $datos_secciones[$i]['items'] = array();
-        $items = $seccion->listarItems();
-        foreach ($items as $k => $item) {
-          switch ($item->tipo) {
-          case 'S': case 'M': case 'N':
-            $datos_secciones[$i]['items'][$k] = array(
-              'item' => $item,
-              'respuestas' => $encuesta->respuestasPreguntaFacultad($item->idPregunta)
-            );
-            break;
-          default:
-            $datos_secciones[$i]['items'][$k] = array(
-              'item' => $item,
-              'respuestas' => null
-            );
-            break;
-          }
+      $pregunta = $this->gp->dame($idPregunta);
+      if (!$pregunta){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('historicos/facultad');
+      }
+      //verifico si el usuario tiene permisos para la facultad
+      if ($this->config->config['publicarHistoricos']){
+        if(!($this->ion_auth->in_group(array('admin','decanos')) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por facultad.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+          redirect('historicos/facultad');
         }
+      }
+      $historico = $pregunta->historicoFacultad($fechaInicio, $fechaFin);
+      if (empty($historico)){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('historicos/facultad');
       }
       //datos para enviar a la vista
       $datos = array(
-        'encuesta' => &$encuesta,
-        'formulario' => &$formulario,
-        'secciones' => &$datos_secciones
+        'datos' => &$historico,
+        'pregunta' => &$pregunta,
+        'opciones' => $pregunta->listarOpciones(),
+        'fechaInicio' => &$fechaInicio,
+        'fechaFin' => &$fechaFin
       );
+      
       $this->load->view('historico_facultad', $datos);
     }
     else{
       $this->load->view('solicitud_historico_facultad', $this->data);
     }
   }
+  
 }
 
 ?>

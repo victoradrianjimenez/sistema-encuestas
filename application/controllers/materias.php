@@ -12,7 +12,9 @@ class Materias extends CI_Controller{
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
+    //leo los datos del usuario logueado
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    //leo los mensajes generados en la página anterior
     $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
@@ -31,13 +33,19 @@ class Materias extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    //chequeo parámetros de entrada
-    $pagInicio = (int)$pagInicio;
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('/');
+    }
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Materia');
     $this->load->model('Gestor_materias','gm');
+    
+    //chequeo parámetros de entrada
+    $pagInicio = (int)$pagInicio;
     
     //obtengo lista de materias
     $lista = $this->gm->listar($pagInicio, PER_PAGE);
@@ -63,42 +71,46 @@ class Materias extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    //chequeo parámetros de entrada
-    $pagInicio = (int)$pagInicio;
-    $idMateria = (int)$idMateria;
-
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('materias/listar');
+    }
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Usuario');
     $this->load->model('Materia');
     $this->load->model('Gestor_materias','gm');
+    
+    //chequeo parámetros de entrada
+    $pagInicio = (int)$pagInicio;
+    $idMateria = (int)$idMateria;
+
     $materia = $this->gm->dame($idMateria);
-    if ($materia){
-      //obtengo lista de datos de docentes
-      $docentes = $materia->listarDocentes($pagInicio, PER_PAGE);
-      $lista = array();
-      foreach ($docentes as $i => $docente){
-        $lista[$i] = array(
-          'docente' => $docente,
-          'datos' => $docente->dameDatosDocente($idMateria)
-        );      
-      }
-      //genero la lista de links de paginación
-      $this->pagination->initialize(array(
-        'base_url' => site_url("materias/ver/$idMateria"),
-        'total_rows' => $materia->cantidadDocentes(),
-        'uri_segment' => 4
-      ));
-      $this->data['lista'] = &$lista;
-      $this->data['materia'] = &$materia;
-      $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
-      $this->load->view('ver_materia', $this->data);
-    }
-    else{
-      $this->session->set_flashdata('resultadoOperacion', "No existe la materia con ID=$idMateria.");
+    if (!$materia){
+      $this->session->set_flashdata('resultadoOperacion', "No existe la materia seleccionada.");
       $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
       redirect('materias/listar');
     }
+    //obtengo lista de datos de docentes
+    $docentes = $materia->listarDocentes($pagInicio, PER_PAGE);
+    $lista = array();
+    foreach ($docentes as $i => $docente){
+      $lista[$i] = array(
+        'docente' => $docente,
+        'datos' => $docente->dameDatosDocente($idMateria)
+      );      
+    }
+    //genero la lista de links de paginación
+    $this->pagination->initialize(array(
+      'base_url' => site_url("materias/ver/$idMateria"),
+      'total_rows' => $materia->cantidadDocentes(),
+      'uri_segment' => 4
+    ));
+    $this->data['lista'] = &$lista;
+    $this->data['materia'] = &$materia;
+    $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
+    $this->load->view('ver_materia', $this->data);
   }
 
   /*
@@ -125,9 +137,9 @@ class Materias extends CI_Controller{
     //leo los datos POST
     $this->Materia->nombre = $this->input->post('nombre',TRUE);
     $this->Materia->codigo = $this->input->post('codigo', TRUE);
-    $this->Materia->publicarInformes = ($this->input->post('publicarInformes')) ? 'S' : 'N';
-    $this->Materia->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? 'S' : 'N';
-    $this->Materia->publicarDevoluciones = ($this->input->post('publicarDevoluciones')) ? 'S' : 'N';
+    $this->Materia->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
+    $this->Materia->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? RESPUESTA_SI : RESPUESTA_NO;
+    $this->Materia->publicarDevoluciones = ($this->input->post('publicarDevoluciones')) ? RESPUESTA_SI : RESPUESTA_NO;
     
     //verifico datos POST
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
@@ -139,8 +151,9 @@ class Materias extends CI_Controller{
                               $this->Materia->publicarInformes, 
                               $this->Materia->publicarHistoricos, 
                               $this->Materia->publicarDevoluciones);
+      //si la operación se realizó con éxito
       if (is_numeric($res)){
-        $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. El ID de la nueva materia es $res.");
+        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
         redirect('materias/listar');
       }
@@ -212,9 +225,9 @@ class Materias extends CI_Controller{
     $this->Materia->idMateria = (int)$this->input->post('idMateria');
     $this->Materia->nombre = $this->input->post('nombre',TRUE);
     $this->Materia->codigo = $this->input->post('codigo', TRUE);
-    $this->Materia->publicarInformes = ($this->input->post('publicarInformes')) ? 'S' : 'N';
-    $this->Materia->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? 'S' : 'N';
-    $this->Materia->publicarDevoluciones = ($this->input->post('publicarDevoluciones')) ? 'S' : 'N';
+    $this->Materia->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
+    $this->Materia->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? RESPUESTA_SI : RESPUESTA_NO;
+    $this->Materia->publicarDevoluciones = ($this->input->post('publicarDevoluciones')) ? RESPUESTA_SI : RESPUESTA_NO;
     
     //verifico datos POST
     $this->form_validation->set_rules('idMateria', 'Materia','is_natural_no_zero|required');
@@ -240,7 +253,7 @@ class Materias extends CI_Controller{
     if ($idMateria == null) redirect('materias/nueva');
     $this->Materia = $this->gm->dame((int)$idMateria);
     if (!$this->Materia){
-        $this->session->set_flashdata('resultadoOperacion', "No existe la materia con ID=$idMateria.");
+        $this->session->set_flashdata('resultadoOperacion', "No existe la materia seleccionada.");
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('materias/listar');
     }
@@ -329,11 +342,10 @@ class Materias extends CI_Controller{
   }
 
   /*
-   * Funcion para responder solicitudes AJAX
+   * Funcion para responder solicitudes AJAX. Obtiene cuantas claves de acceso se crearon en el cuatrimestre anterior
    * POST: idMateria, idCarrera
    */
   public function cantidadClavesAJAX(){
-    if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     if($this->form_validation->run()){
@@ -354,7 +366,6 @@ class Materias extends CI_Controller{
    * POST: buscar
    */
   public function buscarAJAX(){
-    //if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar');

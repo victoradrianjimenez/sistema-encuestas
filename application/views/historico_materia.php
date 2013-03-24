@@ -17,11 +17,9 @@
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
 
-  <title>Histórico Materia - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Histórico por Materia - <?php echo NOMBRE_SISTEMA?></title>
   <style>
     h5.separador{border-bottom: 3px solid #2BA6CB;}
-    ul.respuestas{list-style-position:inside;}
-    .row-fluid [class*="span"]{margin-left:0;}
   </style>
 </head>
 <body>
@@ -60,7 +58,7 @@
         <?php else:?>
           <ul>
             <?php foreach ($opciones as $opcion){
-              echo "<li>$opcion->idOpcion = $opcion->texto aaaaaaaaaaaaaaa</li>";
+              echo "<li>$opcion->idOpcion = $opcion->texto</li>";
             }?>
           </ul>
         <?php endif?>

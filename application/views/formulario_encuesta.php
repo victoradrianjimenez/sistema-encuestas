@@ -45,6 +45,7 @@
                 $docente = $subseccion['docente'];
                 printf('
                 <h3>%s %s</h3>', $docente->nombre, $docente->apellido);
+                if ($docente->idImagen != '') echo '<img src="'.site_url('usuarios/imagen/'.$docente->idImagen).'" width="100" height="100" alt="Imagen de docente"/>';
                 echo '
                 <div class="row preguntas">';
                 $col = 0;

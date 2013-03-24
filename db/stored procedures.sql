@@ -1,3 +1,20 @@
+DROP PROCEDURE IF EXISTS `esp_listar_carreras_materia`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_listar_carreras_materia`(
+	pidMateria SMALLINT UNSIGNED)
+BEGIN
+	SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan, 
+			C.publicarInformes, C.publicarHistoricos
+    FROM    Carreras C INNER JOIN Materias_Carreras MC ON C.idCarrera = MC.idCarrera
+	WHERE	MC.idMateria = pidMateria
+    ORDER BY nombre;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_tipo_pregunta`;
 
 DELIMITER $$
@@ -664,6 +681,23 @@ DELIMITER ;
 
 -- DELIMITER ;
 
+DROP PROCEDURE IF EXISTS `esp_dame_seccion`;
+
+
+DELIMITER $$
+
+
+CREATE PROCEDURE `esp_dame_seccion`(
+    pidSeccion INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT idSeccion, idFormulario, idCarrera, texto, descripcion, tipo
+    FROM Secciones
+    WHERE idSeccion = pidSeccion AND idFormulario = pidFormulario;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_dame_departamento`;
 
@@ -936,7 +970,7 @@ BEGIN
             SET mensaje = CONCAT('Ya existe un departamento que se llama ',pnombre,'.');
             ROLLBACK;
         ELSEIF pidJefeDepartamento IS NOT NULL AND NOT EXISTS( SELECT id FROM Usuarios WHERE id = pidJefeDepartamento LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe el jefe de departamento con ID=',pidJefeDepartamento,'.');
+            SET mensaje = 'No existe el jefe de departamento seleccionado.';
             ROLLBACK;
 		ELSE    
             SET nid = (  
@@ -1048,10 +1082,10 @@ BEGIN
 	ELSE
         START TRANSACTION;
         IF NOT EXISTS( SELECT idDepartamento FROM Departamentos WHERE idDepartamento = pidDepartamento LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe un departamento con ID=',pidDepartamento,'.');
+            SET mensaje = 'No existe el departamento seleccionado.';
             ROLLBACK;
 		ELSEIF pidJefeDepartamento IS NOT NULL AND NOT EXISTS( SELECT id FROM Usuarios WHERE id = pidJefeDepartamento LIMIT 1) THEN
-			SET mensaje = CONCAT('No existe el jefe de departamento con ID=',pidJefeDepartamento,'.');
+			SET mensaje = 'No existe el jefe de departamento seleccionado.';
 			ROLLBACK;
         ELSEIF EXISTS( SELECT nombre FROM Departamentos WHERE nombre = pnombre AND idDepartamento != pidDepartamento LIMIT 1) THEN
             SET mensaje = CONCAT('Ya existe un departamento que se llama ',pnombre,'.');
@@ -1101,10 +1135,10 @@ BEGIN
     ELSE
         START TRANSACTION;
         IF NOT EXISTS(SELECT idDepartamento FROM Departamentos WHERE idDepartamento = pidDepartamento LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe un departamento con ID=', pidDepartamento,'.');
+            SET mensaje = 'No existe el departamento seleccionado.';
             ROLLBACK;
         ELSEIF pidDirectorCarrera IS NOT NULL AND NOT EXISTS(SELECT id FROM Usuarios WHERE id = pidDirectorCarrera LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe un director con ID=', pidDirectorCarrera,'.');
+            SET mensaje = 'No existe el director de carrera seleccionado.';
             ROLLBACK;
         ELSEIF EXISTS(  SELECT nombre FROM Carreras 
                         WHERE nombre = pnombre AND plan=pplan LIMIT 1) THEN
@@ -1200,13 +1234,13 @@ BEGIN
     ELSE
         START TRANSACTION;
         IF NOT EXISTS( SELECT idCarrera FROM Carreras WHERE idCarrera = pidCarrera LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe la carrera con ID=',pidCarrera,'.');
+            SET mensaje = 'No existe la carrera seleccionada.';
             ROLLBACK;
         ELSEIF NOT EXISTS( SELECT idDepartamento FROM Departamentos WHERE idDepartamento = pidDepartamento LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe un departamento con ID=',pidDepartamento,'.');
+            SET mensaje = 'No existe el departamento seleccionado.';
             ROLLBACK;
         ELSEIF pidDirectorCarrera IS NOT NULL AND NOT EXISTS( SELECT id FROM Usuarios WHERE id = pidDirectorCarrera LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe un director con ID=',pidDirectorCarrera,'.');
+            SET mensaje = 'No existe el director de carreras seleccionado.';
             ROLLBACK;
         ELSE    
             UPDATE Carreras 
@@ -1697,10 +1731,10 @@ BEGIN
     
     START TRANSACTION;
     IF NOT EXISTS(SELECT idMateria FROM Materias WHERE idMateria = pidMateria LIMIT 1) THEN
-        SET mensaje = 'No se encuestra una materia con ID dado.';
+        SET mensaje = 'No se encuestra una materia seleccionada.';
         ROLLBACK;
     ELSEIF NOT EXISTS(SELECT idCarrera FROM Carreras WHERE idCarrera = pidCarrera LIMIT 1) THEN
-        SET mensaje = 'No se encuestra una carrera con ID dado.';
+        SET mensaje = 'No se encuestra una carrera seleccionada.';
         ROLLBACK;
     ELSEIF NOT EXISTS(  SELECT idCarrera FROM Materias_Carreras 
                         WHERE  idCarrera = pidCarrera AND idMateria = pidMateria LIMIT 1) THEN
@@ -1784,10 +1818,10 @@ BEGIN
     
     START TRANSACTION;
     IF NOT EXISTS(SELECT idMateria FROM Materias WHERE idMateria = pidMateria LIMIT 1) THEN
-        SET mensaje = 'No se encuentra una materia con ID dado.';
+        SET mensaje = 'No se encuentra una materia seleccionada.';
         ROLLBACK;
     ELSEIF NOT EXISTS(SELECT id FROM Usuarios WHERE id = pidDocente LIMIT 1) THEN
-        SET mensaje = 'No se encuentra una docente con ID dado.';
+        SET mensaje = 'No se encuentra una docente seleccionado.';
         ROLLBACK;
     ELSEIF EXISTS(	SELECT idDocente FROM Docentes_Materias
 					WHERE  idDocente = pidDocente AND idMateria = pidMateria LIMIT 1) THEN
@@ -1914,7 +1948,7 @@ BEGIN
     ELSE
         START TRANSACTION;
         IF NOT EXISTS( SELECT idMateria FROM Materias WHERE idMateria = pidMateria LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe la materia con ID=',pidMateria,'.');
+            SET mensaje = 'No existe la materia seleccionada.';
             ROLLBACK;
         ELSEIF EXISTS( SELECT codigo FROM Materias WHERE codigo = pcodigo AND idMateria != pidMateria LIMIT 1) THEN
             SET mensaje = CONCAT('Ya existe una materia con código ',pcodigo,'.');
@@ -1997,7 +2031,7 @@ BEGIN
     ELSE
         START TRANSACTION;
         IF NOT EXISTS(SELECT id FROM Usuarios WHERE id = pid LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe registro del usuario con ID=',pid,'.');
+            SET mensaje = 'No existe registro del usuario seleccionado.';
             ROLLBACK;
         ELSE
             UPDATE Usuarios
@@ -2036,7 +2070,7 @@ BEGIN
     ELSE
         START TRANSACTION;
         IF NOT EXISTS(SELECT id FROM Usuarios WHERE id = pid LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe registro del usuario con ID=',pid,'.');
+            SET mensaje = 'No existe registro del usuario seleccionado.';
             ROLLBACK;
         ELSE
             UPDATE Usuarios
@@ -2172,7 +2206,7 @@ BEGIN
         START TRANSACTION;
         IF NOT EXISTS(  SELECT idFormulario FROM Formularios    
                         WHERE idFormulario = pidFormulario LIMIT 1) THEN
-            SET mensaje = CONCAT('No se encontró el formulario con ID=',pidFormulario,'.');
+            SET mensaje = 'No se encontró el formulario seleccionado.';
             ROLLBACK;
         ELSE
             SET nid = (  
@@ -2197,12 +2231,12 @@ END $$
 DELIMITER ;
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_Claves_encuesta_materia`;
+DROP PROCEDURE IF EXISTS `esp_listar_claves_encuesta_materia`;
 
 
 DELIMITER $$
 
-CREATE PROCEDURE `esp_listar_Claves_encuesta_materia`(
+CREATE PROCEDURE `esp_listar_claves_encuesta_materia`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2211,7 +2245,7 @@ BEGIN
     SELECT  idClave, idMateria, idCarrera, idEncuesta, idFormulario, 
 			clave, generada, utilizada
     FROM    Claves
-	WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND utilizada IS NULL
+	WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND utilizada IS NOT NULL
     ORDER BY generada DESC, utilizada DESC;
 END $$
 
@@ -2272,7 +2306,7 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;   
 	START TRANSACTION;
 	IF NOT EXISTS(SELECT idEncuesta FROM Encuestas WHERE idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND fechaFin IS NULL LIMIT 1) THEN
-		SET mensaje = CONCAT('No se encontró la encuesta con ID dado, o la misma ya esta finalizada.');
+		SET mensaje = CONCAT('No se encontró la encuesta seleccionada, o la misma ya esta finalizada.');
 		ROLLBACK;
 	ELSE
 		UPDATE	Encuestas
@@ -2306,34 +2340,29 @@ CREATE PROCEDURE `esp_indice_global`(
 	pidFormulario INT UNSIGNED,
 	OUT indice FLOAT)
 BEGIN
-	-- calculo el indice con las sumas realizadas
-	SET indice = (
-	SELECT COALESCE(10/C * (C*RI/T - 1) / (AI/T - 1), 0)
-	FROM(
-		-- realizo las sumatorias necesarias
-		SELECT SUM(Respuesta*importancia) AS RI, SUM(Alternativa*importancia) AS AI, SUM(importancia) AS T, COUNT(Respuesta) AS C
-		FROM(
-			-- obtener datos de respuestas y preguntas(importancias, cantidad de Opciones, etc)
-			SELECT	IF(P.ordenInverso='S', IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta, 
-					IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) AS Alternativa, 
-					COALESCE(IC.importancia,1) AS importancia
-			FROM	Respuestas R
-					INNER JOIN Preguntas P ON
-						P.idPregunta = R.idPregunta
-					INNER JOIN Items I ON
-						I.idPregunta = P.idPregunta
-					LEFT JOIN Items_Carreras IC ON
-						IC.idCarrera = R.idCarrera AND IC.idSeccion = I.idSeccion AND
-						IC.idFormulario = I.idFormulario AND IC.idPregunta = I.idPregunta
-					LEFT JOIN Opciones O ON
-						O.idPregunta = P.idPregunta
-			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
-					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
-					R.idFormulario = pidFormulario AND R.opcion IS NOT NULL
-			GROUP BY O.idPregunta, R.idDocente
-		)Datos
-	)Sumas
-	);
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pidSeccion INT UNSIGNED;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT	idSeccion
+		FROM	Secciones
+		WHERE	idFormulario = pidFormulario;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de cada materia tomar el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pidSeccion;
+		IF NOT done THEN
+			CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, pidEncuesta, pidFormulario, pidSeccion, indice);
+			SET s = s + COALESCE(indice,0);
+			SET n = n + 1;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT ROUND(s/n,2) AS indice;
 END $$
 
 DELIMITER ;
@@ -2355,10 +2384,10 @@ CREATE PROCEDURE `esp_indice_seccion`(
 BEGIN
 	-- calculo el indice con las sumas realizadas
 	SET indice = (
-	SELECT 10/C * (C*RI/T - 1) / (AI/T - 1)
+	SELECT 10 * (RI/T - 1) / (AI/T - 1)
 	FROM(
 		-- realizo las sumatorias necesarias
-		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T, COUNT(Respuesta) AS C
+		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T
 		FROM(
 			-- obtener datos de respuestas y preguntas(importancias, cantidad de Opciones, etc)
 			SELECT	IF(P.ordenInverso='S', IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta, 
@@ -2376,8 +2405,8 @@ BEGIN
 						O.idPregunta = P.idPregunta
 			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
 					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
-					R.idFormulario = pidFormulario AND IC.idSeccion = pidSeccion AND 
-					R.opcion IS NOT NULL
+					R.idFormulario = pidFormulario AND I.idSeccion = pidSeccion AND 
+					R.opcion IS NOT NULL AND R.texto IS NULL
 			GROUP BY O.idPregunta, R.idDocente
 		)Datos
 	)Sumas
@@ -2404,10 +2433,10 @@ CREATE PROCEDURE `esp_indice_docente`(
 BEGIN
 	-- calculo el indice con las sumas realizadas
 	SET indice = (
-	SELECT 10/C * (C*RI/T - 1) / (AI/T - 1)
+	SELECT 10 * (RI/T - 1) / (AI/T - 1)
 	FROM(
 		-- realizo las sumatorias necesarias
-		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T, COUNT(Respuesta) AS C
+		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T
 		FROM(
 			-- obtener numero de respuesta, cantidad de Opciones e importancias.
 			SELECT	IF(P.ordenInverso='S',	IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta,
@@ -2425,8 +2454,8 @@ BEGIN
 						O.idPregunta = P.idPregunta
 			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
 					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
-					R.idFormulario = pidFormulario AND IC.idSeccion = pidSeccion AND 
-					R.opcion IS NOT NULL AND R.idDocente = pidDocente
+					R.idFormulario = pidFormulario AND I.idSeccion = pidSeccion AND 
+					R.opcion IS NOT NULL AND R.idDocente = pidDocente AND R.opcion IS NOT NULL AND R.texto IS NULL
 			GROUP BY O.idPregunta
 		)Datos
 	)Sumas
@@ -2990,10 +3019,10 @@ BEGIN
     ELSE
         START TRANSACTION;    
         IF NOT EXISTS(SELECT idFormulario FROM Formularios WHERE idFormulario = pidFormulario LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe un formulario con el ID=',pidFormulario,'.');
+            SET mensaje = 'No existe el formulario seleccionado.';
             ROLLBACK;
         ELSEIF pidCarrera IS NOT NULL AND NOT EXISTS(SELECT idCarrera FROM Carreras WHERE idCarrera = pidCarrera LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe la carrera con ID=',pidCarrera,'.');
+            SET mensaje = 'No existe la carrera seleccionada.';
             ROLLBACK;
         ELSE
             SET nid = (  
@@ -3036,13 +3065,13 @@ BEGIN
     
 	START TRANSACTION;    
 	IF NOT EXISTS(SELECT idSeccion FROM Secciones WHERE idSeccion = pidSeccion AND idFormulario = pidFormulario LIMIT 1) THEN
-		SET mensaje = CONCAT('No existe una sección con ID=',pidSeccion,'.');
+		SET mensaje = 'No existe la sección seleccionada.';
 		ROLLBACK;
 	ELSEIF NOT EXISTS(SELECT idPregunta FROM Preguntas WHERE idPregunta = pidPregunta LIMIT 1) THEN
-		SET mensaje = CONCAT('No existe la pregunta con ID=',pidPregunta,'.');
+		SET mensaje = 'No existe la pregunta seleccionada.';
 		ROLLBACK;
 	ELSEIF pidCarrera IS NOT NULL AND NOT EXISTS(SELECT idCarrera FROM Carreras WHERE idCarrera = pidCarrera LIMIT 1) THEN
-		SET mensaje = CONCAT('No existe la carrera con ID=',pidCarrera,'.');
+		SET mensaje = 'No existe la carrera seleccionada';
 		ROLLBACK;
 	ELSE
 		INSERT INTO Items
@@ -3292,7 +3321,7 @@ BEGIN
     ELSE    
         START TRANSACTION;   
 		IF NOT EXISTS( SELECT idPregunta FROM Preguntas WHERE idPregunta = pidPregunta LIMIT 1) THEN
-            SET mensaje = CONCAT('No existe una pregunta con ID=',pidPregunta,'.');
+            SET mensaje = 'No existe la pregunta seleccionada.';
             ROLLBACK;
         ELSE
 			UPDATE Preguntas 

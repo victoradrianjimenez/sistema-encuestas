@@ -40,7 +40,6 @@
           <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
           <ul class="nav">
             <li><a href="#" onclick="window.print()">Imprimir...</a></li>
-            <li><a href="#" onclick="window.print()">Descargar PDF...</a></li>
           </ul>
         </div>
       </div>

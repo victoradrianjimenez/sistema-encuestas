@@ -176,7 +176,34 @@ class pCharts extends CI_Controller{
       $this->_generarHistorico($historico);
     }
   }
-
+  public function graficoHistoricoCarrera($idCarrera, $idPregunta, $fechaInicio, $fechaFin){
+    $this->load->model('Pregunta');
+    $this->load->model('Gestor_preguntas','gp');
+    $pregunta = $this->gp->dame($idPregunta);
+    $historico = $pregunta->historicoCarrera($idCarrera, $fechaInicio, $fechaFin);
+    if (!empty($historico)){
+      $this->_generarHistorico($historico);
+    }
+  }
+  public function graficoHistoricoDepartamento($idDepartamento, $idPregunta, $fechaInicio, $fechaFin){
+    $this->load->model('Pregunta');
+    $this->load->model('Gestor_preguntas','gp');
+    $pregunta = $this->gp->dame($idPregunta);
+    $historico = $pregunta->historicoDepartamento($idDepartamento, $fechaInicio, $fechaFin);
+    if (!empty($historico)){
+      $this->_generarHistorico($historico);
+    }
+  }
+  public function graficoHistoricoFacultad($idPregunta, $fechaInicio, $fechaFin){
+    $this->load->model('Pregunta');
+    $this->load->model('Gestor_preguntas','gp');
+    $pregunta = $this->gp->dame($idPregunta);
+    $historico = $pregunta->historicoFacultad($fechaInicio, $fechaFin);
+    if (!empty($historico)){
+      $this->_generarHistorico($historico);
+    }
+  }
+  
   /* 
    * Generar grafico de lineas (historicos)
    */
@@ -209,9 +236,6 @@ class pCharts extends CI_Controller{
         $cnt++;
       }
     }
-    //$datos = array(10,4,3,2,3,3,2,1,0,7,4,3,2,3,3,5,1,0,7);
-    //$etiquetas = array(1,4,2,6,2,3,0,1,-5,1,2,4,5,2,1,0,6,4,30);
-
     $ancho = 600;
     $alto = 200;
     // Standard inclusions

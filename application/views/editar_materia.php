@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Title -->
         <div class="span12">
-          <?php include 'templates/descripcion-departamentos.php'?>
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de las materias pertenecientes a la facultad para la toma de encuestas.</p>
         </div>
       </div>
       
@@ -49,11 +50,11 @@
             <div class="control-group">
               <label class="control-label">Opciones: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="publicarInformes" value="1" <?php echo ($materia->publicarInformes=='S')?'checked="checked"':''?> /> Los informes por Materia son Públicos</label>
+                <label class="checkbox"><input type="checkbox" name="publicarInformes" value="1" <?php echo ($materia->publicarInformes==RESPUESTA_SI)?'checked="checked"':''?> /> Los informes por Materia son Públicos</label>
                 <?php echo form_error('publicarInformes')?>
-                <label class="checkbox"><input type="checkbox" name="publicarHistoricos" value="1" <?php echo ($materia->publicarHistoricos=='S')?'checked="checked"':''?> /> Los informes Históricos por Materia son Públicos</label>
+                <label class="checkbox"><input type="checkbox" name="publicarHistoricos" value="1" <?php echo ($materia->publicarHistoricos==RESPUESTA_SI)?'checked="checked"':''?> /> Los informes Históricos por Materia son Públicos</label>
                 <?php echo form_error('publicarHistoricos')?>
-                <label class="checkbox"><input type="checkbox" name="publicarDevoluciones" value="1" <?php echo ($materia->publicarDevoluciones=='S')?'checked="checked"':''?> /> Los Planes de Mejoras de la Materia son Públicos</label>
+                <label class="checkbox"><input type="checkbox" name="publicarDevoluciones" value="1" <?php echo ($materia->publicarDevoluciones==RESPUESTA_SI)?'checked="checked"':''?> /> Los Planes de Mejoras de la Materia son Públicos</label>
                 <?php echo form_error('publicarDevoluciones')?>
               </div>
             </div>

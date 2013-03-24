@@ -58,9 +58,10 @@
             <div class="control-group">
               <label class="control-label" for="campoImagen">Subir una imágen (tamaño máximo 500KB): </label>
               <div class="controls">
+                <input type="hidden" name="MAX_FILE_SIZE" value="512000" />
                 <input id="campoImagen" type="file" name="imagen"/>
                 <?php echo form_error('imagen'); ?>
-                <label class="checkbox"><input type="checkbox" name="noImagen" value="1"  />Eliminar imagen actual</label>
+                <label class="checkbox"><input type="checkbox" name="noImagen" value="1" <?php echo ($noImagen)?'checked="checked"':''?> />Eliminar imagen actual</label>
               </div>
             </div>
             <div class="control-group">
@@ -81,6 +82,7 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/alert.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
 </body>

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Editar Devolución</title>
+  <title>Editar Devolución - <?php echo NOMBRE_SISTEMA?></title>
 </head>
 <body>
   <div id="wrapper">
@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-devoluciones.php'?>
+          <h3>Planes de mejora</h3>
+          <p>En esta sección se permite acceder a un informe de plan de mejoras creados hasta el momento por una materia de una carrera en particular.</p>
         </div>
       </div>
   
@@ -27,14 +28,21 @@
             <fieldset>
               <legend>Evaluación de la cátedra sobre los resultados de las encuestas</legend>
               
-              <label for="buscarEncuesta">Año:</label>
+              <label class="control-label" for="buscarMateria">Materia:</label>
               <div class="controls">
-                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo set_value('buscarEncuesta')?>">
+                <input class="input-block-level" id="buscarMateria" name="buscarMateria" type="text" autocomplete="off" data-provide="typeahead"  value="<?php echo set_value('buscarMateria')?>" required />
+                <input type="hidden" name="idMateria" required value="<?php echo $materia->idMateria?>"/>
+                <?php echo form_error('idMateria')?>
+              </div>
+              
+              <label class="control-label" for="buscarEncuesta">Año:</label>
+              <div class="controls">
+                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required />
                 <input type="hidden" name="idEncuesta" required value="<?php echo $devolucion->idEncuesta?>"/>
                 <input type="hidden" name="idFormulario" required value="<?php echo $devolucion->idFormulario?>"/>
                 <?php echo form_error('idEncuesta')?>
               </div>
-              
+        
               <label for="campoFortalezas">Identifique las fortalezas del curso: </label>
               <textarea class="input-block-level" id="campoFortalezas"  name="fortalezas" rows="4"><?php echo $devolucion->fortalezas?></textarea>
               <?php echo form_error('fortalezas')?>
@@ -78,6 +86,7 @@
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script>
     autocompletar_encuesta("<?php echo site_url('encuestas/buscarAJAX')?>");
+    autocompletar_materia("<?php echo site_url('materias/buscarAJAX')?>");
   </script>
 </body>
 </html>

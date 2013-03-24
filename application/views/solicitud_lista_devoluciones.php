@@ -12,24 +12,25 @@
 <body>
   <div id="wrapper">
     <?php include 'templates/menu-nav.php'?>
-    <div id="contenedor" class="container">
+    <div class="container">
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-devoluciones.php'?>
+          <h3>Planes de mejora</h3>
+          <p>En esta sección se permite acceder a un informe de plan de mejoras creados hasta el momento por una materia de una carrera en particular.</p>
         </div>
       </div>
       
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <?php $item_submenu = 4;
+          <?php $item_submenu = 2;
             include 'templates/submenu-devoluciones.php';
           ?>
         </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span9">
           <h4>Devoluciones</h4>
           <form class="form-horizontal" action="<?php echo site_url('devoluciones/listar')?>" method="post">
     
@@ -43,7 +44,9 @@
             </div>
             <div class="controls">
               <input class="btn btn-primary" type="submit" name="submit" value="Listar Planes de Mejoras" />
-              <button class="nuevoPlan btn btn-primary" href="#modalNuevoPlan" role="button" data-toggle="modal">Nuevo Plan de Mejoras...</button>
+              <!--<button class="nuevoPlan btn btn-primary" href="#modalNuevoPlan" role="button" data-toggle="modal">Nuevo Plan de Mejoras...</button> -->
+              <a class="btn btn-primary" href="<?php echo site_url('devoluciones/nueva')?>">Nuevo Plan de Mejoras</a>
+              
             </div>
           </form>
         </div>
@@ -68,6 +71,15 @@
             <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
             <input type="hidden" name="idMateria" required/>
             <?php echo form_error('idMateria')?>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="buscarEncuesta">Año:</label>
+          <div class="controls">
+            <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo set_value('buscarEncuesta')?>">
+            <input type="hidden" name="idEncuesta" required value=""/>
+            <input type="hidden" name="idFormulario" required value=""/>
+            <?php echo form_error('idEncuesta')?>
           </div>
         </div>
       </div>

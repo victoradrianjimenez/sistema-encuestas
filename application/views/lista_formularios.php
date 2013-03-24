@@ -15,7 +15,7 @@
         <!-- Titulo -->
         <div class="span12">
           <h3>Gestión de Formularios</h3>
-          <p>---Descripción---</p>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los formularios utilizados para la toma de encuestas.</p>
         </div>
       </div>
       
@@ -58,7 +58,7 @@
   
           <!-- Botones -->
           <div class="btn-group">
-            <a class="btn btn-primary" href="<?php echo site_url('formularios/editar')?>">Agregar formulario</a>
+            <a class="btn btn-primary" href="<?php echo site_url('formularios/nuevo')?>">Agregar formulario</a>
           </div>
         </div>
       </div>
@@ -97,16 +97,16 @@
   <div id="modalMostrarFormulario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h3 id="myModalLabel">Editar Formulario</h3>
+      <h3 id="myModalLabel">Ver Formulario</h3>
     </div>
-    <form class="form-horizontal" action="" method="post">
+    <form class="form-horizontal" action="<?php echo site_url('formularios/ver')?>" method="post">
       <div class="modal-body">
         <input type="hidden" name="idFormulario" value="<?php echo site_url('formularios/ver')?>" />
         <h5 class="nombre"></h5>
         <div class="control-group"> 
           <label class="control-label" for="buscarCarrera">Buscar carrera: </label>
           <div class="controls">
-            <input class="input-xlarge" id="buscarCarrera" type="text" data-provide="typeahead" autocomplete="off">
+            <input class="input-xlarge" id="buscarCarrera" name="buscarCarrera" type="text" data-provide="typeahead" autocomplete="off">
             <input type="hidden" name="idCarrera" value=""/>
             <?php echo form_error('idCarrera')?>
           </div>

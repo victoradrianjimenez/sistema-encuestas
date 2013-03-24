@@ -13,7 +13,8 @@
       <div class="row">
         <!-- Title -->
         <div class="span12">
-            <?php include 'templates/descripcion-departamentos.php'?>
+          <h3>Gestión de Departamentos, Carreras y Materias</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de las materias pertenecientes a la facultad para la toma de encuestas.</p>
         </div>
       </div>
       
@@ -26,7 +27,7 @@
         </div>
         
         <!-- Main -->
-        <div class="span9">
+        <div id="contenedor" class="span9">
           <h4>Materias</h4>
           <?php if(count($lista)== 0):?>
             <p>No se encontraron materias.</p>
@@ -87,7 +88,6 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       idMateria = $(this).attr('value');

@@ -8,35 +8,42 @@
   
   <!-- Le styles -->
   <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  <style>body{padding-top:40px;}</style>
   <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
   <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
   
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
-  
-  <!-- Fav and touch icons -->
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="ico/apple-touch-icon-144-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="ico/apple-touch-icon-114-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="ico/apple-touch-icon-72-precomposed.png">
-  <link rel="apple-touch-icon-precomposed" href="ico/apple-touch-icon-57-precomposed.png">
-  <link rel="shortcut icon" href="ico/favicon.png">
 
-  <title>Devolución</title>
+  <title>Plan de Mejoras - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-    #header h1, #header h2, #header h3, #header h4, #header h5{text-align:center;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
     ul.respuestas{list-style-position:inside;}
     .row-fluid [class*="span"]{margin-left:0;}
   </style>
 </head>
 <body>
+  <!-- Menu de opciones -->
+  <div id="barra-herramientas">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
+          <ul class="nav">
+            <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div id="header" class="row">
       <div class="span12">
-        <h2>Evaluación de la cátedra sobre los resultados de las encuestas</h2>
-        <h4>Asignatura: <?php echo $materia->nombre.' ('.$materia->codigo.')'?></h4>
-        <h4>Cuatrimestre / período: <?php echo $encuesta->año.' / '.$encuesta->cuatrimestre?></h4>
+        <h2 class="text-center">Evaluación de la cátedra sobre los resultados de las encuestas</h2>
+        <h4 class="text-center">Asignatura: <?php echo $materia->nombre.' ('.$materia->codigo.')'?></h4>
+        <h4 class="text-center">Cuatrimestre/<?php echo PERIODO?>: <?php echo $encuesta->año.' / '.$encuesta->cuatrimestre?></h4>
       </div>
     </div>
     <div class="row">
@@ -54,6 +61,10 @@
       </div>
     </div>
   </div>
-  <?php //include 'templates/footer2.php'?>  
+  <?php //include 'templates/footer2.php'?>
+  
+  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
 </body>
 </html>

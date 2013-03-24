@@ -4,10 +4,11 @@
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
   <style>
-    .Opciones{margin:0;}
+    .Opciones {margin:0;}
     .Opciones li{border: 1px solid #CCCCCC; padding: 5px; margin: 5px 0;}
-    li{list-style: none;}
-    .btn-group{float:right; line-height:0;}
+    li.Opcion {list-style: none;}
+    li.Opcion .btn-group {float:right; line-height:0;}
+    #botonAgregarOpcion {float:right; margin:0 6px;}
   </style>
 </head>
 <body>
@@ -17,7 +18,8 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-formularios.php'?>
+          <h3>Gestión de Formularios</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los formularios utilizados para la toma de encuestas.</p>
         </div>
       </div>
       
@@ -43,7 +45,7 @@
             <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" maxlength="250" value="<?php echo $pregunta->descripcion?>" />
             <?php echo form_error('descripcion')?>
 
-            <?php if (!isset($disabled)):?>
+            <?php if (!isset($disabled) || !$disabled):?>
               
               <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
               <select id="campoTipo" name="tipo" required>
@@ -55,7 +57,7 @@
               <?php echo form_error('tipo')?>
               
               <label class="checkbox">
-                <input type="checkbox" name="ordenInverso" value="1" <?php echo ($pregunta->ordenInverso=='S')?'checked="checked"':''?> /> Orden Inverso
+                <input type="checkbox" name="ordenInverso" value="1" <?php echo ($pregunta->ordenInverso==RESPUESTA_SI)?'checked="checked"':''?> /> Orden Inverso
               </label>
               
               <label for="campoUnidad">Unidad: </label>
@@ -78,22 +80,21 @@
               </div>
               
               <div id="OpcionesSeleccion">
-                <legend>Opciones<a style="float:right; margin:0 6px;" href="#modalAgregarOpcion" role="button" data-toggle="modal" title="Agregar opción..."><i class="icon-circle-plus"></i></a></legend>
+                <legend>Opciones<a id="botonAgregarOpcion" href="#modalAgregarOpcion" role="button" data-toggle="modal" title="Agregar opción..."><i class="icon-circle-plus"></i></a></legend>
                 <div class="row">
                   <div class="span9">
                     <ul class="Opciones">
-                      <?php
-                        foreach ($opciones as $opcion) {
-                          echo '
-                          <li class="Opcion">
-                            <div class="btn-group">
-                              <a class="subirOpcion" title="Subir" href="#"><i class="icon-circle-arrow-top"></i></a>
-                              <a class="bajarOpcion" title="Bajar" href="#"><i class="icon-circle-arrow-down"></i></a>
-                              <a class="eliminarOpcion" title="Eliminar" href="#"><i class="icon-circle-remove"></i></a>
-                            </div>
-                            <p class="texto">'.$opcion.'</p>
-                            <input type="hidden" name="textoOpcion[]" value="'.$opcion.'" />
-                          </li>';  
+                      <?php foreach ($opciones as $opcion) {
+                        echo '
+                        <li class="Opcion">
+                          <div class="btn-group">
+                            <a class="subirOpcion" title="Subir" href="#"><i class="icon-circle-arrow-top"></i></a>
+                            <a class="bajarOpcion" title="Bajar" href="#"><i class="icon-circle-arrow-down"></i></a>
+                            <a class="eliminarOpcion" title="Eliminar" href="#"><i class="icon-circle-remove"></i></a>
+                          </div>
+                          <p class="texto">'.$opcion.'</p>
+                          <input type="hidden" name="textoOpcion[]" value="'.$opcion.'" />
+                        </li>';  
                         }
                       ?>
                     </ul>

@@ -12,7 +12,9 @@ class Encuestas extends CI_Controller{
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
+    //leo los datos del usuario logueado
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    //leo los mensajes generados en la página anterior
     $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
@@ -25,18 +27,24 @@ class Encuestas extends CI_Controller{
    * Muestra el listado de encuestas.
    */
   public function listar($pagInicio=0){
-    if (!$this->ion_auth->logged_in()){
+    if(!$this->ion_auth->logged_in()){
       $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    //chequeo parámetros de entrada
-    $pagInicio = (int)$pagInicio;
+    elseif(!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('/');
+    }
     
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Encuesta');
     $this->load->model('Gestor_encuestas','ge');
+    
+    //chequeo parámetros de entrada
+    $pagInicio = (int)$pagInicio;
     
     //obtengo lista de encuestas
     $lista = $this->ge->listar($pagInicio, PER_PAGE);
@@ -91,7 +99,7 @@ class Encuestas extends CI_Controller{
                               $this->Encuesta->año, 
                               $this->Encuesta->cuatrimestre);
       if (is_numeric($res)){
-        $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. El ID de la nueva encuesta es $res.");
+        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
         redirect('encuestas/listar');
       }

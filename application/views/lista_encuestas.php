@@ -11,7 +11,8 @@
       <div class="row">
         <!-- Titulo -->
         <div class="span12">
-          <?php include 'templates/descripcion-encuestas.php'?>
+          <h3>Gestión de Encuestas</h3>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de las encuestas y claves de acceso.</p>
         </div>
       </div>
       

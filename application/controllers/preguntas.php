@@ -12,7 +12,9 @@ class Preguntas extends CI_Controller {
     $this->load->library(array('session', 'ion_auth', 'form_validation'));
     //doy formato al mensaje de error de validación de formulario
     $this->form_validation->set_error_delimiters(ERROR_DELIMITER_START, ERROR_DELIMITER_END);
+    //leo los datos del usuario logueado
     $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
+    //leo los mensajes generados en la página anterior
     $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
@@ -30,9 +32,11 @@ class Preguntas extends CI_Controller {
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    //chequeo parámetros de entrada
-    $PagInicio = (int)$PagInicio;
-    
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('/');
+    }
     //cargo modelos, librerias, etc.
     $this->load->library('pagination');
     $this->load->model('Pregunta');
@@ -40,6 +44,9 @@ class Preguntas extends CI_Controller {
     $this->load->model('Gestor_preguntas','gp');
     $this->load->model('Gestor_carreras','gc');
     
+    //chequeo parámetros de entrada
+    $PagInicio = (int)$PagInicio;
+
     //obtengo lista de preguntas
     $preguntas = $this->gp->listar($PagInicio, PER_PAGE);
     $lista = array(); //datos para mandar a la vista
@@ -55,7 +62,7 @@ class Preguntas extends CI_Controller {
       'total_rows' => $this->gp->cantidad()
     ));
     //envio datos a la vista
-    $this->data['lista'] = &$lista; //array de datos de los Departamentos
+    $this->data['lista'] = &$lista; //array de datos de las preguntas
     $this->data['paginacion'] = $this->pagination->create_links(); //html de la barra de paginación
     $this->load->view('lista_preguntas', $this->data);
   }
@@ -80,18 +87,11 @@ class Preguntas extends CI_Controller {
     $this->load->model('Opcion');
     $this->load->model('Gestor_preguntas','gp');
     
-    $this->load->model('Carrera');
-    $this->load->model('Usuario');
-    $this->load->model('Departamento');
-    $this->load->model('Gestor_carreras','gc');
-    $this->load->model('Gestor_departamentos','gd');
-    $this->load->model('Gestor_usuarios','gu');
-    
     //leer datos del post
     $this->Pregunta->tipo = $this->input->post('tipo');
     $this->Pregunta->texto = $this->input->post('texto', TRUE);
     $this->Pregunta->descripcion = ($this->input->post('descripcion'))?$this->input->post('descripcion', TRUE):NULL;
-    $this->Pregunta->ordenInverso = ((bool)$this->input->post('ordenInverso'))?'S':'N';
+    $this->Pregunta->ordenInverso = ((bool)$this->input->post('ordenInverso'))?RESPUESTA_SI:RESPUESTA_NO;
     $this->Pregunta->unidad = ($this->input->post('unidad'))?$this->input->post('unidad', TRUE):NULL;
     $this->Pregunta->limiteInferior = ($this->input->post('limiteInferior'))?$this->input->post('limiteInferior'):NULL;
     $this->Pregunta->limiteSuperior = ($this->input->post('limiteSuperior'))?$this->input->post('limiteSuperior'):NULL;
@@ -122,7 +122,7 @@ class Preguntas extends CI_Controller {
       if (is_numeric($res)){
         //si la pregunta debe tener opciones
         if ($this->Pregunta->tipo == TIPO_SELECCION_SIMPLE){
-          $this->Pregunta->idPregunta = (int)$res;
+          $this->Pregunta->idPregunta = (int)$res; //id de la nueva pregunta
           foreach ($datosOpciones as $opcion) {
             $res = $this->Pregunta->altaOpcion($opcion);
             if (!is_numeric($res)){
@@ -132,11 +132,8 @@ class Preguntas extends CI_Controller {
           }
         }
       }
-      else{
-        $this->gp->baja($this->Pregunta->idPregunta);//si hay error borro la pregunta con las opciones
-      }
       if (is_numeric($res)){
-        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito. El ID del nuevo formulario es '.$this->Pregunta->idPregunta.'.');
+        $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
         redirect('preguntas/listar');
       }
@@ -145,6 +142,7 @@ class Preguntas extends CI_Controller {
     }
     $this->data['pregunta'] = &$this->Pregunta;
     $this->data['opciones'] = ($datosOpciones)?$datosOpciones:array();
+    $this->data['disabled'] = false; //permitir al usuario editar las opciones de la pregunta
     $this->data['tituloFormulario'] = 'Nueva Pregunta';
     $this->data['urlFormulario'] = site_url('preguntas/nueva');
     $this->load->view('editar_pregunta', $this->data);
@@ -185,28 +183,6 @@ class Preguntas extends CI_Controller {
   }
   
   /*
-   * Funcion para responder solicitudes AJAX
-   * POST: buscar
-   */
-  public function buscarAjax(){
-    //if (!$this->ion_auth->logged_in()){return;}
-    $this->form_validation->set_rules('buscar','Buscar','required');
-    if($this->form_validation->run()){
-      $this->load->model('Pregunta');
-      $this->load->model('Gestor_preguntas','gp');
-      $preguntas = $this->gp->buscar($this->input->post('buscar'));
-      echo "\n";
-      foreach ($preguntas as $pregunta) {
-        echo  "$pregunta->idPregunta\t".
-              "$pregunta->texto\t".
-              "$pregunta->creacion\t".
-              "$pregunta->tipo\t\n";
-      }
-    }
-  }
-  
-  
-  /*
    * Editar o reformular preguntas (solamente texto y descripcion)
    * POST: idPregunta, texto, descripcion
    */
@@ -244,19 +220,40 @@ class Preguntas extends CI_Controller {
       $this->data['resultadoTipo'] = ALERT_ERROR;
     }
     //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
-    if ($idPregunta == null) redirect('preguntas/nueva');
+    if (!$idPregunta) redirect('preguntas/nueva');
     $this->Pregunta = $this->gp->dame((int)$idPregunta);
     if (!$this->Pregunta){
-        $this->session->set_flashdata('resultadoOperacion', "No existe la pregunta con ID=$idPregunta.");
-        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-        redirect('preguntas/listar');
+      $this->session->set_flashdata('resultadoOperacion', "No existe la pregunta seleccionada.");
+      $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      redirect('preguntas/listar');
     }
     $this->data['pregunta'] = &$this->Pregunta;
     $this->data['opciones'] = array();
-    $this->data['disabled'] = true;
+    $this->data['disabled'] = true; //impedir que el usuario edite las opciones de la pregunta
     $this->data['tituloFormulario'] = 'Editar Pregunta';
     $this->data['urlFormulario'] = site_url('preguntas/modificar');
     $this->load->view('editar_pregunta', $this->data);
+  }
+  
+  /*
+   * Funcion para responder solicitudes AJAX
+   * POST: buscar
+   */
+  public function buscarAJAX(){
+    //if (!$this->ion_auth->logged_in()){return;}
+    $this->form_validation->set_rules('buscar','Buscar','required');
+    if($this->form_validation->run()){
+      $this->load->model('Pregunta');
+      $this->load->model('Gestor_preguntas','gp');
+      $preguntas = $this->gp->buscar($this->input->post('buscar'));
+      echo "\n";
+      foreach ($preguntas as $pregunta) {
+        echo  "$pregunta->idPregunta\t".
+              "$pregunta->texto\t".
+              "$pregunta->creacion\t".
+              "$pregunta->tipo\t\n";
+      }
+    }
   }
 }
 ?>

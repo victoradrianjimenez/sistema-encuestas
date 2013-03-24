@@ -16,6 +16,22 @@ class Formulario extends CI_Model{
   }
   
   /**
+   * Obtener una sección a partir de su ID. Devuleve un objeto Seccion.
+   *
+   * @access public
+   * @param identificador de seccion
+   * @return Seccion
+   */
+  public function dameSeccion($idSeccion){
+    $idSeccion = $this->db->escape($idSeccion);
+    $idFormulario= $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_dame_seccion($idSeccion, $idFormulario)");
+    $data = $query->result('Seccion');
+    $query->free_result();
+    return ($data != FALSE)?$data[0]:FALSE;
+  } 
+   
+  /**
    * Obtener el listado de secciones que conforman el formulario. Devuleve un array de objetos.
    *
    * @access public
@@ -28,6 +44,7 @@ class Formulario extends CI_Model{
     $query->free_result();
     return $data;
   }
+  
   /**
    * Obtener el listado de secciones que conforman el formulario, incluyendo las secciones de una carrera. Devuleve un array de objetos.
    *
