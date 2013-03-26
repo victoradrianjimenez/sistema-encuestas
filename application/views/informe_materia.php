@@ -17,7 +17,7 @@
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
 
-  <title>Informe Materia - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Informe por Materia - <?php echo NOMBRE_SISTEMA?></title>
   <style>
     h5.separador{border-bottom: 3px solid #2BA6CB;}
     ul.respuestas{list-style-position:inside;}

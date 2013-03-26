@@ -80,7 +80,7 @@
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
-    autocompletar_usuario("<?php echo site_url('usuarios/buscarAJAX')?>");
+    autocompletar_usuario($('#buscarUsuario'), "<?php echo site_url('usuarios/buscarAJAX')?>");
   </script>
 </body>
 </html>

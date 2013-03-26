@@ -145,7 +145,7 @@
       $("#modalDesasociar").modal();
       return false;
     });
-    autocompletar_usuario("<?php echo site_url('usuarios/buscarAJAX')?>");
+    autocompletar_usuario($('#buscarUsuario'), "<?php echo site_url('usuarios/buscarAJAX')?>");
   </script>
 </body>
 </html>

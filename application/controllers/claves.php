@@ -125,7 +125,7 @@ class Claves extends CI_Controller{
       }
       
       $departamento =  $this->gd->dame($carrera->idDepartamento);
-      $claves = $encuesta->listarClavesMateria($idMateria, $idCarrera);
+      $claves = $encuesta->listarClavesPendientesMateria($idMateria, $idCarrera);
       if (count($claves)==0){
         $this->session->set_flashdata('resultadoOperacion', 'No se encontraron claves de accesos para ver/imprimir.');
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING); 
@@ -141,7 +141,7 @@ class Claves extends CI_Controller{
         );
       }
       $this->data['lista'] = &$lista;
-      $this->load->view('vista_claves', $this->data);
+      $this->load->view('reporte_claves', $this->data);
       return; 
     }
     $this->ver();
@@ -388,7 +388,7 @@ class Claves extends CI_Controller{
   }
 
   //funcion para responder solicitudes AJAX
-  public function listarClavesMateriaAJAX(){
+  public function listarClavesUsadasMateriaAJAX(){
     //if (!$this->ion_auth->logged_in()){return;}
     $this->form_validation->set_rules('idEncuesta','Encuesta','is_natural_no_zero|required');
     $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
@@ -405,7 +405,7 @@ class Claves extends CI_Controller{
       //obtengo lista de claves
       $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
       if ($encuesta){
-        $claves = $encuesta->listarClavesMateria($idMateria, $idCarrera);
+        $claves = $encuesta->listarClavesUsadasMateria($idMateria, $idCarrera);
         echo "\n";
         foreach ($claves as $clave) {
           echo  "$clave->idClave\t".

@@ -95,8 +95,8 @@
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
-    autocompletar_usuario("<?php echo site_url('usuarios/buscarAJAX')?>");
-    autocompletar_departamento("<?php echo site_url('departamentos/buscarAJAX')?>");
+    autocompletar_usuario($('#buscarUsuario'), "<?php echo site_url('usuarios/buscarAJAX')?>");
+    autocompletar_departamento($('#buscarDepartamento'), "<?php echo site_url('departamentos/buscarAJAX')?>");
   </script>
 </body>
 </html>

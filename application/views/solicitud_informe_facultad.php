@@ -67,7 +67,7 @@
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
-    autocompletar_encuesta("<?php echo site_url('encuestas/buscarAJAX')?>");
+    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>");
   </script>
 </body>
 </html>

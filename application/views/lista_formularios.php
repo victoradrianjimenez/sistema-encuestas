@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Formularios - <?php echo NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
 </head>
 <body>
   <div id="wrapper">
@@ -47,7 +46,7 @@
                   <td class="creacion"><?php echo date('d/m/Y G:i:s', strtotime($item->creacion))?></td>
                   <td>
                     <a class="editarFormulario" href="#" value="<?php echo $item->idFormulario?>">Modificar</a> /
-                    <a class="" href="#" value="<?php echo $item->idFormulario?>">Pesos</a> /
+                    <a class="pesosFormulario" href="#" value="<?php echo $item->idFormulario?>">Pesos</a> /
                     <a class="eliminar" href="#" value="<?php echo $item->idFormulario?>">Eliminar</a>
                   </td>
                 </tr>
@@ -67,7 +66,7 @@
   </div>
   <?php include 'templates/footer.php'?>  
   
-  <!-- ventana modal para asociar docentes a la materia -->
+  <!-- ventana modal para ingresar carrera para editar un formulario (agregar preguntas adicionales) -->
   <div id="modalEditarFormulario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -77,14 +76,14 @@
       <div class="modal-body">
         <input type="hidden" name="idFormulario" value="" />
         <h5 class="nombre"></h5>
-        <div class="control-group"> 
-          <label class="control-label" for="buscarCarrera">Buscar carrera: </label>
+        <div class="control-group">
+          <label class="control-label">Carrera:</label>
           <div class="controls">
-            <input class="input-xlarge" id="buscarCarrera" type="text" data-provide="typeahead" autocomplete="off">
-            <input type="hidden" name="idCarrera" value=""/>
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+            <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
             <?php echo form_error('idCarrera')?>
           </div>
-        </div> 
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -93,7 +92,33 @@
     </form>
   </div>
   
-  <!-- ventana modal para asociar docentes a la materia -->
+  <!-- ventana modal elegir una carrera para asignar pesos a las preguntas -->
+  <div id="modalPesosFormulario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Asignar pesos a las preguntas</h3>
+    </div>
+    <form class="form-horizontal" action="<?php echo site_url('formularios/pesos')?>" method="post">
+      <div class="modal-body">
+        <input type="hidden" name="idFormulario" value="" />
+        <h5 class="nombre"></h5>
+        <div class="control-group">
+          <label class="control-label">Carrera:</label>
+          <div class="controls">
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+            <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
+            <?php echo form_error('idCarrera')?>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+      </div>
+    </form>
+  </div>
+  
+  <!-- ventana modal elegir una carrera y para mostrar su formulario (vista previa) -->
   <div id="modalMostrarFormulario" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -103,14 +128,14 @@
       <div class="modal-body">
         <input type="hidden" name="idFormulario" value="<?php echo site_url('formularios/ver')?>" />
         <h5 class="nombre"></h5>
-        <div class="control-group"> 
-          <label class="control-label" for="buscarCarrera">Buscar carrera: </label>
+        <div class="control-group">
+          <label class="control-label">Carrera:</label>
           <div class="controls">
-            <input class="input-xlarge" id="buscarCarrera" name="buscarCarrera" type="text" data-provide="typeahead" autocomplete="off">
-            <input type="hidden" name="idCarrera" value=""/>
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+            <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
             <?php echo form_error('idCarrera')?>
           </div>
-        </div> 
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -143,6 +168,9 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
@@ -177,8 +205,20 @@
       $("#modalEditarFormulario").modal();
       return false;
     });
-    autocompletar_carrera("<?php echo site_url('carreras/buscarAJAX')?>");
-
+    $('.pesosFormulario').click(function(){
+      idFormulario = $(this).attr('value');
+      nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+      //cargo el id del departamento en el formulario
+      $('#modalPesosFormulario input[name="idFormulario"]').val(idFormulario);
+      //pongo el nombre del departamento en el dialogo
+      $("#modalPesosFormulario").find('.nombre').html(nombre);
+      $("#modalPesosFormulario").find('input[type="text"], input[name="idCarrera"]').val(''); //borro los controles
+      $("#modalPesosFormulario").modal();
+      return false;
+    });
+    autocompletar_carrera($('#modalMostrarFormulario input[name="buscarCarrera"]'), "<?php echo site_url('carreras/buscarAJAX')?>");
+    autocompletar_carrera($('#modalPesosFormulario input[name="buscarCarrera"]'), "<?php echo site_url('carreras/buscarAJAX')?>");
+    autocompletar_carrera($('#modalEditarFormulario input[name="buscarCarrera"]'), "<?php echo site_url('carreras/buscarAJAX')?>");
   </script>
 </body>
 </html>

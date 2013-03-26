@@ -85,8 +85,8 @@
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script src="<?php echo base_url('js/fechas.js')?>"></script>
   <script>
-    autocompletar_departamento("<?php echo site_url('departamentos/buscarAJAX')?>");
-    autocompletar_pregunta("<?php echo site_url('preguntas/buscarAjax')?>");
+    autocompletar_departamento($('#buscarDepartamento'), "<?php echo site_url('departamentos/buscarAJAX')?>");
+    autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
   </script>
 </body>
 </html>

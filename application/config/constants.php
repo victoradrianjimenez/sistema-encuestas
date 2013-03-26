@@ -132,3 +132,7 @@ define('PROCEDURE_SUCCESS', 'ok');
 
 define('RESPUESTA_SI', 'S');
 define('RESPUESTA_NO', 'N');
+
+define('MODO_INDICE_INVERSO', 'I'); //el indice calculado es mas favorables para la primera opcion de la pregunta
+define('MODO_INDICE_NORMAL', 'S'); //el indice calculado es mas favorables para la ultima opcion de la pregunta
+define('MODO_INDICE_NULO', 'N'); //la pregunta no influye en el cálculo del índice

@@ -57,7 +57,10 @@
               <?php echo form_error('tipo')?>
               
               <label class="checkbox">
-                <input type="checkbox" name="ordenInverso" value="1" <?php echo ($pregunta->ordenInverso==RESPUESTA_SI)?'checked="checked"':''?> /> Orden Inverso
+                <input type="checkbox" name="ordenInverso" value="1" <?php echo ($pregunta->modoIndice==MODO_INDICE_INVERSO)?'checked="checked"':''?> /> Orden Inverso
+              </label>
+              <label class="checkbox">
+                <input type="checkbox" name="indiceNulo" value="1" <?php echo ($pregunta->modoIndice==MODO_INDICE_NULO)?'checked="checked"':''?> /> La pregunta no influye en el cálculo del índice
               </label>
               
               <label for="campoUnidad">Unidad: </label>

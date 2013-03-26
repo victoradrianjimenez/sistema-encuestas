@@ -9,7 +9,7 @@ class Pregunta extends CI_Model{
   var $texto;
   var $descripcion;
   var $creacion;
-  var $ordenInverso;
+  var $modoIndice;
   var $limiteInferior;
   var $limiteSuperior;
   var $paso;
@@ -112,14 +112,6 @@ class Pregunta extends CI_Model{
     $query->free_result();
     return $data;
   }
-  
-  
-  
-  
-  
-  
-  
-  
   
 }
 

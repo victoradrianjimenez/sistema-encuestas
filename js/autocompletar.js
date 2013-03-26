@@ -1,11 +1,11 @@
-function autocompletar_usuario(url){
+function autocompletar_usuario(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarUsuario').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarUsuario').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -33,20 +33,20 @@ function autocompletar_usuario(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarUsuario').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      inputObj.parentsUntil('.control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1]+' '+cols[2];
     }
   });
 }
 
-function autocompletar_departamento(url){
+function autocompletar_departamento(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarDepartamento').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de departamentos con AJAX
-  $('#buscarDepartamento').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -74,21 +74,21 @@ function autocompletar_departamento(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarDepartamento').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      inputObj.parentsUntil('.control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1];
     }
   });
 
 }
 
-function autocompletar_formulario(url){
+function autocompletar_formulario(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarFormulario').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarFormulario').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -116,20 +116,20 @@ function autocompletar_formulario(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarFormulario').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      inputObj.parentsUntil('.control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1]+' ('+cols[2]+')';
     }
   });
 }
 
-function autocompletar_carrera(url){
+function autocompletar_carrera(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarCarrera, input[name="buscarCarrera"]').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarCarrera, input[name="buscarCarrera"]').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -157,20 +157,20 @@ function autocompletar_carrera(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarCarrera, input[name="buscarCarrera"]').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      inputObj.parentsUntil('.control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1]+" / "+cols[2];
     }
   });
 }
 
-function autocompletar_materia(url){
+function autocompletar_materia(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarMateria').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarMateria').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -201,20 +201,20 @@ function autocompletar_materia(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarMateria').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      inputObj.parentsUntil('.control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1]+" / "+cols[2];
     }
   });
 }  
 
-function autocompletar_encuesta(url){
+function autocompletar_encuesta(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarEncuesta').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarEncuesta').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -242,7 +242,7 @@ function autocompletar_encuesta(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      cont = $('#buscarEncuesta').parentsUntil('control-group').first().parent().removeClass('error');
+      cont = inputObj.parentsUntil('.control-group').first().parent().removeClass('error');
       cont.find('input[name="idEncuesta"]').val(cols[0]);
       cont.find('input[name="idFormulario"]').val(cols[1]);
       return cols[2]+" / "+cols[3];
@@ -250,14 +250,14 @@ function autocompletar_encuesta(url){
   });
 }
 
-function autocompletar_pregunta(url){
+function autocompletar_pregunta(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
-  $('#buscarPregunta').keydown(function(event){
+  inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
-    $(this).parentsUntil('control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
+    $(this).parentsUntil('.control-group').first().parent().addClass('error').find('input[type="hidden"]').val('');
   });
   //realizo la busqueda de usuarios con AJAX
-  $('#buscarPregunta').typeahead({
+  inputObj.typeahead({
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
@@ -285,7 +285,7 @@ function autocompletar_pregunta(url){
     },
     updater: function (item) {
       var cols = item.split("\t");
-      $('#buscarPregunta').parentsUntil('control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
+      inputObj.parentsUntil('.control-group').first().parent().removeClass('error').find('input[type="hidden"]').val(cols[0]);
       return cols[1];
     }
   });

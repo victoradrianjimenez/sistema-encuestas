@@ -87,9 +87,9 @@
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
-    autocompletar_carrera("<?php echo site_url('carreras/buscarAJAX')?>");
-    autocompletar_encuesta("<?php echo site_url('encuestas/buscarAJAX')?>");
-    autocompletar_materia("<?php echo site_url('carreras/buscarMateriasAJAX')?>");
+    autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
+    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>");
+    autocompletar_materia($('#buscarMateria'), "<?php echo site_url('carreras/buscarMateriasAJAX')?>");
     
     //listar claves de acceso al elegir la encuesta
     $('#buscarEncuesta').change(function(){
@@ -102,7 +102,7 @@
       if (idEncuesta==''||idFormulario==''||idMateria==''||idCarrera=='') return;
       $.ajax({
         type: "POST", 
-        url: "<?php echo site_url('claves/listarClavesMateriaAJAX')?>", 
+        url: "<?php echo site_url('claves/listarClavesUsadasMateriaAJAX')?>", 
         data: { 
           idEncuesta: idEncuesta,
           idFormulario: idFormulario,

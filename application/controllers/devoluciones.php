@@ -107,7 +107,7 @@ class Devoluciones extends CI_Controller {
       //verifico si es jefe de catedra. Si no es, no puede dar de alta una devolucion
       $this->load->model('Usuario');
       $this->Usuario->id = $this->data['usuarioLogin']->id;
-      $datosDocente = $this->Usuario->dameDatosDocente($materia->idMateria);
+      $datosDocente = $this->Usuario->dameDatosDocente((int)$this->input->post('idMateria'));
       if (!( $this->ion_auth->is_admin() ||
             ($this->ion_auth->in_group('docentes') && isset($datosDocente['tipoAcceso']) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA)) ){
         $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación. Solamente el Jefe de cátedra puede dar de alta un Plan de Mejoras.');
@@ -179,7 +179,12 @@ class Devoluciones extends CI_Controller {
     $this->load->model('Gestor_materias','gm');
     $this->load->model('Gestor_encuestas','ge');
     $this->load->model('Gestor_devoluciones','gd');
-    if ($idDevolucion && $idMateria && $idEncuesta && $idFormulario){
+    
+    $idDevolucion = ($this->input->post('idDevolucion'))?$this->input->post('idDevolucion'):$idDevolucion;
+    $idMateria = ($this->input->post('idMateria'))?$this->input->post('idMateria'):$idMateria;
+    $idEncuesta = ($this->input->post('idEncuesta'))?$this->input->post('idEncuesta'):$idEncuesta;
+    $idFormulario = ($this->input->post('idFormulario'))?$this->input->post('idFormulario'):$idFormulario;
+    if ($idMateria && $idEncuesta && $idFormulario){
       //verifico que los datos enviados son correctos
       $encuesta = $this->ge->dame((int)$idEncuesta, (int)$idFormulario);
       $materia = $this->gm->dame((int)$idMateria);
@@ -210,22 +215,27 @@ class Devoluciones extends CI_Controller {
         if (!$seguir){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver el plan de mejoras de esta materia.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-          redirect('informes/materia');
+          redirect('devoluciones/listar');
         }
       }
       //obtengo datos de la devolucion
-      $devolucion = $this->gd->dame((int)$idDevolucion, (int)$idMateria, (int)$idEncuesta, (int)$idFormulario);
-      //envio datos a la vista
-      $datos = array(
-        'devolucion' => ($devolucion) ? $devolucion : $this->Devolucion,
-        'materia' => &$materia,
-        'encuesta' => &$encuesta
-      );
-      $this->load->view('mostrar_devolucion', $datos);
+      $devolucion = $this->gd->dame(1, (int)$idMateria, (int)$idEncuesta, (int)$idFormulario);
+      if ($devolucion){
+        //envio datos a la vista
+        $datos = array(
+          'devolucion' => ($devolucion) ? $devolucion : $this->Devolucion,
+          'materia' => &$materia,
+          'encuesta' => &$encuesta
+        );
+        $this->load->view('reporte_devolucion', $datos);
+        return;
+      }
+      else{
+        $this->data['resultadoOperacion'] = 'No existe un plan de mejoras de la materia para esta encuesta.';
+        $this->data['resultadoTipo'] = ALERT_WARNING;
+      }
     }
-    else{
-      $this->load->view('solicitud_devoluciones', $this->data);
-    }
+    $this->load->view('solicitud_devoluciones', $this->data);
   }
 
 }

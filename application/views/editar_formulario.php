@@ -3,28 +3,13 @@
 <head>
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
-    .Secciones{
-      list-style-type: none;
-      margin: 0;
-    }
-    .Secciones li{
-      border: 1px solid #2BA6CB;
-      padding: 5px;
-      margin: 5px 0;
-    }
-    .Preguntas{
-      list-style-type: none;
-      margin: 5px;
-    }
-    .Preguntas li{
-      border: 1px solid #CCCCCC;
-    }
-    .btn-group{
-      float:right;
-      line-height:0;
-    }
+    .Secciones{list-style-type: none; margin: 0;}
+    .Secciones li{border: 1px solid #2BA6CB; padding: 5px; margin: 5px 0;}
+    .Preguntas{list-style-type: none; margin: 5px;}
+    .Preguntas li{border: 1px solid #CCCCCC;}
+    .btn-group{float:right; line-height:0;}
+    #botonAgregarSeccion{float:right; margin:0 6px;}
   </style>
 </head>
 <body>
@@ -52,24 +37,22 @@
           <h4>Formulario</h4>
           <form action="<?php echo $urlFormulario?>" method="post">
             <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
-            <input class="input-block-level" id="campoNombre" type="text" name="nombre" required />
+            <input class="input-block-level" id="campoNombre" type="text" name="nombre" value="<?php echo set_value('nombre')?>" required />
             <label for="campoTitulo">Título: <span class="opcional">*</span></label>
-            <input class="input-block-level" id="campoTitulo" type="text" name="titulo" required />
+            <input class="input-block-level" id="campoTitulo" type="text" name="titulo" value="<?php echo set_value('titulo')?>" required />
             <div class="row-fluid">
-              <div class="span12">
               <div class="span8">
                 <label for="campoDescripcion">Descripción: </label>
-                <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" />
+                <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" value="<?php echo set_value('descripcion')?>" />
               </div>
               <div class="span4">
                 <label for="campoAdicionales">Preguntas adicionales: <span class="opcional">*</span></label>
-                <input class="input-block-level" id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" />
-              </div>
+                <input class="input-block-level" id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" value="<?php echo set_value('preguntasAdicionales')?>"/>
               </div>
             </div>
             <div class="Formularios">
               <legend>Secciones
-                <a style="float:right; margin:0 6px;" href="#modalAgregarSeccion" role="button" data-toggle="modal" title="Agregar sección..."><i class="icon-circle-plus"></i></a>
+                <a id="botonAgregarSeccion" href="#modalAgregarSeccion" role="button" data-toggle="modal" title="Agregar sección..."><i class="icon-circle-plus"></i></a>
               </legend>
             </div>
             <ul class="Secciones"></ul>
@@ -128,8 +111,8 @@
       <input class="input-block-level" type="text" name="descripcionSeccion" />
       <label>Tipo de Sección: <span class="opcional">*</span></label>
       <select name="tipoSeccion">
-        <option value="N">Normal</option>
-        <option value="D">Docente</option>
+        <option value="<?php echo SECCION_TIPO_NORMAL?>">Normal</option>
+        <option value="<?php echo SECCION_TIPO_DOCENTE?>">Docente</option>
       </select>
     </div>
     <div class="modal-footer">
@@ -160,10 +143,12 @@
   <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script src="<?php echo base_url('js/edicion-formularios.js')?>"></script>
   <script>
-    autocompletar_pregunta("<?php echo site_url('preguntas/buscarAjax')?>");
+    autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
   </script>
 </body>
 </html>

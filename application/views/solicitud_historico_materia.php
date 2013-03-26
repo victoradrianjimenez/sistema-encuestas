@@ -94,9 +94,9 @@
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script src="<?php echo base_url('js/fechas.js')?>"></script>
   <script>
-    autocompletar_carrera("<?php echo site_url('carreras/buscarAJAX')?>");
-    autocompletar_materia("<?php echo site_url('carreras/buscarMateriasAJAX')?>");
-    autocompletar_pregunta("<?php echo site_url('preguntas/buscarAjax')?>");
+    autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
+    autocompletar_materia($('#buscarMateria'), "<?php echo site_url('carreras/buscarMateriasAJAX')?>");
+    autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
   </script>
 </body>
 </html>

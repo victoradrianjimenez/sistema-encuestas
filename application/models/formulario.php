@@ -15,6 +15,18 @@ class Formulario extends CI_Model{
     parent::__construct();
   }
   
+  public function asignarImportancia($idCarrera, $idItem, $idSeccion, $importancia){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idItem = $this->db->escape($idItem);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $importancia = $this->db->escape($importancia);
+    $query = $this->db->query("call esp_signar_importancia($idCarrera, $idItem, $idSeccion, $idFormulario, $importancia)");
+    $data = $query->row();
+    $query->free_result();
+    return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';
+  }
+  
   /**
    * Obtener una sección a partir de su ID. Devuleve un objeto Seccion.
    *

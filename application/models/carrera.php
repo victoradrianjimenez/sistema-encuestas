@@ -10,13 +10,13 @@ class Carrera extends CI_Model{
   var $idFormulario;
   var $nombre;
   var $plan;
-  var $publicarInformes = 'N';
-  var $publicarHistoricos = 'N';
+  var $publicarInformes = RESPUESTA_NO;
+  var $publicarHistoricos = RESPUESTA_NO;
   
   function __construct(){
     parent::__construct();
   }
-
+  
   /**
    * Buscar materias que pertenecen a la carrera. Devuleve un array de objetos.
    *

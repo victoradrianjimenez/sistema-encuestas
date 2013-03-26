@@ -119,7 +119,7 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
   <script>
-    autocompletar_materia("<?php echo site_url('materias/buscarAJAX')?>");
+    autocompletar_materia($('#buscarMateria'), "<?php echo site_url('materias/buscarAJAX')?>");
     $('.quitar').click(function(){
       idMateria = $(this).attr('value');
       nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();

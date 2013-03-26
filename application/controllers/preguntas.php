@@ -69,7 +69,7 @@ class Preguntas extends CI_Controller {
 
   /*
    * Recepción del formulario para agregar nueva pregunta
-   * POST: texto, descripcion, tipo, ordenInverso, unidad, limiteInferior, limiteSuperior, paso, textoOpcion[]
+   * POST: texto, descripcion, tipo, ordenInverso, indiceNulo, unidad, limiteInferior, limiteSuperior, paso, textoOpcion[]
    */
   public function nueva(){
     if (!$this->ion_auth->logged_in()){
@@ -91,11 +91,13 @@ class Preguntas extends CI_Controller {
     $this->Pregunta->tipo = $this->input->post('tipo');
     $this->Pregunta->texto = $this->input->post('texto', TRUE);
     $this->Pregunta->descripcion = ($this->input->post('descripcion'))?$this->input->post('descripcion', TRUE):NULL;
-    $this->Pregunta->ordenInverso = ((bool)$this->input->post('ordenInverso'))?RESPUESTA_SI:RESPUESTA_NO;
     $this->Pregunta->unidad = ($this->input->post('unidad'))?$this->input->post('unidad', TRUE):NULL;
     $this->Pregunta->limiteInferior = ($this->input->post('limiteInferior'))?$this->input->post('limiteInferior'):NULL;
     $this->Pregunta->limiteSuperior = ($this->input->post('limiteSuperior'))?$this->input->post('limiteSuperior'):NULL;
     $this->Pregunta->paso = ($this->input->post('paso'))?$this->input->post('paso'):NULL;
+    $this->Pregunta->modoIndice = ((bool)$this->input->post('ordenInverso'))?MODO_INDICE_INVERSO:MODO_INDICE_NORMAL;
+    if ((bool)$this->input->post('indiceNulo')) $this->Pregunta->modoIndice = MODO_INDICE_NULO;
+    
     $datosOpciones = $this->input->post('textoOpcion');
 
     //verifico datos POST
@@ -116,7 +118,7 @@ class Preguntas extends CI_Controller {
     }
     if($this->form_validation->run() && !$error){
       $res = $this->gp->alta( $this->Pregunta->texto, $this->Pregunta->descripcion,  
-                              $this->Pregunta->tipo, $this->Pregunta->ordenInverso, $this->Pregunta->limiteInferior,  
+                              $this->Pregunta->tipo, $this->Pregunta->modoIndice, $this->Pregunta->limiteInferior,  
                               $this->Pregunta->limiteSuperior, $this->Pregunta->paso, $this->Pregunta->unidad);
       //si la pregunta se dio de alta exitosamente
       if (is_numeric($res)){

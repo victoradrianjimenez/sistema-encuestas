@@ -167,15 +167,13 @@ class Formularios extends CI_Controller{
       $idFormulario = (int)$this->input->post('idFormulario');
       $idCarrera = (int)$this->input->post('idCarrera');
       $formulario = $this->gf->dame($idFormulario);
-      if($idCarrera){
-        $carrera = $this->gc->dame($idCarrera);
-        $secciones = $formulario->listarSeccionesCarrera($idCarrera);
+      $carrera = $this->gc->dame($idCarrera);
+      if(!$formulario || !$carrera){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERRO);
+        redirect('formularios/listar');
       }
-      else{
-        $carrera = $this->Carrera;
-        $secciones = $formulario->listarSecciones();
-        $idCarrera = false;
-      }
+      $secciones = $formulario->listarSeccionesCarrera($idCarrera);
       $docentes = array($this->Usuario);  
       //por cada seccion
       $datos_secciones = array();
@@ -201,6 +199,99 @@ class Formularios extends CI_Controller{
       $this->data['tituloFormulario'] = 'Personalizar Formulario';
       $this->data['urlFormulario'] = site_url('formularios/agregar_preguntas');
       $this->load->view('personalizar_formulario', $this->data);
+    }
+    else {
+      $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      redirect('formularios/listar');
+    }
+  }
+
+  public function pesos(){
+    if (!$this->ion_auth->logged_in()){
+      $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('usuarios/login');
+    }
+    elseif (!$this->ion_auth->is_admin()){
+      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+      redirect('formularios/listar');
+    }
+    $this->load->model('Usuario');
+    $this->load->model('Pregunta');
+    $this->load->model('Item');
+    $this->load->model('Seccion');
+    $this->load->model('Carrera');
+    $this->load->model('Formulario');
+    $this->load->model('Gestor_carreras', 'gc');
+    $this->load->model('Gestor_formularios', 'gf');
+    $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero');
+    if($this->form_validation->run()){
+      $idFormulario = (int)$this->input->post('idFormulario');
+      $idCarrera = (int)$this->input->post('idCarrera');
+      $formulario = $this->gf->dame($idFormulario);
+      $carrera = $this->gc->dame($idCarrera);
+      if(!$formulario || !$carrera){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERRO);
+        redirect('formularios/listar');
+      }
+      //verifico si se enviaron los pesos (o importancias)
+      if ($this->input->post('pesos')){
+        //entonces guardo los pesos en la BD
+        $error = false;
+        //leo todos los datos enviados
+        $inputs = $this->input->post(NULL, TRUE);
+        //verifico integridad de los datos
+        foreach ($inputs as $var => $importancia) {
+          //si el dato es un peso de una pregunta
+          if (strpos($var,'peso') !== false){
+            //verifico que haya mandado ID de la pregunta, el tipo y el ID del docente (es opcional)
+            if (sscanf($var, "peso_%d_%d", $idItem, $idSeccion)>1){
+              $res = $formulario->asignarImportancia($idCarrera, $idItem, $idSeccion, $importancia);
+              if($res != PROCEDURE_SUCCESS){
+                $error = true;
+              }
+            }
+          }
+        }
+        if (!$error){
+          $this->session->set_flashdata('resultadoOperacion', 'Los pesos de las preguntas fueron guardados correctamente.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+          redirect('formularios/listar');  
+        }
+        $this->data['resultadoOperacion'] = 'Hubo un error al guardar los pesos de las preguntas. Por favor intente nuevamente.';
+        $this->data['resultadoTipo'] = ALERT_ERROR;
+      }
+      //muestro pagina de edicion de pesos        
+      $secciones = $formulario->listarSeccionesCarrera($idCarrera);
+      $docentes = array($this->Usuario);  
+      //por cada seccion
+      $datos_secciones = array();
+      foreach ($secciones as $i => $seccion) {
+        $datos_subsecciones = array();
+        $items = ($idCarrera) ? $seccion->listarItemsCarrera($idCarrera) : $seccion->listarItems();
+        //por cada item
+        $datos_items = array();
+        foreach ($items as $k => $item) {
+          $datos_items[$k]['item'] = $item;
+        }
+        //si la sección es común, habrá una única subsección
+        $datos_subsecciones[0]['docente'] = $this->Usuario;
+        $datos_subsecciones[0]['items'] = $datos_items;
+        //guardo los datos de la sección
+        $datos_secciones[$i]['seccion'] = $seccion;
+        $datos_secciones[$i]['subsecciones'] = $datos_subsecciones;
+      }
+      $this->data['formulario'] = &$formulario;
+      $this->data['carrera'] = ($carrera)?$carrera:$this->Carrera;
+      $this->data['secciones'] = &$datos_secciones;
+
+      $this->data['tituloFormulario'] = 'Editar pesos para el cálculo del índice';
+      $this->data['urlFormulario'] = site_url('formularios/pesos');
+      $this->load->view('pesos_formulario', $this->data);
     }
     else {
       $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');

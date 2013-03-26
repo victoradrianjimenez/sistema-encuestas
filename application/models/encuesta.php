@@ -33,7 +33,7 @@ class Encuesta extends CI_Model{
 
 
   /**
-   * Obtener el listado de claves de acceso de la encuesta para una materia y carrera dada. Devuleve un array de objetos.
+   * Obtener el listado de claves que no fueron usadas, de una encuesta para una materia y carrera dada. Devuleve un array de objetos.
    *
    * @access  public
    * @param identificador de materia
@@ -42,12 +42,33 @@ class Encuesta extends CI_Model{
    * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listarClavesMateria($idMateria, $idCarrera){
+  public function listarClavesPendientesMateria($idMateria, $idCarrera){
     $idEncuesta = $this->db->escape($this->idEncuesta);
     $idFormulario = $this->db->escape($this->idFormulario);
     $idMateria = $this->db->escape($idMateria);
     $idCarrera = $this->db->escape($idCarrera);
-    $query = $this->db->query("call esp_listar_claves_encuesta_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $query = $this->db->query("call esp_listar_claves_pendientes_encuesta_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $data = $query->result('Clave');
+    $query->free_result();
+    return $data;
+  }
+  
+  /**
+   * Obtener el listado de claves que ya fueron usadas, de una  encuesta para una materia y carrera dada. Devuleve un array de objetos.
+   *
+   * @access  public
+   * @param identificador de materia
+   * @param identificador de carrera
+   * @param posicion del primer item de la lista a mostrar
+   * @param cantidad de items a mostrar (tamaño de página)
+   * @return  array
+   */  
+  public function listarClavesUsadasMateria($idMateria, $idCarrera){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idMateria = $this->db->escape($idMateria);
+    $idCarrera = $this->db->escape($idCarrera);
+    $query = $this->db->query("call esp_listar_claves_usadas_encuesta_materia($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Clave');
     $query->free_result();
     return $data;
