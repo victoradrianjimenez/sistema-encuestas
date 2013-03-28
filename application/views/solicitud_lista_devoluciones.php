@@ -5,8 +5,8 @@
   <title>Lista Devoluciones</title>
   <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
-    .form-horizontal .controls {margin-left: 70px}
-    .form-horizontal .control-label {width: 50px; float: left}
+    #contenedor .form-horizontal .controls {margin-left: 70px}
+    #contenedor .form-horizontal .control-label {width: 50px; float: left}
   </style>
 </head>
 <body>

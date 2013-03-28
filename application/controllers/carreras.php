@@ -163,7 +163,7 @@ class Carreras extends CI_Controller{
     
     //leo los datos POST
     $this->Carrera->idDepartamento = (int)$this->input->post('idDepartamento');
-    $this->Carrera->idDirectorCarrera = ($this->input->post('idDirectorCarrera')) ? NULL : (int)$this->input->post('idDirectorCarrera');
+    $this->Carrera->idDirectorCarrera = ($this->input->post('idDirectorCarrera')>0) ? $this->input->post('idDirectorCarrera') : NULL;
     $this->Carrera->nombre = $this->input->post('nombre',TRUE);
     $this->Carrera->plan = ($this->input->post('plan')) ? (int)$this->input->post('plan') : date('Y');
     $this->Carrera->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
@@ -229,7 +229,7 @@ class Carreras extends CI_Controller{
     //leo los datos POST
     $this->Carrera->idCarrera = (int)$this->input->post('idCarrera');
     $this->Carrera->idDepartamento = (int)$this->input->post('idDepartamento');
-    $this->Carrera->idDirectorCarrera = ($this->input->post('idDirectorCarrera')=='') ? NULL : (int)$this->input->post('idDirectorCarrera');
+    $this->Carrera->idDirectorCarrera = ($this->input->post('idDirectorCarrera')>0) ? $this->input->post('idDirectorCarrera') : NULL;
     $this->Carrera->nombre = $this->input->post('nombre',TRUE);
     $this->Carrera->plan = ($this->input->post('plan')) ? (int)$this->input->post('plan') : date('Y');
     $this->Carrera->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;

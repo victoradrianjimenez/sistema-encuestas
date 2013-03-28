@@ -12,4 +12,3 @@ $config['mailtype'] = 'text';
 $config['validation'] = TRUE;
 
 ?>
-

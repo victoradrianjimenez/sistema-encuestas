@@ -8,7 +8,7 @@
     .Secciones li{border: 1px solid #2BA6CB; padding: 5px; margin: 5px 0;}
     .Preguntas{list-style-type: none; margin: 5px;}
     .Preguntas li{border: 1px solid #CCCCCC;}
-    .btn-group{float:right; line-height:0;}
+    .Seccion .btn-group, .Pregunta .btn-group{float:right; line-height:0;}
     h5.separador{border-bottom: 3px solid #2BA6CB;}
   </style>
 </head>

@@ -266,17 +266,34 @@ class Encuesta extends CI_Model{
    * @param identificador de la carrera
    * @return array
    */
-  public function listarDocentes($idMateria, $idCarrera){
+  public function listarDocentesMateria($idMateria, $idCarrera){
     $idMateria = $this->db->escape($idMateria);
     $idCarrera = $this->db->escape($idCarrera);
     $idEncuesta = $this->db->escape($this->idEncuesta);
     $idFormulario = $this->db->escape($this->idFormulario);
-    $query = $this->db->query("call esp_listar_docentes_encuesta($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $query = $this->db->query("call esp_listar_docentes_materia_encuesta($idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data = $query->result('Usuario');
     $query->free_result();
     return $data;
   }
   
+    
+  /**
+   * Obtener el listado de docentes de las que hace referencia la encuesta. Devuleve un array de objetos.
+   *
+   * @access public
+   * @param identificador de la carrera
+   * @return array
+   */
+  public function listarDocentesCarrera($idCarrera){
+    $idCarrera = $this->db->escape($idCarrera);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_listar_docentes_carrera_encuesta($idCarrera, $idEncuesta, $idFormulario)");
+    $data = $query->result('Usuario');
+    $query->free_result();
+    return $data;
+  }
   
   /**
    * Da de Alta una clave. Devuleve '=###' en caso de éxito donde ### es la clave generada, o un mensaje en caso de error.
@@ -486,6 +503,27 @@ class Encuesta extends CI_Model{
     $data = $query->result('Clave');
     $query->free_result();
     return ($data != FALSE)?$data[0]:FALSE;
+  }
+  
+  
+  /**
+   * Obtiene las respuestas de todas las preguntas de una materia y para un docente en particular (no para todos)
+   *
+   * @access publics
+   * @param identificador de carrera
+   * @param idenificador de materia
+   * @return array
+   */  
+  public function respuestasMateriaDocente($idCarrera, $idMateria, $idDocente){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $idDocente = $this->db->escape($idDocente);
+    $query = $this->db->query("call esp_respuestas_materia_docente($idCarrera, $idMateria, $idDocente, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    return $data;
   }
   
   

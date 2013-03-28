@@ -43,9 +43,9 @@
               <?php 
               foreach ($itemSeccion['subsecciones'] as $subseccion){
                 $docente = $subseccion['docente'];
-                printf('
-                <h3>%s %s</h3>', $docente->nombre, $docente->apellido);
-                if ($docente->idImagen != '') echo '<img src="'.site_url('usuarios/imagen/'.$docente->idImagen).'" width="100" height="100" alt="Imagen de docente"/>';
+                echo '<h3>'; 
+                if ($docente->idImagen) echo '<img src="'.site_url('usuarios/imagen/'.$docente->idImagen).'" width="100" height="100" alt="Imagen de docente"/> ';
+                echo $docente->nombre.' '.$docente->apellido.'</h3>';
                 echo '
                 <div class="row preguntas">';
                 $col = 0;
@@ -57,6 +57,7 @@
                   //para las preguntas con opciones
                   switch($item->tipo){
                   case TIPO_SELECCION_SIMPLE:
+                    $col = $col+1;
                     $html_opciones = '';
                     foreach($opciones as $opcion){
                       $html_opciones .= '<option value="'.$opcion->idOpcion.'">'.$opcion->texto.'</option>';
@@ -74,9 +75,9 @@
                         </div>
                       </div>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, $html_opciones);
-                    $col = $col+1;
                     break;
                   case TIPO_NUMERICA:
+                    $col = $col+1;
                     printf ('
                     <div class="item span6">
                       <div class="row-fluid">
@@ -89,23 +90,22 @@
                       </div>
                     </div>',  $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, 
                               $item->limiteInferior, $item->limiteSuperior, $item->paso);
-                    $col = $col+1;
                     break;
                   case TIPO_TEXTO_SIMPLE:
+                    $col = $col+1;
                     printf ('
                     <div class="item span6">
                       <p>%s %s<input class="input-block-level" type="text" name="idPregunta_%d_%s_%d"/></p>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
-                    $col = $col+1;
                     break;
                   case TIPO_TEXTO_MULTILINEA:
                     if ($col%2 == 1) echo'</div><div class="row preguntas">';
+                    $col = 0;
                     printf ('
                     <div class="item span12">
                       <p>%s %s</p>
                       <textarea class="input-block-level" name="idPregunta_%d_%s_%d"></textarea>
                     </div>', $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
-                    $col = 0;
                   }
                   if ($col%2 == 0) echo'</div><div class="row preguntas">';
                 }//foreach items
@@ -148,6 +148,7 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-tooltip.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
   <script>
     $('span.badge').tooltip();
   </script>

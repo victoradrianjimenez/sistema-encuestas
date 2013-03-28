@@ -211,7 +211,7 @@ BEGIN
 	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
 	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
 			R.idCarrera = pidCarrera
-	ORDER BY idClave, R.idDocente;
+	ORDER BY R.idDocente, idClave;
 END $$
 
 DELIMITER ;
@@ -235,7 +235,32 @@ BEGIN
 	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
 	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
 			R.idCarrera = pidCarrera AND R.idMateria = pidMateria
-	ORDER BY idClave, R.idDocente;
+	ORDER BY R.idDocente, idClave;
+END $$
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS `esp_respuestas_materia_docente`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_respuestas_materia_docente`(
+	pidCarrera SMALLINT UNSIGNED,
+	pidMateria SMALLINT UNSIGNED,
+	pidDocente INT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	-- Respuestas Materia
+	SELECT	R.idClave, R.idDocente, R.idPregunta, 
+			IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),R.opcion) as 'opcion', 
+			R.texto
+	FROM 	Respuestas R INNER JOIN Preguntas P ON R.idPregunta = P.idPregunta
+	WHERE	R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario AND 
+			R.idCarrera = pidCarrera AND R.idMateria = pidMateria AND (idDocente = pidDocente OR idDocente IS NULL)
+	ORDER BY R.idDocente, idClave;
 END $$
 
 DELIMITER ;
@@ -1188,9 +1213,6 @@ BEGIN
         ROLLBACK;
     ELSEIF EXISTS(SELECT idCarrera FROM Secciones WHERE idCarrera = pidCarrera LIMIT 1) THEN
         SET mensaje = 'No se puede eliminar, la carrera tiene secciones de formularios asociadas.';
-        ROLLBACK;
-    ELSEIF EXISTS(SELECT idCarrera FROM Preguntas WHERE idCarrera = pidCarrera LIMIT 1) THEN
-        SET mensaje = 'No se puede eliminar, la carrera tiene preguntas asociadas.';
         ROLLBACK;
     ELSE
         DELETE FROM Items_Carreras
@@ -2746,11 +2768,11 @@ DELIMITER ;
 
 
 
-DROP PROCEDURE IF EXISTS `esp_listar_docentes_encuesta`;
+DROP PROCEDURE IF EXISTS `esp_listar_docentes_materia_encuesta`;
 
 DELIMITER $$
 
-CREATE PROCEDURE `esp_listar_docentes_encuesta`(
+CREATE PROCEDURE `esp_listar_docentes_materia_encuesta`(
 	pidMateria SMALLINT UNSIGNED,
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
@@ -2764,6 +2786,28 @@ BEGIN
 	WHERE   R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND 
 			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
 	ORDER BY DM.ordenFormulario;
+END $$
+
+DELIMITER ;
+
+
+
+DROP PROCEDURE IF EXISTS `esp_listar_docentes_carrera_encuesta`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_listar_docentes_carrera_encuesta`(
+	pidCarrera SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	-- obtiene listado de docentes que participaron de una encuesta, ordenados como corresponde
+	SELECT DISTINCT P.id, P.apellido, P.nombre, P.username
+	FROM 	Respuestas R 
+			INNER JOIN Usuarios P ON P.id = R.idDocente
+	WHERE   R.idCarrera = pidCarrera AND 
+			R.idEncuesta = pidEncuesta AND R.idFormulario = pidFormulario
+	ORDER BY P.Apellido, P.Nombre;
 END $$
 
 DELIMITER ;
@@ -2803,7 +2847,7 @@ BEGIN
 				publicarInformes, publicarHistoricos
 		FROM	Departamentos
 		WHERE	nombre like CONCAT('%',pnombre,'%')
-		ORDER BY M.nombre
+		ORDER BY nombre
 		LIMIT 	10;
 	END IF;
 END $$

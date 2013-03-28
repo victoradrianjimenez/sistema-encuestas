@@ -47,18 +47,27 @@ class Historicos extends CI_Controller{
       $pregunta = $this->gp->dame($idPregunta);
       $materia = $this->gm->dame($idMateria);
       $carrera = $this->gc->dame($idCarrera);
-      $departamento = $this->gd->dame($carrera->idDepartamento);
-      if (!$pregunta || !$materia || !$carrera || !$departamento){
+      if (!$pregunta || !$materia || !$carrera){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('historicos/materia');
       }
+      //obtengo el departamento al que pertenece la carrera
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      
       //verifico si el usuario tiene permisos para la materia
-      if ($materia->publicarHistoricos != 'S'){
+      if ($materia->publicarHistoricos != RESPUESTA_SI){
+        if (!$this->ion_auth->logged_in()){
+          $this->session->set_flashdata('resultadoOperacion', 'Los históricos de esta asignatura no son públicos. Debe iniciar sesión para realizar esta operación.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+          redirect('historicos/materia');
+        }
+        //obtener datos del usuario logueado
+        $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id); 
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
             ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !isempty($materia->dameDatosDocente($this->data['usuarioLogin']->id))) )){
+            ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por materia.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('historicos/materia');
@@ -113,14 +122,21 @@ class Historicos extends CI_Controller{
       
       $pregunta = $this->gp->dame($idPregunta);
       $carrera = $this->gc->dame($idCarrera);
-      $departamento = $this->gd->dame($carrera->idDepartamento);
       if (!$pregunta || !$carrera){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('historicos/carrera');
       }
+      //obtengo el departamento al que pertenece la carrera
+      $departamento = $this->gd->dame($carrera->idDepartamento);
+      
       //verifico si el usuario tiene permisos para la carrera
-      if ($carrera->publicarHistoricos != 'S'){
+      if ($carrera->publicarHistoricos != RESPUESTA_SI){
+        if (!$this->ion_auth->logged_in()){
+          $this->session->set_flashdata('resultadoOperacion', 'Los históricos de esta carrera no son públicos. Debe iniciar sesión para realizar esta operación.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+          redirect('historicos/carrera');
+        }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
             ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
@@ -182,7 +198,12 @@ class Historicos extends CI_Controller{
         redirect('historicos/departamento');
       }
       //verifico si el usuario tiene permisos para el departamento
-      if ($departamento->publicarHistoricos != 'S'){
+      if ($departamento->publicarHistoricos != RESPUESTA_SI){
+        if (!$this->ion_auth->logged_in()){
+          $this->session->set_flashdata('resultadoOperacion', 'Los históricos de este departamento no son públicos. Debe iniciar sesión para realizar esta operación.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+          redirect('historicos/departamento');
+        }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por departamento.');
@@ -238,6 +259,11 @@ class Historicos extends CI_Controller{
       }
       //verifico si el usuario tiene permisos para la facultad
       if ($this->config->config['publicarHistoricos']){
+        if (!$this->ion_auth->logged_in()){
+          $this->session->set_flashdata('resultadoOperacion', 'Los históricos de la facultad no son públicos. Debe iniciar sesión para realizar esta operación.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+          redirect('historicos/facultad');
+        }
         if(!($this->ion_auth->in_group(array('admin','decanos')) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por facultad.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
@@ -264,8 +290,6 @@ class Historicos extends CI_Controller{
     else{
       $this->load->view('solicitud_historico_facultad', $this->data);
     }
-  }
-  
+  } 
 }
-
 ?>

@@ -98,7 +98,7 @@ class Departamentos extends CI_Controller{
     
     //leo los datos POST
     $this->Departamento->idDepartamento = null;
-    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')) ? NULL : (int)$this->input->post('idJefeDepartamento'); 
+    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')>0) ? $this->input->post('idJefeDepartamento') : NULL; 
     $this->Departamento->nombre = $this->input->post('nombre',TRUE);
     $this->Departamento->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
     $this->Departamento->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? RESPUESTA_SI : RESPUESTA_NO;
@@ -155,7 +155,7 @@ class Departamentos extends CI_Controller{
     
     //leo los datos POST
     $this->Departamento->idDepartamento = (int)$this->input->post('idDepartamento');
-    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')) ? NULL : (int)$this->input->post('idJefeDepartamento');
+    $this->Departamento->idJefeDepartamento = ($this->input->post('idJefeDepartamento')>0) ? $this->input->post('idJefeDepartamento') : NULL;
     $this->Departamento->nombre = $this->input->post('nombre',TRUE);
     $this->Departamento->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
     $this->Departamento->publicarHistoricos = ($this->input->post('publicarHistoricos')) ? RESPUESTA_SI : RESPUESTA_NO;
@@ -192,7 +192,7 @@ class Departamentos extends CI_Controller{
     $this->data['departamento'] = &$this->Departamento;
     $this->data['jefeDepartamento'] = &$this->Usuario;
     $this->data['tituloFormulario'] = 'Modificar Departamento';
-    $this->data['urlFormulario'] = site_url('departamentos/modificar');
+    $this->data['urlFormulario'] = site_url('departamentos/modificar/'.$idDepartamento);
     $this->load->view('editar_departamento', $this->data);
   }
 
@@ -234,14 +234,14 @@ class Departamentos extends CI_Controller{
    * Funcion para responder solicitudes AJAX
    * POST: buscar
    */
-  public function buscarAjax(){
+  public function buscarAJAX(){
     $this->form_validation->set_rules('buscar','Buscar','required');
     if($this->form_validation->run()){
       $buscar = $this->input->post('buscar', TRUE);
       $this->load->model('Departamento');
       $this->load->model('Gestor_departamentos','gd');
-      $departamentos = $this->gd->buscar($buscar);
       echo "\n";
+      $departamentos = $this->gd->buscar($buscar);
       foreach ($departamentos as $departamento) {
         echo  "$departamento->idDepartamento\t".
               "$departamento->nombre\t\n";

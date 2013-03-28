@@ -83,7 +83,7 @@ $config['max_rounds']     = 9;
  */
 $config['site_title']           = "Sistema Encuestas";        // Site Title, example.com
 $config['admin_email']          = "encuestas@herrera.edu.ar"; // Admin Email, admin@example.com
-$config['default_group']        = 'alumnos'; 			// Default group, use name
+$config['default_group']        = 'usuarios'; 		// Default group, use name
 $config['admin_group']          = 'admin';        // Default administrators group, use name
 $config['identity']             = 'username';     // A database column which is used to login with
 $config['min_password_length']  = 6;              // Minimum Required Length of Password

@@ -33,6 +33,29 @@
           <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
           <ul class="nav">
             <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="form"><form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
+                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                    <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                    <input type="hidden" name="tipo" value="xlsx" />
+                    <input type="submit" name="submit" class="btn btn-link" value="Libro de Excel 2007-2010 (.xlsx)..." />
+                  </form></a>
+                </li>
+                <li>
+                  <a class="form"><form action="<?php echo site_url('informes/archivoMateria')?>" method="post">
+                    <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
+                    <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
+                    <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
+                    <input type="hidden" name="tipo" value="xls" />
+                    <input type="submit" name="submit" class="btn btn-link" value="Libro de Excel 97-2003 (.xls)..."/>
+                  </form></a>
+                </li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -111,9 +134,9 @@
               break;
             }//switch
           }//foreach preguntas
-          if($seccion['indice']) echo '<h4>Índice de la Sección: '.$seccion['indice'].'</h4>'; 
+          if($seccion['indice']) echo '<h4>Índice de la Sección: '.round($seccion['indice'],2).'</h4>'; 
         }//foreach secciones
-        if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.$indice.'</h4>';
+        if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.round($indice,2).'</h4>';
         ?>
       </div>
     </div>

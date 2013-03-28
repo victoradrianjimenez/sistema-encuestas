@@ -93,7 +93,7 @@
             <div class="control-group">
               <label class="control-label">Estado: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="active" value="1" <?php echo set_checkbox('active', '1', TRUE)?> />Cuenta de usuario Activa</label>
+                <label class="checkbox"><input type="checkbox" name="active" value="1" <?php echo ($usuario->active)?'checked="checked"':''?> />Cuenta de usuario Activa</label>
                 <?php echo form_error('active')?>
               </div>
             </div>

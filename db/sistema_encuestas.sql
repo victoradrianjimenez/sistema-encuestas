@@ -356,7 +356,7 @@ CREATE TABLE Usuarios(
 --
 
 CREATE TABLE Usuarios_Grupos(
-    id            INT UNSIGNED  NOT NULL,
+    id            INT UNSIGNED  AUTO_INCREMENT,
     id_usuario    INT UNSIGNED  NOT NULL,
     id_grupo      INT UNSIGNED  NOT NULL,
     PRIMARY KEY (id)

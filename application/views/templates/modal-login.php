@@ -9,21 +9,21 @@
       <div class="control-group">
         <label class="control-label" for="loginUsuario">Usuario</label>
         <div class="controls">
-          <input id="loginUsuario" type="text" name="usuario" required />
+          <input id="loginUsuario" type="text" name="usuarioLogin" required />
           <?php echo form_error('usuario')?>
         </div>
       </div>
       <div class="control-group">
         <label class="control-label" for="loginContraseña">Contraseña</label>
         <div class="controls">
-          <input id="loginContraseña" type="password" name="contrasena" required />
+          <input id="loginContraseña" type="password" name="contrasenaLogin" required />
           <?php echo form_error('contrasena')?>
         </div>
       </div>
       <div class="control-group">
         <div class="controls">
           <label class="checkbox">
-            <input type="checkbox" name="recordarme" value="1" checked/>Recordarme   
+            <input type="checkbox" name="recordarmeLogin" value="1" checked/>Recordarme   
           </label>
           <a href="<?php echo site_url("usuarios/recuperarContrasena")?>">¿Olvidó la contraseña?</a>
         </div>

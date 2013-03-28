@@ -5,8 +5,8 @@
   <title>Generar histórico por Departamento - <?php echo NOMBRE_SISTEMA?></title>
   <link href="<?php echo base_url('css/datepicker.css')?>" rel="stylesheet">
   <style>
-    .form-horizontal .controls {margin-left: 100px}
-    .form-horizontal .control-label {width: 80px; float: left}
+    #contenedor .form-horizontal .controls {margin-left: 100px}
+    #contenedor .form-horizontal .control-label {width: 80px; float: left}
   </style>
 </head>
 <body>
@@ -37,7 +37,7 @@
               <label class="control-label" for="buscarDepartamento">Departamento: </label>
               <div class="controls">
                 <input class="input-block-level" id="buscarDepartamento" name="buscarDepartamento" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarDepartamento')?>" required />
-                <input type="hidden" name="idDepartamento" value="<?php echo set_value('idDepartamento')?>"required/>
+                <input type="hidden" name="idDepartamento" value="<?php echo set_value('idDepartamento')?>" required/>
                 <?php echo form_error('idDepartamento')?>
               </div>
             </div>

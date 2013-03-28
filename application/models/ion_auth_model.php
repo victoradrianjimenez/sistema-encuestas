@@ -829,14 +829,14 @@ class Ion_auth_model extends CI_Model
 				$this->add_to_group($group, $id);
 			}
 		}
-
+    /*
 		//add to default group if not already set
 		$default_group = $this->where('name', $this->config->item('default_group', 'ion_auth'))->group()->row();
 		if ((isset($default_group->id) && !isset($groups)) || (empty($groups) && !in_array($default_group->id, $groups)))
 		{
 			$this->add_to_group($default_group->id, $id);
 		}
-
+    */
 		$this->trigger_events('post_register');
 
 		return (isset($id)) ? $id : FALSE;

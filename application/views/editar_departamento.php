@@ -43,7 +43,7 @@
             <div class="control-group">
               <label class="control-label" for="buscarUsuario" title="El jefe de departamento debe estar registrado previamente en el sistema.">Jefe de Departamento: </label>
               <div class="controls">
-                <input class="input-block-level" type="text" id="buscarUsuario" name="buscarUsuario" data-provide="typeahead" autocomplete="off" value="<?php echo set_value('buscarUsuario')?>"/>
+                <input class="input-block-level" type="text" id="buscarUsuario" name="buscarUsuario" data-provide="typeahead" autocomplete="off" value="<?php echo trim($jefeDepartamento->nombre.' '.$jefeDepartamento->apellido)?>"/>
                 <?php echo form_error('idJefeDepartamento')?>
                 <input type="hidden" name="idJefeDepartamento" value="<?php echo $departamento->idJefeDepartamento?>"/>
               </div>

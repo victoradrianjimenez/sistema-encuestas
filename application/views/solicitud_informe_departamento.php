@@ -4,8 +4,8 @@
   <?php include 'templates/head.php'?>
   <title>Generar Informe por Departamento - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-    .form-horizontal .controls {margin-left: 110px}
-    .form-horizontal .control-label {width: 90px; float: left}
+    #contenedor .form-horizontal .controls {margin-left: 110px}
+    #contenedor .form-horizontal .control-label {width: 90px; float: left}
   </style>
 </head>
 <body>

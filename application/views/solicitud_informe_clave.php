@@ -4,8 +4,8 @@
   <?php include 'templates/head.php'?>
   <title>Generar Informe por Clave de acceso - <?php echo NOMBRE_SISTEMA?></title>
   <style>
-    .form-horizontal .controls {margin-left: 90px;}
-    .form-horizontal .control-label {width: 70px; float: left;}
+    #contenedor .form-horizontal .controls {margin-left: 90px;}
+    #contenedor .form-horizontal .control-label {width: 70px; float: left;}
   </style>
 </head>
 <body>

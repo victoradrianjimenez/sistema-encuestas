@@ -114,15 +114,15 @@
                     }//foreach items
                     echo '
                   </div>';
-                  if($subseccion['indice']) echo '<h4>Índice para el docente: '.$subseccion['indice'].'</h4>';
+                  if($subseccion['indice']) echo '<h4>Índice para el docente: '.round($subseccion['indice'],2).'</h4>';
                   echo '
                 </div>
               </div>';
             }//foreach subsecciones
-            if($seccion['indice']) echo '<h4>Índice de la Sección: '.$seccion['indice'].'</h4>';
+            if($seccion['indice']) echo '<h4>Índice de la Sección: '.round($seccion['indice'],2).'</h4>';
           }//if 
         }//foreach secciones
-        if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.$indice.'</h4>';
+        if($indice) echo '<h5 class="separador"></h5><h4>Índice global: '.round($indice,2).'</h4>';
         ?>
       </div>
     </div>

@@ -252,7 +252,7 @@ class Usuarios extends CI_Controller{
           $data['idImagen'] = NULL;
         }
         //si el ususario escribe una contraseña, actualizarla
-        if ($password){
+        if ($this->input->post('password')){
           $data['password'] = $this->input->post('password');
         }
         //agrego al usuario a los grupos elegidos
@@ -261,7 +261,7 @@ class Usuarios extends CI_Controller{
           $this->ion_auth->add_to_group($g, $this->Usuario->id);
         }
         //modifico datos y cargo vista para mostrar resultado
-        $usuarioAnterior = $this->gu->dame($id);
+        $usuarioAnterior = $this->gu->dame($this->Usuario->id);
         $res = $this->ion_auth->update($this->Usuario->id, $data);
         //si los datos del usuario se guardaron con exito
         if ($res){
@@ -415,11 +415,11 @@ class Usuarios extends CI_Controller{
    */
   function login(){
     //verifico si los datos son correctos
-    $this->form_validation->set_rules('usuario','Nombre de usuario','required|alpha_dash_space|max_length[100]');      
-    $this->form_validation->set_rules('contrasena','Contraseña','min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']');
+    $this->form_validation->set_rules('usuarioLogin','Nombre de usuario','required|alpha_dash_space|max_length[100]');      
+    $this->form_validation->set_rules('contrasenaLogin','Contraseña','min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']');
     if($this->form_validation->run()){      
       //en caso de que los datos sean correctos, realizo login
-      if ($this->ion_auth->login($this->input->post('usuario'), $this->input->post('contrasena'), (bool)$this->input->post('recordarme'))){
+      if ($this->ion_auth->login($this->input->post('usuarioLogin'), $this->input->post('contrasenaLogin'), (bool)$this->input->post('recordarmeLogin'))){
         //si el usuario ingresó datos de acceso válidos
         $this->data['usuarioLogin'] = $this->ion_auth->user()->row();
         redirect('/');
@@ -554,7 +554,7 @@ class Usuarios extends CI_Controller{
    * Obtener la imagen (foto) de un usuario, a partir del id de la imagen
    */
   public function imagen($idImagen=null){
-    if (!$idImagen){
+    if ($idImagen){
       $this->load->model('Gestor_imagenes', 'gi');
       $imagen = $this->gi->dame($idImagen);
       if ($imagen){

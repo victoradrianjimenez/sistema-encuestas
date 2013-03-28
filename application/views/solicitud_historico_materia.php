@@ -5,8 +5,8 @@
   <title>Generar histórico por Materia - <?php echo NOMBRE_SISTEMA?></title>
   <link href="<?php echo base_url('css/datepicker.css')?>" rel="stylesheet">
   <style>
-    .form-horizontal .controls {margin-left: 100px}
-    .form-horizontal .control-label {width: 80px; float: left}
+    #contenedor .form-horizontal .controls {margin-left: 100px}
+    #contenedor .form-horizontal .control-label {width: 80px; float: left}
   </style>
 </head>
 <body>
