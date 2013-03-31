@@ -34,16 +34,16 @@
           <form class="form-horizontal" action="<?php echo site_url('informes/departamento')?>" method="post">
             <div class="control-group">
               <label class="control-label" for="buscarDepartamento">Departamento:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarDepartamento" name="buscarDepartamento" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarDepartamento')?>" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarDepartamento" name="buscarDepartamento" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarDepartamento')?>" required><i class="icon-search"></i>
                 <input type="hidden" name="idDepartamento" value="<?php echo set_value('idDepartamento')?>" required/>
                 <?php echo form_error('idDepartamento')?>
               </div>
             </div>
             <div class="control-group">  
               <label class="control-label" for="buscarEncuesta">Año:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required><i class="icon-search"></i>
                 <input type="hidden" name="idEncuesta" value="<?php echo set_value('idEncuesta')?>" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" value="<?php echo set_value('idFormulario')?>" required/>
@@ -66,17 +66,17 @@
   <?php include 'templates/footer.php'?>
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_departamento($('#buscarDepartamento'), "<?php echo site_url('departamentos/buscarAJAX')?>");
-    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>");
+    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
   </script>
 </body>
 </html>

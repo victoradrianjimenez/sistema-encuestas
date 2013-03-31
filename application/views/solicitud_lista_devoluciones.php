@@ -3,7 +3,6 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Lista Devoluciones</title>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
   <style>
     #contenedor .form-horizontal .controls {margin-left: 70px}
     #contenedor .form-horizontal .control-label {width: 50px; float: left}
@@ -36,8 +35,8 @@
     
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" required><i class="icon-search"></i>
                 <input type="hidden" name="idCarrera" required/>
                 <?php echo form_error('idCarrera')?>
               </div>
@@ -67,16 +66,16 @@
         <h5></h5>
         <div class="control-group">
           <label class="control-label" for="buscarMateria">Materia:</label>
-          <div class="controls">
-            <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required>
+          <div class="controls buscador">
+            <input class="input-block-level" id="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" required><i class="icon-search"></i>
             <input type="hidden" name="idMateria" required/>
             <?php echo form_error('idMateria')?>
           </div>
         </div>
         <div class="control-group">
           <label for="buscarEncuesta">Año:</label>
-          <div class="controls">
-            <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo set_value('buscarEncuesta')?>">
+          <div class="controls buscador">
+            <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" required value="<?php echo set_value('buscarEncuesta')?>"><i class="icon-search"></i>
             <input type="hidden" name="idEncuesta" required value=""/>
             <input type="hidden" name="idFormulario" required value=""/>
             <?php echo form_error('idEncuesta')?>
@@ -91,17 +90,18 @@
   </div>
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/formulario.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
+  <script src="<?php echo base_url('js/formulario.min.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
     autocompletar_materia($('#buscarMateria'), "<?php echo site_url('materias/buscarAJAX')?>");
-    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>");
+    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
     $('.nuevoPlan').click(function(){
       $("#modalNuevoPlan").modal();
       return false;

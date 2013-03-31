@@ -131,17 +131,30 @@ class Claves extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING); 
         redirect('claves/ver');
       }
-      $lista = array();
-      foreach ($claves as $i => $clave) {
-        $lista[$i] = array(
-          'materia' => $materia,
-          'carrera' => $carrera,
-          'departamento' => $departamento,
-          'clave' => $clave
-        );
+      $this->data['materia'] = &$materia;
+      $this->data['carrera'] = &$carrera;
+      $this->data['departamento'] = &$departamento;
+      $this->data['encuesta'] = &$encuesta;
+      $this->data['lista'] = &$claves;
+      //ver si se pide ver o descargar como pdf
+      if (!$this->input->post('imprimirPDF'))
+        $this->load->view('reporte_claves', $this->data);
+      else{
+         $this->load->library('pdf');
+        $html = $this->load->view('reporte_claves_pdf', $this->data, TRUE);
+        $pdf = new Pdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf->SetTitle('Claves de acceso - '.NOMBRE_SISTEMA);
+        $pdf->SetMargins(10,10,10,10);
+        $pdf->SetFont('helvetica', '', 10);
+        $pdf->setPrintFooter(false);
+        $pdf->setPrintHeader(false);
+        $pdf->AddPage();
+        $pdf->writeHTML($html, true, 0, true, 0);
+        $pdf->lastPage(); //reset pointer to the last page
+        ob_end_clean();
+        $pdf->Output('Claves de acceso', 'D');
+        ob_end_clean();
       }
-      $this->data['lista'] = &$lista;
-      $this->load->view('reporte_claves', $this->data);
       return; 
     }
     $this->ver();

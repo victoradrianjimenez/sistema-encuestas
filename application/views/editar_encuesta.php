@@ -43,8 +43,8 @@
             </div>
             <div class="control-group">
               <label class="control-label" for="buscarFormulario">Formulario: <span class="opcional">*</span></label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarFormulario" name="buscarFormulario" type="text" autocomplete="off" name="nombreFormulario" value="<?php echo set_value('buscarFormulario')?>" />
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarFormulario" name="buscarFormulario" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarFormulario')?>" /><i class="icon-search"></i>
                 <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>"/>
                 <?php echo form_error('idFormulario')?>
               </div>
@@ -77,14 +77,14 @@
   </div>
   <?php include 'templates/footer.php'?>
   
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_formulario($('#buscarFormulario'), "<?php echo site_url('formularios/buscarAJAX')?>");
   </script>

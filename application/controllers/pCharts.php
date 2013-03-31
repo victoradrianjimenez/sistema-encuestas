@@ -101,8 +101,8 @@ class pCharts extends CI_Controller{
       }
       $pos++;      
     }
-    $ancho = 550;
-    $alto = 150;
+    $ancho = 400;
+    $alto = 120;
     // Standard inclusions
     $this->load->library('pChart/pData');
     $this->load->library('pChart/pChart', array($ancho, $alto));
@@ -112,7 +112,7 @@ class pCharts extends CI_Controller{
     $this->pdata->AddAllSeries();
     $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
      // Inicializar gráfico
-    $this->pchart->setFontProperties("fonts/tahoma.ttf",14);
+    $this->pchart->setFontProperties("fonts/tahoma.ttf",10);
     $this->pchart->setGraphArea(40,8,$ancho-36,$alto-20);
     $this->pchart->drawGraphArea(255,255,254,TRUE);
     $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,2,TRUE);  
@@ -132,19 +132,21 @@ class pCharts extends CI_Controller{
     $pos = 0;
     $datos = array();
     $etiquetas = array();
-    for ($i=1; $i <= (($pregunta->limiteSuperior - $pregunta->limiteInferior + $pregunta->paso) / $pregunta->paso); $i++) {
+    if (!$pregunta->paso) return;
+    for ($i=(float)$pregunta->limiteInferior; $i<=$pregunta->limiteSuperior; $i+=$pregunta->paso) {
       $datos[$pos] = '';
-      $etiquetas[$pos] = ($i-1) * $pregunta->paso + $pregunta->limiteInferior;
+      $etiquetas[$pos] = $i;
       foreach ($datos_respuestas as $val) {
-        if ($val['opcion'] == $i){
+        if ($val['opcion'] == $pos+1){
           $datos[$pos] = $val['cantidad'];
           break;
         }
       }
       $pos++;      
-    }
-    $ancho = 550;
-    $alto = 150;
+    } 
+
+    $ancho = 400;
+    $alto = 120;
     // Standard inclusions
     $this->load->library('pChart/pData');
     $this->load->library('pChart/pChart', array($ancho, $alto));
@@ -153,11 +155,11 @@ class pCharts extends CI_Controller{
     $this->pdata->AddPoint($etiquetas,"AbsciseLabels");
     $this->pdata->AddAllSeries();
     $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
-     // Inicializar gráfico
-    $this->pchart->setFontProperties("fonts/tahoma.ttf",14);
+    // Inicializar gráfico
+    $this->pchart->setFontProperties("fonts/tahoma.ttf",10);
     $this->pchart->setGraphArea(40,8,$ancho-36,$alto-20);
     $this->pchart->drawGraphArea(255,255,254,TRUE);
-    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,2,TRUE);  
+    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_NORMAL, 50,50,50, TRUE,0,2,TRUE);  
     $this->pchart->drawGrid(4,TRUE,230,230,230,50);
     // Dibujar el grafico de barras    
     $this->pdata->RemoveSerie("AbsciseLabels");

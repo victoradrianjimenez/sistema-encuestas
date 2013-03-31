@@ -48,12 +48,11 @@
   <?php include 'templates/footer.php'?>  
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script> 
 </body>
 </html>

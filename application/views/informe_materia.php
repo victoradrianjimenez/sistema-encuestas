@@ -7,10 +7,10 @@
   <meta name="author" content="">
   
   <!-- Le styles -->
-  <link href="<?php echo base_url('css/bootstrap.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/bootstrap.min.css')?>" rel="stylesheet">
   <style>body{padding-top:40px;}</style>
-  <link href="<?php echo base_url('css/bootstrap-responsive.css')?>" rel="stylesheet" media="screen">
-  <link href="<?php echo base_url('css/app.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/bootstrap-responsive.min.css')?>" rel="stylesheet" media="screen">
+  <link href="<?php echo base_url('css/app.min.css')?>" rel="stylesheet">
   <link href="<?php echo base_url('css/imprimir.css')?>" rel="stylesheet" media="print">
   
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -136,7 +136,7 @@
                           <div class="span4">
                             <img src="'.site_url("pcharts/graficoPreguntaMateria/".
                               $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta.'/'.$subseccion['docente']->id.'/'.$materia->idMateria.'/'.$carrera->idCarrera).
-                              '" width="350" height="105" />
+                              '" width="400" height="120" />
                           </div>';
                         }
                       echo '</div>';
@@ -168,8 +168,8 @@
   </div>
   <?php //include 'templates/footer2.php'?>
 
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
 </body>
 </html>

@@ -35,8 +35,8 @@
             <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>"/>
             <div class="control-group">
               <label class="control-label" for="buscarDepartamento">Departamento: <span class="opcional">*</span></label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarDepartamento" type="text" data-provide="typeahead" autocomplete="off" value="<?php echo $departamento->nombre?>" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarDepartamento" type="text" data-provide="typeahead" autocomplete="off" value="<?php echo $departamento->nombre?>" required><i class="icon-search"></i>
                 <input type="hidden" name="idDepartamento" value="<?php echo $carrera->idDepartamento?>" required/>
                 <?php echo form_error('idDepartamento')?>
               </div>
@@ -57,8 +57,8 @@
             </div>
             <div class="control-group">
               <label class="control-label" for="buscarUsuario">Director de carrera: </label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarUsuario" name="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off" value="<?php echo trim($director->nombre.' '.$director->apellido)?>">
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarUsuario" name="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off" value="<?php echo trim($director->nombre.' '.$director->apellido)?>"><i class="icon-search"></i>
                 <input type="hidden" name="idDirectorCarrera" value="<?php echo $carrera->idDirectorCarrera?>"/>
                 <?php echo form_error('idDirectorCarrera')?>
               </div>
@@ -87,14 +87,14 @@
   
   <?php include 'templates/footer.php'?>
   
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_usuario($('#buscarUsuario'), "<?php echo site_url('usuarios/buscarAJAX')?>");
     autocompletar_departamento($('#buscarDepartamento'), "<?php echo site_url('departamentos/buscarAJAX')?>");

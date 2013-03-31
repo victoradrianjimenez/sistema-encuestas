@@ -138,6 +138,7 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
     $this->form_validation->set_rules('password', 'Contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
+    $this->form_validation->set_rules('password2', 'Confirmar Contraseña', '');
     if($this->form_validation->run()){
       $error = false;
       $idImagen = null;
@@ -220,6 +221,7 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
+    $this->form_validation->set_rules('password2', 'Confirmar Contraseña', '');
     if($this->form_validation->run()){
       $error = false;
       $idImagen = null;
@@ -291,7 +293,7 @@ class Usuarios extends CI_Controller{
     $this->data['grupos'] = $this->ion_auth->groups()->result();
     $this->data['noImagen'] = $noImagen;
     $this->data['tituloFormulario'] = 'Modificar Usuario';
-    $this->data['urlFormulario'] = site_url('usuarios/modificar');
+    $this->data['urlFormulario'] = site_url('usuarios/modificar/'.$id);
     $this->load->view('editar_usuario', $this->data);
   }
 
@@ -545,7 +547,8 @@ class Usuarios extends CI_Controller{
       foreach ($usuarios as $usuario) {
         echo  "$usuario->id\t".
               "$usuario->nombre\t".
-              "$usuario->apellido\t\n";
+              "$usuario->apellido\t".
+              "$usuario->username\t\n";
       }
     }
   }

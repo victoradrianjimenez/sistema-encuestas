@@ -463,7 +463,9 @@
         { $this->VMin = 0; $this->VMax = 2; $Scale = 1; $Divisions = 2;}
        elseif ($MaxDivs > 1)
         {
-         while(!$ScaleOk)
+          $maxLoopCount=0; 
+          $Scale = 1;
+         while(!$ScaleOk && $maxLoopCount++<20)
           {
            $Scale1 = ( $this->VMax - $this->VMin ) / $Factor;
            $Scale2 = ( $this->VMax - $this->VMin ) / $Factor / 2;

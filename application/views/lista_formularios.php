@@ -78,8 +78,8 @@
         <h5 class="nombre"></h5>
         <div class="control-group">
           <label class="control-label">Carrera:</label>
-          <div class="controls">
-            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+          <div class="controls buscador">
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required><i class="icon-search"></i>
             <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
             <?php echo form_error('idCarrera')?>
           </div>
@@ -104,8 +104,8 @@
         <h5 class="nombre"></h5>
         <div class="control-group">
           <label class="control-label">Carrera:</label>
-          <div class="controls">
-            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+          <div class="controls buscador">
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required><i class="icon-search"></i>
             <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
             <?php echo form_error('idCarrera')?>
           </div>
@@ -130,8 +130,8 @@
         <h5 class="nombre"></h5>
         <div class="control-group">
           <label class="control-label">Carrera:</label>
-          <div class="controls">
-            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+          <div class="controls buscador">
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required><i class="icon-search"></i>
             <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
             <?php echo form_error('idCarrera')?>
           </div>
@@ -164,14 +164,14 @@
   </div>
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     $('.eliminar').click(function(){
       idFormulario = $(this).attr('value');

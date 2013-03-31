@@ -76,8 +76,8 @@
         <input type="hidden" name="idCarrera" value="<?php echo $carrera->idCarrera?>" />
         <div class="control-group"> 
           <label class="control-label" for="buscarMateria">Buscar materia: </label>
-          <div class="controls">
-            <input class="input-xlarge" id="buscarMateria" type="text" data-provide="typeahead" autocomplete="off">
+          <div class="controls buscador">
+            <input class="input-xlarge" id="buscarMateria" type="text" data-provide="typeahead" autocomplete="off"><i class="icon-search"></i>
             <input type="hidden" name="idMateria" value=""/>
             <?php echo form_error('idMateria')?>
           </div>
@@ -111,13 +111,13 @@
   </div>
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_materia($('#buscarMateria'), "<?php echo site_url('materias/buscarAJAX')?>");
     $('.quitar').click(function(){

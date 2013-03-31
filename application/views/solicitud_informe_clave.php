@@ -28,24 +28,24 @@
             
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarCarrera" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarCarrera" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required><i class="icon-search"></i>
                 <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
                 <?php echo form_error('idCarrera')?>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label" for="buscarMateria">Materia:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarMateria" name="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarMateria')?>" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarMateria" name="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarMateria')?>" required><i class="icon-search"></i>
                 <input type="hidden" name="idMateria" value="<?php echo set_value('idMateria')?>" required/>
                 <?php echo form_error('idMateria')?>
               </div>
             </div>
             <div class="control-group">  
               <label class="control-label" for="buscarEncuesta">Año:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required><i class="icon-search"></i>
                 <input type="hidden" name="idEncuesta" value="<?php echo set_value('idEncuesta')?>" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" value="<?php echo set_value('idFormulario')?>" required/>
@@ -78,17 +78,17 @@
   <?php include 'templates/footer.php'?>  
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-alert.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
-    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>");
+    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
     autocompletar_materia($('#buscarMateria'), "<?php echo site_url('carreras/buscarMateriasAJAX')?>");
     
     //listar claves de acceso al elegir la encuesta

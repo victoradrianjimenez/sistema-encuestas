@@ -3,7 +3,7 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Generar histórico por Facultad - <?php echo NOMBRE_SISTEMA?></title>
-  <link href="<?php echo base_url('css/datepicker.css')?>" rel="stylesheet">
+  <link href="<?php echo base_url('css/datepicker.min.css')?>" rel="stylesheet">
   <style>
     #contenedor .form-horizontal .controls {margin-left: 100px}
     #contenedor .form-horizontal .control-label {width: 80px; float: left}
@@ -36,8 +36,8 @@
             
             <div class="control-group">
               <label class="control-label" for="buscarPregunta">Pregunta:</label>
-              <div class="controls">
-                <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarPregunta')?>" required />
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarPregunta')?>" required /><i class="icon-search"></i>
                 <input type="hidden" name="idPregunta" value="<?php echo set_value('idPregunta')?>"required/>
                 <?php echo form_error('idPregunta')?>
               </div>
@@ -68,17 +68,18 @@
   <?php include 'templates/footer.php'?>  
   
   <!-- Le javascript -->
-  <script src="<?php echo base_url('js/bootstrap-transition.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-modal.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-collapse.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-dropdown.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-typeahead.js')?>"></script>
-  <script src="<?php echo base_url('js/bootstrap-datepicker.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-transition.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-modal.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-datepicker.min.js')?>"></script>
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.js')?>"></script>
-  <script src="<?php echo base_url('js/fechas.js')?>"></script>
+  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
+  <script src="<?php echo base_url('js/fechas.min.js')?>"></script>
   <script>
     autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
+    selectores_fecha($('#dpd1'), $('#dpd2'));
   </script>
 </body>
 </html>

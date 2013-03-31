@@ -56,9 +56,18 @@
 if($resultadoOperacion){
   echo '
   <div class="alert '.$resultadoTipo.'">
-    <button type="button" class="close" data-dismiss="alert">×</button>
+    <button type="button" class="close" data-dismiss="alert"><span class="time">10</span> ×</button>
     '.$resultadoOperacion.'
   </div>
+  <script>
+    //script para autoocultar mensajes de resultados de operacion
+    function esperar(){
+      num = $(".alert .time").text();
+      if (num>1) $(".alert .time").text(num-1).delay(1000).show(esperar);
+      else $(".alert").hide("slow");
+    }
+    $(".alert .time").delay(1000).show(esperar);
+  </script>
   ';
 }
 if(!(isset($usuarioLogin) && is_object($usuarioLogin)))

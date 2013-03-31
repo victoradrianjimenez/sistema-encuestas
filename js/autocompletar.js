@@ -1,3 +1,6 @@
+/*
+ * Funciones que manejan los eventos de autocompletar, enviando solicitudes AJAX
+ */
 function autocompletar_usuario(inputObj, url){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
   inputObj.keydown(function(event){
@@ -9,6 +12,7 @@ function autocompletar_usuario(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.next().addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -20,12 +24,13 @@ function autocompletar_usuario(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },
     highlighter: function (item) {
       var cols = item.split("\t");
-      var texto = cols[1]+' '+cols[2]+' (ID='+cols[0]+')'; //nombre, apellido e id
+      var texto = cols[1]+' '+cols[2]+' ('+cols[3]+')'; //nombre, apellido e username
       var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
       return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
         return '<strong>' + match + '</strong>'
@@ -50,6 +55,7 @@ function autocompletar_departamento(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.next().addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -61,6 +67,7 @@ function autocompletar_departamento(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },
@@ -92,6 +99,7 @@ function autocompletar_formulario(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.next().addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -103,6 +111,7 @@ function autocompletar_formulario(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },
@@ -133,6 +142,7 @@ function autocompletar_carrera(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.siblings('i').addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -144,6 +154,7 @@ function autocompletar_carrera(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },
@@ -174,6 +185,7 @@ function autocompletar_materia(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.next().addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -188,6 +200,7 @@ function autocompletar_materia(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },
@@ -207,7 +220,7 @@ function autocompletar_materia(inputObj, url){
   });
 }  
 
-function autocompletar_encuesta(inputObj, url){
+function autocompletar_encuesta(inputObj, url, periodo){
   //cuando edito el buscador, lo pongo en rojo hasta que elija un item del listado
   inputObj.keydown(function(event){
     if (event.which==9) return; //ignorar al presionar Tab
@@ -218,6 +231,7 @@ function autocompletar_encuesta(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.next().addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -229,12 +243,13 @@ function autocompletar_encuesta(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },
     highlighter: function (item) {
       var cols = item.split("\t");
-      var texto = cols[2]+" / "+cols[3]; //año / cuatrimestre
+      var texto = cols[2]+" / "+cols[3]+' '+periodo; //año / cuatrimestre
       var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
       return texto.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
         return '<strong>' + match + '</strong>'
@@ -245,7 +260,7 @@ function autocompletar_encuesta(inputObj, url){
       cont = inputObj.parentsUntil('.control-group').first().parent().removeClass('error');
       cont.find('input[name="idEncuesta"]').val(cols[0]);
       cont.find('input[name="idFormulario"]').val(cols[1]);
-      return cols[2]+" / "+cols[3];
+      return cols[2]+" / "+cols[3]+' '+periodo;
     }
   });
 }
@@ -261,6 +276,7 @@ function autocompletar_pregunta(inputObj, url){
     matcher: function (item) {return true},    
     sorter: function (items) {return items},
     source: function(query, process){
+      inputObj.next().addClass('activo');
       return $.ajax({
         type: "POST", 
         url: url, 
@@ -272,6 +288,7 @@ function autocompletar_pregunta(inputObj, url){
           if (filas[i].length<5) continue;
           items.push(filas[i]);
         }
+        inputObj.siblings('i').removeClass('activo');
         return process(items);
       });
     },

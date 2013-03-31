@@ -1,3 +1,6 @@
+/*
+ * Manejar eventos de controles de edicion de preguntas 
+ */
 $('.agregarOpcion').click(function(){
   //busco el contenedor del formulario de agregar opcion
   contFormulario = $('#modalAgregarOpcion');
