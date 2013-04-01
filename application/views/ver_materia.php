@@ -78,7 +78,7 @@
         <div class="control-group"> 
           <label class="control-label" for="buscarUsuario">Buscar docente: <span class="opcional">*</span></label>
           <div class="controls buscador">
-            <input class="input-xlarge" id="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off"><i class="icon-search"></i>
+            <input class="input-block-level" id="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off"><i class="icon-search"></i>
             <input type="hidden" name="idDocente" value=""/>
             <?php echo form_error('idDocente')?>
           </div>
@@ -86,14 +86,14 @@
         <div class="control-group"> 
           <label class="control-label" for="campoOrdenFormulario">Posición en formulario: <span class="opcional">*</span></label>
           <div class="controls">
-            <input class="input-xlarge" id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="ordenFormulario" value="1" required/>
+            <input class="input-block-level" id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="ordenFormulario" value="1" required/>
             <?php echo form_error('ordenFormulario')?>
           </div>
         </div>
         <div class="control-group"> 
           <label class="control-label" for="campoCargo">Cargo:</label>
           <div class="controls">
-            <input class="input-xlarge" id="campoCargo" type="text" name="cargo" />
+            <input class="input-block-level" id="campoCargo" type="text" name="cargo" />
             <?php echo form_error('cargo')?>
           </div>
         </div>   

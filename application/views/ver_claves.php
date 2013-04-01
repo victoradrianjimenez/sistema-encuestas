@@ -37,7 +37,7 @@
           <p>Cantidad de claves generadas: <?php echo $claves['generadas']?></p>
           <p>Cantidad de claves utilizadas: <?php echo $claves['utilizadas']?></p>
           
-          <button class="generar btn btn-primary" href="#modalGenerar" role="button" data-toggle="modal">Generar Claves de Acceso</button>
+          <button class="generar btn btn-primary">Generar Claves de Acceso</button>
           <form id="verClaves" class="form-horizontal" action="<?php echo site_url('claves/listar')?>" method="post">
             <input type="hidden" name="idEncuesta" value="<?php echo $encuesta->idEncuesta?>" />
             <input type="hidden" name="idFormulario" value="<?php echo $encuesta->idFormulario?>" />
@@ -90,11 +90,7 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/formulario.min.js')?>"></script>
-  <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
-    autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
-    autocompletar_materia($('#buscarMateria'), "<?php echo site_url('carreras/buscarMateriasAJAX')?>");
-    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
     $('.generar').click(function(){
       idMateria = $('#contenedor input[name="idMateria"]').val();
       idCarrera = $('#contenedor input[name="idCarrera"]').val();

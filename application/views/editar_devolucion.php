@@ -23,22 +23,23 @@
         <div class="span12">
           <form action="<?php echo site_url('devoluciones/nueva')?>" method="post">
             <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" required/>
-              
-            <label class="control-label" for="buscarMateria">Materia:</label>
-            <div class="controls buscador">
-              <input class="input-block-level" id="buscarMateria" name="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarMateria')?>" required /><i class="icon-search"></i>
-              <input type="hidden" name="idMateria" required value="<?php echo $materia->idMateria?>"/>
-              <?php echo form_error('idMateria')?>
+            <div class="control-group">  
+              <label class="control-label" for="buscarMateria">Materia:</label>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarMateria" name="buscarMateria" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarMateria')?>" required /><i class="icon-search"></i>
+                <input type="hidden" name="idMateria" required value="<?php echo $materia->idMateria?>"/>
+                <?php echo form_error('idMateria')?>
+              </div>
             </div>
-            
-            <label class="control-label" for="buscarEncuesta">Año:</label>
-            <div class="controls buscador">
-              <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required /><i class="icon-search"></i>
-              <input type="hidden" name="idEncuesta" required value="<?php echo $devolucion->idEncuesta?>"/>
-              <input type="hidden" name="idFormulario" required value="<?php echo $devolucion->idFormulario?>"/>
-              <?php echo form_error('idEncuesta')?>
+            <div class="control-group">
+              <label class="control-label" for="buscarEncuesta">Año:</label>
+              <div class="controls buscador">
+                <input class="input-block-level" id="buscarEncuesta" name="buscarEncuesta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarEncuesta')?>" required /><i class="icon-search"></i>
+                <input type="hidden" name="idEncuesta" required value="<?php echo $devolucion->idEncuesta?>"/>
+                <input type="hidden" name="idFormulario" required value="<?php echo $devolucion->idFormulario?>"/>
+                <?php echo form_error('idEncuesta')?>
+              </div>
             </div>
-      
             <label for="campoFortalezas">Identifique las fortalezas del curso: </label>
             <textarea class="input-block-level" id="campoFortalezas"  name="fortalezas" rows="4"><?php echo $devolucion->fortalezas?></textarea>
             <?php echo form_error('fortalezas')?>

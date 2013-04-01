@@ -109,6 +109,3 @@ class Bcrypt {
     return $output;
   }
 }
-
-
-/***** End of BCrypt.php ***********/

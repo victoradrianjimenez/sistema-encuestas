@@ -120,3 +120,4 @@ class Gestor_usuarios extends CI_Model{
   }
   
 }
+?>

@@ -338,7 +338,7 @@ class Formularios extends CI_Controller{
           if (sscanf($var, "idPregunta_%u_%u", $idSeccion, $posicion)>1){
             $seccion = $formulario->dameSeccion($idSeccion);
             $res = $seccion->altaItem($pregunta, $idCarrera, 0);
-            if($res != PROCEDURE_SUCCESS){
+            if(!is_numeric($res)){
               $error = true;
             }
           }
@@ -383,6 +383,7 @@ class Formularios extends CI_Controller{
       $this->load->model('Seccion');
       $this->load->model('Formulario');
       $this->load->model('Gestor_formularios','gf');
+
       //leo los datos enviados por post, y los almaceno en un array
       $entradas = $this->input->post(NULL, TRUE);
       $datosSecciones = array();
@@ -390,8 +391,8 @@ class Formularios extends CI_Controller{
       $error = false;
       foreach ($entradas as $key => $x) {
         if (strpos($key, 'textoSeccion') !== false) {
-          if (sscanf($key, "textoSeccion_%d",$i) == 1)
-            $datosSecciones[$i]['texto'] = $x;
+          if(sscanf($key, "textoSeccion_%d",$i) == 1)
+            $datosSecciones[$i]['texto'] = $x; //$i contiene la posicion de la seccion
           else{
             $res="El texto de la sección no puede ser nulo.";
             $error=true;
@@ -404,7 +405,7 @@ class Formularios extends CI_Controller{
         }
         elseif (strpos($key, 'tipoSeccion') !== false) {
           if(sscanf($key, "tipoSeccion_%d", $i) == 1)
-            $datosSecciones[$i]['tipo'] = $x;
+            $datosSecciones[$i]['tipo'] = $x; //$i contiene la posicion de la seccion
           else{
             $res="El tipo de sección es incorrecto.";
             $error=true;
@@ -413,7 +414,7 @@ class Formularios extends CI_Controller{
         }
         elseif (strpos($key, 'idPregunta') !== false) {
           if(sscanf($key, "idPregunta_%d_%d", $i, $j) == 2)
-            $datosSecciones[$i]['preguntas'][$j] = $x;
+            $datosSecciones[$i]['preguntas'][$j] = $x; //$i es la posicion de la seccion y $j la posicion de la pregunta dentro de la seccion
           else{
             $res="El identificador de la pregunta es incorrecto.";
             $error=true;
@@ -423,7 +424,7 @@ class Formularios extends CI_Controller{
       }
       if(!$error){
         //doy de alta el formulario primero
-        $res = $this->gf->alta($this->input->post('nombre', TRUE), $this->input->post('titulo', TRUE), $this->input->post('descripcion', TRUE), $this->input->post('preguntasAdicionales', TRUE));
+        $res = $this->gf->alta($this->input->post('nombre', TRUE), $this->input->post('titulo', TRUE), $this->input->post('descripcion', TRUE), (int)$this->input->post('preguntasAdicionales'));
         $error = !is_numeric($res);
       }
       if(!$error){
@@ -434,25 +435,19 @@ class Formularios extends CI_Controller{
             $error = true;
             break;
           }
-          if(!isset($seccion['preguntas'])){
-            $res = "Las secciones no pueden estar vacías.";
-            $error = true;
-            break;
-          }
-          $this->Seccion->idSeccion = (int)$res;
-          $this->Seccion->idFormulario = $this->Formulario->idFormulario;
-          foreach ($seccion['preguntas'] as $j => $pregunta) {
-            $res = $this->Seccion->altaItem($pregunta, NULL, $j);
-            if ($res != PROCEDURE_SUCCESS){
-              $error = true;
-              break;
+          if(isset($seccion['preguntas'])){ //permitir secciones vacias
+            $this->Seccion->idSeccion = (int)$res;
+            $this->Seccion->idFormulario = $this->Formulario->idFormulario;
+            foreach ($seccion['preguntas'] as $j => $pregunta) {
+              $res = $this->Seccion->altaItem($pregunta, NULL, $j);
+              if (!is_numeric($res)){
+                $error = true;
+                break;
+              }
             }
+            if ($error) break;
           }
-          if ($error) break;
         }
-      }
-      if($error){
-        $this->gf->baja($this->Formulario->idFormulario);
       }
       if (!$error){
         $this->session->set_flashdata('resultadoOperacion', 'El formulario se creó con éxito.');
@@ -460,15 +455,14 @@ class Formularios extends CI_Controller{
         redirect("formularios/listar");
       }
       else{
-        $this->data['resultadoTipo'] = $res;
-        $this->data['resultadoOperacion'] = ALERT_ERROR;
+        $this->gf->baja($this->Formulario->idFormulario);
+        $this->data['resultadoOperacion'] = $res;
+        $this->data['resultadoTipo'] = ALERT_ERROR;
       }
     }
-    else{
-      $this->data['tituloFormulario'] = 'Nuevo Formulario';
-      $this->data['urlFormulario'] = site_url('formularios/nuevo');
-      $this->load->view('editar_formulario', $this->data);
-    }
+    $this->data['tituloFormulario'] = 'Nuevo Formulario';
+    $this->data['urlFormulario'] = site_url('formularios/nuevo');
+    $this->load->view('editar_formulario', $this->data);
   }
   
   

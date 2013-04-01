@@ -127,10 +127,12 @@
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
       <h3 id="myModalLabel">Agregar pregunta</h3>
     </div>
-    <div class="modal-body buscador">
+    <div class="modal-body">
       <label>Buscar pregunta: <span class="opcional">*</span></label>
-      <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" ><i class="icon-search"></i>
-      <input type="hidden" name="idMateria" value=""/>
+      <div class="controls buscador">
+        <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" ><i class="icon-search"></i>
+        <input type="hidden" name="idPregunta" value=""/>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
@@ -146,7 +148,7 @@
   <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
-  <script src="<?php echo base_url('js/edicion-formularios.js')?>"></script>
+  <script src="<?php echo base_url('js/edicion-formularios.min.js')?>"></script>
   <script>
     autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
   </script>

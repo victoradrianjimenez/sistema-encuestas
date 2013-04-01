@@ -93,7 +93,7 @@
     </div>
     <div class="row">
       <div class="span12">
-        <img src="<?php echo site_url('pcharts/graficoHistoricoDepartamento/'.
+        <img src="<?php echo site_url('pCharts/graficoHistoricoDepartamento/'.
           $departamento->idDepartamento."/".$pregunta->idPregunta.'/'.$fechaInicio.'/'.$fechaFin)
           ?>" width="600" height="200" style="margin:0 auto" />      
       </div>

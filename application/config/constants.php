@@ -95,17 +95,8 @@ unset($base_uri, $base_url);
 */
 
 //delimitadores de los errores de validación de formularios
-define('NOMBRE_FACULTAD', 'Facultad de Ciencias Exactas y Tecnología');
-define('NOMBRE_UNIVERSIDAD', 'Universidad Nacional de Tucumán');
-
-//delimitadores de los errores de validación de formularios
 define('ERROR_DELIMITER_START', '<span class="label label-important">');
 define('ERROR_DELIMITER_END', '</span>');
-//cuantos items se mostraran por pagina en un listado
-define('PER_PAGE', 10);
-//periodos cada cuanto se toma una encuesta
-define('PERIODO', 'Cuatrimestre');
-define('NOMBRE_SISTEMA', 'Sistema Encuestas');
 
 //nombres de clases HTML para cada tipo de error 
 define('ALERT_WARNING', 'alert-block');
@@ -136,3 +127,4 @@ define('RESPUESTA_NO', 'N');
 define('MODO_INDICE_INVERSO', 'I'); //el indice calculado es mas favorables para la primera opcion de la pregunta
 define('MODO_INDICE_NORMAL', 'S'); //el indice calculado es mas favorables para la ultima opcion de la pregunta
 define('MODO_INDICE_NULO', 'N'); //la pregunta no influye en el cálculo del índice
+?>

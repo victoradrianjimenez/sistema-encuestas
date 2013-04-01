@@ -102,8 +102,8 @@ class Preguntas extends CI_Controller {
 
     //verifico datos POST
     $error = false;
-    $this->form_validation->set_rules('texto','Texto','max_length[200]|required');
-    $this->form_validation->set_rules('descripcion','Descripción','max_length[200]');
+    $this->form_validation->set_rules('texto','Texto','max_length[250]|required');
+    $this->form_validation->set_rules('descripcion','Descripción','max_length[250]');
     $this->form_validation->set_rules('unidad','Unidad','alpha_dash_space|max_length[10]');
     $this->form_validation->set_rules('tipo','Tipo de pregunta','alpha|exact_length[1]');
     switch ($this->Pregunta->tipo){
@@ -209,8 +209,8 @@ class Preguntas extends CI_Controller {
 
     //verificar los datos
     $this->form_validation->set_rules('idPregunta','Pregunta','is_natural_no_zero|required');
-    $this->form_validation->set_rules('texto','Texto','max_length[200]|required');
-    $this->form_validation->set_rules('descripcion','Descripción','max_length[200]');
+    $this->form_validation->set_rules('texto','Texto','max_length[250]|required');
+    $this->form_validation->set_rules('descripcion','Descripción','max_length[250]');
     if($this->form_validation->run()){
       $res = $this->gp->modificar($this->Pregunta->idPregunta, $this->Pregunta->texto, $this->Pregunta->descripcion);
       if ($res == PROCEDURE_SUCCESS){

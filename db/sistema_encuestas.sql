@@ -522,9 +522,9 @@ ALTER TABLE Items_Carreras ADD CONSTRAINT RefCarreras68
     REFERENCES Carreras(idCarrera)
 ;
 
-ALTER TABLE Items_Carreras ADD CONSTRAINT RefItems69 
-    FOREIGN KEY (idItem, idSeccion, idFormulario)
-    REFERENCES Items(idItem, idSeccion, idFormulario)
+ALTER TABLE Items_Carreras ADD CONSTRAINT RefItem69 
+    FOREIGN KEY (idSeccion, idFormulario, idItem)
+    REFERENCES Items(idSeccion, idFormulario, idItem)
 ;
 
 
@@ -617,7 +617,7 @@ ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefGrupos77
     REFERENCES Grupos(id)
 ;
 
-ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefUsuarios78 
+ALTER TABLE Usuarios_Grupos ADD CONSTRAINT `RefUsuarios78`
     FOREIGN KEY (id_usuario)
     REFERENCES Usuarios(id)
 ;
@@ -638,3 +638,9 @@ INSERT INTO `Usuarios` (`id`,`ip_address`,`username`,`password`,`salt`,`email`,`
 
 INSERT INTO `Usuarios_Grupos` (`id`,`id_usuario`,`id_grupo`) VALUES 
  (1,1,1);
+ 
+INSERT INTO `Tipo_Pregunta` (`idTipo`,`tipo`) VALUES 
+ ('N','Numérica'),
+ ('S','Selección simple'),
+ ('T','Texto simple'),
+ ('X','Texto multilínea');

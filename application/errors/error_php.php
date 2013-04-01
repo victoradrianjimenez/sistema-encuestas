@@ -6,6 +6,6 @@
 <p>Gravedad: <?php echo $severity; ?></p>
 <p>Mensaje:  <?php echo $message; ?></p>
 <p>Nombre de archivo: <?php echo $filepath; ?></p>
-<p>Número de línea: <?php echo $line; ?></p>
+<p>Numero de linea: <?php echo $line; ?></p>
 
 </div>

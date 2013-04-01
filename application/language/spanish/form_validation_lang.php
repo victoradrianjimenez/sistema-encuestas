@@ -23,6 +23,3 @@ $lang['is_natural_no_zero']	= "El campo %s debe contener un número mayor que ce
 $lang['decimal']			= "El campo %s debe contener un número decimal.";
 $lang['less_than']			= "El campoe %s debe contener un número menor que %s.";
 $lang['greater_than']		= "El campoe %s debe contener un número mayor que %s.";
-
-/* End of file form_validation_lang.php */
-/* Location: ./system/language/spanish/form_validation_lang.php */

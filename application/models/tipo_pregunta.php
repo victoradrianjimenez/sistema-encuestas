@@ -11,3 +11,4 @@ class Tipo_pregunta extends CI_Model{
     parent::__construct();
   }
 }
+?>

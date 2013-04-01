@@ -194,7 +194,7 @@ class Devoluciones extends CI_Controller {
         redirect('devoluciones/listar');
       }
       //verifico si el usuario tiene permisos para la materia
-      if ($materia->publicarDevoluciones != 'S'){
+      if ($materia->publicarDevoluciones != RESPUESTA_SI){
         $seguir = false;
         if($this->ion_auth->in_group(array('admin','decanos'))) 
           $seguir = true;
@@ -219,7 +219,7 @@ class Devoluciones extends CI_Controller {
         }
       }
       //obtengo datos de la devolucion
-      $devolucion = $this->gd->dame(1, (int)$idMateria, (int)$idEncuesta, (int)$idFormulario);
+      $devolucion = $this->gd->dame((int)$idDevolucion, (int)$idMateria, (int)$idEncuesta, (int)$idFormulario);
       if ($devolucion){
         //envio datos a la vista
         $datos = array(
@@ -239,3 +239,4 @@ class Devoluciones extends CI_Controller {
   }
 
 }
+?>

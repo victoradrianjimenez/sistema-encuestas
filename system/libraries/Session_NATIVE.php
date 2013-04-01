@@ -84,6 +84,16 @@ class  CI_Session {
         session_destroy();
     }
     
+    function sess_destroy()
+    {
+      session_unset();
+    }
+  
+    function sess_create()
+    {
+      $this->regenerate_id();
+    }
+  
     /**
     * Reads given session attribute value
     */    

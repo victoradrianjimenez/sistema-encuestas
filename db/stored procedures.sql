@@ -2421,7 +2421,7 @@ BEGIN
 		SELECT SUM(Respuesta*Importancia) AS RI, SUM(Alternativa*Importancia) AS AI, SUM(Importancia) AS T
 		FROM(
 			-- obtener numero de respuesta, cantidad de Opciones e importancias.
-			SELECT	IF(P.modoIndice='I',	IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) - opcion + 1, opcion) AS Respuesta,
+			SELECT	IF(P.modoIndice='I',	IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion))-opcion+1, opcion) AS Respuesta,
 					IF(P.tipo='N',(limiteSuperior-limiteInferior)/paso+1,COUNT(idOpcion)) AS Alternativa, 
 					COALESCE(IC.importancia,1) AS Importancia
 			FROM	Respuestas R
@@ -2437,7 +2437,7 @@ BEGIN
 			WHERE	R.idClave = pidClave AND R.idMateria = pidMateria AND 
 					R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND 
 					R.idFormulario = pidFormulario AND I.idSeccion = pidSeccion AND 
-					P.modoIndice != 'N' AND R.opcion IS NOT NULL AND R.idDocente = pidDocente AND R.opcion IS NOT NULL AND R.texto IS NULL
+					P.modoIndice != 'N' AND R.opcion IS NOT NULL AND R.idDocente = pidDocente AND R.texto IS NULL
 			GROUP BY O.idPregunta
 		)Datos
 	)Sumas
@@ -2458,7 +2458,7 @@ CREATE PROCEDURE `esp_indice_global`(
 	pidCarrera SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED,
-	OUT indice FLOAT)
+	OUT ind FLOAT)
 BEGIN
 	DECLARE done INT DEFAULT 0;
 	DECLARE indice FLOAT;
@@ -2477,13 +2477,15 @@ BEGIN
 		FETCH cur INTO pidSeccion;
 		IF NOT done THEN
 			CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, pidEncuesta, pidFormulario, pidSeccion, indice);
-			SET s = s + COALESCE(indice,0);
-			SET n = n + 1;
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
 		END IF;
 	UNTIL done END REPEAT;
 	CLOSE cur;
 	-- devolver el indice promedio
-	SELECT s/n AS indice;
+	SET ind = s/n;
 END $$
 
 DELIMITER ;
@@ -2545,8 +2547,10 @@ BEGIN
 			CALL esp_indice_docente(pidClave, pidMateria, pidCarrera, 
 									pidEncuesta, pidFormulario, pidSeccion, 
 									pidDocente, indice);
-			SET s = s + COALESCE(indice,0);
-			SET n = n + 1;
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
 		END IF;
 	UNTIL done END REPEAT;
 	CLOSE cur;
@@ -2585,8 +2589,10 @@ BEGIN
 		FETCH cur INTO pidClave, pidMateria;
 		IF NOT done THEN
 			CALL esp_indice_global(pidClave, pidMateria, pidCarrera, pidEncuesta, pidFormulario, indice);
-			SET s = s + COALESCE(indice,0);
-			SET n = n + 1;
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
 		END IF;
 	UNTIL done END REPEAT;
 	CLOSE cur;
@@ -2625,8 +2631,10 @@ BEGIN
 		FETCH cur INTO pidClave;
 		IF NOT done THEN
 			CALL esp_indice_global(pidClave, pidMateria, pidCarrera, pidEncuesta, pidFormulario, indice);
-			SET s = s + COALESCE(indice,0);
-			SET n = n + 1;
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
 		END IF;
 	UNTIL done END REPEAT;
 	CLOSE cur;
@@ -2689,8 +2697,10 @@ BEGIN
 			CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, 
 									pidEncuesta, pidFormulario, pidSeccion, 
 									indice);
-			SET s = s + COALESCE(indice,0);
-			SET n = n + 1;
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
 		END IF;
 	UNTIL done END REPEAT;
 	CLOSE cur;
@@ -2755,8 +2765,10 @@ BEGIN
 			CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, 
 									pidEncuesta, pidFormulario, pidSeccion, 
 									indice);
-			SET s = s + COALESCE(indice,0);
-			SET n = n + 1;
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
 		END IF;
 	UNTIL done END REPEAT;
 	CLOSE cur;
@@ -3001,24 +3013,29 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
     
     IF COALESCE(pnombre,'') = '' THEN
-        SET mensaje = 'El nombre del formulacio no puede ser nulo';
+        SET mensaje = 'El nombre del formulario no puede ser nulo.';
     ELSE
-        START TRANSACTION;    
-        SET nid = (
-            SELECT COALESCE(MAX(idFormulario),0)+1 
-            FROM    Formularios FOR UPDATE);
-        INSERT INTO Formularios 
-            (idFormulario, nombre, titulo, descripcion, creacion, preguntasAdicionales)
-        VALUES (nid, pnombre, ptitulo, pdescripcion, NOW(), ppreguntasAdicionales);
-        IF err THEN
-            SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
-            ROLLBACK;
-        ELSE 
-            SET mensaje = nid;
-            COMMIT;
-        END IF;
-    END IF;
-    SELECT mensaje;
+        START TRANSACTION;
+		IF EXISTS (SELECT nombre FROM Formularios WHERE nombre=pnombre LIMIT 1) THEN
+			SET mensaje = 'Ya existe un formulario con el mismo nombre.';  
+			ROLLBACK;
+		ELSE
+			SET nid = (
+				SELECT COALESCE(MAX(idFormulario),0)+1 
+				FROM    Formularios FOR UPDATE);
+			INSERT INTO Formularios 
+				(idFormulario, nombre, titulo, descripcion, creacion, preguntasAdicionales)
+			VALUES (nid, pnombre, ptitulo, pdescripcion, NOW(), ppreguntasAdicionales);
+			IF err THEN
+				SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
+				ROLLBACK;
+			ELSE 
+				SET mensaje = nid;
+				COMMIT;
+			END IF;
+		END IF;
+	END IF;
+	SELECT mensaje;
 END $$
 
 DELIMITER ;
@@ -3107,7 +3124,7 @@ BEGIN
 		SET nid = (  
 			SELECT COALESCE(MAX(idItem),0)+1 
 			FROM    Items
-			WHERE   idSeccion=pidSeccion AND idFormulario=pidFormulario AND idPregunta=pidPregunta FOR UPDATE);
+			WHERE   idSeccion=pidSeccion AND idFormulario=pidFormulario FOR UPDATE);
 		INSERT INTO Items
 			(idItem, idSeccion, idFormulario, idPregunta, idCarrera, posicion)
 		VALUES (nid, pidSeccion, pidFormulario, pidPregunta, pidCarrera, pposicion);

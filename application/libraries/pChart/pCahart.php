@@ -115,7 +115,7 @@
  define("ALIGN_BOTTOM_RIGHT",9);
 
  /* pChart class definition */
- class pChart
+ class pchart
   {
    /* Palettes definition */
    var $Palette = array("0"=>array("R"=>188,"G"=>224,"B"=>46),

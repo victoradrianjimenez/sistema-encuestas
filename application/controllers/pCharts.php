@@ -104,6 +104,7 @@ class pCharts extends CI_Controller{
     $ancho = 400;
     $alto = 120;
     // Standard inclusions
+    
     $this->load->library('pChart/pData');
     $this->load->library('pChart/pChart', array($ancho, $alto));
     // Dataset definition 

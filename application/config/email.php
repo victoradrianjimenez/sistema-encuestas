@@ -8,7 +8,6 @@ $config['smtp_pass'] = 'encuestas123';
 $config['smtp_timeout'] = '7';
 $config['charset']    = 'utf-8';
 $config['newline']    = "\r\n";
-$config['mailtype'] = 'text';
+$config['mailtype'] = 'html';
 $config['validation'] = TRUE;
-
 ?>

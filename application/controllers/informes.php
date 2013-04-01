@@ -19,7 +19,6 @@ class Informes extends CI_Controller{
 
   private function _filtrarListaDocentes($materia, $listaDocentes){
     //verifico si el usuario tiene permisos para la materia
-    
     if ($materia->publicarInformes != RESPUESTA_SI){
       if ($this->ion_auth->logged_in()){
         $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);    
@@ -36,6 +35,9 @@ class Informes extends CI_Controller{
             }
           }
           return $docentes;
+        }
+        else{
+          return $listaDocentes; //mostrar resultados para todos los docentes
         }
       }
       return array();
@@ -1038,23 +1040,23 @@ class Informes extends CI_Controller{
     //genero la descarga para el usuario
     switch ($tipo) {
       case 'xls':
-        ob_end_clean();
+        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'.$nombre.'.xls"');
         header('Cache-Control: max-age=0');
         //genero el archivo y guardo
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel5');
         $objWriter->save('php://output');
-        ob_end_clean();
+        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         break;
       case 'xlsx':
-        ob_end_clean();
+        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$nombre.'.xlsx"');
         header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel2007');
         $objWriter->save('php://output');
-        ob_end_clean();
+        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         break;
       default:
         return false;

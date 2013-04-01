@@ -57,7 +57,7 @@ $('.agregarPregunta').click(function(){
   contFormulario = $('#modalAgregarPregunta');
   
   //leo los datos de la seccion
-  pidPregunta = $('#modalAgregarPregunta').find('[name="idMateria"]').val();
+  pidPregunta = $('#modalAgregarPregunta').find('[name="idPregunta"]').val();
   ptexto = $('#buscarPregunta').val();
   if (ptexto=='' || pidPregunta=='') return;
   

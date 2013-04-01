@@ -151,9 +151,9 @@ class Claves extends CI_Controller{
         $pdf->AddPage();
         $pdf->writeHTML($html, true, 0, true, 0);
         $pdf->lastPage(); //reset pointer to the last page
-        ob_end_clean();
+        //ob_end_clean(); //ES NECESARIO A VECES. DEPENDE DEL SERVIDOR
         $pdf->Output('Claves de acceso', 'D');
-        ob_end_clean();
+        //ob_end_clean(); //ES NECESARIO A VECES. DEPENDE DEL SERVIDOR
       }
       return; 
     }
@@ -331,7 +331,7 @@ class Claves extends CI_Controller{
     $this->form_validation->set_rules('idFormulario','Formulario','is_natural_no_zero|required');
     $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
-    $this->form_validation->set_rules('cantidad','Cantidad','is_natural_no_zero');      
+    $this->form_validation->set_rules('cantidad','Cantidad','is_natural_no_zero');    
     if($this->form_validation->run()){
       $idMateria = (int)$this->input->post('idMateria');
       $idCarrera = (int)$this->input->post('idCarrera');
@@ -370,9 +370,8 @@ class Claves extends CI_Controller{
         $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con problemas. Se generaron $cnt claves.");
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       }
-      redirect('claves/ver');
     }
-    $this->load->view('claves_acceso', $this->data);
+    redirect('claves/ver');
   }
    
   /*

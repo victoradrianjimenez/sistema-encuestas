@@ -314,14 +314,15 @@ class Usuarios extends CI_Controller{
     $this->load->model('Gestor_imagenes', 'gi');
     
     //leo datos POST
-    $this->Usuario->username = $this->input->post('username',TRUE);
-    $this->Usuario->email = $this->input->post('email',TRUE);
+    $this->Usuario->username = ($this->input->post('username')) ? $this->input->post('username',TRUE) : $this->data['usuarioLogin']->username;
+    $this->Usuario->email = ($this->input->post('email')) ? $this->input->post('email',TRUE) : $this->data['usuarioLogin']->email;
     $noImagen = ((bool)$this->input->post('noImagen')); //si es verdadero, se debe eliminar foto del usuario
-    
+
     //verifico datos POST
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
+    $this->form_validation->set_rules('password2', 'Confirmar Contraseña', '');
     if($this->form_validation->run()){
       $error = false;
       $idImagen = null;
@@ -351,7 +352,7 @@ class Usuarios extends CI_Controller{
           $data['idImagen'] = NULL;
         }
         //si el ususario escribe una contraseña, actualizarla
-        if ($password){
+        if ($this->input->post('password')){
           $data['password'] = $this->input->post('password');
         }
         //modifico datos y cargo vista para mostrar resultado
@@ -469,13 +470,13 @@ class Usuarios extends CI_Controller{
           redirect('/');
         }
         else{
-          $this->session->set_flashdata('resultadoOperacion', 'Ha ocurrido un problema al enviar el código de activación. Por favor intente nuevamente.');
-          $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);        
+          $this->data['resultadoOperacion'] = 'Ha ocurrido un problema al enviar el código de activación. Por favor intente nuevamente.';
+          $this->data['resultadoTipo'] = ALERT_ERROR;        
         }
       }
       else{
-        $this->session->set_flashdata('resultadoOperacion', 'No existe un usuario registrado con el email ingresado.');
-        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        $this->data['resultadoOperacion'] = 'No existe un usuario registrado con el email ingresado.';
+        $this->data['resultadoTipo'] = ALERT_ERROR;
       }
     }
     $this->data['captcha'] = $this->_crear_captcha(200, 40);
@@ -561,10 +562,10 @@ class Usuarios extends CI_Controller{
       $this->load->model('Gestor_imagenes', 'gi');
       $imagen = $this->gi->dame($idImagen);
       if ($imagen){
-        ob_end_clean();
+        //ob_end_clean(); A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
         header ('Content-type: '.$imagen->tipo);
         echo base64_decode($imagen->imagen);
-        ob_end_clean();
+        //ob_end_clean(); A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
       }
       else
         //cargo imagen por defecto
@@ -642,3 +643,4 @@ class Usuarios extends CI_Controller{
     return $cap['image'];
   }
 }
+?>

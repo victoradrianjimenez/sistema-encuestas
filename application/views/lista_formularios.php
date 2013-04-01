@@ -129,10 +129,10 @@
         <input type="hidden" name="idFormulario" value="<?php echo site_url('formularios/ver')?>" />
         <h5 class="nombre"></h5>
         <div class="control-group">
-          <label class="control-label">Carrera:</label>
-          <div class="controls buscador">
-            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required><i class="icon-search"></i>
-            <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
+          <label class="control-label" style="width: 60px; float: left">Carrera:</label>
+          <div class="controls buscador" style="margin-left: 80px">
+            <input class="input-block-level" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>"><i class="icon-search"></i>
+            <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>"/>
             <?php echo form_error('idCarrera')?>
           </div>
         </div>

@@ -96,7 +96,7 @@
                 if ($graficos){
                   echo '
                   <div class="span4">
-                    <img src="'.site_url("pcharts/graficoPreguntaFacultad/".
+                    <img src="'.site_url("pCharts/graficoPreguntaFacultad/".
                       $encuesta->idEncuesta.'/'.$encuesta->idFormulario."/".$pregunta['item']->idPregunta).
                       '" width="400" height="120" />
                   </div>';

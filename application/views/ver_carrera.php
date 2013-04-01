@@ -77,7 +77,7 @@
         <div class="control-group"> 
           <label class="control-label" for="buscarMateria">Buscar materia: </label>
           <div class="controls buscador">
-            <input class="input-xlarge" id="buscarMateria" type="text" data-provide="typeahead" autocomplete="off"><i class="icon-search"></i>
+            <input class="input-block-level" id="buscarMateria" type="text" data-provide="typeahead" autocomplete="off"><i class="icon-search"></i>
             <input type="hidden" name="idMateria" value=""/>
             <?php echo form_error('idMateria')?>
           </div>

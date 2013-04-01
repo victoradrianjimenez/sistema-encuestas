@@ -82,7 +82,7 @@ $config['max_rounds']     = 9;
  | appropriately. If this variable set to 0, there is no maximum.
  */
 $config['site_title']           = "Sistema Encuestas";        // Site Title, example.com
-$config['admin_email']          = "encuestas@herrera.edu.ar"; // Admin Email, admin@example.com
+$config['admin_email']          = "encuestas.facet@gmail.com"; // Admin Email, admin@example.com
 $config['default_group']        = 'usuarios'; 		// Default group, use name
 $config['admin_group']          = 'admin';        // Default administrators group, use name
 $config['identity']             = 'username';     // A database column which is used to login with
@@ -171,3 +171,4 @@ $config['error_end_delimiter']     = '</p>';	// Error mesage end delimiter
 
 /* End of file ion_auth.php */
 /* Location: ./application/config/ion_auth.php */
+?>
