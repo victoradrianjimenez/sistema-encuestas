@@ -45,10 +45,12 @@ class Devoluciones extends CI_Controller {
     $this->load->model('Materia');
     $this->load->model('Encuesta');
     $this->load->model('Devolucion');
+    $this->load->model('Departamento');
     $this->load->model('Gestor_carreras','gc');
     $this->load->model('Gestor_encuestas','ge');
     $this->load->model('Gestor_materias','gm');
     $this->load->model('Gestor_devoluciones','gd');
+    $this->load->model('Gestor_departamentos','gdep');
     
     //chequeo parámetros de entrada
     $idCarrera = ($this->input->post('idCarrera')) ? (int)$this->input->post('idCarrera') : (int)$idCarrera;
@@ -61,7 +63,23 @@ class Devoluciones extends CI_Controller {
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('devoluciones');
       }
-  
+      //obtengo el departamento al que pertenece la carrera
+      $departamento = $this->gdep->dame($carrera->idDepartamento);
+      
+      //verifico si el usuario tiene permisos para la carrera
+      if (!$this->ion_auth->logged_in()){
+        $this->session->set_flashdata('resultadoOperacion', 'Debe iniciar sesión para ver el listado de Planes de Mejora.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('devoluciones/listar');
+      }
+      if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para listar los Planes de Mejora para esta carrera. Sólo pueden verlos los directores de carrera o las autoridades correspondientes.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('devoluciones/listar');
+      }
+
       //obtengo lista de devoluciones
       $devoluciones = $this->gd->listar($idCarrera, $pagInicio, PER_PAGE);
       $lista = array(); //datos para mandar a la vista
@@ -105,14 +123,10 @@ class Devoluciones extends CI_Controller {
     }
     else{
       //verifico si es jefe de catedra. Si no es, no puede dar de alta una devolucion
-      $this->load->model('Usuario');
-      $this->Usuario->id = $this->data['usuarioLogin']->id;
-      $datosDocente = $this->Usuario->dameDatosDocente((int)$this->input->post('idMateria'));
-      if (!( $this->ion_auth->is_admin() ||
-            ($this->ion_auth->in_group('docentes') && isset($datosDocente['tipoAcceso']) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA)) ){
+      if (!$this->ion_auth->in_group(array('admin','docentes'))){
         $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación. Solamente el Jefe de cátedra puede dar de alta un Plan de Mejoras.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-        redirect('devoluciones/listar');
+        redirect('devoluciones/ver');
       }
     }
     //cargo modelos y librerias necesarias
@@ -142,15 +156,24 @@ class Devoluciones extends CI_Controller {
     $this->form_validation->set_rules('alumnos','Alumnos','alpha_dash_space');
     $this->form_validation->set_rules('docentes','Docentes','alpha_dash_space');
     $this->form_validation->set_rules('mejoras','Mejoras','alpha_dash_space');
-    if($this->form_validation->run()){      
+    if($this->form_validation->run()){
+      //verifico si es jefe de catedra. Si no es, no puede dar de alta una devolucion
+      $this->load->model('Usuario');
+      $this->Usuario->id = $this->data['usuarioLogin']->id;
+      $datosDocente = $this->Usuario->dameDatosDocente((int)$this->input->post('idMateria'));
+      if (!($this->ion_auth->in_group('docentes') && isset($datosDocente['tipoAcceso']) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) ){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación. Solamente el Jefe de cátedra puede dar de alta un Plan de Mejoras.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('devoluciones/ver');
+      }  
       //agrego devolucion y cargo vista para mostrar resultado
       $res = $this->gd->alta( $this->Devolucion->idMateria, $this->Devolucion->idEncuesta, $this->Devolucion->idFormulario, 
                               $this->Devolucion->fortalezas, $this->Devolucion->debilidades, $this->Devolucion->alumnos,
                               $this->Devolucion->docentes, $this->Devolucion->mejoras);
-      if (is_numeric($res)){
+      if ($res == PROCEDURE_SUCCESS){
         $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-        redirect('devoluciones/listar');
+        redirect('devoluciones/ver');
       }
       $this->data['resultadoOperacion'] = $res;
       $this->data['resultadoTipo'] = ALERT_ERROR;
@@ -168,7 +191,7 @@ class Devoluciones extends CI_Controller {
   /*
    * Ver una devolucion
    */
-  public function ver($idDevolucion=null, $idMateria=null, $idEncuesta=null, $idFormulario=null){
+  public function ver($idMateria=null, $idEncuesta=null, $idFormulario=null){
     //cargo modelos, librerias, etc.
     $this->load->model('Materia');
     $this->load->model('Encuesta');
@@ -180,46 +203,56 @@ class Devoluciones extends CI_Controller {
     $this->load->model('Gestor_encuestas','ge');
     $this->load->model('Gestor_devoluciones','gd');
     
-    $idDevolucion = ($this->input->post('idDevolucion'))?$this->input->post('idDevolucion'):$idDevolucion;
-    $idMateria = ($this->input->post('idMateria'))?$this->input->post('idMateria'):$idMateria;
-    $idEncuesta = ($this->input->post('idEncuesta'))?$this->input->post('idEncuesta'):$idEncuesta;
-    $idFormulario = ($this->input->post('idFormulario'))?$this->input->post('idFormulario'):$idFormulario;
+    $idMateria = ($this->input->post('idMateria'))?(int)$this->input->post('idMateria'):(int)$idMateria;
+    $idEncuesta = ($this->input->post('idEncuesta'))?(int)$this->input->post('idEncuesta'):(int)$idEncuesta;
+    $idFormulario = ($this->input->post('idFormulario'))?(int)$this->input->post('idFormulario'):(int)$idFormulario;
     if ($idMateria && $idEncuesta && $idFormulario){
       //verifico que los datos enviados son correctos
-      $encuesta = $this->ge->dame((int)$idEncuesta, (int)$idFormulario);
-      $materia = $this->gm->dame((int)$idMateria);
+      $encuesta = $this->ge->dame($idEncuesta, $idFormulario);
+      $materia = $this->gm->dame($idMateria);
       if (!$encuesta || !$materia){
         $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('devoluciones/listar');
-      }
+      }   
       //verifico si el usuario tiene permisos para la materia
       if ($materia->publicarDevoluciones != RESPUESTA_SI){
-        $seguir = false;
-        if($this->ion_auth->in_group(array('admin','decanos'))) 
-          $seguir = true;
-        elseif($this->ion_auth->in_group(array('directores','jefes_departamentos'))){
-          $carreras = $materia->listarCarreras(); //listar las carreras a la que pertenece la materia
+        if (!$this->ion_auth->logged_in()){
+          $this->session->set_flashdata('resultadoOperacion', 'Los planes de mejoras de esta asignatura no son públicos. Debe iniciar sesión para realizar esta operación.');
+          $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+          redirect('devoluciones/ver');
+        }
+        //obtener datos del usuario logueado
+        $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
+        
+        $pass = false;
+        $carreras = $materia->listarCarreras(); //listar las carreras a la que pertenece la materia
+        //verifico si el usuario es un director de alguna carrera a la que pertenece la materia
+        if ($this->ion_auth->in_group('directores')){
           foreach ($carreras as $carrera) {
-            //verifico si el usuario es un director
-            if ($this->ion_auth->in_group('directores')){
-              if($carrera->idDirector == $this->data['usuarioLogin']->id) {$seguir=true; break;}
-            }
-            //verifico si el usuario es un jefe de depto
-            elseif($this->ion_auth->in_group('jefes_departamentos')){
-              $departamento = $this->gdep->dame($carrera->idDepartamento);
-              if ($departamento && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) {$seguir=true; break;}
+            if($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) {$pass=true; break;}
+          }
+        }
+        elseif ($this->ion_auth->in_group('jefes_departamentos')){
+          foreach ($carreras as $carrera) {
+            $departamento = $this->gdep->dame($carrera->idDepartamento);
+            if($departamento){
+              if($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) {$pass=true; break;}
             }
           }
         }
-        if (!$seguir){
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver el plan de mejoras de esta materia.');
+        
+        if(!($this->ion_auth->in_group(array('admin','decanos')) ||
+            ($this->ion_auth->in_group('jefes_departamentos') && $pass) ||
+            ($this->ion_auth->in_group('directores') && $pass) ||
+            ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver los planes de mejora de esta materia. Sólo pueden verlos los docentes y autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-          redirect('devoluciones/listar');
+          redirect('informes/materia'); 
         }
       }
       //obtengo datos de la devolucion
-      $devolucion = $this->gd->dame((int)$idDevolucion, (int)$idMateria, (int)$idEncuesta, (int)$idFormulario);
+      $devolucion = $this->gd->dame($idMateria, $idEncuesta, $idFormulario);
       if ($devolucion){
         //envio datos a la vista
         $datos = array(

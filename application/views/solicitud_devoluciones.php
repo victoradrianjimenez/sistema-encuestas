@@ -32,7 +32,6 @@
         <div id="contenedor" class="span9">
           <h4>Devoluciones</h4>
           <form class="form-horizontal" action="<?php echo site_url('devoluciones/ver')?>" method="post">
-    
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
               <div class="controls buscador">
@@ -58,8 +57,8 @@
                 <input type="hidden" name="idFormulario" value="<?php echo set_value('idFormulario')?>" required/>
               </div>
             </div>
-            <div class="controls btn-group">
-              <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
+            <div class="controls">
+              <input class="btn btn-primary" type="submit" name="submit" value="Ver Plan de Mejoras" />
             </div>
           </form>
         </div>
@@ -80,7 +79,7 @@
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
-    autocompletar_materia($('#buscarMateria'), "<?php echo site_url('materias/buscarAJAX')?>");
+    autocompletar_materia($('#buscarMateria'), "<?php echo site_url('carreras/buscarMateriasAJAX')?>");
     autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
   </script>
 </body>

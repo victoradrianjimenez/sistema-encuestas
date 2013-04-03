@@ -14,7 +14,7 @@
         <!-- Title -->
         <div class="span12">
           <h3>Gestión de Departamentos, Carreras y Materias</h3>
-          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los departamentos pertenecientes a la facultad. Las funcionalidades disponibles permiten agregar nuevos departamentos, modificar o bien eliminar departamentos existentes.</p>
+          <p>Esta sección contiene las funcionalidades necesarias para la gestión de los departamentos pertenecientes a la facultad.</p>
         </div>
       </div>
       
@@ -43,8 +43,8 @@
                   <td class="nombre"><?php echo $item['departamento']->nombre?></td>
                   <td><?php echo $item['jefeDepartamento']->nombre.' '.$item['jefeDepartamento']->apellido?></td>
                   <td>
-                    <a class="modificar" href="<?php echo site_url('departamentos/modificar/'.$item['departamento']->idDepartamento)?>">Modificar</a> / 
-                    <a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item['departamento']->idDepartamento?>">Eliminar</a>
+                    <a class="modificar" href="<?php echo site_url('departamentos/modificar/'.$item['departamento']->idDepartamento)?>" title="Editar los datos del departamento.">Modificar</a> / 
+                    <a class="eliminar" href="#modalEliminar" role="button" data-toggle="modal" value="<?php echo $item['departamento']->idDepartamento?>" title="Quitar el departamento del sistema.">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -54,7 +54,7 @@
           
           <!-- Botones -->
           <div class="btn-group">
-            <a class="btn btn-primary" href="<?php echo site_url('departamentos/nuevo')?>">Agregar departamento</a>
+            <a class="btn btn-primary" href="<?php echo site_url('departamentos/nuevo')?>">Agregar nuevo departamento</a>
           </div>
         </div>
       </div>

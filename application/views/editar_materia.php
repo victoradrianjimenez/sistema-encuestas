@@ -34,14 +34,14 @@
             </div>
             <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" required />
             <div class="control-group">
-              <label class="control-label" for="campoNombre">Nombre: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoNombre">Nombre: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoNombre" type="text" name="nombre" maxlength="60" value="<?php echo $materia->nombre?>" required />
                 <?php echo form_error('nombre'); ?>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoCodigo">Código: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoCodigo">Código: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoCodigo" type="text" name="codigo" maxlength="5" value="<?php echo $materia->codigo?>" required />
                 <?php echo form_error('codigo'); ?>

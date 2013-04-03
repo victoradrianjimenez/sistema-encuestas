@@ -79,12 +79,11 @@ class Gestor_devoluciones extends CI_Model{
    * @param identificador de formulario
    * @return object
    */
-  public function dame($idDevolucion, $idMateria, $idEncuesta, $idFormulario){
-    $idDevolucion = $this->db->escape($idDevolucion);
+  public function dame($idMateria, $idEncuesta, $idFormulario){
     $idMateria = $this->db->escape($idMateria);
     $idEncuesta = $this->db->escape($idEncuesta);
     $idFormulario = $this->db->escape($idFormulario);
-    $query = $this->db->query("call esp_dame_devolucion($idDevolucion, $idMateria, $idEncuesta, $idFormulario)");
+    $query = $this->db->query("call esp_dame_devolucion($idMateria, $idEncuesta, $idFormulario)");
     $data = $query->result('Devolucion');
     $query->free_result();
     return ($data != FALSE)?$data[0]:FALSE;

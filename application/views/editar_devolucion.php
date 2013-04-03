@@ -18,9 +18,15 @@
   
       <div class="row">
         <!-- SideBar -->
-        
+        <div class="span3" id="menu">
+          <?php $item_submenu = 3;
+            include 'templates/submenu-devoluciones.php';
+          ?>
+        </div>
+         
         <!-- Main -->
-        <div class="span12">
+        <div class="span9">
+          <h4>Nuevo Plan de Mejoras</h4>
           <form action="<?php echo site_url('devoluciones/nueva')?>" method="post">
             <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" required/>
             <div class="control-group">  

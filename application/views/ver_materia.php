@@ -36,6 +36,7 @@
               <thead>
                 <th>Apellido</th>
                 <th>Nombre</th>
+                <th>Tipo de Acceso</th>
                 <th>Cargo</th>
                 <th>Acciones</th>
               </thead>
@@ -43,6 +44,7 @@
                 <tr>
                   <td class="nombre"><?php echo $item['docente']->apellido?></td>
                   <td class="apellido"><?php echo $item['docente']->nombre?></td>
+                  <td class="tipoAcceso"><?php echo ($item['datos']['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA)?'Jefe de cátedra':'Docente'?></td>
                   <td class="cargo"><?php echo (isset($item['datos']['cargo'])) ? $item['datos']['cargo'] : ''?></td>
                   <td>
                     <a class="quitar" href="#" title="Quitar asociación del docente con la materia" value="<?php echo $item['docente']->id?>">Quitar</a>
@@ -76,7 +78,7 @@
         <h5><?php echo $materia->nombre.' - Código '.$materia->codigo?></h5>
         <input type="hidden" name="idMateria" value="<?php echo $materia->idMateria?>" />
         <div class="control-group"> 
-          <label class="control-label" for="buscarUsuario">Buscar docente: <span class="opcional">*</span></label>
+          <label class="control-label" for="buscarUsuario">Buscar docente: <span class="opcional" title="Campo obligatorio.">*</span></label>
           <div class="controls buscador">
             <input class="input-block-level" id="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off"><i class="icon-search"></i>
             <input type="hidden" name="idDocente" value=""/>
@@ -84,7 +86,17 @@
           </div>
         </div>
         <div class="control-group"> 
-          <label class="control-label" for="campoOrdenFormulario">Posición en formulario: <span class="opcional">*</span></label>
+          <label class="control-label" for="campoTipoAcceso">Tipo de acceso: <span class="opcional" title="Campo obligatorio.">*</span></label>
+          <div class="controls">
+            <select class="input-block-level" id="campoTipoAcceso" name="tipoAcceso" required>
+              <option value="<?php echo TIPO_ACCESO_DOCENTE?>" selected="selected">Docente</option>
+              <option value="<?php echo TIPO_ACCESO_JEFE_CATEDRA?>">Jefe de Cátedra</option>
+            </select>
+            <?php echo form_error('tipoAcceso')?>
+          </div>
+        </div>
+        <div class="control-group"> 
+          <label class="control-label" for="campoOrdenFormulario">Posición en formulario: <span class="opcional" title="Campo obligatorio.">*</span></label>
           <div class="controls">
             <input class="input-block-level" id="campoOrdenFormulario" type="number" min="0" max="255" step="1" name="ordenFormulario" value="1" required/>
             <?php echo form_error('ordenFormulario')?>

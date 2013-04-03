@@ -272,15 +272,14 @@ DROP PROCEDURE IF EXISTS `esp_dame_devolucion`;
 DELIMITER $$
 
 CREATE PROCEDURE `esp_dame_devolucion`(
-	pidDevolucion INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
 	pidEncuesta INT UNSIGNED,
 	pidFormulario INT UNSIGNED)
 BEGIN
-    SELECT  idDevolucion, idMateria, idEncuesta, idFormulario, fecha,
+    SELECT  idMateria, idEncuesta, idFormulario, fecha,
 			fortalezas, debilidades, alumnos, docentes, mejoras
     FROM	Devoluciones
-	WHERE 	idDevolucion = pidDevolucion AND idMateria = pidMateria AND 
+	WHERE 	idMateria = pidMateria AND 
 			idEncuesta = pidEncuesta AND idFormulario = pidFormulario;
 END $$
 
@@ -298,7 +297,7 @@ CREATE PROCEDURE `esp_listar_devoluciones_carrera`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  D.idDevolucion, D.idMateria, D.idEncuesta, D.idFormulario, D.fecha,
+    SELECT  D.idMateria, D.idEncuesta, D.idFormulario, D.fecha,
 			D.fortalezas, D.debilidades, D.alumnos, D.docentes, D.mejoras
     FROM	Devoluciones D INNER JOIN Materias_Carreras MC ON D.idMateria = MC.idMateria
 	WHERE 	MC.idCarrera = ?
@@ -346,7 +345,6 @@ CREATE PROCEDURE `esp_alta_devolucion`(
     pdocentes TEXT,
     pmejoras TEXT)
 BEGIN
-    DECLARE id INT UNSIGNED;
     DECLARE mensaje VARCHAR(100);
     DECLARE err BOOLEAN DEFAULT FALSE;
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
@@ -365,22 +363,18 @@ BEGIN
             SET mensaje = 'No se encontró la Materia correspondiente.';
             ROLLBACK;
 		ELSE
-            SET id = (  
-                SELECT COALESCE(MAX(idDevolucion),0)+1 
-                FROM    Devoluciones 
-                WHERE   idMateria = pidMateria AND
-                        idEncuesta = pidEncuesta AND
-                        idFormulario = pidFormulario FOR UPDATE);
+            DELETE FROM Devoluciones
+			WHERE idMateria=pidMateria AND idEncuesta=pidEncuesta AND idFormulario=pidFormulario;
             INSERT INTO Devoluciones
-                (idDevolucion, idMateria, idEncuesta, idFormulario, fecha, 
+                (idMateria, idEncuesta, idFormulario, fecha, 
                 fortalezas, debilidades, alumnos, docentes, mejoras)
-            VALUES (id, pidMateria, pidEncuesta, pidFormulario, NOW(), 
+            VALUES (pidMateria, pidEncuesta, pidFormulario, NOW(), 
                 pfortalezas, pdebilidades, palumnos, pdocentes, pmejoras);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
             ELSE 
-                SET mensaje = id;
+                SET mensaje = 'ok';
                 COMMIT;
             END IF;
         END IF;
@@ -922,12 +916,12 @@ CREATE PROCEDURE `esp_listar_items_seccion_carrera`(
 	pidCarrera SMALLINT UNSIGNED)
 BEGIN
     START TRANSACTION;
-    SELECT  I.idItem, I.idSeccion, I.idFormulario, P.idPregunta, I.idCarrera, P.texto, P.descripcion, 
+    SELECT  I.idItem, I.idSeccion, I.idFormulario, P.idPregunta, P.texto, P.descripcion, 
 			P.creacion, P.tipo, modoIndice, limiteInferior, limiteSuperior, paso, unidad,
-            I.posicion, IC.importancia
+            IC.importancia
     FROM    Items I INNER JOIN Preguntas P ON I.idPregunta = P.idPregunta 
             LEFT JOIN Items_Carreras IC ON I.idSeccion = IC.idSeccion AND 
-                I.idFormulario = IC.idFormulario AND I.idItem = IC.idItem
+                I.idFormulario = IC.idFormulario AND I.idItem = IC.idItem AND IC.idCarrera = pidCarrera
     WHERE   I.idSeccion = pidSeccion AND I.idFormulario = pidFormulario AND (I.idCarrera IS NULL OR I.idCarrera = pidCarrera)
     ORDER BY I.idCarrera, I.posicion; -- primero los items comunes y despues las que agregan las carreras
     COMMIT;
@@ -986,6 +980,22 @@ BEGIN
 			publicarInformes, publicarHistoricos, publicarDevoluciones
     FROM Materias
     WHERE idMateria = pidMateria;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_existe_materia_carrera`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_existe_materia_carrera`(
+    pidMateria SMALLINT UNSIGNED,
+	pidCarrera SMALLINT UNSIGNED)
+BEGIN
+    SELECT	idMateria, idCarrera 
+	FROM	Materias_Carreras
+	WHERE	idMateria=pidMateria AND idCarrera=pidCarrera;
 END $$
 
 DELIMITER ;
@@ -1832,6 +1842,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_asociar_docente_materia`(
     pidDocente INT UNSIGNED,
 	pidMateria SMALLINT UNSIGNED,
+	ptipoAcceso CHAR(1),
 	pordenFormulario TINYINT UNSIGNED,
 	pcargo VARCHAR(40))
 BEGIN
@@ -1841,7 +1852,10 @@ BEGIN
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET err=TRUE;       
     
     START TRANSACTION;
-    IF NOT EXISTS(SELECT idMateria FROM Materias WHERE idMateria = pidMateria LIMIT 1) THEN
+	IF NOT ptipoAcceso IN ('D','J') THEN
+        SET mensaje = 'El tipo de acceso docente es incorrecto.';
+        ROLLBACK;
+	ELSEIF NOT EXISTS(SELECT idMateria FROM Materias WHERE idMateria = pidMateria LIMIT 1) THEN
         SET mensaje = 'No se encuentra una materia seleccionada.';
         ROLLBACK;
     ELSEIF NOT EXISTS(SELECT id FROM Usuarios WHERE id = pidDocente LIMIT 1) THEN
@@ -1863,8 +1877,8 @@ BEGIN
 		SET ordenFormulario = ordenFormulario+1
 		WHERE idMateria=pidMateria AND ordenFormulario >= pordenFormulario;
         INSERT INTO Docentes_Materias
-            (idDocente, idMateria, ordenFormulario, cargo)
-        VALUES (pidDocente, pidMateria, pordenFormulario, pcargo);
+            (idDocente, idMateria, tipoAcceso, ordenFormulario, cargo)
+        VALUES (pidDocente, pidMateria, ptipoAcceso, pordenFormulario, pcargo);
         IF err THEN
             SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
             ROLLBACK;
@@ -2379,7 +2393,7 @@ BEGIN
 					INNER JOIN Preguntas P ON
 						P.idPregunta = R.idPregunta
 					INNER JOIN Items I ON
-						I.idPregunta = P.idPregunta
+						I.idPregunta = P.idPregunta AND I.idFormulario=R.idFormulario
 					LEFT JOIN Items_Carreras IC ON
 						IC.idCarrera = R.idCarrera AND IC.idSeccion = I.idSeccion AND
 						IC.idFormulario = I.idFormulario AND IC.idItem = I.idItem
@@ -2428,7 +2442,7 @@ BEGIN
 					INNER JOIN Preguntas P ON
 						P.idPregunta = R.idPregunta
 					INNER JOIN Items I ON
-						I.idPregunta = P.idPregunta
+						I.idPregunta = P.idPregunta AND I.idFormulario=R.idFormulario
 					LEFT JOIN Items_Carreras IC ON
 						IC.idCarrera = R.idCarrera AND IC.idSeccion = I.idSeccion AND
 						IC.idFormulario = I.idFormulario AND IC.idItem = I.idItem

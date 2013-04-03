@@ -34,14 +34,14 @@
             </div>
             <input type="hidden" name="idDepartamento" value="<?php echo $departamento->idDepartamento?>" required /> 
             <div class="control-group">
-              <label class="control-label" for="campoNombre">Nombre: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoNombre">Nombre: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" type="text" id="campoNombre" name="nombre" maxlength="60" value="<?php echo $departamento->nombre?>" required/>
                 <?php echo form_error('nombre')?>
               </div>
             </div>
-            <div class="control-group">
-              <label class="control-label" for="buscarUsuario" title="El jefe de departamento debe estar registrado previamente en el sistema.">Jefe de Departamento: </label>
+            <div class="control-group" title="El jefe de departamento debe estar registrado previamente como usuario del sistema.">
+              <label class="control-label" for="buscarUsuario">Jefe de Departamento: </label>
               <div class="controls buscador">
                 <input class="input-block-level" type="text" id="buscarUsuario" name="buscarUsuario" data-provide="typeahead" autocomplete="off" value="<?php echo trim($jefeDepartamento->nombre.' '.$jefeDepartamento->apellido)?>"/><i class="icon-search"></i>
                 <?php echo form_error('idJefeDepartamento')?>
@@ -51,9 +51,9 @@
             <div class="control-group">
               <label class="control-label">Opciones: </label>
               <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="publicarInformes" value="1" <?php echo ($departamento->publicarInformes==RESPUESTA_SI)?'checked="checked"':''?> /> Los informes por Departamento son Públicos</label>
+                <label class="checkbox" title="Si se establecen los informes como públicos, cualquier usuario podrá solicitarlos."><input type="checkbox" name="publicarInformes" value="1" <?php echo ($departamento->publicarInformes==RESPUESTA_SI)?'checked="checked"':''?> /> Los informes por Departamento son Públicos</label>
                 <?php echo form_error('publicarInformes')?>
-                <label class="checkbox"><input type="checkbox" name="publicarHistoricos" value="1" <?php echo ($departamento->publicarHistoricos==RESPUESTA_SI)?'checked="checked"':''?> /> Los informes Históricos por Departamento son Públicos</label>
+                <label class="checkbox" title="Si se establecen los históricos como públicos, cualquier usuario podrá solicitarlos."><input type="checkbox" name="publicarHistoricos" value="1" <?php echo ($departamento->publicarHistoricos==RESPUESTA_SI)?'checked="checked"':''?> /> Los informes Históricos por Departamento son Públicos</label>
                 <?php echo form_error('publicarHistoricos')?>
               </div>
             </div>

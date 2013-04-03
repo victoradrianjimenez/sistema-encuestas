@@ -43,9 +43,6 @@
             </div>
             <div class="controls">
               <input class="btn btn-primary" type="submit" name="submit" value="Listar Planes de Mejoras" />
-              <!--<button class="nuevoPlan btn btn-primary" href="#modalNuevoPlan" role="button" data-toggle="modal">Nuevo Plan de Mejoras...</button> -->
-              <a class="btn btn-primary" href="<?php echo site_url('devoluciones/nueva')?>">Nuevo Plan de Mejoras</a>
-              
             </div>
           </form>
         </div>

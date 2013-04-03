@@ -36,9 +36,9 @@
         <div class="span9">
           <h4>Formulario</h4>
           <form action="<?php echo $urlFormulario?>" method="post">
-            <label for="campoNombre">Nombre: <span class="opcional">*</span></label>
+            <label for="campoNombre">Nombre: <span class="opcional" title="Campo obligatorio.">*</span></label>
             <input class="input-block-level" id="campoNombre" type="text" name="nombre" value="<?php echo set_value('nombre')?>" required />
-            <label for="campoTitulo">Título: <span class="opcional">*</span></label>
+            <label for="campoTitulo">Título: <span class="opcional" title="Campo obligatorio.">*</span></label>
             <input class="input-block-level" id="campoTitulo" type="text" name="titulo" value="<?php echo set_value('titulo')?>" required />
             <div class="row-fluid">
               <div class="span8">
@@ -46,7 +46,7 @@
                 <input class="input-block-level" id="campoDescripcion" type="text" name="descripcion" value="<?php echo set_value('descripcion')?>" />
               </div>
               <div class="span4">
-                <label for="campoAdicionales">Preguntas adicionales: <span class="opcional">*</span></label>
+                <label for="campoAdicionales">Preguntas adicionales: <span class="opcional" title="Campo obligatorio.">*</span></label>
                 <input class="input-block-level" id="campoAdicionales" type="number" name="preguntasAdicionales" min="0" max="255" step="1" value="10" value="<?php echo set_value('preguntasAdicionales')?>"/>
               </div>
             </div>
@@ -105,11 +105,11 @@
       <h3 id="myModalLabel">Agregar sección</h3>
     </div>
     <div class="modal-body">
-      <label>Texto: <span class="opcional">*</span></label>
+      <label>Texto: <span class="opcional" title="Campo obligatorio.">*</span></label>
       <input class="input-block-level" type="text" name="textoSeccion" required/>
       <label>Descripción: </label>
       <input class="input-block-level" type="text" name="descripcionSeccion" />
-      <label>Tipo de Sección: <span class="opcional">*</span></label>
+      <label>Tipo de Sección: <span class="opcional" title="Campo obligatorio.">*</span></label>
       <select name="tipoSeccion">
         <option value="<?php echo SECCION_TIPO_NORMAL?>">Normal</option>
         <option value="<?php echo SECCION_TIPO_DOCENTE?>">Docente</option>
@@ -128,7 +128,7 @@
       <h3 id="myModalLabel">Agregar pregunta</h3>
     </div>
     <div class="modal-body">
-      <label>Buscar pregunta: <span class="opcional">*</span></label>
+      <label>Buscar pregunta: <span class="opcional" title="Campo obligatorio.">*</span></label>
       <div class="controls buscador">
         <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" ><i class="icon-search"></i>
         <input type="hidden" name="idPregunta" value=""/>

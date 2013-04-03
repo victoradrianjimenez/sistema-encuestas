@@ -20,14 +20,14 @@
           </div>
           <div class="modal-body">
             <div class="control-group">
-              <label class="control-label" for="campoContraseña">Nueva contraseña: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoContraseña">Nueva contraseña: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoContraseña" type="password" name="nuevaContrasena" required />
                 <?php echo form_error('nuevaContrasena')?>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoContraseña2">Confirmar contraseña: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoContraseña2">Confirmar contraseña: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoContraseña2" type="password" name="confirmarContrasena" required />
                 <?php echo form_error('confirmarContrasena')?>

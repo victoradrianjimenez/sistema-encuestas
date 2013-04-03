@@ -21,7 +21,6 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Resultados <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li class="nav-header">Informes</li>
               <li><a href="<?php echo site_url('informes/materia')?>">Encuestas realizadas</a></li>
               <li><a href="<?php echo site_url('historicos/materia')?>">Informes históricos</a></li>
               <li><a href="<?php echo site_url('informes/clave')?>">Respuestas individuales</a></li>

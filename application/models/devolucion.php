@@ -4,8 +4,7 @@
  * 
  */
 class Devolucion extends CI_Model{
-	var $idDevolucion;
-  var $idMateria;
+	var $idMateria;
   var $idCarrera;
   var $idEncuesta;
   var $idFormulario;

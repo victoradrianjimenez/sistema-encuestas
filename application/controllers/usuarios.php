@@ -244,7 +244,7 @@ class Usuarios extends CI_Controller{
           'apellido' => $this->input->post('apellido',TRUE),
           'username' => $this->input->post('username',TRUE),
           'email' => $this->input->post('email',TRUE),
-          'active' => $this->Usuario->active
+          'active' => $this->input->post('active'),
         );
         //si el ususario sube una imagen, actualizarla
         if ($idImagen){

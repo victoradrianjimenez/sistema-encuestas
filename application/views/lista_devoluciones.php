@@ -37,7 +37,7 @@
                   <td><?php echo $item['encuesta']->año.' / '.$item['encuesta']->cuatrimestre?></td>
                   <td><?php echo $item['materia']->nombre.' ('.$item['materia']->codigo.')'?></td>
                   <td>
-                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idDevolucion.'/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a>
+                    <a href="<?php echo site_url('devoluciones/ver/'.$item['devolucion']->idMateria.'/'.$item['devolucion']->idEncuesta.'/'.$item['devolucion']->idFormulario)?>"/>Ver</a>
                   </td>
                 </tr>
               <?php endforeach ?>

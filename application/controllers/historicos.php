@@ -66,8 +66,8 @@ class Historicos extends CI_Controller{
         $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id); 
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
+            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por materia.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('historicos/materia');
@@ -139,7 +139,7 @@ class Historicos extends CI_Controller{
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
+            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por carrera.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('historicos/carrera');

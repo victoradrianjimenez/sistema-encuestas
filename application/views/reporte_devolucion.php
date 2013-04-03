@@ -43,7 +43,7 @@
       <div class="span12">
         <h2 class="text-center">Evaluación de la cátedra sobre los resultados de las encuestas</h2>
         <h4 class="text-center">Asignatura: <?php echo $materia->nombre.' ('.$materia->codigo.')'?></h4>
-        <h4 class="text-center">Cuatrimestre/<?php echo PERIODO?>: <?php echo $encuesta->año.' / '.$encuesta->cuatrimestre?></h4>
+        <h4 class="text-center">Año/<?php echo PERIODO?>: <?php echo $encuesta->año.' / '.$encuesta->cuatrimestre?></h4>
       </div>
     </div>
     <div class="row">

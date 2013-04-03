@@ -17,15 +17,15 @@ class Informes extends CI_Controller{
     $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
 
-  private function _filtrarListaDocentes($materia, $listaDocentes){
+  private function _filtrarListaDocentes($materia, $carrera, $departamento, $listaDocentes){
     //verifico si el usuario tiene permisos para la materia
     if ($materia->publicarInformes != RESPUESTA_SI){
       if ($this->ion_auth->logged_in()){
         $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);    
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !isempty($datosDocente) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) )){    
+            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('docentes') && !empty($datosDocente) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) )){    
           //mostrar solo resultado del usuario logueado
           $docentes = array();
           if ($this->data['usuarioLogin']){
@@ -126,6 +126,12 @@ class Informes extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/clave');
       }
+      if (!$clave->utilizada){
+        $this->session->set_flashdata('resultadoOperacion', 'La clave de acceso seleccionada todavia no fue utilizada.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('informes/clave');
+      }
+      
       //obtengo el departamento al que pertenece la carrera
       $departamento = $this->gd->dame($carrera->idDepartamento);
       
@@ -138,16 +144,16 @@ class Informes extends CI_Controller{
       $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
       if(!($this->ion_auth->in_group(array('admin','decanos')) ||
           ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
-        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por clave de acceso.');
+          ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por clave de acceso. Sólo pueden verlos los docentes y autoridades correspondientes.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/clave');
       }
 
       //obtener la lista de docentes que participa en la encuesta. Luego filtrar para mostrar en el informe, dependiendo de que permisos tenga el usuario logueado
       $listaDocentes = $encuesta->listarDocentesMateria($idMateria, $idCarrera);
-      $docentes = $this->_filtrarListaDocentes($materia, $listaDocentes);
+      $docentes = $this->_filtrarListaDocentes($materia, $carrera, $departamento, $listaDocentes);
       
       $secciones = $formulario->listarSeccionesCarrera($idCarrera);
       $this->Usuario->id = 0; //importante. Es el id de un docente no existente.
@@ -273,20 +279,28 @@ class Informes extends CI_Controller{
           redirect('informes/materia');
         }
         //obtener datos del usuario logueado
-        $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id); 
+        $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por materia.');
+            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+            ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por materia. Sólo pueden verlos los docentes y autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
-          redirect('informes/materia');
+          redirect('informes/materia'); 
         }
+      }
+
+      //si no hay datos para mostrar, finalizar
+      $cantidadesClaves = $encuesta->cantidadClavesMateria($idMateria, $idCarrera);
+      if ($cantidadesClaves['generadas']<1){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('informes/materia');
       }
       
       //obtener la lista de docentes que participa en la encuesta. Luego filtrar para mostrar en el informe, dependiendo de que permisos tenga el usuario logueado
       $listaDocentes = $encuesta->listarDocentesMateria($idMateria, $idCarrera);      
-      $docentes = $this->_filtrarListaDocentes($materia, $listaDocentes);
+      $docentes = $this->_filtrarListaDocentes($materia, $carrera, $departamento, $listaDocentes);
       
       //obtener datos del formulario usado en la encuesta
       $secciones = $formulario->listarSeccionesCarrera($idCarrera);
@@ -319,6 +333,7 @@ class Informes extends CI_Controller{
           break;
         }
       }
+
       //datos para enviar a la vista
       $datos = array(
         'encuesta' => &$encuesta,
@@ -326,7 +341,7 @@ class Informes extends CI_Controller{
         'carrera' => &$carrera,
         'departamento' => &$departamento,
         'materia' => &$materia,
-        'claves' => $encuesta->cantidadClavesMateria($idMateria, $idCarrera),
+        'claves' => &$cantidadesClaves, 
         'indice' => ($indiceGlobal) ? $encuesta->indiceGlobalMateria($idMateria, $idCarrera) : null,
         'graficos' => &$graficos,
         'secciones' => &$datos_secciones
@@ -391,12 +406,21 @@ class Informes extends CI_Controller{
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera.');
+            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera. Sólo pueden verlos las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/carrera');
         }
       }
+      
+      //si no hay datos para mostrar, finalizar
+      $cantidadesClaves =  $encuesta->cantidadClavesCarrera($idCarrera);
+      if ($cantidadesClaves['generadas']<1){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('informes/carrera');
+      }
+      
       //obtener datos del formulario usado en la encuesta
       $secciones = $formulario->listarSeccionesCarrera($idCarrera);
       $datos_secciones = array();
@@ -439,7 +463,7 @@ class Informes extends CI_Controller{
         'formulario' => &$formulario,
         'carrera' => &$carrera,
         'departamento' => &$departamento,
-        'claves' => $encuesta->cantidadClavesCarrera($idCarrera),
+        'claves' => &$cantidadesClaves,
         'indice' => ($indiceGlobal) ? $encuesta->indiceGlobalCarrera($idCarrera) : null,
         'graficos' => &$graficos,
         'secciones' => &$datos_secciones
@@ -498,10 +522,18 @@ class Informes extends CI_Controller{
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por departamento.');
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por departamento. Sólo pueden verlos las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/departamento');
         }
+      }
+      
+      //si no hay datos para mostrar, finalizar
+      $cantidadesClaves =  $encuesta->cantidadClavesDepartamento($idDepartamento);
+      if ($cantidadesClaves['generadas']<1){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('informes/departamento');
       }
       
       //obtener datos del formulario usado en la encuesta
@@ -542,7 +574,7 @@ class Informes extends CI_Controller{
         'encuesta' => &$encuesta,
         'formulario' => &$formulario,
         'departamento' => &$departamento,
-        'claves' => $encuesta->cantidadClavesDepartamento($idDepartamento),
+        'claves' => &$cantidadesClaves,
         'graficos' => &$graficos,
         'secciones' => &$datos_secciones
       );
@@ -592,12 +624,20 @@ class Informes extends CI_Controller{
           redirect('informes/facultad');
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) )){
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por facultad.');
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por facultad. Sólo pueden verlos las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/facultad');
         }
       }
 
+      //si no hay datos para mostrar, finalizar
+      $cantidadesClaves =  $encuesta->cantidadClavesFacultad();
+      if ($cantidadesClaves['generadas']<1){
+        $this->session->set_flashdata('resultadoOperacion', 'No hay datos para mostrar.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('informes/facultad');
+      }
+      
       $secciones = $formulario->listarSecciones();
       $datos_secciones = array();
       foreach ($secciones as $i => $seccion) {
@@ -636,7 +676,7 @@ class Informes extends CI_Controller{
       $datos = array(
         'encuesta' => &$encuesta,
         'formulario' => &$formulario,
-        'claves' => $encuesta->cantidadClavesFacultad(),
+        'claves' => &$cantidadesClaves,
         'graficos' => &$graficos,
         'secciones' => &$datos_secciones
       );
@@ -703,18 +743,19 @@ class Informes extends CI_Controller{
           $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
           redirect('informes/materia');
       }
+      $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
       if(!($this->ion_auth->in_group(array('admin','decanos')) ||
           ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('docentes') && !isempty($datosDocente)) )){
-        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para descargar la planilla de cálculo.');
+          ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+          ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para descargar la planilla de cálculo. Sólo los docentes de cátedra o las autoridades correspondientes pueden hacerlo.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/materia');
       }
       
       //obtengo lista de docentes, que depende de que permisos tenga el usuario logueado
       $listaDocentes = $encuesta->listarDocentesMateria($idMateria, $idCarrera);
-      $docentes = $this->_filtrarListaDocentes($materia, $listaDocentes);
+      $docentes = $this->_filtrarListaDocentes($materia, $carrera, $departamento, $listaDocentes);
 
       //Iniciar la planilla de cálculo
       $this->phpexcel->getProperties()->setCreator('Sistema Encuestas Vía Web')
@@ -736,7 +777,7 @@ class Informes extends CI_Controller{
         ->setCellValueByColumnAndRow(0, 10, '* La primera hoja contiene los datos generales de la encuesta.')
         ->setCellValueByColumnAndRow(0, 11, '* La segunda hoja contiene el listado de preguntas que conforman el formulario utilizado en la encuesta.')
         ->setCellValueByColumnAndRow(0, 12, '* La tercer hoja contiene el listado de docentes que participaron en la encuesta.')
-        ->setCellValueByColumnAndRow(0, 13, 'El resto de las hojas contienes los datos de cada sección del formulario, los tienen el siguiente formato:')
+        ->setCellValueByColumnAndRow(0, 13, 'El resto de las hojas contienes los datos de cada sección del formulario, que tienen el siguiente formato:')
         ->setCellValueByColumnAndRow(0, 14, '* La primer columna contiene el identificador de la clave de acceso que se usó para responder la encuesta.')
         ->setCellValueByColumnAndRow(0, 15, '* La segunda columna contiene el identidicador del docente al cual se refiere la pregunta. Si este valor es vacío significa que la pregunta es referida a la cátedra.')
         ->setCellValueByColumnAndRow(0, 16, '* El resto de las columnas muestran las respuestas dadas para una pregunta en particular. En el encabezado de las columnas se muestra el identidicador de la pregunta.')
@@ -744,13 +785,19 @@ class Informes extends CI_Controller{
         
       //creo la hoja para el listado de preguntas
       $this->phpexcel->createSheet();
-      $this->phpexcel->setActiveSheetIndex(1)
+      $worksheet = $this->phpexcel->setActiveSheetIndex(1)
         ->setCellValueByColumnAndRow(0, 1, 'LISTADO DE PREGUNTAS')
         ->setCellValueByColumnAndRow(0, 3, 'ID Pregunta')
         ->setCellValueByColumnAndRow(1, 3, 'Pregunta')
         ->setCellValueByColumnAndRow(2, 3, 'Opciones')
         ->setTitle('Preguntas');
-
+      $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+      $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+      $worksheet->getStyleByColumnAndRow(2, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(2, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+      
       //agrego la hoja con la lista de docentes (segunda hoja)
       $this->_agregarHojaDocente(2,'Docentes',$docentes);
       
@@ -842,8 +889,8 @@ class Informes extends CI_Controller{
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
             ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirector == $this->data['usuarioLogin']->id) )){
-          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera.');
+            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+          $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para descargar los datos de la carrera. Sólo pueden hacerlo las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/carrera');
         }
@@ -869,7 +916,7 @@ class Informes extends CI_Controller{
         ->setCellValueByColumnAndRow(0, 10, '* La primera hoja contiene los datos generales de la encuesta.')
         ->setCellValueByColumnAndRow(0, 11, '* La segunda hoja contiene el listado de preguntas que conforman el formulario utilizado en la encuesta.')
         ->setCellValueByColumnAndRow(0, 12, '* La tercer hoja contiene el listado de docentes que participaron en la encuesta.')
-        ->setCellValueByColumnAndRow(0, 13, 'El resto de las hojas contienes los datos de cada sección del formulario, los tienen el siguiente formato:')
+        ->setCellValueByColumnAndRow(0, 13, 'El resto de las hojas contienes los datos de cada sección del formulario, que tienen el siguiente formato:')
         ->setCellValueByColumnAndRow(0, 14, '* La primer columna contiene el identificador de la clave de acceso que se usó para responder la encuesta.')
         ->setCellValueByColumnAndRow(0, 15, '* La segunda columna contiene el identidicador del docente al cual se refiere la pregunta. Si este valor es vacío significa que la pregunta es referida a la cátedra.')
         ->setCellValueByColumnAndRow(0, 16, '* El resto de las columnas muestran las respuestas dadas para una pregunta en particular. En el encabezado de las columnas se muestra el identidicador de la pregunta.')
@@ -877,12 +924,18 @@ class Informes extends CI_Controller{
       
       //creo la hoja para el listado de preguntas
       $this->phpexcel->createSheet();
-      $this->phpexcel->setActiveSheetIndex(1)
+      $worksheet = $this->phpexcel->setActiveSheetIndex(1)
         ->setCellValueByColumnAndRow(0, 1, 'LISTADO DE PREGUNTAS')
         ->setCellValueByColumnAndRow(0, 3, 'ID Pregunta')
         ->setCellValueByColumnAndRow(1, 3, 'Pregunta')
         ->setCellValueByColumnAndRow(2, 3, 'Opciones')
         ->setTitle('Preguntas');
+      $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+      $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+      $worksheet->getStyleByColumnAndRow(2, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(2, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
       
       //agrego la hoja con la lista de docentes (segunda hoja)
       $docentes = $encuesta->listarDocentesCarrera($idCarrera);
@@ -933,6 +986,8 @@ class Informes extends CI_Controller{
       //guardo datos de la pregunta
       $worksheet->setCellValueByColumnAndRow(0, $fila, $item->idPregunta)
                 ->setCellValueByColumnAndRow(1, $fila, $item->texto);
+      $worksheet->getStyleByColumnAndRow(0, $fila)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(0, $fila)->getFill()->getStartColor()->setARGB('FFE1E2FF');
       switch ($item->tipo) {
         case TIPO_SELECCION_SIMPLE:
           $opciones = $item->listarOpciones();
@@ -965,9 +1020,17 @@ class Informes extends CI_Controller{
               ->setCellValueByColumnAndRow(0, 3, 'Clave')
               ->setCellValueByColumnAndRow(1, 3, 'Docente')
               ->setTitle($nombre);
+    //le aplico un color de fondo
+    $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+    $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+    $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+    $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
     foreach ($items as $k => $item) {
       //pongo el ID de la pregunta al inicio de cada columna correspondiente
       $worksheet->setCellValueByColumnAndRow($k+2, 3, $item->idPregunta);
+      //le aplico un color de fondo
+      $worksheet->getStyleByColumnAndRow($k+2, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow($k+2, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');      
     }
   }
   
@@ -986,11 +1049,19 @@ class Informes extends CI_Controller{
               ->setCellValueByColumnAndRow(1, 3, 'Apellido')
               ->setCellValueByColumnAndRow(2, 3, 'Nombre')
               ->setTitle($nombre);
+    $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+    $worksheet->getStyleByColumnAndRow(0, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+    $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+    $worksheet->getStyleByColumnAndRow(1, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
+    $worksheet->getStyleByColumnAndRow(2, 3)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+    $worksheet->getStyleByColumnAndRow(2, 3)->getFill()->getStartColor()->setARGB('FFC0C0FF');
     foreach ($docentes as $k => $docente) {
       //pongo el ID del docente al inicio de cada columna correspondiente
       $worksheet->setCellValueByColumnAndRow(0, $k+4, $docente->id)
                 ->setCellValueByColumnAndRow(1, $k+4, $docente->apellido)
                 ->setCellValueByColumnAndRow(2, $k+4, $docente->nombre);
+      $worksheet->getStyleByColumnAndRow(0, $k+4)->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+      $worksheet->getStyleByColumnAndRow(0, $k+4)->getFill()->getStartColor()->setARGB('FFE1E2FF');
     }
   }
   
@@ -1021,12 +1092,18 @@ class Informes extends CI_Controller{
       if ($idClave != $clavePagina[$seccion] || $idDocente != $docentePagina[$seccion]){
         $filaPagina[$seccion]++;
         $clavePagina[$seccion] = $idClave;
-        $docentePagina[$seccion] = $idDocente;  
+        $docentePagina[$seccion] = $idDocente;
+        
+        $this->phpexcel->setActiveSheetIndex($seccion+3)
+        ->setCellValueByColumnAndRow(0,      $filaPagina[$seccion], $idClave)
+        ->setCellValueByColumnAndRow(1,      $filaPagina[$seccion], $idDocente);
+        $this->phpexcel->getActiveSheet()->getStyleByColumnAndRow(0, $filaPagina[$seccion])->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+        $this->phpexcel->getActiveSheet()->getStyleByColumnAndRow(0, $filaPagina[$seccion])->getFill()->getStartColor()->setARGB('FFE1E2FF');
+        $this->phpexcel->getActiveSheet()->getStyleByColumnAndRow(1, $filaPagina[$seccion])->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+        $this->phpexcel->getActiveSheet()->getStyleByColumnAndRow(1, $filaPagina[$seccion])->getFill()->getStartColor()->setARGB('FFE1E2FF');
       }
       //ubico la respuesta actual dentro de la planilla de cálculo. Es una hoja por sección y por docente. Cada columna tiene las respuestas a una pregunta.
       $this->phpexcel->setActiveSheetIndex($seccion+3)
-        ->setCellValueByColumnAndRow(0,      $filaPagina[$seccion], $idClave)
-        ->setCellValueByColumnAndRow(1,      $filaPagina[$seccion], $idDocente)
         ->setCellValueByColumnAndRow($col+2, $filaPagina[$seccion], $respuesta['opcion'].$respuesta['texto']);
     }
   }

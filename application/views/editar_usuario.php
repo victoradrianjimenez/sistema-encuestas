@@ -3,6 +3,9 @@
 <head>
   <?php include 'templates/head.php'?>
   <title><?php echo $tituloFormulario.' - '.NOMBRE_SISTEMA?></title>
+  <style>
+    img.foto{width:150px; height:150px;}
+  </style>
 </head>
 <body>
   <div id="wrapper">
@@ -37,7 +40,7 @@
             <div class="control-group">
               <div class="controls">
                 <h4><?php echo $tituloFormulario?></h4>
-                <img src="<?php echo site_url('usuarios/imagen/'.$usuario->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>               
+                <img class="foto" src="<?php echo site_url('usuarios/imagen/'.$usuario->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>               
               </div>
             </div>
             <div class="control-group">
@@ -48,21 +51,21 @@
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label"  for="campoApellido">Apellido: <span class="opcional">*</span></label>
+              <label class="control-label"  for="campoApellido">Apellido: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoApellido" type="text" name="apellido" maxlength="40" required value="<?php echo $usuario->apellido?>"/>
                 <?php echo form_error('apellido'); ?>
               </div>
             </div>
             <div class="control-group">  
-              <label class="control-label" for="campoEmail">E-mail: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoEmail">E-mail: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoEmail" type="text" name="email" maxlength="100" required value="<?php echo $usuario->email?>"/>
                 <?php echo form_error('email'); ?>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoUsuario" type="text" name="username" maxlength="100" required value="<?php echo $usuario->username?>"/>
                 <?php echo form_error('username'); ?>
@@ -106,11 +109,12 @@
                       $selected = '';
                       //verifico si el el usuario pertenece al grupo actual
                       foreach ($usuario_grupos as $g) {
-                        if ($grupo->id == $g){
+                        if ($grupo->id == $g->id){
                           $selected = 'checked="checked"';
                           break;
                         }
                       }
+                      
                       if(isset($_POST['grupos'])){
                         foreach ($_POST['grupos'] as $g) {
                           if ($grupo->id == $g){

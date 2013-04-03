@@ -42,13 +42,13 @@
               </thead>
               <?php foreach($lista as $item): ?>  
                 <tr>
-                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$item['carrera']->idCarrera)?>"><?php echo $item['carrera']->nombre?></a></td>
+                  <td><a class="nombre" href="<?php echo site_url("carreras/ver/".$item['carrera']->idCarrera)?>" title="Para ver o asociar materias a la carrera, haga clic aqui."><?php echo $item['carrera']->nombre?></a></td>
                   <td class="plan"><?php echo $item['carrera']->plan?></td>
                   <td class="director"><?php echo $item['director']->nombre.' '.$item['director']->apellido?></td>
                   <td class="departamento"><?php echo $item['departamento']->nombre?></td>
                   <td>
-                    <a class="modificar" href="<?php echo site_url('carreras/modificar/'.$item['carrera']->idCarrera)?>">Modificar</a> /
-                    <a class="eliminar" href="#" value="<?php echo $item['carrera']->idCarrera?>">Eliminar</a>
+                    <a class="modificar" href="<?php echo site_url('carreras/modificar/'.$item['carrera']->idCarrera)?>" title="Editar los datos de la carrera.">Modificar</a> /
+                    <a class="eliminar" href="#" value="<?php echo $item['carrera']->idCarrera?>" title="Quitar la carrera del sistema.">Eliminar</a>
                   </td>
                 </tr>
               <?php endforeach ?>
@@ -58,7 +58,7 @@
           
           <!-- Botones -->
           <div class="btn-group">
-            <a class="btn btn-primary" href="<?php echo site_url('carreras/nueva')?>">Agregar carrera</a>
+            <a class="btn btn-primary" href="<?php echo site_url('carreras/nueva')?>">Agregar nueva carrera</a>
           </div>      
         </div>
       </div>

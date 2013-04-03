@@ -21,6 +21,7 @@
   <style>
     h5.separador{border-bottom: 3px solid #2BA6CB;}
     .item{min-height: 50px}
+    img.foto{width:100px; height:100px;}
   </style>
 </head>
 <body>
@@ -44,7 +45,7 @@
               foreach ($itemSeccion['subsecciones'] as $subseccion){
                 $docente = $subseccion['docente'];
                 echo '<h3>'; 
-                if ($docente->idImagen) echo '<img src="'.site_url('usuarios/imagen/'.$docente->idImagen).'" width="100" height="100" alt="Imagen de docente"/> ';
+                if ($docente->idImagen) echo '<img class="foto" src="'.site_url('usuarios/imagen/'.$docente->idImagen).'" width="100" height="100" alt="Imagen de docente"/> ';
                 echo $docente->nombre.' '.$docente->apellido.'</h3>';
                 echo '
                 <div class="row preguntas">';
@@ -78,18 +79,24 @@
                     break;
                   case TIPO_NUMERICA:
                     $col = $col+1;
-                    printf ('
+                    $s ='
                     <div class="item span6">
                       <div class="row-fluid">
                         <div class="span8">
                           <p>%s %s</p>
                         </div>
                         <div class="span4">
-                          <input class="input-block-level" type="number" name="idPregunta_%d_%s_%d" min="%f" max="%f" step="%f"/>
+                          <select name="idPregunta_%d_%s_%d" >
+                            <option value="">(No Contesta)</option>';
+                            for ($num=(float)$item->limiteInferior; $num<=$item->limiteSuperior; $num+=$item->paso){
+                              $s .= '<option value="'.$num.'">'.$num.'</option>';
+                            }
+                            $s .= '
+                          </select>
                         </div>
                       </div>
-                    </div>',  $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id, 
-                              $item->limiteInferior, $item->limiteSuperior, $item->paso);
+                    </div>';
+                    printf($s, $item->texto, $tip, $item->idPregunta, $item->tipo, $docente->id);
                     break;
                   case TIPO_TEXTO_SIMPLE:
                     $col = $col+1;

@@ -73,12 +73,13 @@ class Materia extends CI_Model{
    * @param identificador de usuario
    * @return string
    */
-  public function asociarDocente($id, $ordenFormulario, $cargo){
+  public function asociarDocente($id, $tipoAcceso, $ordenFormulario, $cargo){
     $idMateria = $this->db->escape($this->idMateria);
+    $tipoAcceso = $this->db->escape($tipoAcceso);
     $id = $this->db->escape($id);
     $ordenFormulario = $this->db->escape($ordenFormulario);
     $cargo = $this->db->escape($cargo);
-    $query = $this->db->query("call esp_asociar_docente_materia($id, $idMateria, $ordenFormulario, $cargo)");
+    $query = $this->db->query("call esp_asociar_docente_materia($id, $idMateria, $tipoAcceso, $ordenFormulario, $cargo)");
     $data = $query->row();
     $query->free_result();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';

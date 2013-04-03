@@ -37,7 +37,7 @@
           <form action="<?php echo $urlFormulario?>" method="post">
             <input type="hidden" name="idPregunta" value="<?php echo $pregunta->idPregunta?>"/>
             
-            <label for="campoTexto">Texto: <span class="opcional">*</span></label>
+            <label for="campoTexto">Texto: <span class="opcional" title="Campo obligatorio.">*</span></label>
             <input class="input-block-level" id="campoTexto" type="text" name="texto" maxlength="250" value="<?php echo $pregunta->texto?>" />
             <?php echo form_error('texto')?>
             
@@ -47,7 +47,7 @@
 
             <?php if (!isset($disabled) || !$disabled):?>
               
-              <label for="campoTipo">Tipo de respuesta: <span class="opcional">*</span></label>
+              <label for="campoTipo">Tipo de respuesta: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <select id="campoTipo" name="tipo" required>
                 <option value="<?php echo TIPO_SELECCION_SIMPLE?>" <?php echo set_select('tipo', TIPO_SELECCION_SIMPLE, TRUE)?>>Selección simple</option>
                 <option value="<?php echo TIPO_NUMERICA?>" <?php echo set_select('tipo', TIPO_NUMERICA)?>>Numérica</option>
@@ -69,15 +69,15 @@
   
               <div id="OpcionesNumerico" class="hide">
                 <h4>Opciones</h4>
-                <label for="campoLimiteInferior">Limite inferior: <span class="opcional">*</span></label>
+                <label for="campoLimiteInferior">Limite inferior: <span class="opcional" title="Campo obligatorio.">*</span></label>
                 <input id="campoLimiteInferior" type="number" name="limiteInferior" value="<?php echo $pregunta->limiteInferior?>" />
                 <?php echo form_error('limiteInferior')?>
                 
-                <label for="campoLimiteSuperior">Limite superior: <span class="opcional">*</span></label>
+                <label for="campoLimiteSuperior">Limite superior: <span class="opcional" title="Campo obligatorio.">*</span></label>
                 <input id="campoLimiteSuperior" type="number" name="limiteSuperior" value="<?php echo $pregunta->limiteSuperior?>" />
                 <?php echo form_error('limiteSuperior')?>
                 
-                <label for="campoPaso">Paso: <span class="opcional">*</span></label>
+                <label for="campoPaso">Paso: <span class="opcional" title="Campo obligatorio.">*</span></label>
                 <input id="campoPaso" type="number" name="paso" value="<?php echo $pregunta->paso?>" />
                 <?php echo form_error('paso')?>
               </div>

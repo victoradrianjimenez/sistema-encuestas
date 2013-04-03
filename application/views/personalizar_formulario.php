@@ -114,7 +114,7 @@
       <h3 id="myModalLabel">Agregar pregunta</h3>
     </div>
     <div class="modal-body buscador">
-      <label>Buscar pregunta: <span class="opcional">*</span></label>
+      <label>Buscar pregunta: <span class="opcional" title="Campo obligatorio.">*</span></label>
       <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" ><i class="icon-search"></i>
       <input type="hidden" name="idMateria" value=""/>
     </div>

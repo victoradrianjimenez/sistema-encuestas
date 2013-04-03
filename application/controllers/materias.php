@@ -265,7 +265,7 @@ class Materias extends CI_Controller{
 
   /*
    * Recepción del formulario para crear una asociacion entre un docente y una materia
-   * POST: idDocente, idMateria, ordenFormulario, cargo
+   * POST: idDocente, idMateria, tipoAcceso, ordenFormulario, cargo
    */
   public function asociarDocente(){
     //verifico si el usuario tiene permisos para continuar
@@ -282,6 +282,7 @@ class Materias extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('idDocente','Docente','is_natural_no_zero|required');
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
+    $this->form_validation->set_rules('tipoAcceso','Tipo de acceso','required|alpha|exact_length[1]');
     $this->form_validation->set_rules('ordenFormulario','Orden en formulario','is_natural_no_zero|required');
     $this->form_validation->set_rules('cargo','Cargo','alpha_dash_space|max_length[40]');
     $idMateria = (int)$this->input->post('idMateria');
@@ -289,8 +290,9 @@ class Materias extends CI_Controller{
       $this->load->model('Materia');
       $this->Materia->idMateria = $idMateria;
       //creo la asociacion y cargo vista para mostrar resultado
-      $res = $this->Materia->asociarDocente((int)$this->input->post('idDocente'), 
-                                            (int)$this->input->post('ordenFormulario'), 
+      $res = $this->Materia->asociarDocente((int)$this->input->post('idDocente'),
+                                            $this->input->post('tipoAcceso'), 
+                                            (int)$this->input->post('ordenFormulario'),
                                             $this->input->post('cargo', TRUE));
       if ($res == PROCEDURE_SUCCESS){
         $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');

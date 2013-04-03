@@ -3,6 +3,9 @@
 <head>
   <?php include 'templates/head.php'?>
   <title>Editar datos de usuario - <?php echo NOMBRE_SISTEMA?></title>
+  <style>
+    img.foto{width:150px; height:150px;}
+  </style>
 </head>
 <body>
   <div id="wrapper">
@@ -13,7 +16,7 @@
         <div class="span12">
           <h3>Editar datos de cuenta de usuario</h3>
           <p>Nombre: <?php echo $usuarioLogin->nombre.' '.$usuarioLogin->apellido?></p>
-          <img src="<?php echo site_url('usuarios/imagen/'.$usuarioLogin->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>
+          <img class="foto" src="<?php echo site_url('usuarios/imagen/'.$usuarioLogin->idImagen)?>" width="150" height="150" alt="Imagen de usuario"/>
         </div>
       </div>
       
@@ -28,14 +31,14 @@
               </div>
             </div>
             <div class="control-group">  
-              <label class="control-label" for="campoEmail">E-mail: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoEmail">E-mail: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoEmail" type="text" name="email" maxlength="100" required value="<?php echo $usuarioLogin->email?>"/>
                 <?php echo form_error('email'); ?>
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional">*</span></label>
+              <label class="control-label" for="campoUsuario">Nombre de usuario: <span class="opcional" title="Campo obligatorio.">*</span></label>
               <div class="controls">
                 <input class="input-block-level" id="campoUsuario" type="text" name="username" maxlength="100" required value="<?php echo $usuarioLogin->username?>"/>
                 <?php echo form_error('username'); ?>
