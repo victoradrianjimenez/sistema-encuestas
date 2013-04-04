@@ -61,15 +61,16 @@ class Gestor_carreras extends CI_Model{
    * @param plan de la carrera (año)
    * @return string
    */
-  public function modificar($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos){
+  public function modificar($idCarrera, $idDepartamento, $idDirectorCarrera, $idOrganizador, $nombre, $plan, $publicarInformes, $publicarHistoricos){
     $publicarInformes = $this->db->escape($publicarInformes);
     $publicarHistoricos = $this->db->escape($publicarHistoricos);
     $idDepartamento = $this->db->escape($idDepartamento);
     $idDirectorCarrera = $this->db->escape($idDirectorCarrera);
+    $idOrganizador = $this->db->escape($idOrganizador);
     $idCarrera = $this->db->escape($idCarrera);
     $nombre = $this->db->escape($nombre);
     $plan = $this->db->escape($plan);
-    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $nombre, $plan, $publicarInformes, $publicarHistoricos)");
+    $query = $this->db->query("call esp_modificar_carrera($idCarrera, $idDepartamento, $idDirectorCarrera, $idOrganizador, $nombre, $plan, $publicarInformes, $publicarHistoricos)");
     $data = $query->row();
     $query->free_result();
     return ($data)?$data->mensaje:'No se pudo conectar con la base de datos.';

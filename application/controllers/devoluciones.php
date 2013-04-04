@@ -34,7 +34,7 @@ class Devoluciones extends CI_Controller {
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -73,8 +73,8 @@ class Devoluciones extends CI_Controller {
         redirect('devoluciones/listar');
       }
       if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+          ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
         $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para listar los Planes de Mejora para esta carrera. Sólo pueden verlos los directores de carrera o las autoridades correspondientes.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('devoluciones/listar');
@@ -161,7 +161,7 @@ class Devoluciones extends CI_Controller {
       $this->load->model('Usuario');
       $this->Usuario->id = $this->data['usuarioLogin']->id;
       $datosDocente = $this->Usuario->dameDatosDocente((int)$this->input->post('idMateria'));
-      if (!($this->ion_auth->in_group('docentes') && isset($datosDocente['tipoAcceso']) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) ){
+      if (!(isset($datosDocente['tipoAcceso']) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) ){
         $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación. Solamente el Jefe de cátedra puede dar de alta un Plan de Mejoras.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('devoluciones/ver');
@@ -227,25 +227,17 @@ class Devoluciones extends CI_Controller {
         
         $pass = false;
         $carreras = $materia->listarCarreras(); //listar las carreras a la que pertenece la materia
-        //verifico si el usuario es un director de alguna carrera a la que pertenece la materia
-        if ($this->ion_auth->in_group('directores')){
-          foreach ($carreras as $carrera) {
-            if($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) {$pass=true; break;}
+        //verifico si el usuario es un director de alguna carrera a la que pertenece la materia o un jefe de depto
+        foreach ($carreras as $carrera) {
+          if($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) {$pass=true; break;}
+          $departamento = $this->gdep->dame($carrera->idDepartamento);
+          if($departamento){
+            if($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) {$pass=true; break;}
           }
         }
-        elseif ($this->ion_auth->in_group('jefes_departamentos')){
-          foreach ($carreras as $carrera) {
-            $departamento = $this->gdep->dame($carrera->idDepartamento);
-            if($departamento){
-              if($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) {$pass=true; break;}
-            }
-          }
-        }
-        
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $pass) ||
-            ($this->ion_auth->in_group('directores') && $pass) ||
-            ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+            ($pass) ||
+            (!empty($datosDocente)) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver los planes de mejora de esta materia. Sólo pueden verlos los docentes y autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/materia'); 

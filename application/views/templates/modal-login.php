@@ -30,8 +30,8 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
       <input type="submit" name="submit" value="Aceptar" class="btn btn-primary" />
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
     </div>
   </form>
 </div>

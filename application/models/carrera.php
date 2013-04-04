@@ -7,6 +7,7 @@ class Carrera extends CI_Model{
   var $idCarrera;
   var $idDepartamento;
   var $idDirectorCarrera;
+  var $idOrganizador;
   var $idFormulario;
   var $nombre;
   var $plan;

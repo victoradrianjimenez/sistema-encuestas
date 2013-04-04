@@ -32,7 +32,7 @@ class Claves extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -67,6 +67,9 @@ class Claves extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
         redirect('claves/ver');
       }
+
+
+
       $this->data['encuesta'] = &$encuesta;
       $this->data['materia'] = &$materia;
       $this->data['carrera'] = &$carrera;
@@ -88,7 +91,7 @@ class Claves extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -121,6 +124,13 @@ class Claves extends CI_Controller{
       if (!$encuesta || !$materia || !$carrera){
         $this->session->set_flashdata('resultadoOperacion', "Los datos ingresados son inválidos.");
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR); 
+        redirect('claves/ver');
+      }
+      
+      //verifico que el usuario es un organizador
+      if ($this->ion_auth->in_group('docentes') && $carrera->idOrganizador != $this->data['usuarioLogin']->id){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación. Solamente el docente designado puede listar claves de acceso.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
         redirect('claves/ver');
       }
       
@@ -315,7 +325,7 @@ class Claves extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->is_admin()){
+    elseif (!$this->ion_auth->in_group(array('admin','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('claves/ver');
@@ -352,6 +362,13 @@ class Claves extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
         redirect('claves/ver');
       }
+      //verifico que el usuario es un organizador
+      if ($this->ion_auth->in_group('docentes') && $carrera->idOrganizador != $this->data['usuarioLogin']->id){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación. Solamente el docente designado puede generar claves de acceso.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('claves/ver');
+      }
+      
       $cnt = 0;
       for ($i=0; $i<$cantidad; $i++){
         $clave = $encuesta->altaClave($idMateria, $idCarrera);
@@ -361,6 +378,8 @@ class Claves extends CI_Controller{
         if ($guardarCantidad) $materia->asignarCantidadClaves($idCarrera, $cantidad);
         $this->session->set_flashdata('resultadoOperacion', "La operación se realizó con éxito. Se generaron $cnt claves.");
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+        $this->ver();
+        return;
       }
       elseif($cnt==0) {
         $this->session->set_flashdata('resultadoOperacion', "Se produjo un error. No se generaron claves.");
@@ -386,7 +405,7 @@ class Claves extends CI_Controller{
           return TRUE;
         }
         else{
-          $this->form_validation->set_message('validar_clave_acceso', "Clave de Acceso Utilizada el $clave->utilizada.");
+          $this->form_validation->set_message('validar_clave_acceso', "Clave de Acceso Utilizada el ".date('d/m/Y G:i:s', strtotime($clave->utilizada)));
         }
       }
       else{

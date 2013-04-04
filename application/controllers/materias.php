@@ -33,7 +33,7 @@ class Materias extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -71,7 +71,7 @@ class Materias extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('materias/listar');
@@ -274,11 +274,6 @@ class Materias extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->is_admin()){
-      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('materias/listar');
-    }
     //verifico datos POST
     $this->form_validation->set_rules('idDocente','Docente','is_natural_no_zero|required');
     $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
@@ -288,9 +283,30 @@ class Materias extends CI_Controller{
     $idMateria = (int)$this->input->post('idMateria');
     if($this->form_validation->run()){
       $this->load->model('Materia');
-      $this->Materia->idMateria = $idMateria;
+      $this->load->model('Carrera');
+      $this->load->model('Gestor_materias','gm');
+      $materia = $this->gm->dame($idMateria);
+      if (!$materia){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('materias/ver/'.$idMateria);
+      }
+      
+      $pass = false;
+      $carreras = $materia->listarCarreras(); //listar las carreras a la que pertenece la materia
+      //verifico si el usuario es un director de alguna carrera a la que pertenece la materia o un jefe de depto
+      foreach ($carreras as $carrera) {
+        if($carrera->idOrganizador == $this->data['usuarioLogin']->id) {$pass=true; break;}
+      }
+        
+      if (!($this->ion_auth->is_admin() || $pass )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('materias/ver/'.$idMateria);
+      }
+      
       //creo la asociacion y cargo vista para mostrar resultado
-      $res = $this->Materia->asociarDocente((int)$this->input->post('idDocente'),
+      $res = $materia->asociarDocente((int)$this->input->post('idDocente'),
                                             $this->input->post('tipoAcceso'), 
                                             (int)$this->input->post('ordenFormulario'),
                                             $this->input->post('cargo', TRUE));
@@ -317,20 +333,35 @@ class Materias extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->is_admin()){
-      $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
-      $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
-      redirect('materias/listar');
-    }
     //verifico datos POST
     $this->form_validation->set_rules('idDocente','Materia','is_natural_no_zero|required');
     $this->form_validation->set_rules('idMateria','Carrera','is_natural_no_zero|required');
     $idMateria = (int)$this->input->post('idMateria');
     if($this->form_validation->run()){
       $this->load->model('Materia');
-      $this->Materia->idMateria = $idMateria;
+      $this->load->model('Carrera');
+      $this->load->model('Gestor_materias','gm');
+      $materia = $this->gm->dame($idMateria);
+      if (!$materia){
+        $this->session->set_flashdata('resultadoOperacion', 'Los datos ingresados son incorrectos.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+        redirect('materias/ver/'.$idMateria);
+      }
+      
+      $pass = false;
+      $carreras = $materia->listarCarreras(); //listar las carreras a la que pertenece la materia
+      //verifico si el usuario es un director de alguna carrera a la que pertenece la materia o un jefe de depto
+      foreach ($carreras as $carrera) {
+        if($carrera->idOrganizador == $this->data['usuarioLogin']->id) {$pass=true; break;}
+      }
+      if (!($this->ion_auth->is_admin() || $pass )){
+        $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('materias/ver/'.$idMateria);
+      }
+      
       //creo la asociacion y cargo vista para mostrar resultado
-      $res = $this->Materia->desasociarDocente((int)$this->input->post('idDocente'));
+      $res = $materia->desasociarDocente((int)$this->input->post('idDocente'));
       if ($res == PROCEDURE_SUCCESS){
         $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
         $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);

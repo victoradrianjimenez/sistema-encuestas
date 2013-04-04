@@ -29,11 +29,8 @@ class Usuarios extends CI_Controller{
   public function listarDecanos($pagInicio=0){
     $this->_listarGrupo($pagInicio,'decanos',site_url("usuarios/listarDecanos"));
   }
-  public function listarJefesDepartamentos($pagInicio=0){
-    $this->_listarGrupo($pagInicio,'jefes_departamentos',site_url("usuarios/listarJefesDepartamentos"));
-  }
-  public function listarDirectores($pagInicio=0){
-    $this->_listarGrupo($pagInicio,'directores',site_url("usuarios/listarDirectores"));
+  public function listarAlumnos($pagInicio=0){
+    $this->_listarGrupo($pagInicio,'alumnos',site_url("usuarios/listarAlumnos"));
   }
   public function listarDocentes($pagInicio=0){
     $this->_listarGrupo($pagInicio,'docentes',site_url("usuarios/listarDocentes"));
@@ -44,7 +41,7 @@ class Usuarios extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -61,7 +58,7 @@ class Usuarios extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -130,8 +127,9 @@ class Usuarios extends CI_Controller{
     $this->Usuario->email = $this->input->post('email',TRUE);
     $this->Usuario->active = (isset($_POST['active'])) ? $this->input->post('active') : 1;
     $noImagen = ((bool)$this->input->post('noImagen')); //si es verdadero, se debe eliminar foto del usuario
-    $grupos = ($this->input->post('grupos'))? $this->input->post('grupos') : array(); //leo los grupos a los que pertenece el nuevo usuario
-    
+    $grupos = $this->ion_auth->groups()->result();
+    $usuario_grupos = ($this->input->post('grupos')) ? $this->input->post('grupos') : array(3); //grupo de docentes por defecto activado
+      
     //verifico datos POST
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
@@ -162,7 +160,7 @@ class Usuarios extends CI_Controller{
           'active' => $this->Usuario->active,
           'idImagen' => $idImagen
         );
-        $res = $this->ion_auth->register($this->Usuario->username, $this->input->post('password'), $this->Usuario->email, $additional_data, $grupos);
+        $res = $this->ion_auth->register($this->Usuario->username, $this->input->post('password'), $this->Usuario->email, $additional_data, $usuario_grupos);
         if (is_numeric($res)){
           $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
           $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
@@ -174,9 +172,9 @@ class Usuarios extends CI_Controller{
     }
     //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
     $this->data['usuario'] = $this->Usuario;
-    $this->data['usuario_grupos'] = &$grupos;
-    $this->data['grupos'] = $this->ion_auth->groups()->result();
-    $this->data['noImagen'] = $noImagen;
+    $this->data['usuario_grupos'] = &$usuario_grupos;
+    $this->data['grupos'] = &$grupos;
+    $this->data['noImagen'] = &$noImagen;
     $this->data['tituloFormulario'] = 'Nuevo Usuario';
     $this->data['urlFormulario'] = site_url('usuarios/nuevo');
     $this->load->view('editar_usuario', $this->data);
@@ -212,8 +210,16 @@ class Usuarios extends CI_Controller{
     $this->Usuario->email = $this->input->post('email',TRUE);
     $this->Usuario->active = (isset($_POST['active'])) ? $this->input->post('active') : 1;
     $noImagen = ((bool)$this->input->post('noImagen')); //si es verdadero, se debe eliminar foto del usuario
-    $grupos = ($this->input->post('grupos'))? $this->input->post('grupos') : array(); //leo los grupos a los que pertenece el nuevo usuario
-    
+    if (!$this->input->post('grupos')){
+      $i = 0;
+      $usuario_grupos = array();
+      foreach ($this->ion_auth->get_users_groups($id)->result() as $grupo) {
+        $usuario_grupos[$i++] = $grupo->id;
+      }
+    }
+    else{
+      $usuario_grupos = $this->input->post('grupos');
+    }
     //verifico datos POST
     $this->form_validation->set_rules('id','Identificador','is_natural_no_zero|required');
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
@@ -259,7 +265,7 @@ class Usuarios extends CI_Controller{
         }
         //agrego al usuario a los grupos elegidos
         $this->ion_auth->remove_from_group(NULL, $this->Usuario->id);
-        foreach ($grupos as $g) {
+        foreach ($this->input->post('grupos') as $g) {
           $this->ion_auth->add_to_group($g, $this->Usuario->id);
         }
         //modifico datos y cargo vista para mostrar resultado
@@ -289,7 +295,7 @@ class Usuarios extends CI_Controller{
       redirect('usuarios/listar');
     }
     $this->data['usuario'] = $this->Usuario;
-    $this->data['usuario_grupos'] = $this->ion_auth->get_users_groups($id)->result();
+    $this->data['usuario_grupos'] = &$usuario_grupos;
     $this->data['grupos'] = $this->ion_auth->groups()->result();
     $this->data['noImagen'] = $noImagen;
     $this->data['tituloFormulario'] = 'Modificar Usuario';
@@ -398,6 +404,13 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('id','Usuario','is_natural_no_zero|required');
     if($this->form_validation->run()){
       $this->load->model('Gestor_usuarios','gu');
+      
+      if ((int)$this->input->post('id') == (int)$this->data['usuarioLogin']){
+        $this->session->set_flashdata('resultadoOperacion', 'El administrador no puede borrar su propia cuenta.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
+        redirect('usuarios/listar');
+      }
+
       //doy de baja y cargo vista para mostrar resultado
       $res = $this->gu->baja((int)$this->input->post('id'));
       if ($res == PROCEDURE_SUCCESS){

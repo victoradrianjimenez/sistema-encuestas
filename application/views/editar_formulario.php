@@ -116,8 +116,8 @@
       </select>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
       <button class="btn btn-primary agregarSeccion">Agregar</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
     </div>
   </div>
   
@@ -135,8 +135,8 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
       <button class="btn btn-primary agregarPregunta">Agregar</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
     </div>
   </div>
   

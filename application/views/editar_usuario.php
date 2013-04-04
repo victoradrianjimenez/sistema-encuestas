@@ -22,14 +22,7 @@
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <h4>Navegación</h4>
-          <ul class="nav nav-pills nav-stacked">      
-            <li class="active"><a href="<?php echo site_url("usuarios")?>">Todos los usuarios</a></li>
-            <li><a href="<?php echo site_url("usuarios/listarDecanos")?>">Decano</a></li>
-            <li><a href="<?php echo site_url("usuarios/listarJefesDepartamentos")?>">Jefes de departamento</a></li>
-            <li><a href="<?php echo site_url("usuarios/listarDirectores")?>">Directores de carrera</a></li>
-            <li><a href="<?php echo site_url("usuarios/listarDocentes")?>">Docentes</a></li>
-          </ul>
+          <?php include 'templates/submenu-usuarios.php'?>
         </div>
         
         <!-- Main -->
@@ -109,7 +102,7 @@
                       $selected = '';
                       //verifico si el el usuario pertenece al grupo actual
                       foreach ($usuario_grupos as $g) {
-                        if ($grupo->id == $g->id){
+                        if ($grupo->id == $g){
                           $selected = 'checked="checked"';
                           break;
                         }

@@ -23,9 +23,9 @@ class Informes extends CI_Controller{
       if ($this->ion_auth->logged_in()){
         $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);    
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !empty($datosDocente) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) )){    
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+            (!empty($datosDocente) && $datosDocente['tipoAcceso']==TIPO_ACCESO_JEFE_CATEDRA) )){    
           //mostrar solo resultado del usuario logueado
           $docentes = array();
           if ($this->data['usuarioLogin']){
@@ -143,9 +143,9 @@ class Informes extends CI_Controller{
       }
       $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
       if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+          ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+          (!empty($datosDocente)) )){
         $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por clave de acceso. Sólo pueden verlos los docentes y autoridades correspondientes.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/clave');
@@ -281,9 +281,9 @@ class Informes extends CI_Controller{
         //obtener datos del usuario logueado
         $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+            (!empty($datosDocente)) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por materia. Sólo pueden verlos los docentes y autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/materia'); 
@@ -405,8 +405,8 @@ class Informes extends CI_Controller{
           redirect('informes/carrera');
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por carrera. Sólo pueden verlos las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/carrera');
@@ -521,7 +521,7 @@ class Informes extends CI_Controller{
           redirect('informes/departamento');
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver informes por departamento. Sólo pueden verlos las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/departamento');
@@ -745,9 +745,9 @@ class Informes extends CI_Controller{
       }
       $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id);
       if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-          ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
-          ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+          ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+          ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+          (!empty($datosDocente)) )){
         $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para descargar la planilla de cálculo. Sólo los docentes de cátedra o las autoridades correspondientes pueden hacerlo.');
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('informes/materia');
@@ -888,8 +888,8 @@ class Informes extends CI_Controller{
           redirect('informes/carrera');
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para descargar los datos de la carrera. Sólo pueden hacerlo las autoridades correspondientes.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('informes/carrera');

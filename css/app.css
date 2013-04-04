@@ -117,15 +117,8 @@ i.icon-circle-remove{
 }
 
 /* ubicacion del icono del imput para buscar */
-.buscador {
-  position: relative;
-}
 .buscador i{
-  position: absolute; right: 0; top:0; margin:7px;
-  filter:alpha(opacity=20);-moz-opacity:.20;opacity:.20;
-}
-.buscador i.activo{
-  filter:alpha(opacity=100);-moz-opacity:1;opacity:1;
+  display:none;
 }
 
 /*estas clases permiten centrar un div en resoluciones de dispositivos moviles */

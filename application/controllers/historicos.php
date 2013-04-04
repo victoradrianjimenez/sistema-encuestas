@@ -65,9 +65,9 @@ class Historicos extends CI_Controller{
         //obtener datos del usuario logueado
         $datosDocente = $materia->dameDatosDocente($this->data['usuarioLogin']->id); 
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('docentes') && !empty($datosDocente)) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) ||
+            (!empty($datosDocente)) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por materia.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('historicos/materia');
@@ -138,8 +138,8 @@ class Historicos extends CI_Controller{
           redirect('historicos/carrera');
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
-            ($this->ion_auth->in_group('directores') && $carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) ||
+            ($carrera->idDirectorCarrera == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por carrera.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('historicos/carrera');
@@ -205,7 +205,7 @@ class Historicos extends CI_Controller{
           redirect('historicos/departamento');
         }
         if(!($this->ion_auth->in_group(array('admin','decanos')) ||
-            ($this->ion_auth->in_group('jefes_departamentos') && $departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
+            ($departamento->idJefeDepartamento == $this->data['usuarioLogin']->id) )){
           $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para ver históricos por departamento.');
           $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
           redirect('historicos/departamento');

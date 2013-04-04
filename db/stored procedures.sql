@@ -40,7 +40,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_listar_carreras_materia`(
 	pidMateria SMALLINT UNSIGNED)
 BEGIN
-	SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan, 
+	SELECT  C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.idOrganizador, C.nombre, C.plan, 
 			C.publicarInformes, C.publicarHistoricos
     FROM    Carreras C INNER JOIN Materias_Carreras MC ON C.idCarrera = MC.idCarrera
 	WHERE	MC.idMateria = pidMateria
@@ -722,7 +722,7 @@ DELIMITER ;
 -- CREATE PROCEDURE `esp_listar_carreras_departamento`(
 --     pidDepartamento SMALLINT UNSIGNED)
 -- BEGIN
---     SELECT  idDepartamento, idCarrera, idDirectorCarrera, nombre, plan, publicarInformes, publicarHistoricos
+--     SELECT  idDepartamento, idCarrera, idDirectorCarrera, idOrganizador, nombre, plan, publicarInformes, publicarHistoricos
 --     FROM    Carreras
 --     WHERE   idDepartamento = pidDepartamento
 --     ORDER BY nombre, plan DESC;
@@ -1009,7 +1009,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_dame_carrera`(
     pidCarrera SMALLINT UNSIGNED)
 BEGIN
-    SELECT	idCarrera, idDepartamento, idDirectorCarrera, nombre, plan,
+    SELECT	idCarrera, idDepartamento, idDirectorCarrera, idOrganizador, nombre, plan,
 			publicarInformes, publicarHistoricos
     FROM Carreras
     WHERE idCarrera = pidCarrera;
@@ -1157,6 +1157,7 @@ DELIMITER $$
 CREATE PROCEDURE `esp_alta_carrera`(
     pidDepartamento SMALLINT UNSIGNED,
 	pidDirectorCarrera INT UNSIGNED,
+	pidOrganizador INT UNSIGNED,
     pnombre VARCHAR(60),
     pplan SMALLINT UNSIGNED,
 	ppublicarInformes CHAR(1),
@@ -1179,6 +1180,9 @@ BEGIN
         ELSEIF pidDirectorCarrera IS NOT NULL AND NOT EXISTS(SELECT id FROM Usuarios WHERE id = pidDirectorCarrera LIMIT 1) THEN
             SET mensaje = 'No existe el director de carrera seleccionado.';
             ROLLBACK;
+        ELSEIF pidOrganizador IS NOT NULL AND NOT EXISTS(SELECT id FROM Usuarios WHERE id = pidOrganizador LIMIT 1) THEN
+            SET mensaje = 'No existe el usuario para el rol de organizador seleccionado.';
+            ROLLBACK;
         ELSEIF EXISTS(  SELECT nombre FROM Carreras 
                         WHERE nombre = pnombre AND plan=pplan LIMIT 1) THEN
             SET mensaje = CONCAT('Ya existe una carrera del plan ', pplan,' que se llama ', pnombre, '.');
@@ -1188,8 +1192,8 @@ BEGIN
                 SELECT COALESCE(MAX(idCarrera),0)+1 
                 FROM    Carreras FOR UPDATE);
             INSERT INTO Carreras 
-                (idCarrera, idDepartamento, idDirectorCarrera, nombre, plan, publicarInformes, publicarHistoricos)
-            VALUES (nid, pidDepartamento, pidDirectorCarrera, pnombre, pplan, ppublicarInformes, ppublicarHistoricos);
+                (idCarrera, idDepartamento, idDirectorCarrera, idOrganizador, nombre, plan, publicarInformes, publicarHistoricos)
+            VALUES (nid, pidDepartamento, pidDirectorCarrera, pidOrganizador, pnombre, pplan, ppublicarInformes, ppublicarHistoricos);
             IF err THEN
                 SET mensaje = 'Error inesperado al intentar acceder a la base de datos.';
                 ROLLBACK;
@@ -1254,6 +1258,7 @@ CREATE PROCEDURE `esp_modificar_carrera`(
     pidCarrera SMALLINT UNSIGNED,
     pidDepartamento SMALLINT UNSIGNED,
 	pidDirectorCarrera INT UNSIGNED,
+	pidOrganizador INT UNSIGNED,
     pnombre VARCHAR(60),
     pplan SMALLINT UNSIGNED,
 	ppublicarInformes CHAR(1),
@@ -1278,9 +1283,12 @@ BEGIN
         ELSEIF pidDirectorCarrera IS NOT NULL AND NOT EXISTS( SELECT id FROM Usuarios WHERE id = pidDirectorCarrera LIMIT 1) THEN
             SET mensaje = 'No existe el director de carreras seleccionado.';
             ROLLBACK;
+        ELSEIF pidOrganizador IS NOT NULL AND NOT EXISTS(SELECT id FROM Usuarios WHERE id = pidOrganizador LIMIT 1) THEN
+            SET mensaje = 'No existe el usuario para el rol de organizador seleccionado.';
+            ROLLBACK;
         ELSE    
             UPDATE Carreras 
-            SET idDepartamento=pidDepartamento, idDirectorCarrera=pidDirectorCarrera, nombre = pnombre, 
+            SET idDepartamento=pidDepartamento, idDirectorCarrera=pidDirectorCarrera, idOrganizador=pidOrganizador, nombre = pnombre, 
 				plan = pplan, publicarInformes=ppublicarInformes, publicarHistoricos=ppublicarHistoricos
             WHERE idCarrera = pidCarrera;
             IF err THEN
@@ -1308,7 +1316,7 @@ CREATE PROCEDURE `esp_listar_carreras`(
     pPagLongitud INT UNSIGNED)
 BEGIN
     SET @qry = '
-    SELECT  idCarrera, idDepartamento, idDirectorCarrera, nombre, plan,
+    SELECT  idCarrera, idDepartamento, idDirectorCarrera, idOrganizador, nombre, plan,
 			publicarInformes, publicarHistoricos
     FROM    Carreras
     ORDER BY nombre, plan DESC
@@ -1716,7 +1724,7 @@ CREATE PROCEDURE `esp_buscar_carreras`(
 	pnombre VARCHAR(60))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
-		SELECT	idCarrera, idDepartamento, idDirectorCarrera, nombre, plan,
+		SELECT	idCarrera, idDepartamento, idDirectorCarrera, idOrganizador, nombre, plan,
 				publicarInformes, publicarHistoricos
 		FROM	Carreras
 		WHERE	nombre like CONCAT('%',pnombre,'%')
@@ -2907,6 +2915,9 @@ BEGIN
     ELSEIF EXISTS(SELECT idDirectorCarrera FROM Carreras WHERE idDirectorCarrera = pid LIMIT 1) THEN
         SET mensaje = 'No se puede eliminar, existe una carrera que lo tiene como Director de Carrera.';
         ROLLBACK;
+    ELSEIF EXISTS(SELECT idOrganizador FROM Carreras WHERE idOrganizador = pid LIMIT 1) THEN
+        SET mensaje = 'No se puede eliminar, existe una carrera que lo tiene como Organizador.';
+        ROLLBACK;
     ELSE
 		SET pidImagen = (SELECT idImagen FROM Usuarios WHERE id=pid LIMIT 1);
 		DELETE FROM Usuarios_Grupos
@@ -3555,7 +3566,7 @@ DELIMITER ;
 -- CREATE PROCEDURE `esp_listar_carreras_docente`(
 -- 	pid INT UNSIGNED)
 -- BEGIN
---     SELECT  DISTINCT C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.nombre, C.plan,
+--     SELECT  DISTINCT C.idCarrera, C.idDepartamento, C.idDirectorCarrera, C.idOrganizador, C.nombre, C.plan,
 -- 			C.publicarInformes, C.publicarHistoricos
 --     FROM    Carreras C 
 -- 			INNER JOIN Materias_Carreras MC ON MC.idCarrera = C.idCarrera

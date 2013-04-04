@@ -143,8 +143,8 @@
       </label>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
       <button class="btn btn-primary agregarOpcion">Agregar</button>
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cerrar</button>
     </div>
   </div>
   

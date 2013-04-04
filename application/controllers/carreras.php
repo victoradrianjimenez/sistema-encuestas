@@ -34,7 +34,7 @@ class Carreras extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
@@ -87,7 +87,7 @@ class Carreras extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif (!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('carreras/listar');
@@ -164,6 +164,7 @@ class Carreras extends CI_Controller{
     //leo los datos POST
     $this->Carrera->idDepartamento = (int)$this->input->post('idDepartamento');
     $this->Carrera->idDirectorCarrera = ($this->input->post('idDirectorCarrera')>0) ? $this->input->post('idDirectorCarrera') : NULL;
+    $this->Carrera->idOrganizador = ($this->input->post('idOrganizador')>0) ? $this->input->post('idOrganizador') : NULL;
     $this->Carrera->nombre = $this->input->post('nombre',TRUE);
     $this->Carrera->plan = ($this->input->post('plan')) ? (int)$this->input->post('plan') : date('Y');
     $this->Carrera->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
@@ -172,12 +173,14 @@ class Carreras extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idDirectorCarrera','Director de Carrera','is_natural_no_zero');
+    $this->form_validation->set_rules('idOrganizador','Organizador de Carrera','is_natural_no_zero');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
     $this->form_validation->set_rules('plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');      
     if($this->form_validation->run()){
       //agrego carrera y cargo vista para mostrar resultado
       $res = $this->gc->alta( $this->Carrera->idDepartamento,
                               $this->Carrera->idDirectorCarrera,
+                              $this->Carrera->idOrganizador,
                               $this->Carrera->nombre,
                               $this->Carrera->plan,
                               $this->Carrera->publicarInformes,
@@ -197,6 +200,7 @@ class Carreras extends CI_Controller{
     $this->data['carrera'] = &$this->Carrera; //datos por defecto de una nueva carrera
     $this->data['departamento'] = &$this->Departamento;
     $this->data['director'] = &$this->Usuario;
+    $this->data['organizador'] = &$this->Usuario;
     $this->data['tituloFormulario'] = 'Nueva Carrera';
     $this->data['urlFormulario'] = site_url('carreras/nueva');
     $this->load->view('editar_carrera', $this->data);
@@ -230,6 +234,7 @@ class Carreras extends CI_Controller{
     $this->Carrera->idCarrera = (int)$this->input->post('idCarrera');
     $this->Carrera->idDepartamento = (int)$this->input->post('idDepartamento');
     $this->Carrera->idDirectorCarrera = ($this->input->post('idDirectorCarrera')>0) ? $this->input->post('idDirectorCarrera') : NULL;
+    $this->Carrera->idOrganizador = ($this->input->post('idOrganizador')>0) ? $this->input->post('idOrganizador') : NULL;
     $this->Carrera->nombre = $this->input->post('nombre',TRUE);
     $this->Carrera->plan = ($this->input->post('plan')) ? (int)$this->input->post('plan') : date('Y');
     $this->Carrera->publicarInformes = ($this->input->post('publicarInformes')) ? RESPUESTA_SI : RESPUESTA_NO;
@@ -238,6 +243,7 @@ class Carreras extends CI_Controller{
     //verifico datos POST
     $this->form_validation->set_rules('idDepartamento','Departamento','is_natural_no_zero|required');
     $this->form_validation->set_rules('idDirectorCarrera','Director de Carrera','is_natural_no_zero');
+    $this->form_validation->set_rules('idOrganizador','Organizador de Carrera','is_natural_no_zero');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[60]|required');
     $this->form_validation->set_rules('plan','Plan','is_natural_no_zero|less_than[2100]|greater_than[1900]|required');      
     if($this->form_validation->run()){
@@ -246,6 +252,7 @@ class Carreras extends CI_Controller{
       $res = $this->gc->modificar($this->Carrera->idCarrera,
                                   $this->Carrera->idDepartamento,
                                   $this->Carrera->idDirectorCarrera,
+                                  $this->Carrera->idOrganizador,
                                   $this->Carrera->nombre,
                                   $this->Carrera->plan,
                                   $this->Carrera->publicarInformes,
@@ -266,11 +273,14 @@ class Carreras extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
         redirect('carreras/listar');
     }
+    
+    $organizador = ($this->Carrera->idOrganizador) ? $this->gu->dame($this->Carrera->idOrganizador) : $this->Usuario;
     if ($this->Carrera->idDirectorCarrera) $this->Usuario = $this->gu->dame($this->Carrera->idDirectorCarrera);
     if ($this->Carrera->idDepartamento) $this->Departamento = $this->gd->dame($this->Carrera->idDepartamento);
     $this->data['carrera'] = &$this->Carrera;
     $this->data['departamento'] = &$this->Departamento;
     $this->data['director'] = &$this->Usuario;
+    $this->data['organizador'] = &$organizador;
     $this->data['tituloFormulario'] = 'Modificar Carrera';
     $this->data['urlFormulario'] = site_url('carreras/modificar/'.$idCarrera);
     $this->load->view('editar_carrera', $this->data);

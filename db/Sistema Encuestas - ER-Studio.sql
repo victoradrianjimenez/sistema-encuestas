@@ -2,33 +2,20 @@
 -- ER/Studio 7.1 SQL Code Generation
 -- Project :      Sistema Encuestas.dm1
 --
--- Date Created : Wednesday, January 30, 2013 03:53:39
+-- Date Created : Thursday, April 04, 2013 00:50:50
 -- Target DBMS : MySQL 5.x
 --
 
 -- 
--- TABLE: Alumnos 
+-- TABLE: captcha 
 --
 
-CREATE TABLE Alumnos(
-    cx        CHAR(7)        NOT NULL,
-    nombre    VARCHAR(80)    NOT NULL,
-    PRIMARY KEY (cx)
-)ENGINE=INNODB
-;
-
-
-
--- 
--- TABLE: Alumnos_Materias 
---
-
-CREATE TABLE Alumnos_Materias(
-    cx                 CHAR(7)     NOT NULL,
-    idMateria          SMALLINT UNSIGNED  NOT NULL,
-    fechaIncripcion    DATE        NOT NULL,
-    completada         CHAR(1)     DEFAULT 'N' NOT NULL,
-    PRIMARY KEY (cx, idMateria)
+CREATE TABLE captcha(
+    captcha_id      BIGINT UNSIGNED  AUTO_INCREMENT,
+    captcha_time    INT UNSIGNED   NOT NULL,
+    ip_address      VARCHAR(16)    DEFAULT '0' NOT NULL,
+    word            VARCHAR(20)    NOT NULL,
+    PRIMARY KEY (captcha_id)
 )ENGINE=INNODB
 ;
 
@@ -39,12 +26,15 @@ CREATE TABLE Alumnos_Materias(
 --
 
 CREATE TABLE Carreras(
-    IdCarrera            SMALLINT UNSIGNED  NOT NULL,
-    idDepartamento       SMALLINT UNSIGNED  NOT NULL,
-    idDirectorCarrera    INT UNSIGNED,
-    nombre               VARCHAR(60)    NOT NULL,
-    plan                 SMALLINT UNSIGNED  NOT NULL,
-    PRIMARY KEY (IdCarrera)
+    idCarrera             SMALLINT UNSIGNED  NOT NULL,
+    idDepartamento        SMALLINT UNSIGNED  NOT NULL,
+    idDirectorCarrera     INT UNSIGNED,
+    idOrganizador         INT UNSIGNED,
+    nombre                VARCHAR(60)    NOT NULL,
+    plan                  SMALLINT UNSIGNED  NOT NULL,
+    publicarInformes      CHAR(1)        DEFAULT 'N' NOT NULL,
+    publicarHistoricos    CHAR(1)        DEFAULT 'N' NOT NULL,
+    PRIMARY KEY (idCarrera)
 )ENGINE=INNODB
 ;
 
@@ -57,14 +47,13 @@ CREATE TABLE Carreras(
 CREATE TABLE Claves(
     idClave         INT UNSIGNED  NOT NULL,
     idMateria       SMALLINT UNSIGNED  NOT NULL,
-    IdCarrera       SMALLINT UNSIGNED  NOT NULL,
+    idCarrera       SMALLINT UNSIGNED  NOT NULL,
     idEncuesta      INT UNSIGNED  NOT NULL,
     idFormulario    INT UNSIGNED  NOT NULL,
     clave           CHAR(16)    NOT NULL,
-    tipo            CHAR(1)     NOT NULL,
     generada        DATETIME    NOT NULL,
     utilizada       DATETIME,
-    PRIMARY KEY (idClave, idMateria, IdCarrera, idEncuesta, idFormulario)
+    PRIMARY KEY (idClave, idMateria, idCarrera, idEncuesta, idFormulario)
 )ENGINE=INNODB
 ;
 
@@ -78,6 +67,8 @@ CREATE TABLE Departamentos(
     idDepartamento        SMALLINT UNSIGNED  NOT NULL,
     idJefeDepartamento    INT UNSIGNED,
     nombre                VARCHAR(60)    NOT NULL,
+    publicarInformes      CHAR(1)        DEFAULT 'N' NOT NULL,
+    publicarHistoricos    CHAR(1)        DEFAULT 'N' NOT NULL,
     PRIMARY KEY (idDepartamento)
 )ENGINE=INNODB
 ;
@@ -111,7 +102,8 @@ CREATE TABLE Devoluciones(
 
 CREATE TABLE Docentes_Materias(
     idDocente          INT UNSIGNED   NOT NULL,
-    idMateria          SMALLINT UNSIGNED  NOT NULL,		tipoAcceso         CHAR(1) DEFAULT 'D' NOT NULL,
+    idMateria          SMALLINT UNSIGNED  NOT NULL,
+    tipoAcceso         CHAR(1)        DEFAULT 'D' NOT NULL,
     ordenFormulario    TINYINT UNSIGNED  NOT NULL,
     cargo              VARCHAR(40),
     PRIMARY KEY (idDocente, idMateria)
@@ -127,6 +119,7 @@ CREATE TABLE Docentes_Materias(
 CREATE TABLE Encuestas(
     idEncuesta      INT UNSIGNED  NOT NULL,
     idFormulario    INT UNSIGNED  NOT NULL,
+    tipo            CHAR(1)     DEFAULT 'A' NOT NULL,
     año             SMALLINT UNSIGNED  NOT NULL,
     cuatrimestre    TINYINT UNSIGNED  NOT NULL,
     fechaInicio     DATETIME    NOT NULL,
@@ -147,7 +140,7 @@ CREATE TABLE Formularios(
     titulo                  VARCHAR(200)    NOT NULL,
     descripcion             VARCHAR(200),
     creacion                DATETIME        NOT NULL,
-    preguntasAdicionales    TINYINT UNSIGNED  NOT NULL,
+    preguntasAdicionales    TINYINT         NOT NULL,
     PRIMARY KEY (idFormulario)
 )ENGINE=INNODB
 ;
@@ -159,10 +152,24 @@ CREATE TABLE Formularios(
 --
 
 CREATE TABLE Grupos(
-    id             INT UNSIGNED    AUTO_INCREMENT,
+    id             INT UNSIGNED    NOT NULL,
     name           VARCHAR(20)     NOT NULL,
     description    VARCHAR(100)    NOT NULL,
     PRIMARY KEY (id)
+)ENGINE=INNODB
+;
+
+
+
+-- 
+-- TABLE: Imagenes 
+--
+
+CREATE TABLE Imagenes(
+    idImagen    INT UNSIGNED NOT NULL,
+    imagen      LONGBLOB     NOT NULL,
+    tipo        CHAR(200)    NOT NULL,
+    PRIMARY KEY (idImagen)
 )ENGINE=INNODB
 ;
 
@@ -173,12 +180,13 @@ CREATE TABLE Grupos(
 --
 
 CREATE TABLE Items(
+    idItem          INT UNSIGNED  NOT NULL,
     idSeccion       INT UNSIGNED  NOT NULL,
     idFormulario    INT UNSIGNED  NOT NULL,
     idPregunta      INT UNSIGNED  NOT NULL,
-    IdCarrera       SMALLINT UNSIGNED,
+    idCarrera       SMALLINT UNSIGNED,
     posicion        TINYINT UNSIGNED  NOT NULL,
-    PRIMARY KEY (idSeccion, idFormulario, idPregunta)
+    PRIMARY KEY (idSeccion, idFormulario, idItem)
 )ENGINE=INNODB
 ;
 
@@ -189,13 +197,12 @@ CREATE TABLE Items(
 --
 
 CREATE TABLE Items_Carreras(
-    IdCarrera       SMALLINT UNSIGNED  NOT NULL,
+    idCarrera       SMALLINT UNSIGNED  NOT NULL,
+    idItem          INT UNSIGNED     NOT NULL,
     idSeccion       INT UNSIGNED     NOT NULL,
     idFormulario    INT UNSIGNED     NOT NULL,
-    idPregunta      INT UNSIGNED     NOT NULL,
-    posicion        TINYINT UNSIGNED NOT NULL,
     importancia     DECIMAL(3, 2) UNSIGNED  DEFAULT 1 NOT NULL,
-    PRIMARY KEY (IdCarrera, idSeccion, idFormulario, idPregunta)
+    PRIMARY KEY (idCarrera, idSeccion, idFormulario, idItem)
 )ENGINE=INNODB
 ;
 
@@ -206,10 +213,12 @@ CREATE TABLE Items_Carreras(
 --
 
 CREATE TABLE Materias(
-    idMateria    SMALLINT UNSIGNED  NOT NULL,
-    nombre       VARCHAR(60)    NOT NULL,
-    codigo       CHAR(5)        NOT NULL,
-    alumnos      SMALLINT UNSIGNED  DEFAULT 0 NOT NULL,
+    idMateria               SMALLINT UNSIGNED  NOT NULL,
+    nombre                  VARCHAR(60)    NOT NULL,
+    codigo                  CHAR(5)        NOT NULL,
+    publicarInformes        CHAR(1)        DEFAULT 'N' NOT NULL,
+    publicarHistoricos      CHAR(1)        DEFAULT 'N' NOT NULL,
+    publicarDevoluciones    CHAR(1)        DEFAULT 'N' NOT NULL,
     PRIMARY KEY (idMateria)
 )ENGINE=INNODB
 ;
@@ -222,8 +231,9 @@ CREATE TABLE Materias(
 
 CREATE TABLE Materias_Carreras(
     idMateria    SMALLINT UNSIGNED  NOT NULL,
-    IdCarrera    SMALLINT UNSIGNED  NOT NULL,
-    PRIMARY KEY (idMateria, IdCarrera)
+    idCarrera    SMALLINT UNSIGNED  NOT NULL,
+    alumnos      SMALLINT UNSIGNED  DEFAULT '0' NOT NULL,
+    PRIMARY KEY (idMateria, idCarrera)
 )ENGINE=INNODB
 ;
 
@@ -249,16 +259,14 @@ CREATE TABLE Opciones(
 
 CREATE TABLE Preguntas(
     idPregunta        INT UNSIGNED     NOT NULL,
-    IdCarrera         SMALLINT UNSIGNED,
-    texto             VARCHAR(200)     NOT NULL,
-    descripcion       VARCHAR(200),
-    creacion          DATETIME         NOT NULL,
     tipo              CHAR(1)          NOT NULL,
-    obligatoria       CHAR(1)          NOT NULL,
-    ordenInverso      CHAR(1)          NOT NULL,
+    texto             VARCHAR(250)     NOT NULL,
+    descripcion       VARCHAR(250),
+    creacion          DATETIME         NOT NULL,
+    modoIndice        CHAR(1)          NOT NULL,
     limiteInferior    DECIMAL(7, 2),
     limiteSuperior    DECIMAL(7, 2),
-    paso              DECIMAL(7, 2) UNSIGNED,
+    paso              DECIMAL(7, 2),
     unidad            VARCHAR(10),
     PRIMARY KEY (idPregunta)
 )ENGINE=INNODB
@@ -275,13 +283,13 @@ CREATE TABLE Respuestas(
     idPregunta      INT UNSIGNED  NOT NULL,
     idClave         INT UNSIGNED  NOT NULL,
     idMateria       SMALLINT UNSIGNED  NOT NULL,
-    IdCarrera       SMALLINT UNSIGNED  NOT NULL,
+    idCarrera       SMALLINT UNSIGNED  NOT NULL,
     idEncuesta      INT UNSIGNED  NOT NULL,
     idFormulario    INT UNSIGNED  NOT NULL,
     idDocente       INT UNSIGNED,
     opcion          TINYINT UNSIGNED,
     texto           TEXT,
-    PRIMARY KEY (idRespuesta, idPregunta, idClave, idMateria, IdCarrera, idEncuesta, idFormulario)
+    PRIMARY KEY (idRespuesta, idPregunta, idClave, idMateria, idCarrera, idEncuesta, idFormulario)
 )ENGINE=INNODB
 ;
 
@@ -294,11 +302,24 @@ CREATE TABLE Respuestas(
 CREATE TABLE Secciones(
     idSeccion       INT UNSIGNED    NOT NULL,
     idFormulario    INT UNSIGNED    NOT NULL,
-    IdCarrera       SMALLINT UNSIGNED,
+    idCarrera       SMALLINT UNSIGNED,
     texto           VARCHAR(200)    NOT NULL,
     descripcion     VARCHAR(200),
     tipo            CHAR(1)         DEFAULT 'N' NOT NULL,
     PRIMARY KEY (idSeccion, idFormulario)
+)ENGINE=INNODB
+;
+
+
+
+-- 
+-- TABLE: Tipo_Pregunta 
+--
+
+CREATE TABLE Tipo_Pregunta(
+    idTipo    CHAR(1)     NOT NULL,
+    tipo      CHAR(20)    NOT NULL,
+    PRIMARY KEY (idTipo)
 )ENGINE=INNODB
 ;
 
@@ -310,6 +331,9 @@ CREATE TABLE Secciones(
 
 CREATE TABLE Usuarios(
     id                         INT UNSIGNED     AUTO_INCREMENT,
+    idImagen                   INT UNSIGNED,
+    apellido                   VARCHAR(40)      NOT NULL,
+    nombre                     VARCHAR(40),
     ip_address                 VARBINARY(10)    NOT NULL,
     username                   VARCHAR(100)     NOT NULL,
     password                   VARCHAR(80)      NOT NULL,
@@ -322,8 +346,6 @@ CREATE TABLE Usuarios(
     created_on                 INT UNSIGNED     NOT NULL,
     last_login                 INT UNSIGNED,
     active                     TINYINT UNSIGNED,
-    nombre                     VARCHAR(40),
-    apellido                   VARCHAR(40)      NOT NULL,
     PRIMARY KEY (id)
 )ENGINE=INNODB
 ;
@@ -345,20 +367,53 @@ CREATE TABLE Usuarios_Grupos(
 
 
 -- 
--- TABLE: Alumnos_Materias 
+-- INDEX: AK_word_captcha 
 --
 
-ALTER TABLE Alumnos_Materias ADD CONSTRAINT RefAlumnos48 
-    FOREIGN KEY (cx)
-    REFERENCES Alumnos(cx)
+CREATE UNIQUE INDEX AK_word_captcha ON captcha(word)
 ;
+-- 
+-- INDEX: AK_Nombre_Plan_Carreras 
+--
 
-ALTER TABLE Alumnos_Materias ADD CONSTRAINT RefMaterias84 
-    FOREIGN KEY (idMateria)
-    REFERENCES Materias(idMateria)
+CREATE UNIQUE INDEX AK_Nombre_Plan_Carreras ON Carreras(nombre, plan)
 ;
+-- 
+-- INDEX: AK_claves 
+--
 
+CREATE UNIQUE INDEX AK_claves ON Claves(idEncuesta, idFormulario, clave)
+;
+-- 
+-- INDEX: AK_Nombre_Departamentos 
+--
 
+CREATE UNIQUE INDEX AK_Nombre_Departamentos ON Departamentos(nombre)
+;
+-- 
+-- INDEX: AK_nombre_formulario 
+--
+
+CREATE UNIQUE INDEX AK_nombre_formulario ON Formularios(nombre)
+;
+-- 
+-- INDEX: AK_Codigo_Materias 
+--
+
+CREATE UNIQUE INDEX AK_Codigo_Materias ON Materias(codigo)
+;
+-- 
+-- INDEX: AK_email 
+--
+
+CREATE UNIQUE INDEX AK_email ON Usuarios(email)
+;
+-- 
+-- INDEX: AK_username 
+--
+
+CREATE UNIQUE INDEX AK_username ON Usuarios(username)
+;
 -- 
 -- TABLE: Carreras 
 --
@@ -373,19 +428,24 @@ ALTER TABLE Carreras ADD CONSTRAINT RefUsuarios81
     REFERENCES Usuarios(id)
 ;
 
+ALTER TABLE Carreras ADD CONSTRAINT RefUsuarios88 
+    FOREIGN KEY (idOrganizador)
+    REFERENCES Usuarios(id)
+;
+
 
 -- 
 -- TABLE: Claves 
 --
 
-ALTER TABLE Claves ADD CONSTRAINT RefMaterias_Carreras70 
-    FOREIGN KEY (idMateria, IdCarrera)
-    REFERENCES Materias_Carreras(idMateria, IdCarrera)
-;
-
 ALTER TABLE Claves ADD CONSTRAINT RefEncuestas45 
     FOREIGN KEY (idEncuesta, idFormulario)
     REFERENCES Encuestas(idEncuesta, idFormulario)
+;
+
+ALTER TABLE Claves ADD CONSTRAINT RefMaterias_Carreras70 
+    FOREIGN KEY (idMateria, idCarrera)
+    REFERENCES Materias_Carreras(idMateria, idCarrera)
 ;
 
 
@@ -418,14 +478,14 @@ ALTER TABLE Devoluciones ADD CONSTRAINT RefMaterias71
 -- TABLE: Docentes_Materias 
 --
 
-ALTER TABLE Docentes_Materias ADD CONSTRAINT RefUsuarios82 
-    FOREIGN KEY (idDocente)
-    REFERENCES Usuarios(id)
-;
-
 ALTER TABLE Docentes_Materias ADD CONSTRAINT RefMaterias39 
     FOREIGN KEY (idMateria)
     REFERENCES Materias(idMateria)
+;
+
+ALTER TABLE Docentes_Materias ADD CONSTRAINT RefUsuarios82 
+    FOREIGN KEY (idDocente)
+    REFERENCES Usuarios(id)
 ;
 
 
@@ -454,8 +514,8 @@ ALTER TABLE Items ADD CONSTRAINT RefPreguntas59
 ;
 
 ALTER TABLE Items ADD CONSTRAINT RefCarreras72 
-    FOREIGN KEY (IdCarrera)
-    REFERENCES Carreras(IdCarrera)
+    FOREIGN KEY (idCarrera)
+    REFERENCES Carreras(idCarrera)
 ;
 
 
@@ -464,13 +524,13 @@ ALTER TABLE Items ADD CONSTRAINT RefCarreras72
 --
 
 ALTER TABLE Items_Carreras ADD CONSTRAINT RefCarreras68 
-    FOREIGN KEY (IdCarrera)
-    REFERENCES Carreras(IdCarrera)
+    FOREIGN KEY (idCarrera)
+    REFERENCES Carreras(idCarrera)
 ;
 
 ALTER TABLE Items_Carreras ADD CONSTRAINT RefItems69 
-    FOREIGN KEY (idSeccion, idFormulario, idPregunta)
-    REFERENCES Items(idSeccion, idFormulario, idPregunta)
+    FOREIGN KEY (idItem, idSeccion, idFormulario)
+    REFERENCES Items(idItem, idSeccion, idFormulario)
 ;
 
 
@@ -479,8 +539,8 @@ ALTER TABLE Items_Carreras ADD CONSTRAINT RefItems69
 --
 
 ALTER TABLE Materias_Carreras ADD CONSTRAINT RefCarreras36 
-    FOREIGN KEY (IdCarrera)
-    REFERENCES Carreras(IdCarrera)
+    FOREIGN KEY (idCarrera)
+    REFERENCES Carreras(idCarrera)
 ;
 
 ALTER TABLE Materias_Carreras ADD CONSTRAINT RefMaterias37 
@@ -503,9 +563,9 @@ ALTER TABLE Opciones ADD CONSTRAINT RefPreguntas55
 -- TABLE: Preguntas 
 --
 
-ALTER TABLE Preguntas ADD CONSTRAINT RefCarreras56 
-    FOREIGN KEY (IdCarrera)
-    REFERENCES Carreras(IdCarrera)
+ALTER TABLE Preguntas ADD CONSTRAINT RefTipo_Pregunta86 
+    FOREIGN KEY (tipo)
+    REFERENCES Tipo_Pregunta(idTipo)
 ;
 
 
@@ -514,8 +574,8 @@ ALTER TABLE Preguntas ADD CONSTRAINT RefCarreras56
 --
 
 ALTER TABLE Respuestas ADD CONSTRAINT RefClaves51 
-    FOREIGN KEY (idClave, idMateria, IdCarrera, idEncuesta, idFormulario)
-    REFERENCES Claves(idClave, idMateria, IdCarrera, idEncuesta, idFormulario)
+    FOREIGN KEY (idClave, idMateria, idCarrera, idEncuesta, idFormulario)
+    REFERENCES Claves(idClave, idMateria, idCarrera, idEncuesta, idFormulario)
 ;
 
 ALTER TABLE Respuestas ADD CONSTRAINT RefPreguntas57 
@@ -539,8 +599,18 @@ ALTER TABLE Secciones ADD CONSTRAINT RefFormularios52
 ;
 
 ALTER TABLE Secciones ADD CONSTRAINT RefCarreras73 
-    FOREIGN KEY (IdCarrera)
-    REFERENCES Carreras(IdCarrera)
+    FOREIGN KEY (idCarrera)
+    REFERENCES Carreras(idCarrera)
+;
+
+
+-- 
+-- TABLE: Usuarios 
+--
+
+ALTER TABLE Usuarios ADD CONSTRAINT RefImagenes87 
+    FOREIGN KEY (idImagen)
+    REFERENCES Imagenes(idImagen)
 ;
 
 
@@ -548,12 +618,12 @@ ALTER TABLE Secciones ADD CONSTRAINT RefCarreras73
 -- TABLE: Usuarios_Grupos 
 --
 
-ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefGrupos772 
+ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefGrupos77 
     FOREIGN KEY (id_grupo)
     REFERENCES Grupos(id)
 ;
 
-ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefUsuarios782 
+ALTER TABLE Usuarios_Grupos ADD CONSTRAINT RefUsuarios78 
     FOREIGN KEY (id_usuario)
     REFERENCES Usuarios(id)
 ;

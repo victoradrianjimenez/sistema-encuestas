@@ -63,6 +63,14 @@
                 <?php echo form_error('idDirectorCarrera')?>
               </div>
             </div>
+            <div class="control-group" title="El organizador es aquel usuario encargado de generar claves de acceso y actualizar datos de las materias de la carrera.">
+              <label class="control-label">Organizador: </label>
+              <div class="controls buscador">
+                <input class="input-block-level" name="buscarOrganizador" type="text" data-provide="typeahead" autocomplete="off" value="<?php echo trim($organizador->nombre.' '.$organizador->apellido)?>"><i class="icon-search"></i>
+                <input type="hidden" name="idOrganizador" value="<?php echo $carrera->idOrganizador?>"/>
+                <?php echo form_error('idOrganizador')?>
+              </div>
+            </div>
             <div class="control-group">
               <label class="control-label">Opciones: </label>
               <div class="controls">
@@ -97,7 +105,8 @@
   <script src="<?php echo base_url('js/formularios.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
-    autocompletar_usuario($('#buscarUsuario'), "<?php echo site_url('usuarios/buscarAJAX')?>");
+    autocompletar_usuario($('input[name="buscarUsuario"]'), "<?php echo site_url('usuarios/buscarAJAX')?>");
+    autocompletar_usuario($('input[name="buscarOrganizador"]'), "<?php echo site_url('usuarios/buscarAJAX')?>");
     autocompletar_departamento($('#buscarDepartamento'), "<?php echo site_url('departamentos/buscarAJAX')?>");
   </script>
 </body>

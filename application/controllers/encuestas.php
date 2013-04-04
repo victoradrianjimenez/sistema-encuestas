@@ -32,7 +32,7 @@ class Encuestas extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif(!$this->ion_auth->in_group(array('admin','decanos','jefes_departamentos','directores','docentes'))){
+    elseif(!$this->ion_auth->in_group(array('admin','decanos','docentes'))){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('/');
