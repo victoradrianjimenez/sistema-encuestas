@@ -32,7 +32,27 @@
         <div class="container">
           <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
           <ul class="nav">
-            <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+            <li><a href="#" onclick="window.print()"><i class="icon-print"></i> Imprimir...</a></li>
+            <li>
+              <a class="form"><form action="<?php echo site_url('informes/clave')?>" method="post">
+                <input type="hidden" name="idClave" value="<?php echo $claveAnteriorPosterior[0]?>" />
+                <input type="hidden" name="idEncuesta" value="<?php echo $clave->idEncuesta?>" />
+                <input type="hidden" name="idFormulario" value="<?php echo $clave->idFormulario?>" />
+                <input type="hidden" name="idCarrera" value="<?php echo $clave->idCarrera?>" />
+                <input type="hidden" name="idMateria" value="<?php echo $clave->idMateria?>" />
+                <i class="icon-chevron-left"></i> <input type="submit" name="submit" class="btn btn-link" value="Anterior" <?php if(!$claveAnteriorPosterior[0]) echo 'disabled="disabled"'?>/>
+              </form></a>
+            </li>
+            <li>
+              <a class="form"><form action="<?php echo site_url('informes/clave')?>" method="post">
+                <input type="hidden" name="idClave" value="<?php echo $claveAnteriorPosterior[1]?>" />
+                <input type="hidden" name="idEncuesta" value="<?php echo $clave->idEncuesta?>" />
+                <input type="hidden" name="idFormulario" value="<?php echo $clave->idFormulario?>" />
+                <input type="hidden" name="idCarrera" value="<?php echo $clave->idCarrera?>" />
+                <input type="hidden" name="idMateria" value="<?php echo $clave->idMateria?>" />
+                <input type="submit" name="submit" class="btn btn-link" value="Siguiente" <?php if(!$claveAnteriorPosterior[1]) echo 'disabled="disabled"'?>/> <i class="icon-chevron-right "></i>
+              </form></a>
+            </li>
           </ul>
         </div>
       </div>

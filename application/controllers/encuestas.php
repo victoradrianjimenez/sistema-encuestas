@@ -205,6 +205,32 @@ class Encuestas extends CI_Controller{
       }
     }
   }
+  
+  /*
+   * Funcion para responder solicitudes AJAX
+   * POST: buscar (solo encuestas realizadas para una materias)
+   */
+  public function buscarMateriaAJAX(){
+    $this->form_validation->set_rules('buscar','Buscar','required|is_natural_no_zero');
+    $this->form_validation->set_rules('idMateria','Materia','is_natural_no_zero|required');
+    $this->form_validation->set_rules('idCarrera','Carrera','is_natural_no_zero|required');
+    if($this->form_validation->run()){
+      $this->load->model('Encuesta');
+      $this->load->model('Gestor_encuestas','ge');
+      $encuestas = $this->ge->buscar($this->input->post('buscar'));
+      echo "\n";
+      foreach ($encuestas as $encuesta) {
+        $cantidades = $encuesta->cantidadClavesMateria((int)$this->input->post('idMateria'), (int)$this->input->post('idCarrera'));
+        if ($cantidades['generadas'] > 0){
+          echo  "$encuesta->idEncuesta\t".
+                "$encuesta->idFormulario\t".
+                "$encuesta->año\t".
+                "$encuesta->cuatrimestre\t".
+                "$encuesta->fechaInicio\t\n";
+        }
+      }
+    }
+  }
 }
 
 ?>

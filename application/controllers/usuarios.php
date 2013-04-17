@@ -575,10 +575,10 @@ class Usuarios extends CI_Controller{
       $this->load->model('Gestor_imagenes', 'gi');
       $imagen = $this->gi->dame($idImagen);
       if ($imagen){
-        //ob_end_clean(); A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
+        ob_end_clean(); //A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
         header ('Content-type: '.$imagen->tipo);
         echo base64_decode($imagen->imagen);
-        //ob_end_clean(); A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
+        ob_end_clean(); //A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
       }
       else
         //cargo imagen por defecto

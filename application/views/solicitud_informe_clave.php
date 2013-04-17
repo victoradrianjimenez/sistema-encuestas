@@ -84,13 +84,12 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
-  <script src="<?php echo base_url('js/formularios.js')?>"></script>
+  <script src="<?php echo base_url('js/formularios.min.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
-    autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
     autocompletar_materia($('#buscarMateria'), "<?php echo site_url('carreras/buscarMateriasAJAX')?>");
-    
+    autocompletar_encuesta_materia($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarMateriaAJAX')?>", "<?php echo PERIODO?>");
     //listar claves de acceso al elegir la encuesta
     $('#buscarEncuesta').change(function(){
       $('#listaClaves').empty();

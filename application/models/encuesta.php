@@ -244,13 +244,14 @@ class Encuesta extends CI_Model{
    * @param idenificador de carrera
    * @return array
    */  
-  public function textosPreguntaMateria($idPregunta, $idMateria, $idCarrera){
+  public function textosPreguntaMateria($idPregunta, $idDocente, $idMateria, $idCarrera){
     $idPregunta = $this->db->escape($idPregunta);
+    $idDocente = $this->db->escape($idDocente);
     $idMateria = $this->db->escape($idMateria);
     $idCarrera = $this->db->escape($idCarrera);
     $idEncuesta = $this->db->escape($this->idEncuesta);
     $idFormulario = $this->db->escape($this->idFormulario);
-    $query = $this->db->query("call esp_textos_pregunta_materia($idPregunta, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $query = $this->db->query("call esp_textos_pregunta_materia($idPregunta, $idDocente, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
     $data=$query->result_array();
     $query->free_result();
     return $data;
@@ -564,6 +565,25 @@ class Encuesta extends CI_Model{
     return $data;
   }
   
+  
+  /**
+   * Devuleve un array con los idClave anterior y posterior a el id dado (dada la lista ordenada por id)
+   *
+   * @access publics
+   * @return array
+   */  
+  public function clavesAnteriorPosterior($idClave, $idCarrera, $idMateria){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $idClave = $this->db->escape($idClave);
+    $idCarrera = $this->db->escape($idCarrera);
+    $idMateria = $this->db->escape($idMateria);
+    $query = $this->db->query("call esp_claves_anterior_posterior($idClave, $idMateria, $idCarrera, $idEncuesta, $idFormulario)");
+    $data=$query->result_array();
+    $query->free_result();
+    return array((isset($data[0]))?$data[0]['idClave']:null, (isset($data[1]))?$data[1]['idClave']:null);
+  }
+
 }
 
 ?>

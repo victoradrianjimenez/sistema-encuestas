@@ -101,6 +101,16 @@ class pCharts extends CI_Controller{
       }
       $pos++;      
     }
+    //transformo a valores promedios
+    $cnt = 0;
+    foreach ($datos as $c) {
+      $cnt += (int)$c;
+    }
+    foreach ($datos as $pos => $c) {
+      $datos[$pos] = ($cnt>0) ? round($c/$cnt*100,2):'0';
+    }
+
+    
     $ancho = 400;
     $alto = 120;
     // Standard inclusions
@@ -112,11 +122,12 @@ class pCharts extends CI_Controller{
     $this->pdata->AddPoint($etiquetas,"AbsciseLabels");
     $this->pdata->AddAllSeries();
     $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
+    $this->pdata->SetYAxisUnit("%");
      // Inicializar gráfico
     $this->pchart->setFontProperties("fonts/tahoma.ttf",10);
-    $this->pchart->setGraphArea(40,8,$ancho-36,$alto-20);
+    $this->pchart->setGraphArea(60,8,$ancho-36,$alto-20);
     $this->pchart->drawGraphArea(255,255,254,TRUE);
-    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,2,TRUE);  
+    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,1,TRUE);  
     $this->pchart->drawGrid(4,TRUE,230,230,230,50);
     // Dibujar el grafico de barras    
     $this->pdata->RemoveSerie("AbsciseLabels");
@@ -145,6 +156,14 @@ class pCharts extends CI_Controller{
       }
       $pos++;      
     } 
+    //transformo a valores promedios
+    $cnt = 0;
+    foreach ($datos as $c) {
+      $cnt += (int)$c;
+    }
+    foreach ($datos as $pos => $c) {
+      $datos[$pos] = ($cnt>0) ? round($c/$cnt*100,2):'0';
+    }
 
     $ancho = 400;
     $alto = 120;
@@ -156,11 +175,12 @@ class pCharts extends CI_Controller{
     $this->pdata->AddPoint($etiquetas,"AbsciseLabels");
     $this->pdata->AddAllSeries();
     $this->pdata->SetAbsciseLabelSerie("AbsciseLabels");
+    $this->pdata->SetYAxisUnit("%");
     // Inicializar gráfico
     $this->pchart->setFontProperties("fonts/tahoma.ttf",10);
-    $this->pchart->setGraphArea(40,8,$ancho-36,$alto-20);
+    $this->pchart->setGraphArea(60,8,$ancho-36,$alto-20);
     $this->pchart->drawGraphArea(255,255,254,TRUE);
-    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_NORMAL, 50,50,50, TRUE,0,2,TRUE);  
+    $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_NORMAL, 50,50,50, TRUE,0,1,TRUE);  
     $this->pchart->drawGrid(4,TRUE,230,230,230,50);
     // Dibujar el grafico de barras    
     $this->pdata->RemoveSerie("AbsciseLabels");

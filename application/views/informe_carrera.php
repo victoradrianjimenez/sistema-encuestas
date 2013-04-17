@@ -22,6 +22,7 @@
     h5.separador{border-bottom: 3px solid #2BA6CB;}
     ul.respuestas{list-style-position:inside;}
     .row-fluid [class*="span"]{margin-left:0;}
+    .row.not-break{page-break-inside:avoid;}
   </style>
 </head>
 <body>
@@ -32,9 +33,9 @@
         <div class="container">
           <a class="brand" href="<?php echo site_url()?>">Sistema Encuestas</a>
           <ul class="nav">
-            <li><a href="#" onclick="window.print()">Imprimir...</a></li>
+            <li><a href="#" onclick="window.print()"><i class="icon-print"></i> Imprimir...</a></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Descargar Datos <b class="caret"></b></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-download-alt"></i> Descargar Datos <b class="caret"></b></a>
               <ul class="dropdown-menu">
                 <li>
                   <a class="form"><form action="<?php echo site_url('informes/archivoCarrera')?>" method="post">
@@ -107,7 +108,7 @@
             //preguntas con opciones
             case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
               echo '
-              <div class="row">';
+              <div class="row not-break">';
                 echo ($graficos)?'<div class="span8">':'<div class="span12">';
                   echo'
                   <p>'.$pregunta['item']->texto.'</p>

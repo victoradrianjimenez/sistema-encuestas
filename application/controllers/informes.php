@@ -65,7 +65,7 @@ class Informes extends CI_Controller{
           }
           break;
         case TIPO_TEXTO_SIMPLE: case TIPO_TEXTO_MULTILINEA:
-          $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idMateria, $idCarrera);
+          $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
           break;
         }
         $datos_items[$k] = array(
@@ -201,7 +201,6 @@ class Informes extends CI_Controller{
           break;
         }
       }
-
       //datos para enviar a la vista
       $datos = array(
         'encuesta' => &$encuesta,
@@ -211,6 +210,7 @@ class Informes extends CI_Controller{
         'materia' => &$materia,
         'indice' => ($indiceGlobal) ? $encuesta->indiceGlobalClave($idClave, $idMateria, $idCarrera) : null,
         'clave' => &$clave,
+        'claveAnteriorPosterior' => $encuesta->clavesAnteriorPosterior($idClave, $idCarrera, $idMateria), 
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_clave', $datos);
@@ -1117,23 +1117,23 @@ class Informes extends CI_Controller{
     //genero la descarga para el usuario
     switch ($tipo) {
       case 'xls':
-        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'.$nombre.'.xls"');
         header('Cache-Control: max-age=0');
         //genero el archivo y guardo
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel5');
         $objWriter->save('php://output');
-        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         break;
       case 'xlsx':
-        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$nombre.'.xlsx"');
         header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel2007');
         $objWriter->save('php://output');
-        //ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
         break;
       default:
         return false;

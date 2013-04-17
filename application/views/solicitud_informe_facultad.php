@@ -64,7 +64,7 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
-  <script src="<?php echo base_url('js/formularios.js')?>"></script>
+  <script src="<?php echo base_url('js/formularios.min.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
     autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");

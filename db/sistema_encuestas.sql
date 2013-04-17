@@ -80,7 +80,6 @@ CREATE TABLE Departamentos(
 --
 
 CREATE TABLE Devoluciones(
-    idDevolucion    INT UNSIGNED  NOT NULL,
     idMateria       SMALLINT UNSIGNED  NOT NULL,
     idEncuesta      INT UNSIGNED  NOT NULL,
     idFormulario    INT UNSIGNED  NOT NULL,
@@ -90,7 +89,7 @@ CREATE TABLE Devoluciones(
     alumnos         TEXT,
     docentes        TEXT,
     mejoras         TEXT,
-    PRIMARY KEY (idDevolucion, idMateria, idEncuesta, idFormulario)
+    PRIMARY KEY (idMateria, idEncuesta, idFormulario)
 )ENGINE=INNODB
 ;
 

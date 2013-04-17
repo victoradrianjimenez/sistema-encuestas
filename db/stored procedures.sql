@@ -1,3 +1,30 @@
+DROP PROCEDURE IF EXISTS `esp_claves_anterior_posterior`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_claves_anterior_posterior`(
+	pidClave INT UNSIGNED,
+	pidMateria SMALLINT UNSIGNED,
+	pidCarrera SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+    SELECT	MAX(idClave) as idClave
+	FROM	Claves
+	WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND 
+			idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND 
+			idClave < pidClave AND utilizada IS NOT NULL
+	UNION
+	SELECT	MIN(idClave) as idClave
+	FROM	Claves
+	WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND
+			idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND
+			idClave > pidClave AND utilizada IS NOT NULL;
+END $$
+
+DELIMITER ;
+
+
 DROP PROCEDURE IF EXISTS `esp_signar_importancia`;
 
 DELIMITER $$
@@ -1432,7 +1459,7 @@ CREATE PROCEDURE `esp_respuesta_pregunta_clave`(
     pidEncuesta INT UNSIGNED,
     pidFormulario INT UNSIGNED)
 BEGIN
-	SELECT	R.opcion, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto) AS texto
+	SELECT	R.opcion, IF(P.tipo IN ('T','X'), R.texto, IF(P.tipo='N',P.limiteInferior+P.paso*(R.opcion-1),O.texto)) AS texto
 	FROM 	Respuestas R 
 			INNER JOIN Preguntas P ON P.idPregunta = R.idPregunta
 			LEFT JOIN Opciones O ON O.idPregunta = R.idPregunta AND O.idOpcion = R.opcion
@@ -1564,6 +1591,7 @@ DELIMITER $$
 
 CREATE PROCEDURE `esp_textos_pregunta_materia`(
     pidPregunta INT UNSIGNED,
+	pidDocente INT UNSIGNED,
     pidMateria SMALLINT UNSIGNED,
     pidCarrera SMALLINT UNSIGNED,
     pidEncuesta INT UNSIGNED,
@@ -1571,8 +1599,8 @@ CREATE PROCEDURE `esp_textos_pregunta_materia`(
 BEGIN
 	SELECT  texto
 	FROM    Respuestas R
-	WHERE   R.idPregunta = pidPregunta AND R.idMateria = pidMateria AND 
-			R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND
+	WHERE   R.idPregunta = pidPregunta AND (R.idDocente = pidDocente OR R.idDocente IS NULL) AND
+			R.idMateria = pidMateria AND R.idCarrera = pidCarrera AND R.idEncuesta = pidEncuesta AND
 			R.idFormulario = pidFormulario AND texto IS NOT NULL;
 END $$
 

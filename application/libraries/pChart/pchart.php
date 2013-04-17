@@ -465,21 +465,23 @@
         {
           $maxLoopCount=0; 
           $Scale = 1;
-         while(!$ScaleOk && $maxLoopCount++<20)
+         while(!$ScaleOk)
           {
            $Scale1 = ( $this->VMax - $this->VMin ) / $Factor;
            $Scale2 = ( $this->VMax - $this->VMin ) / $Factor / 2;
            $Scale4 = ( $this->VMax - $this->VMin ) / $Factor / 4;
-
            if ( $Scale1 > 1 && $Scale1 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = floor($Scale1); $Scale = 1;}
            if ( $Scale2 > 1 && $Scale2 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = floor($Scale2); $Scale = 2;}
+           //esta linea la agregue yo para evitar bucles infinitos
+           if ( $Scale4 > 1 && $Scale4 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = floor($Scale4); $Scale = 4;}
            if (!$ScaleOk)
             {
-             if ( $Scale2 > 1 ) { $Factor = $Factor * 10; }
-             if ( $Scale2 < 1 ) { $Factor = $Factor / 10; }
+             if ( $Scale2 > 1 ) { $Factor = $Factor * 10.1; }
+             if ( $Scale2 < 1 ) { $Factor = $Factor / 10.1; }
             }
+            //esta linea la agregue yo para evitar bucles infinitos
+            if ($maxLoopCount++ == 100) {$Scale1 = ($MaxDivs-1)/2; $ScaleOk = TRUE; $Divisions = floor($Scale1); $Scale = 1;} 
           }
-
          if ( floor($this->VMax / $Scale / $Factor) != $this->VMax / $Scale / $Factor)
           {
            $GridID     = floor ( $this->VMax / $Scale / $Factor) + 1;
@@ -682,6 +684,8 @@
         { $this->VMin = 0; $this->VMax = 2; $Scale = 1; $Divisions = 2;}
        elseif ($MaxDivs > 1)
         {
+          $maxLoopCount=0; 
+          $Scale = 1;
          while(!$ScaleOk)
           {
            $Scale1 = ( $this->VMax - $this->VMin ) / $Factor;
@@ -690,11 +694,15 @@
 
            if ( $Scale1 > 1 && $Scale1 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = floor($Scale1); $Scale = 1;}
            if ( $Scale2 > 1 && $Scale2 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = floor($Scale2); $Scale = 2;}
+           //esta linea la agregue yo para evitar bucles infinitos
+           if ( $Scale4 > 1 && $Scale4 <= $MaxDivs && !$ScaleOk) { $ScaleOk = TRUE; $Divisions = floor($Scale4); $Scale = 4;}
            if (!$ScaleOk)
             {
              if ( $Scale2 > 1 ) { $Factor = $Factor * 10; }
              if ( $Scale2 < 1 ) { $Factor = $Factor / 10; }
             }
+            //esta linea la agregue yo para evitar bucles infinitos
+            if ($maxLoopCount++ == 100) {$Scale1 = ($MaxDivs-1)/2; $ScaleOk = TRUE; $Divisions = floor($Scale1); $Scale = 1;}
           }
 
          if ( floor($this->VMax / $Scale / $Factor) != $this->VMax / $Scale / $Factor)
