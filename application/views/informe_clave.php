@@ -108,6 +108,21 @@
                       $item = &$i['item'];
                       $respuestas = &$i['respuestas'];
 
+                      switch ($item->modoIndice) {
+                      case MODO_INDICE_NULO:
+                        $modoIndice = 'Esta pregunta NO influye en el cálculo del índice. El coeficiente de importancia es '.(($item->importancia)?$item->importancia:1).'.';
+                        break;
+                      case MODO_INDICE_INVERSO:
+                        $modoIndice = 'Esta pregunta influye en el cálculo del índice. Se toman los valores de respuesta en forma inversa. El coeficiente de importancia es '.(($pregunta['item']->importancia)?$pregunta['item']->importancia:1).'.';
+                        break;
+                      case MODO_INDICE_NORMAL:
+                        $modoIndice = 'Esta pregunta influye en el cálculo del índice. El coeficiente de importancia es '.(($item->importancia)?$item->importancia:1).'.';
+                        break;
+                      default:
+                        $modoIndice = '';
+                        break;
+                      }
+
                       //genero el html de la ayuda contextual
                       $tip = ($item->descripcion!='')?'<span class="badge badge-info" data-toggle="tooltip" title="'.$item->descripcion.'">!</span>':'';
                       
@@ -115,18 +130,18 @@
                       case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA: case TIPO_TEXTO_SIMPLE:
                         printf('
                         <div class="item span6">
-                          <p>%s %s</p>
+                          <p title="%s">%s %s</p>
                           <p><b>%s</b></p>
-                        </div>', $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
+                        </div>', $modoIndice, $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
                         $col = $col+1;
                         break;
                       case TIPO_TEXTO_MULTILINEA:
                         if ($col%2 == 1) echo'</div><div class="row">';
                         printf ('
                         <div class="item span12">
-                          <p>%s %s</p>
+                          <p title="%s">%s %s</p>
                           <p><b>%s</b></p>
-                        </div>', $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
+                        </div>', $modoIndice, $item->texto, $tip, (isset($respuestas[0]))?$respuestas[0]['texto']:'NC');
                         $col = 0;
                         break;
                       }

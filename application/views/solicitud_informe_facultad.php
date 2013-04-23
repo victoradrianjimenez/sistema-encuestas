@@ -44,6 +44,7 @@
             <div class="control-group">
               <div class="controls">
                 <label class="checkbox"><input type="checkbox" name="graficos" value="1" <?php echo set_checkbox('graficos', '1', TRUE)?> />Incluir gráficos de barras</label>
+                <label class="checkbox"><input type="checkbox" name="respuestaPromedio" value="1" <?php echo set_checkbox('respuestaPromedio', '1', TRUE)?> />Incluir respuesta promedio para cada pregunta</label>
               </div>
             </div>
             <div class="controls btn-group">

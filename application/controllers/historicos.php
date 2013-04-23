@@ -39,6 +39,7 @@ class Historicos extends CI_Controller{
       $this->load->model('Materia');
       $this->load->model('Carrera');
       $this->load->model('Departamento');
+      $this->load->model('Encuesta');
       $this->load->model('Gestor_materias','gm');
       $this->load->model('Gestor_carreras','gc');
       $this->load->model('Gestor_departamentos','gd');
@@ -79,6 +80,15 @@ class Historicos extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
         redirect('historicos/materia');
       }
+      
+      foreach ($historico as $k => $h) {
+        $this->Encuesta->idEncuesta = $h['idEncuesta'];
+        $this->Encuesta->idFormulario = $h['idFormulario'];
+        $claves = $this->Encuesta->cantidadClavesMateria($idMateria, $idCarrera);
+        $historico[$k]['cantidad'] = $claves['generadas'];
+        $historico[$k]['contestadas'] = $claves['utilizadas']; 
+      }
+
       //datos para enviar a la vista
       $datos = array(
         'datos' => &$historico,
@@ -116,6 +126,7 @@ class Historicos extends CI_Controller{
       $this->load->model('Pregunta');
       $this->load->model('Carrera');
       $this->load->model('Departamento');
+      $this->load->model('Encuesta');
       $this->load->model('Gestor_carreras','gc');
       $this->load->model('Gestor_departamentos','gd');
       $this->load->model('Gestor_preguntas','gp');
@@ -151,6 +162,15 @@ class Historicos extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
         redirect('historicos/carrera');
       }
+      
+      foreach ($historico as $k => $h) {
+        $this->Encuesta->idEncuesta = $h['idEncuesta'];
+        $this->Encuesta->idFormulario = $h['idFormulario'];
+        $claves = $this->Encuesta->cantidadClavesCarrera($idCarrera);
+        $historico[$k]['cantidad'] = $claves['generadas'];
+        $historico[$k]['contestadas'] = $claves['utilizadas']; 
+      }
+
       //datos para enviar a la vista
       $datos = array(
         'datos' => &$historico,
@@ -187,6 +207,7 @@ class Historicos extends CI_Controller{
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
       $this->load->model('Departamento');
+      $this->load->model('Encuesta');
       $this->load->model('Gestor_departamentos','gd');
       $this->load->model('Gestor_preguntas','gp');
       
@@ -217,6 +238,15 @@ class Historicos extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
         redirect('historicos/departamento');
       }
+
+      foreach ($historico as $k => $h) {
+        $this->Encuesta->idEncuesta = $h['idEncuesta'];
+        $this->Encuesta->idFormulario = $h['idFormulario'];
+        $claves = $this->Encuesta->cantidadClavesDepartamento($idDepartamento);
+        $historico[$k]['cantidad'] = $claves['generadas'];
+        $historico[$k]['contestadas'] = $claves['utilizadas']; 
+      }
+      
       //datos para enviar a la vista
       $datos = array(
         'datos' => &$historico,
@@ -249,6 +279,7 @@ class Historicos extends CI_Controller{
       //cargo librerias y modelos
       $this->load->model('Opcion');
       $this->load->model('Pregunta');
+      $this->load->model('Encuesta');
       $this->load->model('Gestor_preguntas','gp');
       
       $pregunta = $this->gp->dame($idPregunta);
@@ -276,6 +307,15 @@ class Historicos extends CI_Controller{
         $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
         redirect('historicos/facultad');
       }
+
+      foreach ($historico as $k => $h) {
+        $this->Encuesta->idEncuesta = $h['idEncuesta'];
+        $this->Encuesta->idFormulario = $h['idFormulario'];
+        $claves = $this->Encuesta->cantidadClavesFacultad();
+        $historico[$k]['cantidad'] = $claves['generadas'];
+        $historico[$k]['contestadas'] = $claves['utilizadas']; 
+      }
+      
       //datos para enviar a la vista
       $datos = array(
         'datos' => &$historico,

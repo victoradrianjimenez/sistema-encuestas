@@ -37,8 +37,11 @@
             <div class="control-group">
               <label class="control-label" for="buscarPregunta">Pregunta:</label>
               <div class="controls buscador">
+                <!-- 
                 <input class="input-block-level" id="buscarPregunta" name="buscarPregunta" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarPregunta')?>" required /><i class="icon-search"></i>
                 <input type="hidden" name="idPregunta" value="<?php echo set_value('idPregunta')?>"required/>
+                -->
+                <select class="input-block-level" id="buscarPregunta" name="idPregunta" utocomplete="off" required></select>
                 <?php echo form_error('idPregunta')?>
               </div>
             </div>
@@ -78,7 +81,8 @@
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script src="<?php echo base_url('js/fechas.min.js')?>"></script>
   <script>
-    autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
+    //autocompletar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/buscarAjax')?>");
+    completar_pregunta($('#buscarPregunta'), "<?php echo site_url('preguntas/listarAjax')?>");
     selectores_fecha($('#dpd1'), $('#dpd2'));
   </script>
 </body>

@@ -60,6 +60,7 @@
             <div class="control-group">
               <div class="controls">
                 <label class="checkbox"><input type="checkbox" name="graficos" value="1" <?php echo set_checkbox('graficos', '1', TRUE)?> />Incluir gráficos de barras</label>
+                <label class="checkbox"><input type="checkbox" name="respuestaPromedio" value="1" <?php echo set_checkbox('respuestaPromedio', '1', TRUE)?> />Incluir respuesta promedio para cada pregunta</label>
                 <label class="checkbox"><input type="checkbox" name="indicesSecciones" value="1" <?php echo set_checkbox('indicesSecciones', '1', TRUE)?> />Incluir promedio de índices de secciones</label>
                 <label class="checkbox"><input type="checkbox" name="indicesDocentes" value="1" <?php echo set_checkbox('indicesDocentes', '1', TRUE)?> />Incluir promedio de índices para cada docente</label>
                 <label class="checkbox"><input type="checkbox" name="indiceGlobal" value="1" <?php echo set_checkbox('indiceGlobal', '1', TRUE)?> />Incluir indice general</label>

@@ -115,6 +115,7 @@ define('TIPO_TEXTO_MULTILINEA', 'X');
 
 define('SECCION_TIPO_NORMAL', 'N');
 define('SECCION_TIPO_DOCENTE', 'D');
+define('SECCION_TIPO_ALUMNO', 'A');
 
 define('TIPO_ACCESO_DOCENTE', 'D');
 define('TIPO_ACCESO_JEFE_CATEDRA', 'J');

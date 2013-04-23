@@ -84,8 +84,22 @@
               echo '
               <div class="row not-break">';
                 echo ($graficos)?'<div class="span8">':'<div class="span12">';
+                  switch ($pregunta['item']->modoIndice) {
+                  case MODO_INDICE_NULO:
+                    $modoIndice = 'Esta pregunta NO influye en el cálculo del índice. El coeficiente de importancia es '.(($pregunta['item']->importancia)?$pregunta['item']->importancia:1).'.';
+                    break;
+                  case MODO_INDICE_INVERSO:
+                    $modoIndice = 'Esta pregunta influye en el cálculo del índice. Se toman los valores de respuesta en forma inversa. El coeficiente de importancia es '.(($pregunta['item']->importancia)?$pregunta['item']->importancia:1).'.';
+                    break;
+                  case MODO_INDICE_NORMAL:
+                    $modoIndice = 'Esta pregunta influye en el cálculo del índice. El coeficiente de importancia es '.(($pregunta['item']->importancia)?$pregunta['item']->importancia:1).'.';
+                    break;
+                  default:
+                    $modoIndice = '';
+                    break;
+                  }
                   echo '
-                  <p>'.$pregunta['item']->texto.'</p>
+                  <p title="'.$modoIndice.'">'.$pregunta['item']->texto.'</p>
                   <div class="row-fluid">';
                     foreach ($pregunta['respuestas'] as $k => $respuesta){   
                       echo '
@@ -95,7 +109,9 @@
                       </div>';
                     }
                     echo '
-                  </div>
+                  </div>';
+                  if ($respuestaPromedio) echo '<p><i>Respuesta promedio: <b>'.$pregunta['respuestaPromedio'].'</b></i></p>';
+                  echo'
                 </div>';
                 if ($graficos){
                   echo '

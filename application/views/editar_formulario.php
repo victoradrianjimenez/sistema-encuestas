@@ -112,6 +112,7 @@
       <label>Tipo de Sección: <span class="opcional" title="Campo obligatorio.">*</span></label>
       <select name="tipoSeccion">
         <option value="<?php echo SECCION_TIPO_NORMAL?>">Normal</option>
+        <option value="<?php echo SECCION_TIPO_ALUMNO?>">Alumno</option>
         <option value="<?php echo SECCION_TIPO_DOCENTE?>">Docente</option>
       </select>
     </div>

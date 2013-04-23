@@ -2320,7 +2320,7 @@ BEGIN
     FROM    Claves
 	WHERE	idMateria = pidMateria AND idCarrera = pidCarrera AND idEncuesta = pidEncuesta AND 
 			idFormulario = pidFormulario AND utilizada IS NOT NULL
-    ORDER BY generada DESC, utilizada DESC;
+    ORDER BY idClave;
 END $$
 
 DELIMITER ;
@@ -2518,7 +2518,7 @@ BEGIN
 	DECLARE cur CURSOR FOR 
 		SELECT	idSeccion
 		FROM	Secciones
-		WHERE	idFormulario = pidFormulario;  
+		WHERE	idFormulario = pidFormulario AND tipo != 'A';  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
 	-- por cada clave de cada materia tomar el indice para calcular el indice promedio
 	OPEN cur;
@@ -3113,7 +3113,7 @@ BEGIN
     
     IF COALESCE(ptexto,'') = '' THEN
         SET mensaje = 'El texto de la sección no puede ser vacío.';
-    ELSEIF NOT ptipo IN ('N', 'D') THEN
+    ELSEIF NOT ptipo IN ('N', 'D', 'A') THEN
         SET mensaje = 'El tipo de sección es incorrecto.';
     ELSE
         START TRANSACTION;    

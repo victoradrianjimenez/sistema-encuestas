@@ -357,3 +357,20 @@ function autocompletar_pregunta(inputObj, url){
     }
   });
 }
+
+//igual que el anterior, pero en vez de buscar, lista todas las preguntas en una lista desplegable
+function completar_pregunta(inputObj, url){
+  $.ajax({
+    type: "POST", 
+    url: url, 
+    data:{}
+  }).done(function(msg){
+    var filas = msg.split("\n");
+    for (var i=0; i<filas.length; i++){
+      if (filas[i].length<5) continue;
+      var cols = filas[i].split("\t");
+      var texto = cols[1]; //texto
+      inputObj.append('<option value="'+cols[0]+'">'+texto+'</option>');
+    }
+  });
+}

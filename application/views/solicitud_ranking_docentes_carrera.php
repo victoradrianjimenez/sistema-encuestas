@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Generar Informe por Carrera - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Ranking de Materias - <?php echo NOMBRE_SISTEMA?></title>
   <style>
     #contenedor .form-horizontal .controls {margin-left: 70px}
     #contenedor .form-horizontal .control-label {width: 50px; float: left}
@@ -32,12 +32,12 @@
         <div id="contenedor" class="span9">
           
           <ul class="nav nav-tabs">
-            <li class="active"><a href="#">Informe por carrera</a></li>
+            <li><a href="<?php echo site_url('informes/carrera')?>">Informe por carrera</a></li>
             <li><a href="<?php echo site_url('ranking/materiasCarrera')?>">Ranking de Materias</a></li>
-            <li><a href="<?php echo site_url('ranking/docentesCarrera')?>">Ranking de Docentes</a></li>
+            <li class="active"><a href="#">Ranking de Docentes</a></li>
           </ul>
 
-          <form class="form-horizontal" action="<?php echo site_url('informes/carrera')?>" method="post">
+          <form class="form-horizontal" action="<?php echo site_url('ranking/docentesCarrera')?>" method="post">
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>
               <div class="controls buscador">
@@ -53,14 +53,6 @@
                 <input type="hidden" name="idEncuesta" value="<?php echo set_value('idEncuesta')?>" required/>
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" value="<?php echo set_value('idFormulario')?>" required/>
-              </div>
-            </div>          
-            <div class="control-group">
-              <div class="controls">
-                <label class="checkbox"><input type="checkbox" name="graficos" value="1" <?php echo set_checkbox('graficos', '1', TRUE)?> />Incluir gráficos de barras</label>
-                <label class="checkbox"><input type="checkbox" name="respuestaPromedio" value="1" <?php echo set_checkbox('respuestaPromedio', '1', TRUE)?> />Incluir respuesta promedio para cada pregunta</label>
-                <label class="checkbox"><input type="checkbox" name="indicesSecciones" value="1" <?php echo set_checkbox('indicesSecciones', '1', TRUE)?> />Incluir promedio de índices de secciones</label>
-                <label class="checkbox"><input type="checkbox" name="indiceGlobal" value="1" <?php echo set_checkbox('indiceGlobal', '1', TRUE)?> />Incluir indice general</label>
               </div>
             </div>
             <div class="controls btn-group">

@@ -19,7 +19,7 @@
             <fieldset>
               <h5 class="text-center">Ingrese la Clave de Acceso que figura en la tarjeta entregada por el representante de la Comisión Académica</h5>
               <div class="control-group">
-                <input class="input-block-level text-center" name="clave" type="text" id="clave" maxlength="16" placeholder="Ingrese su clave de acceso" value="<?php echo set_value('clave')?>"/>
+                <input class="input-block-level text-center" name="clave" type="text" id="clave" maxlength="16" autocomplete="off" placeholder="Ingrese su clave de acceso" value="<?php echo set_value('clave')?>"/>
                 <?php echo form_error('clave')?>
               </div>
               <div class="text-center">

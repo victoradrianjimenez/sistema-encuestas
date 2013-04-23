@@ -257,5 +257,22 @@ class Preguntas extends CI_Controller {
       }
     }
   }
+  
+  /*
+   * Funcion para responder solicitudes AJAX
+   */
+  public function listarAJAX(){
+    //if (!$this->ion_auth->logged_in()){return;}
+    $this->load->model('Pregunta');
+    $this->load->model('Gestor_preguntas','gp');
+    $preguntas = $this->gp->listar(0,1000);
+    echo "\n";
+    foreach ($preguntas as $pregunta) {
+      echo  "$pregunta->idPregunta\t".
+            "$pregunta->texto\t".
+            "$pregunta->creacion\t".
+            "$pregunta->tipo\t\n";
+    }
+  }
 }
 ?>

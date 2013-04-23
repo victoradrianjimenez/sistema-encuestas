@@ -53,24 +53,43 @@ class Informes extends CI_Controller{
       $datos_items = array();
       foreach ($items as $k => $item) {
         switch ($item->tipo) {
-        case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+        case TIPO_SELECCION_SIMPLE:
           $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
           //transformo a valores promedios
           $cnt = 0;
+          $sum = 0;
           foreach ($datos_respuestas as $r) {
             $cnt += (int)$r['cantidad'];
+            $sum += (int)$r['opcion'] * (int)$r['cantidad'];
           }
           foreach ($datos_respuestas as $pos => $r) {
             $datos_respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
           }
+          $respuestaPromedio = ($cnt>0) ? round($sum/$cnt,2):'';
+          break;
+        case TIPO_NUMERICA:
+          $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
+          //transformo a valores promedios
+          $cnt = 0;
+          $sum = 0;
+          foreach ($datos_respuestas as $r) {
+            $cnt += (int)$r['cantidad'];
+            $sum += (float)$r['texto'] * (int)$r['cantidad'];
+          }
+          foreach ($datos_respuestas as $pos => $r) {
+            $datos_respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
+          }
+          $respuestaPromedio = ($cnt>0) ? round($sum/$cnt,2):'';
           break;
         case TIPO_TEXTO_SIMPLE: case TIPO_TEXTO_MULTILINEA:
           $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
+          $respuestaPromedio = null;
           break;
         }
         $datos_items[$k] = array(
           'item' => $item,
-          'respuestas' => $datos_respuestas
+          'respuestas' => $datos_respuestas,
+          'respuestaPromedio' => $respuestaPromedio
         );
       }
       return $datos_items;
@@ -163,7 +182,7 @@ class Informes extends CI_Controller{
       foreach ($secciones as $i => $seccion) {
         $datos_secciones[$i]['seccion'] = $seccion;
         $datos_secciones[$i]['subsecciones'] = array();
-        $datos_secciones[$i]['indice'] = ($indicesSecciones)?$encuesta->indiceSeccionClave($idClave, $idMateria, $idCarrera, $seccion->idSeccion):null;
+        $datos_secciones[$i]['indice'] = ($indicesSecciones && $seccion->tipo != SECCION_TIPO_ALUMNO)?$encuesta->indiceSeccionClave($idClave, $idMateria, $idCarrera, $seccion->idSeccion):null;
         switch ($seccion->tipo){
         //si la sección es referida a docentes
         case SECCION_TIPO_DOCENTE:
@@ -184,7 +203,7 @@ class Informes extends CI_Controller{
           }
           break;
         //si la sección es referida a la materia (sección comun)
-        case SECCION_TIPO_NORMAL:
+        case SECCION_TIPO_NORMAL: case SECCION_TIPO_ALUMNO:
           $items = $seccion->listarItemsCarrera($idCarrera);
           $datos_items = array();
           foreach ($items as $k => $item) {
@@ -238,6 +257,7 @@ class Informes extends CI_Controller{
       $indicesSecciones = (bool)$this->input->post('indicesSecciones');
       $indiceGlobal = (bool)$this->input->post('indiceGlobal');
       $graficos = (bool)$this->input->post('graficos');
+      $respuestaPromedio = (bool)$this->input->post('respuestaPromedio');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -312,7 +332,7 @@ class Informes extends CI_Controller{
         $datos_secciones[$i] = array(
           'seccion' => $seccion,
           'subsecciones' => array(),
-          'indice' => ($indicesSecciones) ? $encuesta->indiceSeccionMateria($idMateria, $idCarrera, $seccion->idSeccion) : null
+          'indice' => ($indicesSecciones && $seccion->tipo != SECCION_TIPO_ALUMNO) ? $encuesta->indiceSeccionMateria($idMateria, $idCarrera, $seccion->idSeccion) : null
         );
         switch ($seccion->tipo){
         case SECCION_TIPO_DOCENTE:
@@ -324,7 +344,7 @@ class Informes extends CI_Controller{
             );
           }
           break;
-        case SECCION_TIPO_NORMAL:
+        case SECCION_TIPO_NORMAL: case SECCION_TIPO_ALUMNO:
           $datos_secciones[$i]['subsecciones'][0] =  array(
             'docente' => $this->Usuario,
             'preguntas' => $this->_dameDatosSeccionMateria($seccion, $encuesta, 0, $idMateria, $carrera->idCarrera),
@@ -344,6 +364,7 @@ class Informes extends CI_Controller{
         'claves' => &$cantidadesClaves, 
         'indice' => ($indiceGlobal) ? $encuesta->indiceGlobalMateria($idMateria, $idCarrera) : null,
         'graficos' => &$graficos,
+        'respuestaPromedio' => &$respuestaPromedio,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_materia', $datos);
@@ -369,6 +390,7 @@ class Informes extends CI_Controller{
       $indicesSecciones = (bool)$this->input->post('indicesSecciones');
       $indiceGlobal = (bool)$this->input->post('indiceGlobal');
       $graficos = (bool)$this->input->post('graficos');
+      $respuestaPromedio = (bool)$this->input->post('respuestaPromedio');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -428,30 +450,52 @@ class Informes extends CI_Controller{
         $datos_secciones[$i] =  array(
           'seccion' => $seccion,
           'items' => array(),
-          'indice' => ($indicesSecciones) ? $encuesta->indiceSeccionCarrera($idCarrera, $seccion->idSeccion) : null
+          'indice' => ($indicesSecciones && $seccion->tipo != SECCION_TIPO_ALUMNO) ? $encuesta->indiceSeccionCarrera($idCarrera, $seccion->idSeccion) : null
         );        
         $items = $seccion->listarItemsCarrera($idCarrera);
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
-          case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+          case TIPO_SELECCION_SIMPLE:
             $respuestas = $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera);
             //transformo a valores promedios
             $cnt = 0;
+            $sum = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
+              $sum += (float)$r['opcion'] * (int)$r['cantidad'];
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
             }
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $respuestas
+              'respuestas' => $respuestas,
+              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+            );
+            break;
+          case TIPO_NUMERICA:
+            $respuestas = $encuesta->respuestasPreguntaCarrera($item->idPregunta, $idCarrera);
+            //transformo a valores promedios
+            $cnt = 0;
+            $sum = 0;
+            foreach ($respuestas as $r) {
+              $cnt += (int)$r['cantidad'];
+              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+            }
+            foreach ($respuestas as $pos => $r) {
+              $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
+            }
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => $respuestas,
+              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
             );
             break;
           default:
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => null
+              'respuestas' => null,
+              'respuestaPromedio' => null
             );
             break;
           }
@@ -466,6 +510,7 @@ class Informes extends CI_Controller{
         'claves' => &$cantidadesClaves,
         'indice' => ($indiceGlobal) ? $encuesta->indiceGlobalCarrera($idCarrera) : null,
         'graficos' => &$graficos,
+        'respuestaPromedio' => &$respuestaPromedio,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_carrera', $datos);
@@ -489,6 +534,7 @@ class Informes extends CI_Controller{
       $idEncuesta = (int)$this->input->post('idEncuesta');
       $idFormulario = (int)$this->input->post('idFormulario');
       $graficos = (bool)$this->input->post('graficos');
+      $respuestaPromedio = (bool)$this->input->post('respuestaPromedio');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -545,25 +591,47 @@ class Informes extends CI_Controller{
         $items = $seccion->listarItems();
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
-          case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+          case TIPO_SELECCION_SIMPLE:
             $respuestas = $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento);
             //transformo a valores promedios
             $cnt = 0;
+            $sum = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
+              $sum += (float)$r['opcion'] * (int)$r['cantidad'];
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
             }
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $respuestas
+              'respuestas' => $respuestas,
+              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+            );
+            break;
+          case TIPO_NUMERICA:
+            $respuestas = $encuesta->respuestasPreguntaDepartamento($item->idPregunta, $idDepartamento);
+            //transformo a valores promedios
+            $cnt = 0;
+            $sum = 0;
+            foreach ($respuestas as $r) {
+              $cnt += (int)$r['cantidad'];
+              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+            }
+            foreach ($respuestas as $pos => $r) {
+              $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
+            }
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => $respuestas,
+              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
             );
             break;
           default:
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => null
+              'respuestas' => null,
+              'respuestaPromedio' => null
             );
             break;
           }
@@ -576,6 +644,7 @@ class Informes extends CI_Controller{
         'departamento' => &$departamento,
         'claves' => &$cantidadesClaves,
         'graficos' => &$graficos,
+        'respuestaPromedio' => &$respuestaPromedio,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_departamento', $datos);
@@ -596,6 +665,7 @@ class Informes extends CI_Controller{
       $idEncuesta = (int)$this->input->post('idEncuesta');
       $idFormulario = (int)$this->input->post('idFormulario');
       $graficos = (bool)$this->input->post('graficos');
+      $respuestaPromedio = (bool)$this->input->post('respuestaPromedio');
       
       //cargo librerias y modelos
       $this->load->model('Opcion');
@@ -648,25 +718,47 @@ class Informes extends CI_Controller{
         $items = $seccion->listarItems();
         foreach ($items as $k => $item) {
           switch ($item->tipo) {
-          case TIPO_SELECCION_SIMPLE: case TIPO_NUMERICA:
+          case TIPO_SELECCION_SIMPLE:
             $respuestas = $encuesta->respuestasPreguntaFacultad($item->idPregunta);
             //transformo a valores promedios
             $cnt = 0;
+            $sum = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
+              $sum += (float)$r['opcion'] * (int)$r['cantidad'];
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
             }
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $respuestas
+              'respuestas' => $respuestas,
+              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+            );
+            break;
+          case TIPO_NUMERICA:
+            $respuestas = $encuesta->respuestasPreguntaFacultad($item->idPregunta);
+            //transformo a valores promedios
+            $cnt = 0;
+            $sum = 0;
+            foreach ($respuestas as $r) {
+              $cnt += (int)$r['cantidad'];
+              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+            }
+            foreach ($respuestas as $pos => $r) {
+              $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
+            }
+            $datos_secciones[$i]['items'][$k] = array(
+              'item' => $item,
+              'respuestas' => $respuestas,
+              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
             );
             break;
           default:
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => null
+              'respuestas' => null,
+              'respuestaPromedio' => null
             );
             break;
           }
@@ -678,6 +770,7 @@ class Informes extends CI_Controller{
         'formulario' => &$formulario,
         'claves' => &$cantidadesClaves,
         'graficos' => &$graficos,
+        'respuestaPromedio' => &$respuestaPromedio,
         'secciones' => &$datos_secciones
       );
       $this->load->view('informe_facultad', $datos);

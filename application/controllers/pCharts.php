@@ -92,7 +92,7 @@ class pCharts extends CI_Controller{
     $etiquetas = array();
     foreach ($opciones as $i => $opcion) {
       $datos[$pos] = '';
-      $etiquetas[$pos] = $opciones[$i]->texto;
+      $etiquetas[$pos] = (strlen($opciones[$i]->texto)>12) ? substr($opciones[$i]->texto,0,12).'.' : $opciones[$i]->texto; //limito para que no se superpongan las etiquetas
       foreach ($datos_respuestas as $val) {
         if ($val['opcion'] == $opcion->idOpcion){
           $datos[$pos] = $val['cantidad'];
@@ -125,7 +125,7 @@ class pCharts extends CI_Controller{
     $this->pdata->SetYAxisUnit("%");
      // Inicializar gráfico
     $this->pchart->setFontProperties("fonts/tahoma.ttf",10);
-    $this->pchart->setGraphArea(60,8,$ancho-36,$alto-20);
+    $this->pchart->setGraphArea(60,8,$ancho-36,$alto-22);
     $this->pchart->drawGraphArea(255,255,254,TRUE);
     $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_START0, 50,50,50, TRUE,0,1,TRUE);  
     $this->pchart->drawGrid(4,TRUE,230,230,230,50);
@@ -178,7 +178,7 @@ class pCharts extends CI_Controller{
     $this->pdata->SetYAxisUnit("%");
     // Inicializar gráfico
     $this->pchart->setFontProperties("fonts/tahoma.ttf",10);
-    $this->pchart->setGraphArea(60,8,$ancho-36,$alto-20);
+    $this->pchart->setGraphArea(60,8,$ancho-36,$alto-22);
     $this->pchart->drawGraphArea(255,255,254,TRUE);
     $this->pchart->drawScale($this->pdata->GetData(),$this->pdata->GetDataDescription(), SCALE_NORMAL, 50,50,50, TRUE,0,1,TRUE);  
     $this->pchart->drawGrid(4,TRUE,230,230,230,50);
