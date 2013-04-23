@@ -31,7 +31,11 @@
         
         <!-- Main -->
         <div id="contenedor" class="span9">
-        <h4>Solicitar informe por carrera</h4>
+
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#">Histórico por carrera</a></li>
+          </ul>
+        
           <form class="form-horizontal" action="<?php echo site_url('historicos/carrera')?>" method="post">
             <div class="control-group">
               <label class="control-label" for="buscarCarrera">Carrera:</label>

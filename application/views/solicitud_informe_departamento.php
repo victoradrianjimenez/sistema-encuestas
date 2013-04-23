@@ -30,7 +30,11 @@
         
         <!-- Main -->
         <div id="contenedor" class="span9">
-          <h4>Solicitar informe por departamento</h4>
+
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#">Informe por departamento</a></li>
+          </ul>
+          
           <form class="form-horizontal" action="<?php echo site_url('informes/departamento')?>" method="post">
             <div class="control-group">
               <label class="control-label" for="buscarDepartamento">Departamento:</label>

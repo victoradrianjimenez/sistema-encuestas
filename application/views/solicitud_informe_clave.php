@@ -23,7 +23,11 @@
       <div class="row">
         <!-- Main -->
         <div id="contenedor" class="span12">
-          <h4>Solicitar informe por clave de acceso</h4>
+
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#">Informe por clave de acceso</a></li>
+          </ul>
+          
           <form class="form-horizontal" action="<?php echo site_url('informes/clave')?>" method="post">
             
             <div class="control-group">

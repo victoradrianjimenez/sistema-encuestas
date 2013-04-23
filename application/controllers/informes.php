@@ -65,7 +65,8 @@ class Informes extends CI_Controller{
           foreach ($datos_respuestas as $pos => $r) {
             $datos_respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
           }
-          $respuestaPromedio = ($cnt>0) ? round($sum/$cnt,2):'';
+          $opciones = $item->listarOpciones();
+          $respuestaPromedio = ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%';
           break;
         case TIPO_NUMERICA:
           $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
@@ -467,10 +468,11 @@ class Informes extends CI_Controller{
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
             }
+            $opciones = $item->listarOpciones();
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+              'respuestaPromedio' => ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%'
             );
             break;
           case TIPO_NUMERICA:
@@ -603,10 +605,11 @@ class Informes extends CI_Controller{
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
             }
+            $opciones = $item->listarOpciones();
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+              'respuestaPromedio' => ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%'
             );
             break;
           case TIPO_NUMERICA:
@@ -730,10 +733,11 @@ class Informes extends CI_Controller{
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
             }
+            $opciones = $item->listarOpciones();
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
-              'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+              'respuestas' => $respuestas,  
+              'respuestaPromedio' => ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%'
             );
             break;
           case TIPO_NUMERICA:

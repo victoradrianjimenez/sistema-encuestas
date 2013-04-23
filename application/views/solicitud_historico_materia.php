@@ -31,7 +31,11 @@
         
         <!-- Main -->
         <div id="contenedor" class="span9">
-          <h4>Solicitar informe por asignatura</h4>
+          
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#">Histórico por asignatura</a></li>
+          </ul>
+          
           <form class="form-horizontal" action="<?php echo site_url('historicos/materia')?>" method="post">
     
             <div class="control-group">
