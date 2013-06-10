@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Ranking de Materias - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Ranking de Docentes - <?php echo NOMBRE_SISTEMA?></title>
   <style>
     #contenedor .form-horizontal .controls {margin-left: 70px}
     #contenedor .form-horizontal .control-label {width: 50px; float: left}

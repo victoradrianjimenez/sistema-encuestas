@@ -65,20 +65,6 @@
               </div>
             </div>
             <div class="control-group">
-              <label class="control-label" for="campoContraseña">Contraseña: </label>
-              <div class="controls">
-                <input class="input-block-level" id="campoContraseña" type="password" name="password" value=""/>
-                <?php echo form_error('password'); ?>
-              </div>
-            </div>
-            <div class="control-group">
-              <label class="control-label" for="campoContraseña2">Confirmar contraseña: </label>
-              <div class="controls">
-                <input class="input-block-level" id="campoContraseña2" type="password" name="password2" value=""/>
-                <?php echo form_error('password2'); ?>
-              </div>
-            </div>
-            <div class="control-group">
               <label class="control-label" for="campoImagen">Subir una imágen (tamaño máximo 500KB): </label>
               <div class="controls">
                 <input id="campoImagen" type="file" name="imagen"/>

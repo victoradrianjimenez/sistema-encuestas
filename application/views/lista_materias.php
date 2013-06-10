@@ -28,18 +28,29 @@
         
         <!-- Main -->
         <div id="contenedor" class="span9">
+          
+          <h4>Buscar</h4>
+          <div class="control-group" title="">
+            <label class="control-label" for="buscarMateria"></label>
+            <div class="controls buscador">
+              <input class="input-block-level" id="buscarMateria" name="buscarMateria" type="text" data-provide="typeahead" autocomplete="off" value=""><i class="icon-search"></i>
+              <input type="hidden" name="idMateria" value=""/>
+              <?php echo form_error('idMateria')?>
+            </div>
+          </div> 
+            
           <h4>Materias</h4>
           <?php if(count($lista)== 0):?>
             <p>No se encontraron materias.</p>
           <?php else:?>
-            <table class="table table-bordered table-striped">
+            <table id="tablaItems" class="table table-bordered table-striped">
               <thead>
                 <th>Nombre</th>
                 <th>Código</th>
                 <th>Acciones</th>
               </thead>
               <?php foreach($lista as $item): ?>  
-                <tr>
+                <tr class="fila">
                   <td><a class="nombre" href="<?php echo site_url("materias/ver/".$item->idMateria)?>"><?php echo $item->nombre?></a></td>
                   <td><?php echo $item->codigo?></td>
                   <td>
@@ -89,6 +100,45 @@
   <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
   <script>
+  
+    $('input[name="buscarMateria"]').keydown(function(event){
+      query = $(this).val();
+      url = "<?php echo site_url('materias/buscarAJAX')?>";
+      return $.ajax({
+        type: "POST", 
+        url: url, 
+        data:{ buscar: query}
+      }).done(function(msg){
+        $('.fila').remove();
+        $('.pagination').remove();
+        var filas = msg.split("\n");
+        var items = new Array();
+        for (var i=0; i<filas.length; i++){
+          if (filas[i].length<5) continue;
+          cols = filas[i].split("\t");
+          $('#tablaItems').append(
+            '<tr class="fila">'+
+            '  <td><a class="nombre" href="<?php echo site_url("materias/ver")?>/'+cols[0]+'">'+cols[1]+'</a></td>'+
+            '  <td>'+cols[2]+'</td>'+
+            '  <td>'+
+            '    <a class="modificar" href="<?php echo site_url('materias/modificar')?>/'+cols[0]+'">Modificar</a> /'+
+            '    <a class="eliminar" href="#" value="'+cols[0]+'">Eliminar</a>'+
+            '  </td>'+
+            '</tr>');
+          $('.eliminar').click(function(){
+            idMateria = $(this).attr('value');
+            nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+            //cargo el id de la materia en el formulario
+            $('#modalEliminar input[name="idMateria"]').val(idMateria);
+            //pongo el nombre de la materia en el dialogo
+            $("#modalEliminar").find('.nombre').html(nombre);
+            $("#modalEliminar").modal();
+            return false;
+          });
+        }
+      });
+    });
+  
     $('.eliminar').click(function(){
       idMateria = $(this).attr('value');
       nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();

@@ -33,6 +33,8 @@
 
           <ul class="nav nav-tabs">
             <li class="active"><a href="#">Informe por departamento</a></li>
+            <li><a href="<?php echo site_url('ranking/materiasDepartamento')?>">Ranking de Materias</a></li>
+            <li><a href="<?php echo site_url('ranking/docentesDepartamento')?>">Ranking de Docentes</a></li>
           </ul>
           
           <form class="form-horizontal" action="<?php echo site_url('informes/departamento')?>" method="post">

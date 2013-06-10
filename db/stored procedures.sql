@@ -550,6 +550,33 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_listar_materias_departamento`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_listar_materias_departamento`(
+	pidDepartamento SMALLINT UNSIGNED,
+	pPagInicio INT UNSIGNED,
+    pPagLongitud INT UNSIGNED)
+BEGIN
+	SET @qry = '
+    SELECT  C.idCarrera, M.idMateria, M.nombre, M.codigo, 
+			M.publicarInformes, M.publicarHistoricos, M.publicarDevoluciones
+    FROM    Materias M INNER JOIN Materias_Carreras MC ON M.idMateria = MC.idMateria
+			INNER JOIN Carreras C ON MC.idCarrera = C.idCarrera
+	WHERE	C.idDepartamento = ?
+    ORDER BY M.nombre
+	LIMIT ?,?';
+    PREPARE stmt FROM  @qry;
+	SET @c = pidDepartamento;
+    SET @a = pPagInicio;
+    SET @b = pPagLongitud;
+    EXECUTE stmt USING @c, @a, @b;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_cantidad_materias`;
 
@@ -742,20 +769,20 @@ DELIMITER ;
 
 
 
--- DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
+DROP PROCEDURE IF EXISTS `esp_listar_carreras_departamento`;
 
--- DELIMITER $$
+DELIMITER $$
 
--- CREATE PROCEDURE `esp_listar_carreras_departamento`(
---     pidDepartamento SMALLINT UNSIGNED)
--- BEGIN
---     SELECT  idDepartamento, idCarrera, idDirectorCarrera, idOrganizador, nombre, plan, publicarInformes, publicarHistoricos
---     FROM    Carreras
---     WHERE   idDepartamento = pidDepartamento
---     ORDER BY nombre, plan DESC;
--- END $$
+CREATE PROCEDURE `esp_listar_carreras_departamento`(
+    pidDepartamento SMALLINT UNSIGNED)
+BEGIN
+    SELECT  idDepartamento, idCarrera, idDirectorCarrera, idOrganizador, nombre, plan, publicarInformes, publicarHistoricos
+    FROM    Carreras
+    WHERE   idDepartamento = pidDepartamento
+    ORDER BY nombre, plan DESC;
+END $$
 
--- DELIMITER ;
+DELIMITER ;
 
 
 
@@ -1732,7 +1759,7 @@ CREATE PROCEDURE `esp_buscar_usuarios` (
 	pnombre VARCHAR(40))
 BEGIN
 	IF COALESCE(pnombre,'') != '' THEN
-		SELECT	id, apellido, nombre, username
+		SELECT	id, apellido, nombre, username, last_login, active
 		FROM	Usuarios
 		WHERE	active = 1 AND CONCAT(apellido,' ',nombre,' ',apellido) like CONCAT('%',pnombre,'%')
 		ORDER BY apellido, nombre
@@ -2653,6 +2680,87 @@ END $$
 DELIMITER ;
 
 
+DROP PROCEDURE IF EXISTS `esp_indice_global_departamento`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_indice_global_departamento`(
+	pidDepartamento SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pidClave INT  UNSIGNED;
+	DECLARE pidMateria INT  UNSIGNED;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT 	C.idClave, C.idMateria
+		FROM 	Claves C INNER JOIN Carreras CA ON C.idCarrera = CA.idCarrera
+		WHERE	CA.idDepartamento = pidDepartamento AND
+				C.idEncuesta = pidEncuesta AND C.idFormulario = pidFormulario AND C.utilizada IS NOT NULL;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de cada materia tomar el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pidClave, pidMateria;
+		IF NOT done THEN
+			CALL esp_indice_global(pidClave, pidMateria, pidCarrera, pidEncuesta, pidFormulario, indice);
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT s/n AS indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_global_facultad`;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_indice_global_facultad`(
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pidClave INT  UNSIGNED;
+	DECLARE pidMateria INT  UNSIGNED;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT 	C.idClave, C.idMateria
+		FROM 	Claves C
+		WHERE	C.idEncuesta = pidEncuesta AND C.idFormulario = pidFormulario AND C.utilizada IS NOT NULL;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de cada materia tomar el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pidClave, pidMateria;
+		IF NOT done THEN
+			CALL esp_indice_global(pidClave, pidMateria, pidCarrera, pidEncuesta, pidFormulario, indice);
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT s/n AS indice;
+END $$
+
+DELIMITER ;
+
 
 DROP PROCEDURE IF EXISTS `esp_indice_global_materia`;
 
@@ -2738,6 +2846,91 @@ BEGIN
 		FROM 	Claves
 		WHERE	idCarrera = pidCarrera AND
 				idEncuesta = pidEncuesta AND idFormulario = pidFormulario AND utilizada IS NOT NULL;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pidClave, pidMateria;
+		IF NOT done THEN
+			CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, 
+									pidEncuesta, pidFormulario, pidSeccion, 
+									indice);
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT s/n AS indice;
+END $$
+
+DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS `esp_indice_seccion_departamento`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_indice_seccion_departamento`(
+	pidDepartamento SMALLINT UNSIGNED,
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED,
+	pidSeccion INT UNSIGNED)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pidClave INT  UNSIGNED;
+	DECLARE pidMateria SMALLINT UNSIGNED;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT 	C.idClave, C.idMateria
+		FROM 	Claves C INNER JOIN Carreras CA ON C.idCarrera = CA.idCarrera
+		WHERE	CA.idDepartamento = pidDepartamento AND
+				C.idEncuesta = pidEncuesta AND C.idFormulario = pidFormulario AND C.utilizada IS NOT NULL;  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
+	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
+	OPEN cur;
+	REPEAT
+		FETCH cur INTO pidClave, pidMateria;
+		IF NOT done THEN
+			CALL esp_indice_seccion(pidClave, pidMateria, pidCarrera, 
+									pidEncuesta, pidFormulario, pidSeccion, 
+									indice);
+			IF indice IS NOT NULL THEN
+				SET s = s + indice;
+				SET n = n + 1;
+			END IF;
+		END IF;
+	UNTIL done END REPEAT;
+	CLOSE cur;
+	-- devolver el indice promedio
+	SELECT s/n AS indice;
+END $$
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS `esp_indice_seccion_facultad`;
+
+DELIMITER $$
+
+CREATE PROCEDURE `esp_indice_seccion_facultad`(
+	pidEncuesta INT UNSIGNED,
+	pidFormulario INT UNSIGNED,
+	pidSeccion INT UNSIGNED)
+BEGIN
+	DECLARE done INT DEFAULT 0;
+	DECLARE indice FLOAT;
+	DECLARE pidClave INT  UNSIGNED;
+	DECLARE pidMateria SMALLINT UNSIGNED;
+	DECLARE s FLOAT DEFAULT 0;
+	DECLARE n INT DEFAULT 0;
+	DECLARE cur CURSOR FOR 
+		SELECT 	C.idClave, C.idMateria
+		FROM 	Claves C
+		WHERE	C.idEncuesta = pidEncuesta AND C.idFormulario = pidFormulario AND C.utilizada IS NOT NULL;  
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1;
 	-- por cada clave de la encuesta, calcular el indice para calcular el indice promedio
 	OPEN cur;

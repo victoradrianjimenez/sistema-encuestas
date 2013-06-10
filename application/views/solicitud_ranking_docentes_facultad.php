@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <?php include 'templates/head.php'?>
-  <title>Ranking de Materias - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Ranking de Docentes - <?php echo NOMBRE_SISTEMA?></title>
   <style>
     #contenedor .form-horizontal .controls {margin-left: 70px}
     #contenedor .form-horizontal .control-label {width: 50px; float: left}
@@ -16,14 +16,14 @@
         <!-- Titulo -->
         <div class="span12">
           <h3>Informes por Encuesta</h3>
-          <p>Esta sección permite acceder a un informe que contiene un resumen de las respuestas obtenidas por una carrera en una determinada encuesta.</p>
+          <p>Esta sección permite acceder a un informe que contiene un resumen de las respuestas obtenidas para toda la faultad en una determinada encuesta.</p>
         </div>
       </div>
       
       <div class="row">
         <!-- SideBar -->
         <div class="span3" id="menu">
-          <?php $item_submenu = 2;
+          <?php $item_submenu = 4;
             include 'templates/submenu-informes.php';
           ?>
         </div>
@@ -32,20 +32,12 @@
         <div id="contenedor" class="span9">
           
           <ul class="nav nav-tabs">
-            <li><a href="<?php echo site_url('informes/carrera')?>">Informe por carrera</a></li>
-            <li class="active"><a href="#">Ranking de Materias</a></li>
-            <li><a href="<?php echo site_url('ranking/docentesCarrera')?>">Ranking de Docentes</a></li>
+            <li><a href="<?php echo site_url('informes/facultad')?>">Informe por carrera</a></li>
+            <li><a href="<?php echo site_url('ranking/materiasFacultad')?>">Ranking de Materias</a></li>
+            <li class="active"><a href="#">Ranking de Docentes</a></li>
           </ul>
 
-          <form class="form-horizontal" action="<?php echo site_url('ranking/materiasCarrera')?>" method="post">
-            <div class="control-group">
-              <label class="control-label" for="buscarCarrera">Carrera:</label>
-              <div class="controls buscador">
-                <input class="input-block-level" id="buscarCarrera" name="buscarCarrera" type="text" autocomplete="off" data-provide="typeahead" value="<?php echo set_value('buscarCarrera')?>" required><i class="icon-search"></i>
-                <input type="hidden" name="idCarrera" value="<?php echo set_value('idCarrera')?>" required/>
-                <?php echo form_error('idCarrera')?>
-              </div>
-            </div>
+          <form class="form-horizontal" action="<?php echo site_url('ranking/docentesFacultad')?>" method="post">
             <div class="control-group">  
               <label class="control-label" for="buscarEncuesta">Año:</label>
               <div class="controls buscador">
@@ -54,7 +46,7 @@
                 <?php echo form_error('idEncuesta')?>
                 <input type="hidden" name="idFormulario" value="<?php echo set_value('idFormulario')?>" required/>
               </div>
-            </div>          
+            </div>
             <div class="controls btn-group">
               <input class="btn btn-primary" type="submit" name="submit" value="Aceptar" />
             </div>
@@ -76,7 +68,6 @@
   <script src="<?php echo base_url('js/formularios.min.js')?>"></script>
   <script src="<?php echo base_url('js/autocompletar.min.js')?>"></script>
   <script>
-    autocompletar_carrera($('#buscarCarrera'), "<?php echo site_url('carreras/buscarAJAX')?>");
     autocompletar_encuesta($('#buscarEncuesta'), "<?php echo site_url('encuestas/buscarAJAX')?>", "<?php echo PERIODO?>");
   </script>
 </body>

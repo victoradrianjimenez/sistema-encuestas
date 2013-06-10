@@ -161,9 +161,17 @@ class Claves extends CI_Controller{
         $pdf->AddPage();
         $pdf->writeHTML($html, true, 0, true, 0);
         $pdf->lastPage(); //reset pointer to the last page
-        ob_end_clean(); //ES NECESARIO A VECES. DEPENDE DEL SERVIDOR
+        try{
+          ob_end_clean(); //ES NECESARIO A VECES. DEPENDE DEL SERVIDOR
+        }
+        catch(Exception $e){
+        }
         $pdf->Output('Claves de acceso', 'D');
-        ob_end_clean(); //ES NECESARIO A VECES. DEPENDE DEL SERVIDOR
+        try{
+          ob_end_clean(); //ES NECESARIO A VECES. DEPENDE DEL SERVIDOR
+        }
+        catch(Exception $e){
+        }
       }
       return; 
     }

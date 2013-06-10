@@ -17,7 +17,7 @@
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
 
-  <title>Ranking de materias por Carrera - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Ranking de materias por Departamento - <?php echo NOMBRE_SISTEMA?></title>
 </head>
 <body>
   <!-- Menu de opciones -->
@@ -39,7 +39,6 @@
       <div class="span12">
         <h2 class="text-center"><?php echo NOMBRE_FACULTAD?></h2>
         <h4 class="text-center"><?php echo $departamento->nombre?></h4>
-        <h4 class="text-center"><?php echo $carrera->nombre?></h4>
       </div>
     </div>
     <div class="row">
@@ -50,6 +49,7 @@
             <tr>
               <?php 
                 echo '<th>Pos.</th>';
+                echo '<th>Carrera</th>';
                 echo '<th>Asignatura</th>';
                 echo '<th>Encuestas contestadas</th>';
                 foreach ($secciones as $seccion){
@@ -64,15 +64,16 @@
           <tbody>
             <?php 
               $pos = 1;
-              foreach ($indicesGLobales as $idMateria => $indiceGLobal){ 
+              foreach ($indicesGLobales as $key => $indiceGLobal){ 
                 foreach ($datos_materias as $d){
-                  if ($d['materia']->idMateria == $idMateria){
+                  if ($d['materia']->idMateria.'_'.$d['carrera']->idCarrera == $key){
                     $dm = $d;
                     break;
                   }
                 }
                 echo '<tr>';
                 echo '<td>'.$pos++.'</td>';
+                echo '<td>'.$dm['carrera']->nombre.'</td>';
                 echo '<td>'.$dm['materia']->nombre.' ('.$dm['materia']->codigo.')</td>';
                 echo '<td>'.$dm['cantidad'].'</td>'; 
                 foreach ($dm['indices'] as $col){

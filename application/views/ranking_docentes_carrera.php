@@ -52,6 +52,7 @@
                 echo '<th>Pos.</th>';
                 echo '<th>Docente</th>';
                 echo '<th>Asignatura</th>';
+                echo '<th>Encuestas contestadas</th>';
                 echo '<th>Indice</th>';
               ?>
             </tr>
@@ -65,6 +66,7 @@
                 echo '<td>'.$pos++.'</td>';
                 echo '<td>'.$dm['docente']->nombre.' '.$dm['docente']->apellido.'</td>';
                 echo '<td>'.$dm['materia']->nombre.' ('.$dm['materia']->codigo.')</td>';
+                echo '<td>'.$dm['cantidad'].'</td>'; 
                 echo '<td><b>'.(($indice)?round($indice,2):$indice).'</b></td>';
                 echo '</tr>';
               }

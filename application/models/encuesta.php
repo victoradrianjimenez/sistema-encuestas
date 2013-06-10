@@ -429,6 +429,43 @@ class Encuesta extends CI_Model{
   }
   
   /**
+   * Obtiene el indice de una seccion para un departamento
+   *
+   * @access public
+   * @param identificador de departamento
+   * @param identificador de seccion
+   * @return array
+   */  
+  public function indiceSeccionDepartamento($idDepartamento, $idSeccion){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $idSeccion = $this->db->escape($idSeccion);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_seccion_departamento($idDepartamento, $idEncuesta, $idFormulario, $idSeccion)");
+    $data=$query->row();
+    $query->free_result();
+    return ($data)?$data->indice:0;
+  }
+
+  /**
+   * Obtiene el indice de una seccion para la facultad
+   *
+   * @access public
+   * @param identificador de departamento
+   * @param identificador de seccion
+   * @return array
+   */  
+  public function indiceSeccionFacultad($idSeccion){
+    $idSeccion = $this->db->escape($idSeccion);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_seccion_facultad($idEncuesta, $idFormulario, $idSeccion)");
+    $data=$query->row();
+    $query->free_result();
+    return ($data)?$data->indice:0;
+  }
+    
+  /**
    * Obtiene el indice global para una encuesta de un alumno.
    *
    * @access public
@@ -485,7 +522,39 @@ class Encuesta extends CI_Model{
     return ($data)?$data->indice:0;
   }
   
-    
+  /**
+   * Obtiene el indice global de un departamento
+   *
+   * @access public
+   * @param identificador de Departamento
+   * @return float
+   */  
+  public function indiceGlobalDepartamento($idDepartamento){
+    $idDepartamento = $this->db->escape($idDepartamento);
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_global_departamento($idDepartamento, $idEncuesta, $idFormulario)");
+    $data=$query->row();
+    $query->free_result();
+    return ($data)?$data->indice:0;
+  }
+  
+    /**
+   * Obtiene el indice global de la facultad
+   *
+   * @access public
+   * @param identificador de facultad
+   * @return float
+   */  
+  public function indiceGlobalFacultad(){
+    $idEncuesta = $this->db->escape($this->idEncuesta);
+    $idFormulario = $this->db->escape($this->idFormulario);
+    $query = $this->db->query("call esp_indice_global_facultad($idEncuesta, $idFormulario)");
+    $data=$query->row();
+    $query->free_result();
+    return ($data)?$data->indice:0;
+  }
+      
   
   /**
    * Obtener un departamento a partir de su id. Devuleve un objeto en caso de éxito, o FALSE en caso de error.

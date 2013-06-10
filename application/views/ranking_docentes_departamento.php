@@ -17,7 +17,7 @@
   <script src="<?php echo base_url('js/jquery.js')?>"></script>
   <script src="<?php echo base_url('js/html5shiv.js')?>"></script>
 
-  <title>Ranking de materias por Carrera - <?php echo NOMBRE_SISTEMA?></title>
+  <title>Ranking de docentes por departamento - <?php echo NOMBRE_SISTEMA?></title>
 </head>
 <body>
   <!-- Menu de opciones -->
@@ -39,52 +39,42 @@
       <div class="span12">
         <h2 class="text-center"><?php echo NOMBRE_FACULTAD?></h2>
         <h4 class="text-center"><?php echo $departamento->nombre?></h4>
-        <h4 class="text-center"><?php echo $carrera->nombre?></h4>
       </div>
     </div>
     <div class="row">
       <div class="span12">
-        <h5>Ranking de Materias</h5>
+        <h5>Ranking de Docentes</h5>
         <table class="table table-condensed">
           <thead>
             <tr>
               <?php 
                 echo '<th>Pos.</th>';
+                echo '<th>Carrera</th>';
+                echo '<th>Docente</th>';
                 echo '<th>Asignatura</th>';
                 echo '<th>Encuestas contestadas</th>';
-                foreach ($secciones as $seccion){
-                  if ($seccion->tipo != SECCION_TIPO_ALUMNO){
-                    echo '<th>'.$seccion->texto.'</th>';
-                  }
-                }
-                echo '<th>Indice Global</th>';
+                echo '<th>Indice</th>';
               ?>
             </tr>
           </thead>
           <tbody>
             <?php 
               $pos = 1;
-              foreach ($indicesGLobales as $idMateria => $indiceGLobal){ 
-                foreach ($datos_materias as $d){
-                  if ($d['materia']->idMateria == $idMateria){
-                    $dm = $d;
-                    break;
-                  }
-                }
+              foreach ($indices as $key => $indice){
+                $dm = $datos_docentes[$key]; 
                 echo '<tr>';
                 echo '<td>'.$pos++.'</td>';
-                echo '<td>'.$dm['materia']->nombre.' ('.$dm['materia']->codigo.')</td>';
+                echo '<td>'.$dm['carrera']->nombre.'</td>';
+                echo '<td>'.$dm['docente']->nombre.' '.$dm['docente']->apellido.'</td>';
+                echo '<td>'.$dm['materia']['nombre'].' ('.$dm['materia']['codigo'].')</td>';
                 echo '<td>'.$dm['cantidad'].'</td>'; 
-                foreach ($dm['indices'] as $col){
-                  echo '<td>'.(($col)?round($col,2):$col).'</td>';
-                }
-                echo '<td><b>'.(($indiceGLobal)?round($indiceGLobal,2):$indiceGLobal).'</b></td>';
+                echo '<td><b>'.(($indice)?round($indice,2):$indice).'</b></td>';
                 echo '</tr>';
               }
             ?>
           </tbody>
         </table>
-        <p>En el listado se muestra el indice promedio obtenido por cada materia. La última columna corresponde al indice global, calculado en base a todas las preguntas del formulario. En todos los casos, el índice se mide en una escala de 0 a 10.</p>
+        <p>En el listado se muestra el indice promedio obtenido por cada docente. La última columna corresponde al indice obtenido, medido en una escala de 0 a 10.</p>
       </div>
     </div>
   </div>

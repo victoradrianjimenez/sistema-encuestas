@@ -16,7 +16,7 @@
         <!-- Titulo -->
         <div class="span12">
           <h3>Informes por Encuesta</h3>
-          <p>Esta sección permite acceder a un informe que contiene un resumen de las respuestas obtenidas por un departamento en una determinada encuesta.</p>
+          <p>Esta sección permite acceder a un informe que contiene un resumen de las respuestas obtenidas para toda la faultad en una determinada encuesta.</p>
         </div>
       </div>
       
@@ -33,6 +33,10 @@
           
           <ul class="nav nav-tabs">
             <li class="active"><a href="#">Informe por facultad</a></li>
+            <li><a href="<?php echo site_url('ranking/materiasFacultad')?>">Ranking de Materias</a></li>
+            <li><a href="<?php echo site_url('ranking/docentesFacultad')?>">Ranking de Docentes</a></li>
+          </ul>
+
           </ul>
 
           <form class="form-horizontal" action="<?php echo site_url('informes/facultad')?>" method="post">

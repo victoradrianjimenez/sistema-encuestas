@@ -18,7 +18,7 @@ class Usuarios extends CI_Controller{
     $this->data['resultadoTipo'] = $this->session->flashdata('resultadoTipo');
     $this->data['resultadoOperacion'] = $this->session->flashdata('resultadoOperacion');
   }
-  
+
   public function index(){
     $this->listar();
   }
@@ -110,7 +110,17 @@ class Usuarios extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->is_admin()){
+    $this->load->model('Carrera');
+    $this->load->model('Gestor_carreras', 'gc');
+    $esOrganizador = false;
+    $carreras = $this->gc->listar();
+    foreach($carreras as $carrera){
+      if ($carrera->idOrganizador == $this->data['usuarioLogin']->id){
+        $esOrganizador = true;
+        break;
+      } 
+    }
+    if (!$this->ion_auth->is_admin() && !$esOrganizador){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/listar');
@@ -129,14 +139,21 @@ class Usuarios extends CI_Controller{
     $noImagen = ((bool)$this->input->post('noImagen')); //si es verdadero, se debe eliminar foto del usuario
     $grupos = $this->ion_auth->groups()->result();
     $usuario_grupos = ($this->input->post('grupos')) ? $this->input->post('grupos') : array(3); //grupo de docentes por defecto activado
-      
+
+    //verifico que el organizador no pueda asignar rol administrador a ningun usuario
+    if ($esOrganizador){
+      foreach ($grupos as $i => $g) {
+        if ($g->id == 1 || $g->id == 2){
+            unset($grupos[$i]);
+        }
+      }
+    }
+    
     //verifico datos POST
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
-    $this->form_validation->set_rules('password', 'Contraseña', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
-    $this->form_validation->set_rules('password2', 'Confirmar Contraseña', '');
     if($this->form_validation->run()){
       $error = false;
       $idImagen = null;
@@ -160,9 +177,11 @@ class Usuarios extends CI_Controller{
           'active' => $this->Usuario->active,
           'idImagen' => $idImagen
         );
-        $res = $this->ion_auth->register($this->Usuario->username, $this->input->post('password'), $this->Usuario->email, $additional_data, $usuario_grupos);
+        $randPassword = random_string('alnum', $this->config->item('max_password_length', 'ion_auth'));
+        $res = $this->ion_auth->register($this->Usuario->username, $randPassword, $this->Usuario->email, $additional_data, $usuario_grupos);
         if (is_numeric($res)){
-          $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
+          $this->_emailRecuperacion($this->Usuario->email);
+          $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito. Se ha enviado un email al usuario para que pueda establecer una nueva contraseña.');
           $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
           redirect('usuarios/listar');
         }
@@ -177,6 +196,8 @@ class Usuarios extends CI_Controller{
     $this->data['noImagen'] = &$noImagen;
     $this->data['tituloFormulario'] = 'Nuevo Usuario';
     $this->data['urlFormulario'] = site_url('usuarios/nuevo');
+    $this->data['esOrganizador'] = $esOrganizador; //es para diferenciar al organizador de un administrador
+    $this->data['editar'] = false; //al editar no se puede cambiar el nombre de usuario
     $this->load->view('editar_usuario', $this->data);
   }
 
@@ -192,7 +213,17 @@ class Usuarios extends CI_Controller{
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/login');
     }
-    elseif (!$this->ion_auth->is_admin()){
+    $this->load->model('Carrera');
+    $this->load->model('Gestor_carreras', 'gc');
+    $esOrganizador = false;
+    $carreras = $this->gc->listar();
+    foreach($carreras as $carrera){
+      if ($carrera->idOrganizador == $this->data['usuarioLogin']->id){
+        $esOrganizador = true;
+        break;
+      } 
+    }
+    if (!$this->ion_auth->is_admin() && !$esOrganizador){
       $this->session->set_flashdata('resultadoOperacion', 'No tiene permisos para realizar esta operación.');
       $this->session->set_flashdata('resultadoTipo', ALERT_WARNING);
       redirect('usuarios/listar');
@@ -206,10 +237,10 @@ class Usuarios extends CI_Controller{
     $this->Usuario->id = (int)$this->input->post('id');
     $this->Usuario->apellido = $this->input->post('apellido',TRUE);
     $this->Usuario->nombre = $this->input->post('nombre',TRUE);
-    $this->Usuario->username = $this->input->post('username',TRUE);
     $this->Usuario->email = $this->input->post('email',TRUE);
     $this->Usuario->active = (isset($_POST['active'])) ? $this->input->post('active') : 1;
     $noImagen = ((bool)$this->input->post('noImagen')); //si es verdadero, se debe eliminar foto del usuario
+    $grupos = $this->ion_auth->groups()->result();
     if (!$this->input->post('grupos')){
       $i = 0;
       $usuario_grupos = array();
@@ -220,14 +251,20 @@ class Usuarios extends CI_Controller{
     else{
       $usuario_grupos = $this->input->post('grupos');
     }
+    //verifico que el organizador no pueda asignar rol administrador a ningun usuario
+    if ($esOrganizador){
+      foreach ($grupos as $i => $g) {
+        if ($g->id == 1 || $g->id == 2){
+            unset($grupos[$i]);
+        }
+      }
+    }
+    
     //verifico datos POST
     $this->form_validation->set_rules('id','Identificador','is_natural_no_zero|required');
     $this->form_validation->set_rules('apellido','Apellido','alpha_dash_space|max_length[40]|required');
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
-    $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
-    $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
-    $this->form_validation->set_rules('password2', 'Confirmar Contraseña', '');
     if($this->form_validation->run()){
       $error = false;
       $idImagen = null;
@@ -248,7 +285,6 @@ class Usuarios extends CI_Controller{
         $data = array(
           'nombre' => $this->input->post('nombre',TRUE),
           'apellido' => $this->input->post('apellido',TRUE),
-          'username' => $this->input->post('username',TRUE),
           'email' => $this->input->post('email',TRUE),
           'active' => $this->input->post('active'),
         );
@@ -258,10 +294,6 @@ class Usuarios extends CI_Controller{
         }
         if ($noImagen){
           $data['idImagen'] = NULL;
-        }
-        //si el ususario escribe una contraseña, actualizarla
-        if ($this->input->post('password')){
-          $data['password'] = $this->input->post('password');
         }
         //agrego al usuario a los grupos elegidos
         $this->ion_auth->remove_from_group(NULL, $this->Usuario->id);
@@ -296,10 +328,12 @@ class Usuarios extends CI_Controller{
     }
     $this->data['usuario'] = $this->Usuario;
     $this->data['usuario_grupos'] = &$usuario_grupos;
-    $this->data['grupos'] = $this->ion_auth->groups()->result();
+    $this->data['grupos'] = &$grupos;
     $this->data['noImagen'] = $noImagen;
     $this->data['tituloFormulario'] = 'Modificar Usuario';
     $this->data['urlFormulario'] = site_url('usuarios/modificar/'.$id);
+    $this->data['esOrganizador'] = $esOrganizador; //es para diferenciar al organizador de un administrador
+    $this->data['editar'] = true; //al editar no se puede cambiar el nombre de usuario
     $this->load->view('editar_usuario', $this->data);
   }
 
@@ -463,6 +497,22 @@ class Usuarios extends CI_Controller{
     $this->load->view('ingreso_clave', $this->data);
   }
   
+  /* Enviar email de recuperacion de contraseña
+   * 
+   */
+  private function _emailRecuperacion($email){
+    $config_tables = $this->config->item('tables', 'ion_auth');
+    $identity = $this->db->where('email', $email)->limit('1')->get($config_tables['users'])->row();
+    if ($identity){
+      //enviar un email con un codigo de activación
+      $forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
+      return $forgotten;
+    }
+    $this->data['resultadoOperacion'] = 'No existe un usuario registrado con el email ingresado.';
+    $this->data['resultadoTipo'] = ALERT_ERROR;
+    return false;
+  }
+   
   /*
    * Formulario para iniciar el proceso de cambiar contraseña. 
    * POST: email, captcha
@@ -472,24 +522,15 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('email', 'E-mail', 'valid_email|required');
     if ($this->form_validation->run()){
       //obtener la identity para el email
-      $config_tables = $this->config->item('tables', 'ion_auth');
-      $identity = $this->db->where('email', $this->input->post('email'))->limit('1')->get($config_tables['users'])->row();
-      if ($identity){
-        //enviar un email con un codigo de activación
-        $forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
-        if ($forgotten){
-          $this->session->set_flashdata('resultadoOperacion', 'Se envió un correo elecrónico con un código de activación para continuar con el proceso.');
-          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-          redirect('/');
-        }
-        else{
-          $this->data['resultadoOperacion'] = 'Ha ocurrido un problema al enviar el código de activación. Por favor intente nuevamente.';
-          $this->data['resultadoTipo'] = ALERT_ERROR;        
-        }
+      $forgotten = $this->_emailRecuperacion($this->input->post('email'));
+      if ($forgotten){
+        $this->session->set_flashdata('resultadoOperacion', 'Se envió un correo elecrónico con un código de activación para continuar con el proceso.');
+        $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+        redirect('/');
       }
       else{
-        $this->data['resultadoOperacion'] = 'No existe un usuario registrado con el email ingresado.';
-        $this->data['resultadoTipo'] = ALERT_ERROR;
+        $this->data['resultadoOperacion'] = 'Ha ocurrido un error al enviar el código de activación. Por favor intente nuevamente.';
+        $this->data['resultadoTipo'] = ALERT_ERROR;        
       }
     }
     $this->data['captcha'] = $this->_crear_captcha(200, 40);
@@ -562,7 +603,9 @@ class Usuarios extends CI_Controller{
         echo  "$usuario->id\t".
               "$usuario->nombre\t".
               "$usuario->apellido\t".
-              "$usuario->username\t\n";
+              "$usuario->username\t".
+              date('d/m/Y G:i:s',$usuario->last_login)."\t".
+              "$usuario->active\t\n";
       }
     }
   }
@@ -575,10 +618,18 @@ class Usuarios extends CI_Controller{
       $this->load->model('Gestor_imagenes', 'gi');
       $imagen = $this->gi->dame($idImagen);
       if ($imagen){
-        ob_end_clean(); //A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
+        try{
+          ob_end_clean(); //A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
+        }
+        catch(Exception $e){
+        }
         header ('Content-type: '.$imagen->tipo);
         echo base64_decode($imagen->imagen);
-        ob_end_clean(); //A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
+        try{
+          ob_end_clean(); //A VECES ES REQUIERIDO. DEPENDE DEL SERVIDOR
+        }
+        catch(Exception $e){
+        }
       }
       else
         //cargo imagen por defecto

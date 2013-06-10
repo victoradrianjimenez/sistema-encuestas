@@ -33,7 +33,7 @@ class Gestor_materias extends CI_Model{
    * @param cantidad de items a mostrar (tamaño de página)
    * @return  array
    */  
-  public function listar($pagNumero, $pagLongitud){
+  public function listar($pagNumero=0, $pagLongitud=1000){
     $pagNumero = $this->db->escape($pagNumero);
     $pagLongitud = $this->db->escape($pagLongitud);
     $query = $this->db->query("call esp_listar_materias($pagNumero, $pagLongitud)");

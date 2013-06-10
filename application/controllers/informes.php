@@ -58,29 +58,37 @@ class Informes extends CI_Controller{
           //transformo a valores promedios
           $cnt = 0;
           $sum = 0;
+          $cntProm = 0;
           foreach ($datos_respuestas as $r) {
             $cnt += (int)$r['cantidad'];
-            $sum += (int)$r['opcion'] * (int)$r['cantidad'];
+            if ($r['opcion']>0){
+              $cntProm += (int)$r['cantidad'];
+              $sum += (int)$r['opcion'] * (int)$r['cantidad'];
+            }
           }
           foreach ($datos_respuestas as $pos => $r) {
             $datos_respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
           }
           $opciones = $item->listarOpciones();
-          $respuestaPromedio = ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%';
+          $respuestaPromedio = ($cntProm>0 && count($opciones)>0) ? round(($sum/$cntProm-1)/(count($opciones)-1)*100,2).'%':'-%';
           break;
         case TIPO_NUMERICA:
           $datos_respuestas = $encuesta->respuestasPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
           //transformo a valores promedios
           $cnt = 0;
           $sum = 0;
+          $cntProm = 0;
           foreach ($datos_respuestas as $r) {
             $cnt += (int)$r['cantidad'];
-            $sum += (float)$r['texto'] * (int)$r['cantidad'];
+            if ($r['opcion']>0){
+              $cntProm += (int)$r['cantidad'];
+              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+            }
           }
           foreach ($datos_respuestas as $pos => $r) {
             $datos_respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
           }
-          $respuestaPromedio = ($cnt>0) ? round($sum/$cnt,2):'';
+          $respuestaPromedio = ($cntProm>0) ? round($sum/$cntProm,2):'';
           break;
         case TIPO_TEXTO_SIMPLE: case TIPO_TEXTO_MULTILINEA:
           $datos_respuestas = $encuesta->textosPreguntaMateria($item->idPregunta, $idDocente, $idMateria, $idCarrera);
@@ -461,9 +469,13 @@ class Informes extends CI_Controller{
             //transformo a valores promedios
             $cnt = 0;
             $sum = 0;
+            $cntProm = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
-              $sum += (float)$r['opcion'] * (int)$r['cantidad'];
+              if ($r['opcion']>=0){
+                $cntProm += (int)$r['cantidad'];
+                $sum += (float)$r['opcion'] * (int)$r['cantidad'];
+              }
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
@@ -472,7 +484,7 @@ class Informes extends CI_Controller{
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%'
+              'respuestaPromedio' => ($cntProm>0 && count($opciones)>0) ? round(($sum/$cntProm-1)/(count($opciones)-1)*100,2).'%':'-%'
             );
             break;
           case TIPO_NUMERICA:
@@ -480,9 +492,13 @@ class Informes extends CI_Controller{
             //transformo a valores promedios
             $cnt = 0;
             $sum = 0;
+            $cntProm = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
-              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+              if ($r['opcion']>=0){
+                $cntProm += (int)$r['cantidad'];
+                $sum += (float)$r['texto'] * (int)$r['cantidad'];
+              }
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
@@ -490,7 +506,7 @@ class Informes extends CI_Controller{
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+              'respuestaPromedio' => ($cntProm>0) ? round($sum/$cntProm,2):''
             );
             break;
           default:
@@ -598,9 +614,13 @@ class Informes extends CI_Controller{
             //transformo a valores promedios
             $cnt = 0;
             $sum = 0;
+            $cntProm = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
-              $sum += (float)$r['opcion'] * (int)$r['cantidad'];
+              if ($r['opcion']>=0){
+                $cntProm += (int)$r['cantidad'];
+                $sum += (float)$r['opcion'] * (int)$r['cantidad'];
+              }
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
@@ -609,7 +629,7 @@ class Informes extends CI_Controller{
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%'
+              'respuestaPromedio' => ($cntProm>0 && count($opciones)>0) ? round(($sum/$cntProm-1)/(count($opciones)-1)*100,2).'%':'-%'
             );
             break;
           case TIPO_NUMERICA:
@@ -617,9 +637,13 @@ class Informes extends CI_Controller{
             //transformo a valores promedios
             $cnt = 0;
             $sum = 0;
+            $cntProm = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
-              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+              if ($r['opcion']>=0){
+                $cntProm += (int)$r['cantidad'];
+                $sum += (float)$r['texto'] * (int)$r['cantidad'];
+              }
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
@@ -627,7 +651,7 @@ class Informes extends CI_Controller{
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+              'respuestaPromedio' => ($cntProm>0) ? round($sum/$cntProm,2):''
             );
             break;
           default:
@@ -726,9 +750,13 @@ class Informes extends CI_Controller{
             //transformo a valores promedios
             $cnt = 0;
             $sum = 0;
+            $cntProm = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
-              $sum += (float)$r['opcion'] * (int)$r['cantidad'];
+              if ($r['opcion']>=0){
+                $cntProm += (int)$r['cantidad'];
+                $sum += (float)$r['opcion'] * (int)$r['cantidad'];
+              }
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
@@ -737,7 +765,7 @@ class Informes extends CI_Controller{
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,  
-              'respuestaPromedio' => ($cnt>0 && count($opciones)>0) ? round(($sum/$cnt-1)/(count($opciones)-1)*100,2).'%':'-%'
+              'respuestaPromedio' => ($cntProm>0 && count($opciones)>0) ? round(($sum/$cntProm-1)/(count($opciones)-1)*100,2).'%':'-%'
             );
             break;
           case TIPO_NUMERICA:
@@ -745,9 +773,13 @@ class Informes extends CI_Controller{
             //transformo a valores promedios
             $cnt = 0;
             $sum = 0;
+            $cntProm = 0;
             foreach ($respuestas as $r) {
               $cnt += (int)$r['cantidad'];
-              $sum += (float)$r['texto'] * (int)$r['cantidad'];
+              if ($r['opcion']>=0){
+                $cntProm += (int)$r['cantidad'];
+                $sum += (float)$r['texto'] * (int)$r['cantidad'];
+              }
             }
             foreach ($respuestas as $pos => $r) {
               $respuestas[$pos]['cantidad'] = ($cnt>0) ? round($r['cantidad']/$cnt*100,2).'%':'-%';
@@ -755,7 +787,7 @@ class Informes extends CI_Controller{
             $datos_secciones[$i]['items'][$k] = array(
               'item' => $item,
               'respuestas' => $respuestas,
-              'respuestaPromedio' => ($cnt>0) ? round($sum/$cnt,2):''
+              'respuestaPromedio' => ($cntProm>0) ? round($sum/$cntProm,2):''
             );
             break;
           default:
@@ -1214,23 +1246,39 @@ class Informes extends CI_Controller{
     //genero la descarga para el usuario
     switch ($tipo) {
       case 'xls':
-        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        try{
+          ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        }
+        catch(Exception $e){
+        }
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="'.$nombre.'.xls"');
         header('Cache-Control: max-age=0');
         //genero el archivo y guardo
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel5');
         $objWriter->save('php://output');
-        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        try{
+          ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        }
+        catch(Exception $e){
+        }
         break;
       case 'xlsx':
-        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        try{
+          ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        }
+        catch(Exception $e){
+        }
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="'.$nombre.'.xlsx"');
         header('Cache-Control: max-age=0');
         $objWriter = PHPExcel_IOFactory::createWriter($this->phpexcel, 'Excel2007');
         $objWriter->save('php://output');
-        ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        try{
+          ob_end_clean(); //HACE FALTA A VECES. DEPENDE DEL SERVIDOR.
+        }
+        catch(Exception $e){
+        }
         break;
       default:
         return false;

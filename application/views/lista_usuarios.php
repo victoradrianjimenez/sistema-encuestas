@@ -26,11 +26,21 @@
   
         <!-- Main -->
         <div class="span9">
+        <h4>Buscar</h4>
+        <div class="control-group" title="">
+          <label class="control-label" for="buscarUsuario"></label>
+          <div class="controls buscador">
+            <input class="input-block-level" id="buscarUsuario" name="buscarUsuario" type="text" data-provide="typeahead" autocomplete="off" value=""><i class="icon-search"></i>
+            <input type="hidden" name="idUsuario" value=""/>
+            <?php echo form_error('idUsuario')?>
+          </div>
+        </div> 
+
         <h4><?php echo(isset($grupo))?'Usuarios del grupo '.$grupo->description:'Todos los usuarios'?></h4>
         <?php if(count($lista)== 0):?>
           <p>No se encontraron usuarios.</p>
         <?php else:?>
-          <table class="table table-bordered table-striped">
+          <table id="tablaItems" class="table table-bordered table-striped">
             <thead>
               <th>Apellido</th>
               <th>Nombre</th>
@@ -39,7 +49,7 @@
               <th>Acciones</th>
             </thead>
             <?php foreach($lista as $item): ?>  
-              <tr>
+              <tr class="fila">
                 <td class="apellido"><?php echo $item['usuario']->apellido?></td>
                 <td class="nombre"><?php echo $item['usuario']->nombre?></td>
                 <td class="ultimo-acceso"><?php echo date('d/m/Y G:i:s',$item['usuario']->last_login)?></td>
@@ -90,7 +100,50 @@
   <script src="<?php echo base_url('js/bootstrap-collapse.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-dropdown.min.js')?>"></script>
   <script src="<?php echo base_url('js/bootstrap-alert.min.js')?>"></script>
+  <script src="<?php echo base_url('js/bootstrap-typeahead.min.js')?>"></script>
   <script>
+    $('input[name="buscarUsuario"]').keydown(function(event){
+      query = $(this).val();
+      url = "<?php echo site_url('usuarios/buscarAJAX')?>";
+      return $.ajax({
+        type: "POST", 
+        url: url, 
+        data:{ buscar: query}
+      }).done(function(msg){
+        $('.fila').remove();
+        $('.pagination').remove();
+        var filas = msg.split("\n");
+        var items = new Array();
+        for (var i=0; i<filas.length; i++){
+          if (filas[i].length<5) continue;
+          cols = filas[i].split("\t");
+          if (cols[5] == 1) estado = 'Activo'; else estado = 'Inactivo';
+          $('#tablaItems').append(
+            '<tr class="fila">'+
+            '  <td class="apellido">'+cols[2]+'</td>'+
+            '  <td class="nombre">'+cols[1]+'</td>'+
+            '  <td class="ultimo-acceso">'+cols[4]+'</td>'+
+            '  <td class="estado">'+estado+'</td>'+
+            '  <td>'+
+            '    <a class="modificar" href="<?php echo site_url('usuarios/modificar')?>/'+cols[0]+'">Modificar</a> /'+
+            '    <a class="eliminar" href="#" value="'+cols[0]+'">Eliminar</a>'+
+            '  </td>'+
+            '</tr>');
+          $('.eliminar').click(function(){
+            id = $(this).attr('value');
+            apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
+            nombre = $(this).parentsUntil('tr').parent().find('.nombre').text();
+            //cargo el id de la usuario en el formulario
+            $('#modalEliminar input[name="id"]').val(id);
+            //pongo el nombre de la usuario en el dialogo
+            $("#modalEliminar").find('.nombre').html(nombre+' '+apellido);
+            $("#modalEliminar").modal();
+            return false;
+          });
+        }
+      });
+    });
+    
     $('.eliminar').click(function(){
       id = $(this).attr('value');
       apellido = $(this).parentsUntil('tr').parent().find('.apellido').text();
