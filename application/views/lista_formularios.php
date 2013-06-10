@@ -45,8 +45,10 @@
                   <td class="titulo"><?php echo $item->titulo?></td>
                   <td class="creacion"><?php echo date('d/m/Y G:i:s', strtotime($item->creacion))?></td>
                   <td>
+                    <!--
                     <a class="editarFormulario" href="#" value="<?php echo $item->idFormulario?>">Modificar</a> /
                     <a class="pesosFormulario" href="#" value="<?php echo $item->idFormulario?>">Pesos</a> /
+                    -->
                     <a class="eliminar" href="#" value="<?php echo $item->idFormulario?>">Eliminar</a>
                   </td>
                 </tr>
