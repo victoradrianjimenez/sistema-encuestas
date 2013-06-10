@@ -155,38 +155,48 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('username','Nombre de usuario','required|alpha_dash_space|max_length[100]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
     if($this->form_validation->run()){
-      $error = false;
-      $idImagen = null;
-      //si el usuario sube una imagen, guardarla
-      if (isset($_FILES['imagen']) && !$noImagen){
-        if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
-          $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
-          //si la imagen no pudo guardarse en la base de datos
-          if (!is_numeric($idImagen)){
-            $error = true;
-            $this->session->set_flashdata('resultadoOperacion', $idImagen);
-            $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+      if ($this->ion_auth->username_check($this->input->post('username'))){
+        $this->data['resultadoOperacion'] = 'El nombre de usuario ya esta en uso.';
+        $this->data['resultadoTipo'] = ALERT_WARNING;
+      }
+      elseif($this->ion_auth->email_check($this->input->post('email'))){
+        $this->data['resultadoOperacion'] = 'El email ingresado ya esta en uso.';
+        $this->data['resultadoTipo'] = ALERT_WARNING;
+      }
+      else{
+        $error = false;
+        $idImagen = null;
+        //si el usuario sube una imagen, guardarla
+        if (isset($_FILES['imagen']) && !$noImagen){
+          if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
+            $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
+            //si la imagen no pudo guardarse en la base de datos
+            if (!is_numeric($idImagen)){
+              $error = true;
+              $this->session->set_flashdata('resultadoOperacion', $idImagen);
+              $this->session->set_flashdata('resultadoTipo', ALERT_ERROR);
+            }
           }
         }
-      }
-      //si no hubo error, modifico datos del usuario
-      if (!$error){
-        $additional_data = array(
-          'apellido' => $this->Usuario->apellido,
-          'nombre' => $this->Usuario->nombre,
-          'active' => $this->Usuario->active,
-          'idImagen' => $idImagen
-        );
-        $randPassword = random_string('alnum', $this->config->item('max_password_length', 'ion_auth'));
-        $res = $this->ion_auth->register($this->Usuario->username, $randPassword, $this->Usuario->email, $additional_data, $usuario_grupos);
-        if (is_numeric($res)){
-          $this->_emailRecuperacion($this->Usuario->email);
-          $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito. Se ha enviado un email al usuario para que pueda establecer una nueva contraseña.');
-          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-          redirect('usuarios/listar');
+        //si no hubo error, modifico datos del usuario
+        if (!$error){
+          $additional_data = array(
+            'apellido' => $this->Usuario->apellido,
+            'nombre' => $this->Usuario->nombre,
+            'active' => $this->Usuario->active,
+            'idImagen' => $idImagen
+          );
+          $randPassword = random_string('alnum', $this->config->item('max_password_length', 'ion_auth'));
+          $res = $this->ion_auth->register($this->Usuario->username, $randPassword, $this->Usuario->email, $additional_data, $usuario_grupos);
+          if (is_numeric($res)){
+            $this->_emailRecuperacion($this->Usuario->email);
+            $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito. Se ha enviado un email al usuario para que pueda establecer una nueva contraseña.');
+            $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+            redirect('usuarios/listar');
+          }
+          $this->data['resultadoOperacion'] = $res;
+          $this->data['resultadoTipo'] = ALERT_ERROR;
         }
-        $this->data['resultadoOperacion'] = $res;
-        $this->data['resultadoTipo'] = ALERT_ERROR;
       }
     }
     //en caso de que los datos sean incorrectos, vuelvo a la pagina de edicion
@@ -266,55 +276,62 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('nombre','Nombre','alpha_dash_space|max_length[40]');
     $this->form_validation->set_rules('email','E-mail','required|valid_email|max_length[100]');
     if($this->form_validation->run()){
-      $error = false;
-      $idImagen = null;
-      //si el usuario sube una imagen, guardarla
-      if (isset($_FILES['imagen']) && !$noImagen){
-        //verificar si la imagen se subio bien
-        if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
-          $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
-          if (!is_numeric($idImagen)){
-            $error = true;
-            $this->data['resultadoOperacion'] = $idImagen;
-            $this->data['resultadoTipo'] = ALERT_ERROR;
+      $usuario = $this->gu->dame((int)$id);
+      if($usuario->email != $this->input->post('email') && $this->ion_auth->email_check($this->input->post('email'))){
+        $this->data['resultadoOperacion'] = 'El email ingresado ya esta en uso.';
+        $this->data['resultadoTipo'] = ALERT_WARNING;
+      }
+      else{
+        $error = false;
+        $idImagen = null;
+        //si el usuario sube una imagen, guardarla
+        if (isset($_FILES['imagen']) && !$noImagen){
+          //verificar si la imagen se subio bien
+          if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
+            $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
+            if (!is_numeric($idImagen)){
+              $error = true;
+              $this->data['resultadoOperacion'] = $idImagen;
+              $this->data['resultadoTipo'] = ALERT_ERROR;
+            }
           }
         }
-      }
-      //si no hubo error, modifico datos del usuario
-      if (!$error){
-        $data = array(
-          'nombre' => $this->input->post('nombre',TRUE),
-          'apellido' => $this->input->post('apellido',TRUE),
-          'email' => $this->input->post('email',TRUE),
-          'active' => $this->input->post('active'),
-        );
-        //si el ususario sube una imagen, actualizarla
-        if ($idImagen){
-          $data['idImagen'] = $idImagen;
-        }
-        if ($noImagen){
-          $data['idImagen'] = NULL;
-        }
-        //agrego al usuario a los grupos elegidos
-        $this->ion_auth->remove_from_group(NULL, $this->Usuario->id);
-        foreach ($this->input->post('grupos') as $g) {
-          $this->ion_auth->add_to_group($g, $this->Usuario->id);
-        }
-        //modifico datos y cargo vista para mostrar resultado
-        $usuarioAnterior = $this->gu->dame($this->Usuario->id);
-        $res = $this->ion_auth->update($this->Usuario->id, $data);
-        //si los datos del usuario se guardaron con exito
-        if ($res){
-          //si el usuario no quiere una imagen o subió una nueva, elimino la imagen anterior
-          if ($noImagen || $idImagen) $this->gi->baja($usuarioAnterior->idImagen);
-          $this->session->set_flashdata('resultadoOperacion', 'La modificación de los datos del usuario se realizó con éxito.');
-          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-          redirect('usuarios/listar');
-        }
-        else{
-          if (!$idImagen) $this->gi->baja($idImagen); //como hubo error, borro la imagen que se acaba de dar de alta
-          $this->data['resultadoOperacion'] = 'Se produjo un error al intentar modificar los datos del usuario.';
-          $this->data['resultadoTipo'] = ALERT_ERROR;
+        //si no hubo error, modifico datos del usuario
+        if (!$error){
+          $data = array(
+            'nombre' => $this->input->post('nombre',TRUE),
+            'apellido' => $this->input->post('apellido',TRUE),
+            'email' => $this->input->post('email',TRUE),
+            'active' => $this->input->post('active'),
+          );
+          //si el ususario sube una imagen, actualizarla
+          if ($idImagen){
+            $data['idImagen'] = $idImagen;
+          }
+          if ($noImagen){
+            $data['idImagen'] = NULL;
+          }
+          //agrego al usuario a los grupos elegidos
+          $this->ion_auth->remove_from_group(NULL, $this->Usuario->id);
+          foreach ($this->input->post('grupos') as $g) {
+            $this->ion_auth->add_to_group($g, $this->Usuario->id);
+          }
+          //modifico datos y cargo vista para mostrar resultado
+          $usuarioAnterior = $this->gu->dame($this->Usuario->id);
+          $res = $this->ion_auth->update($this->Usuario->id, $data);
+          //si los datos del usuario se guardaron con exito
+          if ($res){
+            //si el usuario no quiere una imagen o subió una nueva, elimino la imagen anterior
+            if ($noImagen || $idImagen) $this->gi->baja($usuarioAnterior->idImagen);
+            $this->session->set_flashdata('resultadoOperacion', 'La modificación de los datos del usuario se realizó con éxito.');
+            $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+            redirect('usuarios/listar');
+          }
+          else{
+            if (!$idImagen) $this->gi->baja($idImagen); //como hubo error, borro la imagen que se acaba de dar de alta
+            $this->data['resultadoOperacion'] = 'Se produjo un error al intentar modificar los datos del usuario.';
+            $this->data['resultadoTipo'] = ALERT_ERROR;
+          }
         }
       }
     }
@@ -364,51 +381,61 @@ class Usuarios extends CI_Controller{
     $this->form_validation->set_rules('password', 'Contraseña', 'min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password2]');
     $this->form_validation->set_rules('password2', 'Confirmar Contraseña', '');
     if($this->form_validation->run()){
-      $error = false;
-      $idImagen = null;
-      //si el usuario sube una imagen, guardarla
-      if (isset($_FILES['imagen']) && !$noImagen){
-        //verificar si la imagen se subio bien
-        if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
-          $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
-          if (!is_numeric($idImagen)){
-            $error = true;
-            $this->data['resultadoOperacion'] = $idImagen;
-            $this->data['resultadoTipo'] = ALERT_ERROR;
+      if($this->data['usuarioLogin']->username != $this->input->post('username') && $this->ion_auth->username_check($this->input->post('username'))){
+        $this->data['resultadoOperacion'] = 'El nombre de usuario ya esta en uso.';
+        $this->data['resultadoTipo'] = ALERT_WARNING;
+      }
+      elseif($this->data['usuarioLogin']->email != $this->input->post('email') && $this->ion_auth->email_check($this->input->post('email'))){
+        $this->data['resultadoOperacion'] = 'El email ingresado ya esta en uso.';
+        $this->data['resultadoTipo'] = ALERT_WARNING;
+      }
+      else{
+        $error = false;
+        $idImagen = null;
+        //si el usuario sube una imagen, guardarla
+        if (isset($_FILES['imagen']) && !$noImagen){
+          //verificar si la imagen se subio bien
+          if (is_uploaded_file($_FILES['imagen']['tmp_name'])){
+            $idImagen = $this->gi->alta($_FILES['imagen']['tmp_name'], $_FILES['imagen']['type']);
+            if (!is_numeric($idImagen)){
+              $error = true;
+              $this->data['resultadoOperacion'] = $idImagen;
+              $this->data['resultadoTipo'] = ALERT_ERROR;
+            }
           }
         }
-      }
-      //si no hubo error, modifico datos del usuario
-      if (!$error){
-        $data = array(
-          'username' => $this->input->post('username',TRUE),
-          'email' => $this->input->post('email',TRUE),
-        );
-        //si el ususario escribe una contraseña, actualizarla
-        if ($idImagen){
-          $data['idImagen'] = $idImagen;
-        }
-        if ($noImagen){
-          $data['idImagen'] = NULL;
-        }
-        //si el ususario escribe una contraseña, actualizarla
-        if ($this->input->post('password')){
-          $data['password'] = $this->input->post('password');
-        }
-        //modifico datos y cargo vista para mostrar resultado
-        $res = $this->ion_auth->update((int)$this->data['usuarioLogin']->id, $data);
-        //si los datos del usuario se guardaron con exito
-        if ($res){
-          //si el usuario no quiere una imagen o subió una nueva, elimino de la base de datos la imagen anterior que tenia el usuario
-          if ($noImagen || $idImagen) $this->gi->baja($this->data['usuarioLogin']->idImagen);
-          $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
-          $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
-          redirect('/');
-        }
-        else{
-          if ($idImagen != null) $this->gi->baja($idImagen); //como hubo error, borro la imagen que se acaba de dar de alta
-          $this->data['resultadoOperacion'] = 'Se produjo un error al intentar modificar los datos del usuario.';
-          $this->data['resultadoTipo'] = ALERT_ERROR;
+        //si no hubo error, modifico datos del usuario
+        if (!$error){
+          $data = array(
+            'username' => $this->input->post('username',TRUE),
+            'email' => $this->input->post('email',TRUE),
+          );
+          //si el ususario escribe una contraseña, actualizarla
+          if ($idImagen){
+            $data['idImagen'] = $idImagen;
+          }
+          if ($noImagen){
+            $data['idImagen'] = NULL;
+          }
+          //si el ususario escribe una contraseña, actualizarla
+          if ($this->input->post('password')){
+            $data['password'] = $this->input->post('password');
+          }
+          //modifico datos y cargo vista para mostrar resultado
+          $res = $this->ion_auth->update((int)$this->data['usuarioLogin']->id, $data);
+          //si los datos del usuario se guardaron con exito
+          if ($res){
+            //si el usuario no quiere una imagen o subió una nueva, elimino de la base de datos la imagen anterior que tenia el usuario
+            if ($noImagen || $idImagen) $this->gi->baja($this->data['usuarioLogin']->idImagen);
+            $this->session->set_flashdata('resultadoOperacion', 'La operación se realizó con éxito.');
+            $this->session->set_flashdata('resultadoTipo', ALERT_SUCCESS);
+            redirect('/');
+          }
+          else{
+            if ($idImagen != null) $this->gi->baja($idImagen); //como hubo error, borro la imagen que se acaba de dar de alta
+            $this->data['resultadoOperacion'] = 'Se produjo un error al intentar modificar los datos del usuario.';
+            $this->data['resultadoTipo'] = ALERT_ERROR;
+          }
         }
       }
     }
