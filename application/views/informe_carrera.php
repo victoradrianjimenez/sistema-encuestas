@@ -82,7 +82,7 @@
             echo '<p>Año: '.$encuesta->año.'</p>';
             echo '<p>'.PERIODO.': '.$encuesta->cuatrimestre.'</p>';
             echo '<p>Fecha de inicio de las encuestas: '.date('d/m/Y G:i:s', strtotime($encuesta->fechaInicio)).'</p>';
-            echo '<p>Fecha de finalización de las encuestas: '.date('d/m/Y G:i:s', strtotime($encuesta->fechaFin)).'</p>';
+            echo '<p>Fecha de finalización de las encuestas: '.($encuesta->fechaFin?date('d/m/Y G:i:s', strtotime($encuesta->fechaFin)):'-').'</p>';
             ?>
           </div>
           <div class="span6">
