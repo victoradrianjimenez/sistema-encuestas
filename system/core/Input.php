@@ -374,7 +374,7 @@ class CI_Input {
 		$which = strtolower($which);
 
 		// First check if filter_var is available
-		if (is_callable('filter_var'))
+		if (false) // (is_callable('filter_var'))
 		{
 			switch ($which) {
 				case 'ipv4':
