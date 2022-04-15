@@ -9,6 +9,10 @@ Version: 1.0
 
 Autores: Lía Roldán, Adrian Jimenez
 
+Demo: http://sistema-encuestas-unt.herokuapp.com/
+User: admin
+Pass: password
+
 Requisitos del Servidor
 -----------------------
 
